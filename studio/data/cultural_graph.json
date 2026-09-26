@@ -1,0 +1,282 @@
+{
+  "version": 1,
+  "note": "Mock Cultural Graph slice for the NAARAD Studio prototype. One stop, hand-verified. Aliases are matched as substrings (Indic stems) or whole words (Latin script); the first alias per language is the canonical spelling shown in the creator glossary.",
+  "stops": [
+    {
+      "id": "thanjavur-big-temple",
+      "title": {
+        "en-IN": "Brihadeeswarar Temple",
+        "ta-IN": "தஞ்சை பெரிய கோவில்",
+        "hi-IN": "बृहदेश्वर मंदिर"
+      },
+      "place": "Thanjavur, Tamil Nadu",
+      "entities": [
+        {
+          "id": "brihadeeswarar-temple",
+          "type": "monument",
+          "aliases": {
+            "en-IN": ["Brihadeeswarar Temple", "Brihadeeswara", "Brihadisvara", "Big Temple", "Peruvudaiyar Kovil", "Rajarajeswaram"],
+            "ta-IN": ["பெரிய கோவில்", "பெரிய கோவி", "பெரிய கோயி", "பிரகதீஸ்வர", "பெருவுடையார் கோவி", "ராஜராஜேச்சர"],
+            "hi-IN": ["बृहदेश्वर मंदिर", "बृहदीश्वर", "बड़ा मंदिर", "बड़े मंदिर"]
+          }
+        },
+        {
+          "id": "rajaraja-chola-i",
+          "type": "person",
+          "aliases": {
+            "en-IN": ["Rajaraja Chola I", "Rajaraja Chola", "Raja Raja Chola", "Rajaraja"],
+            "ta-IN": ["ராஜராஜ சோழன்", "இராஜராஜ சோழன்", "ராஜராஜ", "இராசராச சோழன்"],
+            "hi-IN": ["राजराज चोल", "राजाराज चोल", "राजा राज चोल", "राजराज"]
+          }
+        },
+        {
+          "id": "thanjavur",
+          "type": "place",
+          "aliases": {
+            "en-IN": ["Thanjavur", "Tanjore"],
+            "ta-IN": ["தஞ்சாவூர்", "தஞ்சாவூ", "தஞ்சை"],
+            "hi-IN": ["तंजावुर", "तंजौर"]
+          }
+        },
+        {
+          "id": "vimana",
+          "type": "architecture",
+          "aliases": {
+            "en-IN": ["vimana", "vimanam", "tower"],
+            "ta-IN": ["விமானம்", "விமான", "கோபுர"],
+            "hi-IN": ["विमान", "शिखर"]
+          }
+        },
+        {
+          "id": "capstone",
+          "type": "architecture",
+          "aliases": {
+            "en-IN": ["capstone", "kalasam", "stone at the top", "stone at the very top"],
+            "ta-IN": ["சிகரக் கல்", "கலசம்", "உச்சியில்"],
+            "hi-IN": ["शिखर-पत्थर", "कलश", "ऊपर का पत्थर", "ऊपर रखे"]
+          }
+        },
+        {
+          "id": "perunthachan",
+          "type": "person",
+          "aliases": {
+            "en-IN": ["Kunjara Mallan Raja Raja Perunthachan", "Perunthachan"],
+            "ta-IN": ["குஞ்சர மல்லன் ராஜராஜ பெருந்தச்சன்", "பெருந்தச்சன்"],
+            "hi-IN": ["कुंजर मल्लन राजराज पेरुंतच्चन", "पेरुंतच्चन"]
+          }
+        },
+        {
+          "id": "peruvudaiyar",
+          "type": "deity",
+          "aliases": {
+            "en-IN": ["Peruvudaiyar", "Shiva", "lingam", "linga"],
+            "ta-IN": ["பெருவுடையார்", "சிவன்", "சிவனு", "லிங்க"],
+            "hi-IN": ["पेरुवुडैयार", "शिव", "लिंग"]
+          }
+        },
+        {
+          "id": "nandi",
+          "type": "sculpture",
+          "aliases": {
+            "en-IN": ["Nandi"],
+            "ta-IN": ["நந்தி"],
+            "hi-IN": ["नंदी", "नन्दी"]
+          }
+        },
+        {
+          "id": "karana",
+          "type": "art",
+          "aliases": {
+            "en-IN": ["karanas", "karana", "Bharatanatyam", "dance poses"],
+            "ta-IN": ["கரணங்கள்", "கரண", "பரதநாட்டிய", "நடன"],
+            "hi-IN": ["करण", "भरतनाट्यम", "नृत्य"]
+          }
+        },
+        {
+          "id": "chola-frescoes",
+          "type": "art",
+          "aliases": {
+            "en-IN": ["Chola frescoes", "frescoes", "fresco", "paintings"],
+            "ta-IN": ["சுவரோவிய", "ஓவிய"],
+            "hi-IN": ["भित्ति-चित्र", "भित्ति चित्र", "चित्र"]
+          }
+        },
+        {
+          "id": "nayak-period",
+          "type": "dynasty",
+          "aliases": {
+            "en-IN": ["Nayak", "Nayaks", "Nayaka"],
+            "ta-IN": ["நாயக்கர்"],
+            "hi-IN": ["नायक"]
+          }
+        },
+        {
+          "id": "sathaya-vizha",
+          "type": "festival",
+          "aliases": {
+            "en-IN": ["Sathaya Vizha", "Sadhaya Vizha", "Aippasi"],
+            "ta-IN": ["சதய விழா", "சதய", "ஐப்பசி"],
+            "hi-IN": ["सदय उत्सव", "सदय", "ऐप्पसी"]
+          }
+        },
+        {
+          "id": "unesco-whs",
+          "type": "designation",
+          "aliases": {
+            "en-IN": ["UNESCO", "World Heritage", "Great Living Chola Temples"],
+            "ta-IN": ["யுனெஸ்கோ", "உலக பாரம்பரிய"],
+            "hi-IN": ["यूनेस्को", "विश्व धरोहर"]
+          }
+        },
+        {
+          "id": "granite",
+          "type": "material",
+          "aliases": {
+            "en-IN": ["granite"],
+            "ta-IN": ["கருங்கல்", "கிரானைட்"],
+            "hi-IN": ["ग्रेनाइट"]
+          }
+        }
+      ],
+      "facts": [
+        {
+          "id": "F1",
+          "confidence": "established",
+          "entities": ["rajaraja-chola-i", "brihadeeswarar-temple"],
+          "text": {
+            "en-IN": "The temple was built by the Chola emperor Rajaraja Chola I and consecrated in 1010 CE.",
+            "ta-IN": "இந்தக் கோவிலை சோழப் பேரரசர் முதலாம் ராஜராஜ சோழன் கட்டினார். பொ.ஆ. 1010இல் குடமுழுக்கு நடந்தது.",
+            "hi-IN": "इस मंदिर को चोल सम्राट राजराज चोल प्रथम ने बनवाया था और 1010 ईस्वी में इसकी प्राण-प्रतिष्ठा हुई थी।"
+          }
+        },
+        {
+          "id": "F2",
+          "confidence": "established",
+          "entities": ["vimana", "granite"],
+          "text": {
+            "en-IN": "Its vimana, the tower over the sanctum, rises about 66 metres and is built almost entirely of granite.",
+            "ta-IN": "கருவறைக்கு மேலே உள்ள கோபுரமான விமானம் சுமார் 66 மீட்டர் உயரம் கொண்டது. இது கிட்டத்தட்ட முழுவதும் கருங்கல்லால் கட்டப்பட்டது.",
+            "hi-IN": "गर्भगृह के ऊपर का शिखर, यानी विमान, लगभग 66 मीटर ऊँचा है और लगभग पूरा ग्रेनाइट से बना है।"
+          }
+        },
+        {
+          "id": "F3",
+          "confidence": "tradition",
+          "entities": ["perunthachan"],
+          "text": {
+            "en-IN": "The architect is traditionally named as Kunjara Mallan Raja Raja Perunthachan.",
+            "ta-IN": "இதன் சிற்பி குஞ்சர மல்லன் ராஜராஜ பெருந்தச்சன் என்று மரபாகக் கூறப்படுகிறது.",
+            "hi-IN": "परंपरा के अनुसार इसके वास्तुकार कुंजर मल्लन राजराज पेरुंतच्चन थे।"
+          }
+        },
+        {
+          "id": "F4",
+          "confidence": "tradition",
+          "entities": ["capstone", "vimana"],
+          "text": {
+            "en-IN": "The capstone at the top of the vimana is said to weigh about 80 tonnes. Tradition says it was hauled up a long earthen ramp.",
+            "ta-IN": "விமானத்தின் உச்சியில் உள்ள சிகரக் கல் சுமார் 80 டன் எடை கொண்டது என்று கூறப்படுகிறது. நீண்ட மண் சாரத்தின் வழியாக அது மேலே இழுத்துச் செல்லப்பட்டது என்பது மரபுக் கதை.",
+            "hi-IN": "विमान के शीर्ष पर रखे शिखर-पत्थर का वज़न लगभग 80 टन बताया जाता है। परंपरा कहती है कि उसे मिट्टी की एक लंबी ढलान पर ऊपर खींचा गया था।"
+          }
+        },
+        {
+          "id": "F5",
+          "confidence": "myth",
+          "entities": ["vimana"],
+          "text": {
+            "en-IN": "The popular belief that the vimana casts no shadow at noon is a myth. Its shadow does fall, mostly on the temple's own broad base.",
+            "ta-IN": "மதிய வேளையில் விமானத்தின் நிழல் விழாது என்ற பிரபலமான நம்பிக்கை ஒரு கட்டுக்கதை. அதன் நிழல் விழுகிறது; பெரும்பாலும் கோவிலின் அகன்ற அடித்தளத்தின் மீதே விழுகிறது.",
+            "hi-IN": "यह लोकप्रिय धारणा कि दोपहर में विमान की छाया नहीं पड़ती, एक मिथक है। इसकी छाया पड़ती है, ज़्यादातर मंदिर के अपने चौड़े आधार पर।"
+          }
+        },
+        {
+          "id": "F6",
+          "confidence": "established",
+          "entities": ["peruvudaiyar", "brihadeeswarar-temple"],
+          "text": {
+            "en-IN": "The temple is dedicated to Shiva as Peruvudaiyar, worshipped in the sanctum as a very large lingam.",
+            "ta-IN": "இந்தக் கோவில் பெருவுடையார் என்ற பெயரில் சிவனுக்கு அர்ப்பணிக்கப்பட்டது. கருவறையில் அவர் மிகப் பெரிய லிங்க வடிவில் வழிபடப்படுகிறார்.",
+            "hi-IN": "यह मंदिर पेरुवुडैयार के रूप में शिव को समर्पित है, जिनकी गर्भगृह में एक बहुत बड़े लिंग के रूप में पूजा होती है।"
+          }
+        },
+        {
+          "id": "F7",
+          "confidence": "established",
+          "entities": ["nandi", "nayak-period"],
+          "text": {
+            "en-IN": "The large monolithic Nandi facing the sanctum, and its pavilion, were added later, in the Nayak period.",
+            "ta-IN": "கருவறையை நோக்கி இருக்கும் பெரிய ஒற்றைக்கல் நந்தியும் அதன் மண்டபமும் பின்னர் நாயக்கர் காலத்தில் சேர்க்கப்பட்டவை.",
+            "hi-IN": "गर्भगृह के सामने की विशाल एकाश्म नंदी प्रतिमा और उसका मंडप बाद में, नायक काल में जोड़े गए थे।"
+          }
+        },
+        {
+          "id": "F8",
+          "confidence": "established",
+          "entities": ["karana"],
+          "text": {
+            "en-IN": "Sculptures on the upper storey around the sanctum show 81 of the 108 karanas, the classical dance poses of Bharatanatyam.",
+            "ta-IN": "கருவறையைச் சுற்றியுள்ள மேல் தளத்தில் உள்ள சிற்பங்கள், பரதநாட்டியத்தின் 108 கரணங்களில் 81 கரணங்களைக் காட்டுகின்றன.",
+            "hi-IN": "गर्भगृह के चारों ओर ऊपरी तल की मूर्तियाँ भरतनाट्यम की 108 शास्त्रीय नृत्य-मुद्राओं, यानी करणों, में से 81 को दर्शाती हैं।"
+          }
+        },
+        {
+          "id": "F9",
+          "confidence": "established",
+          "entities": ["chola-frescoes", "nayak-period"],
+          "text": {
+            "en-IN": "Chola-period frescoes in the passage around the sanctum were discovered in 1931, hidden beneath later Nayak paintings.",
+            "ta-IN": "கருவறையைச் சுற்றியுள்ள பாதையில், பிற்கால நாயக்கர் ஓவியங்களுக்குக் கீழே மறைந்திருந்த சோழர் கால சுவரோவியங்கள் 1931இல் கண்டுபிடிக்கப்பட்டன.",
+            "hi-IN": "गर्भगृह के चारों ओर के गलियारे में चोल काल के भित्ति-चित्र 1931 में खोजे गए, जो बाद के नायक चित्रों के नीचे छिपे थे।"
+          }
+        },
+        {
+          "id": "F10",
+          "confidence": "established",
+          "entities": ["unesco-whs", "brihadeeswarar-temple"],
+          "text": {
+            "en-IN": "The temple is a UNESCO World Heritage Site, inscribed in 1987 as part of the Great Living Chola Temples.",
+            "ta-IN": "இந்தக் கோவில் யுனெஸ்கோ உலக பாரம்பரியச் சின்னம். 1987இல், அழியாத சோழர் பெருங்கோவில்கள் தொகுப்பின் ஒரு பகுதியாக இது பட்டியலிடப்பட்டது.",
+            "hi-IN": "यह मंदिर यूनेस्को विश्व धरोहर स्थल है, जिसे 1987 में 'महान जीवंत चोल मंदिर' समूह के हिस्से के रूप में सूचीबद्ध किया गया।"
+          }
+        },
+        {
+          "id": "F11",
+          "confidence": "established",
+          "entities": ["sathaya-vizha", "rajaraja-chola-i", "thanjavur"],
+          "text": {
+            "en-IN": "Every year in the Tamil month of Aippasi, Thanjavur celebrates Sathaya Vizha, the festival of Rajaraja's birth star.",
+            "ta-IN": "ஒவ்வொரு ஆண்டும் ஐப்பசி மாதத்தில், ராஜராஜனின் பிறந்த நட்சத்திரமான சதயத்தை முன்னிட்டு தஞ்சாவூர் சதய விழா கொண்டாடுகிறது.",
+            "hi-IN": "हर साल तमिल महीने ऐप्पसी में तंजावुर राजराज के जन्म-नक्षत्र का उत्सव, सदय उत्सव, मनाता है।"
+          }
+        },
+        {
+          "id": "F12",
+          "confidence": "tradition",
+          "entities": ["granite", "vimana"],
+          "text": {
+            "en-IN": "Guides often explain that the granite blocks were fitted with interlocking joints and held by their own weight, with little or no binding mortar.",
+            "ta-IN": "கருங்கல் பாளங்கள் ஒன்றோடொன்று பொருந்தும் இணைப்புகளால் பொருத்தப்பட்டு, சுண்ணாம்புக் கலவை அதிகம் இல்லாமல், அவற்றின் சொந்த எடையாலேயே நிற்கின்றன என்று வழிகாட்டிகள் அடிக்கடி விளக்குவார்கள்.",
+            "hi-IN": "गाइड अक्सर बताते हैं कि ग्रेनाइट के खंड आपस में फँसने वाले जोड़ों से बिठाए गए थे और अपने ही वज़न से टिके हैं, जिनमें जोड़ने वाला गारा बहुत कम या बिल्कुल नहीं है।"
+          }
+        }
+      ],
+      "suggested_questions": {
+        "en-IN": [
+          "How was the stone at the top lifted up?",
+          "Is it true the tower casts no shadow?",
+          "Why are dance poses carved on the walls?"
+        ],
+        "ta-IN": [
+          "உச்சியில் உள்ள கல்லை எப்படி மேலே ஏற்றினார்கள்?",
+          "கோபுரத்தின் நிழல் விழாது என்பது உண்மையா?",
+          "சுவர்களில் ஏன் நடன நிலைகள் செதுக்கப்பட்டுள்ளன?"
+        ],
+        "hi-IN": [
+          "सबसे ऊपर का पत्थर कैसे चढ़ाया गया था?",
+          "क्या सच में शिखर की छाया नहीं पड़ती?",
+          "दीवारों पर नृत्य-मुद्राएँ क्यों तराशी गई हैं?"
+        ]
+      }
+    }
+  ]
+}

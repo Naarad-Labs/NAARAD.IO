@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NAARAD Studio</title>
+<meta name="description" content="Record a 90-second heritage story, verify it, and deliver it to travellers in their own language with Sarvam AI.">
+<meta name="theme-color" content="#172752">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23172752'/%3E%3Ctext x='16' y='22' font-family='Georgia' font-size='18' font-weight='700' fill='%23F9F1DC' text-anchor='middle'%3EN%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<!-- Fonts load without blocking: on flaky venue Wi-Fi the Studio must never wait on a font CDN. -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@700&family=Noto+Sans+Tamil:wght@400;600&family=Noto+Sans+Devanagari:wght@400;600&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="studio.css">
+<script type="module" src="studio.js"></script>
+</head>
+<body>
+<a class="skip" href="#stage-record">Skip to the studio</a>
+
+<header class="topbar">
+  <div class="brand">
+    <span class="brand-mark">NAARAD</span>
+    <span class="brand-tag">Studio</span>
+  </div>
+  <p class="brand-sub">Oral heritage in, spoken heritage out, on Sarvam AI</p>
+  <div class="topbar-controls">
+    <span id="status-pill" class="pill pill-muted" role="status">Checking server…</span>
+    <label class="switch" title="Force every stage onto its offline fallback">
+      <input type="checkbox" id="simulate-offline">
+      <span class="switch-track" aria-hidden="true"></span>
+      <span>Simulate Wi-Fi drop</span>
+    </label>
+  </div>
+</header>
+
+<nav class="rail" aria-label="Pipeline stages">
+  <ol>
+    <li data-stage="record"><a href="#stage-record"><span class="rail-num">1</span><span class="rail-text"><span class="rail-name">Record</span><span class="rail-model">Saaras v3</span></span><span class="rail-state" aria-hidden="true"></span></a></li>
+    <li data-stage="verify"><a href="#stage-verify"><span class="rail-num">2</span><span class="rail-text"><span class="rail-name">Verify &amp; gate</span><span class="rail-model">Creator + Sarvam-105B</span></span><span class="rail-state" aria-hidden="true"></span></a></li>
+    <li data-stage="translate"><a href="#stage-translate"><span class="rail-num">3</span><span class="rail-text"><span class="rail-name">Translate</span><span class="rail-model">Mayura</span></span><span class="rail-state" aria-hidden="true"></span></a></li>
+    <li data-stage="listen"><a href="#stage-listen"><span class="rail-num">4</span><span class="rail-text"><span class="rail-name">Listen</span><span class="rail-model">Bulbul v3</span></span><span class="rail-state" aria-hidden="true"></span></a></li>
+    <li data-stage="ask"><a href="#stage-ask"><span class="rail-num">5</span><span class="rail-text"><span class="rail-name">Ask</span><span class="rail-model">Sarvam-105B</span></span><span class="rail-state" aria-hidden="true"></span></a></li>
+  </ol>
+</nav>
+
+<div id="server-banner" class="banner banner-error" role="alert" hidden>
+  The Studio server isn't reachable. Start it with <code>python3 studio/server.py</code> and reload this page.
+</div>
+
+<main class="lanes">
+  <!-- ═════════ Creator lane ═════════ -->
+  <section class="lane" aria-labelledby="creator-title">
+    <h2 id="creator-title" class="lane-title"><span class="lane-kicker">Creator</span> Record, check, publish</h2>
+
+    <article class="card" id="stage-record">
+      <header class="card-head">
+        <span class="step">1</span>
+        <div class="card-titles">
+          <h3>Record your story</h3>
+          <p class="card-sub">Up to 90 seconds, in your own language.</p>
+        </div>
+        <span class="model-tag">saaras:v3</span>
+      </header>
+      <div class="field-row">
+        <label class="field">Story language <select id="source-language"></select></label>
+        <label class="field">Heritage stop <select id="stop-select"></select></label>
+      </div>
+      <div class="capture">
+        <button type="button" id="record-btn" class="btn btn-record">
+          <svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="5"/></svg><span>Record</span>
+        </button>
+        <button type="button" id="upload-btn" class="btn btn-ghost">Upload audio</button>
+        <input type="file" id="upload-input" accept="audio/*" hidden>
+        <button type="button" id="sample-btn" class="btn btn-ghost">Use sample narration</button>
+      </div>
+      <div class="meter" id="record-meter" hidden>
+        <div class="meter-bar"><span id="meter-fill"></span></div>
+        <span id="meter-time" class="meter-time" aria-live="off">0:00 / 1:30</span>
+      </div>
+      <div id="clip" class="clip" hidden>
+        <audio id="clip-audio" controls preload="metadata"></audio>
+        <p class="meta" id="clip-meta"></p>
+      </div>
+      <p class="notice" id="record-notice" role="status" hidden></p>
+      <div class="actions">
+        <button type="button" id="transcribe-btn" class="btn btn-primary" disabled>Transcribe with Saaras</button>
+        <span class="meta" id="record-meta"></span>
+      </div>
+    </article>
+
+    <article class="card is-locked" id="stage-verify">
+      <header class="card-head">
+        <span class="step">2</span>
+        <div class="card-titles">
+          <h3>Verify the transcript</h3>
+          <p class="card-sub">Fix names speech-to-text may have misheard: deities, temple parts, local places.</p>
+        </div>
+        <span class="model-tag model-tag-human">human in the loop</span>
+      </header>
+      <label for="transcript" class="sr-only">Transcript</label>
+      <textarea id="transcript" rows="9" spellcheck="false" disabled placeholder="Your transcript appears here after step 1."></textarea>
+      <div class="edit-bar">
+        <span id="edit-count" class="meta">No corrections yet</span>
+        <button type="button" id="reset-btn" class="btn-link" disabled>Reset to Saaras output</button>
+      </div>
+      <div class="glossary">
+        <h4>Cultural Graph glossary</h4>
+        <p class="hint">Select a misheard word, then tap the right term to replace it. Highlighted terms already appear in your story.</p>
+        <div id="glossary-chips" class="chips"></div>
+      </div>
+      <label class="check"><input type="checkbox" id="reviewed-check" disabled> I have listened back, and this transcript is accurate.</label>
+      <div class="actions">
+        <button type="button" id="moderate-btn" class="btn btn-primary" disabled>Run publish check</button>
+        <span class="model-inline">sarvam-105b</span>
+      </div>
+      <div id="gate" class="gate" aria-live="polite" hidden></div>
+      <div class="actions" id="publish-row" hidden>
+        <button type="button" id="publish-btn" class="btn btn-accent">Publish to travellers</button>
+      </div>
+    </article>
+  </section>
+
+  <!-- ═════════ Traveller lane ═════════ -->
+  <section class="lane lane-traveller" aria-labelledby="traveller-title">
+    <h2 id="traveller-title" class="lane-title"><span class="lane-kicker">Traveller</span> Hear it at the stop</h2>
+    <p class="lock-note" id="traveller-lock">Publish a verified story to unlock the traveller view.</p>
+
+    <article class="card is-locked" id="stage-translate">
+      <header class="card-head">
+        <span class="step">3</span>
+        <div class="card-titles">
+          <h3>Read it in your language</h3>
+          <p class="card-sub" id="stop-title"></p>
+        </div>
+        <span class="model-tag">mayura:v1</span>
+      </header>
+      <div class="field-row">
+        <label class="field">Traveller language <select id="target-language" disabled></select></label>
+      </div>
+      <div class="parallel">
+        <div>
+          <h4 id="orig-label">Original</h4>
+          <p id="orig-text" class="story-text"></p>
+        </div>
+        <div>
+          <h4 id="trans-label">Translation</h4>
+          <p id="trans-text" class="story-text"></p>
+        </div>
+      </div>
+      <p class="notice" id="translate-notice" role="status" hidden></p>
+      <p class="meta" id="translate-meta"></p>
+    </article>
+
+    <article class="card is-locked" id="stage-listen">
+      <header class="card-head">
+        <span class="step">4</span>
+        <div class="card-titles">
+          <h3>Listen, eyes up</h3>
+          <p class="card-sub">The narration a traveller hears when they reach the stop.</p>
+        </div>
+        <span class="model-tag">bulbul:v3</span>
+      </header>
+      <div class="field-row">
+        <label class="field">Voice <select id="speaker-select" disabled></select></label>
+      </div>
+      <div class="actions">
+        <button type="button" id="speak-btn" class="btn btn-primary" disabled>
+          <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 2.5v11l9-5.5z"/></svg><span>Voice it with Bulbul</span>
+        </button>
+        <a id="download-link" class="btn-link" download="naarad-narration.wav" hidden>Download WAV</a>
+      </div>
+      <audio id="narration-audio" controls hidden></audio>
+      <div id="device-voice" class="device-voice" hidden>
+        <button type="button" id="device-play" class="btn btn-ghost">Play with device voice</button>
+        <button type="button" id="device-stop" class="btn-link">Stop</button>
+      </div>
+      <p class="notice" id="listen-notice" role="status" hidden></p>
+      <p class="meta" id="listen-meta"></p>
+    </article>
+
+    <article class="card is-locked" id="stage-ask">
+      <header class="card-head">
+        <span class="step">5</span>
+        <div class="card-titles">
+          <h3>Ask NAARAD</h3>
+          <p class="card-sub">Follow-up questions, answered from this stop's Cultural Graph.</p>
+        </div>
+        <span class="model-tag">sarvam-105b</span>
+      </header>
+      <fieldset class="segmented" id="mode-toggle">
+        <legend class="sr-only">Answer mode</legend>
+        <label><input type="radio" name="mode" value="fast" checked disabled><span>Fast</span></label>
+        <label><input type="radio" name="mode" value="think" disabled><span>Think</span></label>
+      </fieldset>
+      <div id="suggested" class="chips"></div>
+      <ol id="chat" class="chat" aria-live="polite"></ol>
+      <form id="ask-form" class="ask-form">
+        <label for="question" class="sr-only">Your question</label>
+        <input id="question" type="text" autocomplete="off" maxlength="500" placeholder="Ask about this place…" disabled>
+        <button type="button" id="mic-btn" class="btn btn-icon" aria-label="Ask by voice" title="Ask by voice (up to 15 s)" disabled>
+          <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.5a2.5 2.5 0 0 0-2.5 2.5v4a2.5 2.5 0 0 0 5 0V4A2.5 2.5 0 0 0 8 1.5zM3.5 7.5a.75.75 0 0 1 1.5 0 3 3 0 0 0 6 0 .75.75 0 0 1 1.5 0 4.5 4.5 0 0 1-3.75 4.44V13.5h1.5a.75.75 0 0 1 0 1.5h-4.5a.75.75 0 0 1 0-1.5h1.5v-1.56A4.5 4.5 0 0 1 3.5 7.5z"/></svg>
+        </button>
+        <button type="submit" id="ask-btn" class="btn btn-primary" disabled>Ask</button>
+      </form>
+      <p class="notice" id="ask-notice" role="status" hidden></p>
+    </article>
+  </section>
+</main>
+
+<footer class="footer">
+  <p>NAARAD Studio prototype. Every stage falls back offline: a demo transcript, pre-translated copy, the device's own voice, and the stop's Cultural Graph notes. Models: <span id="model-list">loading…</span></p>
+</footer>
+</body>
+</html>

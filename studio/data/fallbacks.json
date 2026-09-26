@@ -1,0 +1,18 @@
+{
+  "note": "Safety-net content served when Sarvam is unreachable (event Wi-Fi drop, missing key, or the UI's 'Simulate Wi-Fi drop' switch). The story is the same creator narration in three languages, hand-corrected after a Mayura draft, so offline translation can still show a parallel text for the demo story.",
+  "story": {
+    "ta-IN": "வணக்கம். நான் தஞ்சை பெரிய கோவிலின் வாசலில் நிற்கிறேன். மதிய வேளையில் இந்தக் கோபுரத்தின் நிழல் தரையில் விழவே விழாது என்று என் பாட்டி சொல்வார். அது அழகான கதை, ஆனால் வெறும் கதைதான். மதியம் வந்து நீங்களே பாருங்கள். இந்தக் கோவிலை முதலாம் ராஜராஜ சோழன் கட்டினார். 1010ஆம் ஆண்டு குடமுழுக்கு நடந்தது. விமானம் சுமார் அறுபத்தாறு மீட்டர் உயரம், முழுவதும் கருங்கல்லால் ஆனது. உச்சியில் இருக்கும் பெரிய கல் எண்பது டன் எடை என்றும், தொலைவில் உள்ள ஒரு கிராமத்திலிருந்து தொடங்கிய மண் சாரத்தின் மேல் யானைகள் அதை இழுத்துச் சென்றன என்றும் எங்கள் ஊர்ப் பெரியவர்கள் சொல்வார்கள். சிற்பங்களைக் கூர்ந்து பாருங்கள். பரதநாட்டியத்தின் கரணங்களைக் காட்டும் நடனமாதர்கள் கல்லில் செதுக்கப்பட்டிருப்பதைக் காணலாம். ஒவ்வொரு ஆண்டும் ஐப்பசி மாதத்தில், ராஜராஜனின் பிறந்த நட்சத்திரத்துக்காக ஊரே சதய விழா கொண்டாடுகிறது. குளிர்ந்த கல்லைத் தொட்டுப் பாருங்கள். கேளுங்கள்.",
+    "hi-IN": "नमस्कार। मैं तंजावुर के बड़े मंदिर के द्वार पर खड़ी हूँ। मेरी दादी कहती थीं कि दोपहर में इस शिखर की छाया ज़मीन पर कभी नहीं पड़ती। यह सुंदर कहानी है, पर सिर्फ़ कहानी है, इसलिए दोपहर में आकर ख़ुद देखिए। इस मंदिर को राजराज चोल प्रथम ने बनवाया था और वर्ष 1010 में इसकी प्राण-प्रतिष्ठा हुई थी। विमान लगभग छियासठ मीटर ऊँचा है और पूरा ग्रेनाइट से बना है। हमारे शहर के बुज़ुर्ग कहते हैं कि सबसे ऊपर रखे बड़े पत्थर का वज़न अस्सी टन है, और हाथियों ने उसे मिट्टी की एक ढलान पर ऊपर खींचा था, जो दूर के एक गाँव से शुरू होती थी। नक्काशी को ध्यान से देखिए, आपको पत्थर में तराशी हुई नर्तकियाँ दिखेंगी, जो भरतनाट्यम के करण दर्शाती हैं। हर साल ऐप्पसी महीने में पूरा शहर राजराज के जन्म-नक्षत्र पर सदय उत्सव मनाता है। ठंडे पत्थर को छूकर देखिए, और सुनिए।",
+    "en-IN": "Vanakkam. I am standing at the gate of the Big Temple of Thanjavur. My grandmother used to tell me that the shadow of this tower never falls on the ground at noon. It is a lovely story, but it is only a story, so come at midday and see for yourself. The temple was built by Rajaraja Chola the First and consecrated in the year 1010. The vimana rises about sixty-six metres, all of granite. The elders of our town say that the great stone at the very top weighs eighty tonnes, and that elephants pulled it up a ramp of earth that began in a village far away. Look closely at the carvings and you will find dancers in stone, showing the karanas of Bharatanatyam. Every year in the month of Aippasi, the whole town celebrates Sathaya Vizha for Rajaraja's birth star. Touch the cool stone, and listen."
+  },
+  "offline_answer_prefix": {
+    "en-IN": "From this stop's offline notes:",
+    "ta-IN": "இந்த இடத்தின் ஆஃப்லைன் குறிப்புகளிலிருந்து:",
+    "hi-IN": "इस पड़ाव के ऑफ़लाइन नोट्स से:"
+  },
+  "offline_no_answer": {
+    "en-IN": "I can't answer that offline. Try again once you have signal, or ask the temple staff.",
+    "ta-IN": "இணைய இணைப்பு இல்லாமல் இதற்கு என்னால் பதில் சொல்ல முடியவில்லை. சிக்னல் கிடைத்ததும் மீண்டும் முயலுங்கள், அல்லது கோவில் பணியாளர்களிடம் கேளுங்கள்.",
+    "hi-IN": "मैं ऑफ़लाइन इसका जवाब नहीं दे सकती। सिग्नल मिलने पर फिर पूछिए, या मंदिर के कर्मचारियों से पूछिए।"
+  }
+}
