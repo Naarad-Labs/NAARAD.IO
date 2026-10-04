@@ -58,14 +58,14 @@ insert into auth.users (id, email) values
 
 -- distance_m, start_point and path_preview are left out on purpose: the trigger
 -- must fill them.
-insert into public.tours (slug, name, location_label, sport, difficulty, route_type, duration_min, ascent_m, rating_avg, status, owner_id, path) values
-  ('marina-loop',  'Marina Loop',  'Chennai', 'hike',  'easy',     'loop',          40, 10, 4.5, 'published', null,
+insert into public.tours (slug, name, location_label, sport, theme, difficulty, route_type, duration_min, ascent_m, rating_avg, status, owner_id, path) values
+  ('marina-loop',  'Marina Loop',  'Chennai', 'hike',  'heritage-walk', 'easy',     'loop',          40, 10, 4.5, 'published', null,
      st_geogfromtext('SRID=4326;LINESTRING(80.2383 12.9826, 80.2450 12.9900, 80.2520 12.9950)')),
-  ('far-hills',    'Far Hills',    'Bengaluru', 'hike', 'hard',    'out_and_back', 300, 900, 4.9, 'published', null,
+  ('far-hills',    'Far Hills',    'Bengaluru', 'hike', 'nature-hike', 'hard',    'out_and_back', 300, 900, 4.9, 'published', null,
      st_geogfromtext('SRID=4326;LINESTRING(77.5900 12.9700, 77.6000 12.9800)')),
-  ('ecr-ride',     'ECR Ride',     'Chennai', 'cycle', 'moderate', 'point_to_point', 90, 40, 4.0, 'published', null,
+  ('ecr-ride',     'ECR Ride',     'Chennai', 'cycle', null, 'moderate', 'point_to_point', 90, 40, 4.0, 'published', null,
      st_geogfromtext('SRID=4326;LINESTRING(80.2500 13.0000, 80.3000 13.1000, 80.3500 13.2000)')),
-  ('draft-trail',  'Draft Trail',  'Chennai', 'walk',  'easy',     'loop',          30, 0, null, 'draft', '11111111-1111-1111-1111-111111111111',
+  ('draft-trail',  'Draft Trail',  'Chennai', 'walk',  null, 'easy',     'loop',          30, 0, null, 'draft', '11111111-1111-1111-1111-111111111111',
      st_geogfromtext('SRID=4326;LINESTRING(80.2400 12.9830, 80.2410 12.9840)'));
 
 insert into public.tour_stops (tour_id, position, name, point)
@@ -90,6 +90,11 @@ begin
   end;
   assert ok, 'an unknown theme must be rejected';
   delete from public.tours where slug = 'photo-walk';
+  -- the track files also use 'coastal-walk'
+  insert into public.tours (slug, name, location_label, sport, theme, difficulty, route_type, duration_min, status, path)
+  values ('beach-walk', 'Beach Walk', 'Chennai', 'walk', 'coastal-walk', 'easy', 'loop', 60, 'draft',
+          st_geogfromtext('SRID=4326;LINESTRING(80.27 13.0, 80.28 13.01)'));
+  delete from public.tours where slug = 'beach-walk';
 end $$;
 
 -- ---------------------------------------------------------------------------
@@ -133,6 +138,11 @@ begin
   assert (select count(*) from public.search_tours(12.9826, 80.2383, p_max_duration_min => 60)) = 1, 'duration filter';
   assert (select count(*) from public.search_tours(12.9826, 80.2383, p_min_ascent_m => 20)) = 1, 'ascent filter';
 
+  -- theme filter (marina is heritage-walk, far-hills is nature-hike, the ride has none)
+  assert (select slug from public.search_tours(12.9826, 80.2383, p_themes => array['heritage-walk'])) = 'marina-loop', 'theme filter';
+  assert (select count(*) from public.search_tours(12.9826, 80.2383, p_themes => array['nature-hike'])) = 0, 'theme far away is out of radius';
+  assert (select count(*) from public.search_tours(p_themes => array['heritage-walk', 'nature-hike'])) = 2, 'several themes at once, anywhere';
+
   -- far away: only the Bengaluru tour
   assert (select slug from public.search_tours(12.9716, 77.5946)) = 'far-hills', 'search near Bengaluru';
 
@@ -148,6 +158,19 @@ begin
   assert r.start_lat between 12.98 and 12.99, 'start_lat';
 end $$;
 
+-- "anywhere": no centre means no distance filter, best rated first
+do $$
+declare r record;
+begin
+  assert (select count(*) from public.search_tours()) = 3, 'anywhere finds every published tour, not the draft';
+  assert (select array_agg(slug order by rating_avg desc) from public.search_tours()) = array['far-hills', 'marina-loop', 'ecr-ride'],
+    'anywhere is ordered best rated first';
+  select * into r from public.search_tours() limit 1;
+  assert r.centre_distance_m is null, 'anywhere has no distance from a centre';
+  assert (select count(*) from public.search_tours(p_sport => 'cycle')) = 1, 'filters still work anywhere';
+  assert (select count(*) from public.search_tours(p_radius_m => 1)) = 3, 'radius is ignored without a centre';
+end $$;
+
 -- bad input is an error, not a silent empty result
 do $$
 declare ok boolean := false;
@@ -159,10 +182,16 @@ begin
   assert ok, 'latitude 95 should raise 22023';
   ok := false;
   begin
-    perform * from public.search_tours(null, null);
+    perform * from public.search_tours(p_lat => 12.98);
   exception when sqlstate '22023' then ok := true;
   end;
-  assert ok, 'null centre should raise 22023';
+  assert ok, 'a latitude without a longitude should raise 22023';
+  ok := false;
+  begin
+    perform * from public.search_tours(p_lng => 80.2);
+  exception when sqlstate '22023' then ok := true;
+  end;
+  assert ok, 'a longitude without a latitude should raise 22023';
 end $$;
 rollback;
 

@@ -83,7 +83,9 @@ Decisions in the schema:
   ingest script. A 3D line does not fit the column type.
 - **`sport` and `theme` are separate columns.** Naarad's current `type` mixes
   them (`cycling` is a sport; `heritage-walk`, `temple-trail`, `nature-hike`,
-  `cultural-tour` and `photography` are themes).
+  `cultural-tour`, `photography` and `coastal-walk` are themes). The track files
+  label routes `nature-hike`, `heritage-walk`, `coastal-walk` or `walk`, and the
+  seed uses those labels for sport and theme rather than inventing any.
 - **Difficulty has three values**, `easy`, `moderate`, `hard`. One of the 12
   curated routes (Coorg) is already `hard`, and the card's CSS has a `diff-hard`
   class.
@@ -100,7 +102,7 @@ Decisions in the schema:
 
 `replica/schema.test.sql` applies `schema.sql` to a throwaway PostgreSQL 16 +
 PostGIS 3.4.2 with the Supabase pieces stubbed (the `auth` schema, `auth.uid()`,
-the `anon`, `authenticated` and `service_role` roles). 57 assertions, all
+the `anon`, `authenticated` and `service_role` roles). 66 assertions, all
 passing: derived columns, every filter, ordering, paging, bad input, what each
 role can and cannot read, write attempts denied, moderation, constraints, delete
 rules, and the plan using the spatial index on 20,000 generated tours.
@@ -118,7 +120,7 @@ All calls are from the browser through `supabase-js`, using the public anon key.
 
 | method path | does | who | input | output | flow |
 | --- | --- | --- | --- | --- | --- |
-| `POST /rest/v1/rpc/search_tours` | tours that start near a point, filtered, nearest first | anyone | `p_lat`, `p_lng`, `p_radius_m`, optional `p_sport`, `p_difficulty[]`, min and max distance, duration and ascent, `p_surface`, `p_route_type`, `p_limit` (max 50), `p_offset` | rows with stats, start point, a GeoJSON line, distance from the centre, `total_count`. **Written and tested.** | F01 F02 F03 |
+| `POST /rest/v1/rpc/search_tours` | tours that start near a point, filtered, nearest first. With no point it means "anywhere": best rated first. | anyone | optional `p_lat` and `p_lng` (both or neither), `p_radius_m`, optional `p_sport`, `p_difficulty[]`, `p_themes[]`, min and max distance, duration and ascent, `p_surface`, `p_route_type`, `p_limit` (max 50), `p_offset` | rows with stats, start point, a GeoJSON line, distance from the centre, `total_count`. **Written and tested.** | F01 F02 F03 |
 | `POST /rest/v1/rpc/get_tour` | one tour with its full line and ordered stops | anyone (a draft only to its owner) | `p_slug` | one JSON value, or `null` | F01 F04 |
 | `POST /rest/v1/rpc/highlights_in_bbox` | highlights inside the map view | anyone | bounds, optional sport | rows with GeoJSON | F04. **Planned, not written** (milestone 3) |
 | `POST /rest/v1/rpc/propose_highlight` | add a highlight as `pending` | signed in | name, kind, sports, point or segment | the new id | F05. **Planned, not written** |

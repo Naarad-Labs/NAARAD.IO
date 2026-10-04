@@ -47,7 +47,7 @@ create table public.tours (
   summary         text not null default '',
   location_label  text not null,
   sport           text not null check (sport in ('hike', 'walk', 'cycle', 'run')),
-  theme           text check (theme in ('heritage-walk', 'temple-trail', 'nature-hike', 'cultural-tour', 'photography')),
+  theme           text check (theme in ('heritage-walk', 'temple-trail', 'nature-hike', 'cultural-tour', 'photography', 'coastal-walk')),
   difficulty      text not null check (difficulty in ('easy', 'moderate', 'hard')),
   route_type      text not null check (route_type in ('loop', 'out_and_back', 'point_to_point')),
   surface         text not null default 'mixed' check (surface in ('paved', 'mixed', 'off_road')),
@@ -320,14 +320,19 @@ create policy "authors delete their pending photos"
 -- how long the tour may be. The recon could not confirm which of the two
 -- Komoot's `max_distance` URL parameter means, so both exist and the client
 -- decides. See architecture.md.
+--
+-- Leave p_lat and p_lng both null for "anywhere": no distance filter, best
+-- rated first. That is Naarad's default view of all India. One of the two
+-- given without the other is an error.
 -- ---------------------------------------------------------------------------
 
 create or replace function public.search_tours(
-  p_lat              double precision,
-  p_lng              double precision,
+  p_lat              double precision default null,
+  p_lng              double precision default null,
   p_radius_m         integer default 30000,
   p_sport            text    default null,
   p_difficulty       text[]  default null,
+  p_themes           text[]  default null,
   p_min_distance_m   integer default null,
   p_max_distance_m   integer default null,
   p_min_duration_min integer default null,
@@ -371,14 +376,14 @@ declare
   v_limit  integer := least(greatest(coalesce(p_limit, 20), 1), 50);
   v_offset integer := greatest(coalesce(p_offset, 0), 0);
 begin
-  if p_lat is null or p_lng is null
-     or p_lat not between -90 and 90
-     or p_lng not between -180 and 180 then
-    raise exception 'search_tours: centre must be a valid latitude and longitude'
+  if (p_lat is null) <> (p_lng is null)
+     or (p_lat is not null and (p_lat not between -90 and 90 or p_lng not between -180 and 180)) then
+    raise exception 'search_tours: give both a valid latitude and longitude, or neither'
       using errcode = '22023';
   end if;
 
-  v_centre := st_setsrid(st_makepoint(p_lng, p_lat), 4326)::geography;
+  v_centre := case when p_lat is null then null
+                   else st_setsrid(st_makepoint(p_lng, p_lat), 4326)::geography end;
 
   return query
   select
@@ -388,13 +393,14 @@ begin
     st_y(t.start_point::geometry),
     st_x(t.start_point::geometry),
     st_asgeojson(t.path_preview)::jsonb,
-    round(st_distance(t.start_point, v_centre))::integer,
+    case when v_centre is null then null else round(st_distance(t.start_point, v_centre))::integer end,
     count(*) over ()
   from public.tours t
   where t.status = 'published'
-    and st_dwithin(t.start_point, v_centre, v_radius)
+    and (v_centre is null or st_dwithin(t.start_point, v_centre, v_radius))
     and (p_sport is null           or t.sport = p_sport)
     and (p_difficulty is null      or t.difficulty = any (p_difficulty))
+    and (p_themes is null          or t.theme = any (p_themes))
     and (p_min_distance_m is null  or t.distance_m   >= p_min_distance_m)
     and (p_max_distance_m is null  or t.distance_m   <= p_max_distance_m)
     and (p_min_duration_min is null or t.duration_min >= p_min_duration_min)
@@ -403,9 +409,10 @@ begin
     and (p_max_ascent_m is null    or t.ascent_m     <= p_max_ascent_m)
     and (p_surface is null         or t.surface      = p_surface)
     and (p_route_type is null      or t.route_type   = p_route_type)
-  -- Nearest first, then best rated. t.id makes the order total, so pages
-  -- never repeat or skip a row.
-  order by st_distance(t.start_point, v_centre), t.rating_avg desc nulls last, t.id
+  -- Nearest first (when there is a centre), then best rated. t.id makes the
+  -- order total, so pages never repeat or skip a row.
+  order by case when v_centre is null then 0 else st_distance(t.start_point, v_centre) end,
+           t.rating_avg desc nulls last, t.id
   limit v_limit offset v_offset;
 end;
 $$;
