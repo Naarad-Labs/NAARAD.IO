@@ -1,0 +1,36 @@
+feature,area,priority,original,clone,notes
+"Search tours by place: current location, address or dropped pin",search,must,yes,no,Source: press summary. Naarad's Discover has no place search in the code read; the planner has a search box (not audited)
+"Search state lives in the URL: place, centre point, sport, max distance, page",search,should,yes,no,Source: the URL the user gave. Shareable and bookmarkable. Unverified how it behaves on change
+Filter by sport,search,must,yes,partial,"Naarad has a basic version in index.html (read in the code, not run). Naarad filters by route type (heritage walk, temple trail, nature hike, cultural tour, cycling), not by sport"
+Filter by maximum distance,search,must,yes,partial,"Naarad has a basic version in index.html (read in the code, not run). Slider 5 to 200 km. Komoot's help says 0 m to 200 km; whether it is a range or a max-only is unconfirmed"
+"Filter by difficulty: easy, intermediate, expert, colour coded",search,must,yes,no,Source: help summary. Naarad's data has difficulty (easy or moderate only) but no filter or hard level
+"Filter by duration range, 30 minutes to 10 hours",search,should,yes,no,Source: help summary. routes.json has duration_min
+Filter by elevation gain range,search,should,yes,no,"Source: help summary. routes.json has one elevation_m, meaning of the number unconfirmed"
+"Filter by surface: no preference, paved, off-road",search,could,yes,no,Source: help summary. No surface field in Naarad's data
+Filter by route type: loop or out and back,search,could,yes,no,Source: press summary. No such field in Naarad's data
+Results as cards with key stats,search,must,yes,partial,"Naarad has a basic version in index.html (read in the code, not run). rt-card list exists. What Komoot's card shows is unconfirmed (not seen)"
+Result count,search,should,yes,partial,"Naarad has a basic version in index.html (read in the code, not run). disc-count shows a route count. Komoot's equivalent is unconfirmed"
+Paginated results,search,could,yes,no,Source: pageNumber in the URL. Only worth it with more than a few dozen routes. Naarad has 6
+Ranked or personalised recommendation order,search,should,yes,skip,"Needs their user data. Use a plain relevance order (distance from the centre, then rating) instead"
+Split view: list and map side by side,map,must,yes,partial,"Naarad has a basic version in index.html (read in the code, not run). disc-split with a Leaflet map exists"
+Tour lines on the map coloured by difficulty,map,should,yes,no,Source: press summary
+Animated direction markers on tour lines,map,could,yes,no,Source: press summary
+Labelled start points on the map,map,should,yes,no,Source: press summary
+Map view can be switched on or off,map,could,yes,no,Source: only the map=true URL parameter. Unconfirmed that there is a control
+"Tour detail page: map, distance, duration, elevation, difficulty, description",tour detail,must,yes,no,GUESS. No source read mentions it. Confirm on screen before building (see recon.md)
+Highlights on the map: points and segments with photos and tips,highlights,should,yes,no,Source: help summary. Closest in Naarad: waypoints and audio stops
+"Create a Highlight: pin, name, sport, tip, photos",highlights,could,yes,no,Source: help summary. Closest in Naarad: the Creator audio annotations
+Rate Highlights after an activity and add a tip or photo,highlights,could,yes,no,"Source: help summary. Needs activity recording, so depends on a feature outside this slice"
+Plan a route on the web from waypoints,planning,should,yes,partial,"Naarad has a planner mode (index.html, Leaflet), capabilities not audited. Source: help summary"
+"Add a waypoint by clicking the map, auto-placed in the best position",planning,could,yes,no,Source: help summary
+Add Highlights and places of interest as waypoints,planning,could,yes,no,Source: help summary
+"Import GPX, TCX or FIT",planning,should,yes,no,"Source: help summary. Naarad only has an offline build script (convert-gpx.js), not a user feature"
+"Export a route as GPX (line only, no waypoints)",planning,should,yes,no,Source: help summary
+Plan multi-day routes as stages,planning,could,yes,no,Source: help summary. A Premium feature in the original
+Offline maps for chosen regions,offline,should,yes,no,"Source: help summary. Naarad's pricing.json and routes.json claim offline, implementation not audited"
+Community network of millions of tours and user Highlights,content,could,yes,skip,The network and its content are not a feature you can rebuild. Seed with Naarad's own routes
+Heatmaps,premium,could,yes,skip,Aggregate data they own
+"3D maps, live tracking, weather on route",premium,could,yes,skip,Outside the Discover slice
+Turn-by-turn navigation and activity recording,navigation,must,yes,skip,"A separate project, outside the Discover slice"
+Garmin and watch sync,integrations,could,yes,skip,"Partner integrations, not part of the product you can rebuild"
+"One free region, then Maps or Premium purchase",pricing,could,yes,skip,Naarad has its own pricing model (data/pricing.json)
