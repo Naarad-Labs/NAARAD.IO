@@ -1,0 +1,299 @@
+/* Naarad Discover primitives. Built on tokens.css (load that first).
+   Every colour, size, radius, shadow and duration comes from a token.
+   Class names are prefixed nd- so they cannot collide with the live site's
+   .disc-* and .rt-* rules. Not wired into index.html yet: that is replica-build.
+   Specs for each component are in components.md. */
+
+.nd,
+.nd * { box-sizing: border-box; }
+
+.nd {
+  font: var(--type-sm);
+  font-family: var(--font-sans);
+  color: var(--color-text);
+  background: var(--color-bg);
+}
+
+/* One focus ring for everything: 2px navy, offset so it never touches the fill. */
+.nd :focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+/* ---------- Button ---------- */
+.nd-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-8);
+  min-height: var(--size-control-md);
+  padding: 0 var(--space-16);
+  font: var(--type-sm);
+  font-weight: 600;
+  color: var(--color-text);
+  background: transparent;
+  border: 1px solid var(--color-border-input);
+  border-radius: var(--radius-sharp);
+  cursor: pointer;
+  transition: background-color var(--motion-fast) var(--motion-ease),
+              border-color var(--motion-fast) var(--motion-ease);
+}
+.nd-btn:hover { border-color: var(--color-primary); background: var(--color-surface); }
+.nd-btn--primary { color: var(--color-on-primary); background: var(--color-primary); border-color: var(--color-primary); }
+.nd-btn--primary:hover { background: var(--color-text); }
+.nd-btn--accent { color: var(--color-on-accent); background: var(--color-accent); border-color: var(--color-accent); }
+.nd-btn--accent:hover { background: var(--color-accent); filter: brightness(.92); }
+.nd-btn:disabled,
+.nd-btn[aria-disabled="true"] {
+  color: var(--color-text-muted);
+  background: var(--color-bg);
+  border-color: var(--color-border);
+  cursor: not-allowed;
+}
+.nd-btn[aria-busy="true"] { cursor: progress; }
+
+/* ---------- Filter chip (a toggle button: aria-pressed) ---------- */
+.nd-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-4);
+  min-height: var(--size-control-sm);
+  padding: 0 var(--space-12);
+  font: var(--type-label);
+  letter-spacing: var(--type-label-tracking);
+  text-transform: var(--type-label-transform);
+  color: var(--color-text);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-input);
+  border-radius: var(--radius-sharp);
+  cursor: pointer;
+  transition: background-color var(--motion-fast) var(--motion-ease),
+              border-color var(--motion-fast) var(--motion-ease),
+              color var(--motion-fast) var(--motion-ease);
+}
+.nd-chip:hover { border-color: var(--color-primary); }
+.nd-chip[aria-pressed="true"] { color: var(--color-on-primary); background: var(--color-primary); border-color: var(--color-primary); }
+.nd-chip:disabled { color: var(--color-text-muted); background: var(--color-bg); border-color: var(--color-border); cursor: not-allowed; }
+.nd-chips { display: flex; flex-wrap: wrap; gap: var(--space-8); }
+
+/* ---------- Difficulty badge: always a word, never colour alone ---------- */
+.nd-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--space-4) var(--space-8);
+  font: var(--type-label);
+  text-transform: none;
+  letter-spacing: .02em;
+  border-radius: var(--radius-pill);
+}
+.nd-badge--easy     { color: var(--color-success); background: var(--color-success-bg); }
+.nd-badge--moderate { color: var(--color-warning); background: var(--color-warning-bg); }
+.nd-badge--hard     { color: var(--color-danger);  background: var(--color-danger-bg); }
+
+/* ---------- Text field (location search) ---------- */
+.nd-field { display: flex; flex-direction: column; gap: var(--space-4); }
+.nd-field__label { font: var(--type-sm); font-weight: 600; }
+.nd-field__control {
+  min-height: var(--size-control-md);
+  padding: 0 var(--space-12);
+  font: var(--type-sm);
+  font-family: var(--font-sans);
+  color: var(--color-text);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-input);
+  border-radius: var(--radius-md);
+}
+.nd-field__control::placeholder { color: var(--color-text-muted); opacity: 1; }
+.nd-field__control:hover { border-color: var(--color-primary); }
+.nd-field__control:disabled { color: var(--color-text-muted); background: var(--color-bg); border-color: var(--color-border); }
+.nd-field__control[aria-invalid="true"] { border-color: var(--color-danger); border-width: 2px; }
+.nd-field__hint { font: var(--type-xs); color: var(--color-text-muted); }
+.nd-field__error { font: var(--type-xs); font-weight: 600; color: var(--color-danger); }
+
+/* ---------- Range (native input, accent from the token) ---------- */
+.nd-range { display: flex; flex-direction: column; gap: var(--space-4); }
+.nd-range__head { display: flex; justify-content: space-between; font: var(--type-sm); }
+.nd-range__head label,
+.nd-range__head legend { font-weight: 600; }
+.nd-range__value { color: var(--color-text-muted); }
+.nd-range input[type="range"] {
+  width: 100%;
+  min-height: var(--size-target-min);
+  margin: 0;
+  accent-color: var(--color-accent-bright);
+  cursor: pointer;
+}
+.nd-range-pair { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-16); border: 0; padding: 0; margin: 0; }
+.nd-range-pair > legend { grid-column: 1 / -1; padding: 0; font: var(--type-sm); font-weight: 600; margin-bottom: var(--space-4); }
+
+/* ---------- Option group (radio set shown as a segmented control) ---------- */
+.nd-options { display: flex; flex-wrap: wrap; border: 0; padding: 0; margin: 0; }
+.nd-options > legend { padding: 0; margin-bottom: var(--space-4); font: var(--type-sm); font-weight: 600; }
+.nd-option { position: relative; }
+.nd-option input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
+.nd-option span {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--size-control-sm);
+  padding: 0 var(--space-12);
+  font: var(--type-sm);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-input);
+  margin-left: -1px;
+  cursor: pointer;
+}
+.nd-option:first-of-type span { margin-left: 0; border-radius: var(--radius-sharp) 0 0 var(--radius-sharp); }
+.nd-option:last-of-type span  { border-radius: 0 var(--radius-sharp) var(--radius-sharp) 0; }
+.nd-option input:checked + span { color: var(--color-on-primary); background: var(--color-primary); border-color: var(--color-primary); position: relative; z-index: 1; }
+.nd-option input:focus-visible + span { outline: 2px solid var(--color-focus); outline-offset: 2px; z-index: 2; }
+.nd-option input:disabled + span { color: var(--color-text-muted); background: var(--color-bg); cursor: not-allowed; }
+
+/* ---------- Tour card ---------- */
+.nd-card {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+  background: var(--color-surface);
+  border: 2px solid transparent;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+  transition: border-color var(--motion-base) var(--motion-ease),
+              box-shadow var(--motion-base) var(--motion-ease),
+              transform var(--motion-base) var(--motion-ease);
+}
+.nd-card:hover { border-color: var(--color-primary); box-shadow: var(--shadow-card-hover); transform: translateY(-1px); }
+.nd-card[aria-current="true"] { border-color: var(--color-accent-bright); box-shadow: var(--shadow-card-selected); }
+.nd-card__media {
+  height: 112px;
+  background: var(--color-bg);
+  border-bottom: 1px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.nd-card__media svg { width: 88%; height: 80%; }
+.nd-card__body { padding: var(--space-12) var(--space-16); }
+.nd-card__title { margin: 0; font: var(--type-card-title); }
+.nd-card__meta { margin: var(--space-4) 0 var(--space-8); font: var(--type-xs); color: var(--color-text-muted); }
+.nd-card__stats { display: flex; flex-wrap: wrap; gap: var(--space-4) var(--space-16); margin: 0; padding: 0; list-style: none; font: var(--type-xs); color: var(--color-text-muted); }
+.nd-card__stats strong { font-weight: 600; color: var(--color-text); }
+.nd-card__foot { display: flex; align-items: center; justify-content: space-between; padding: var(--space-8) var(--space-16); border-top: 1px solid var(--color-border); font: var(--type-xs); color: var(--color-text-muted); }
+.nd-card__foot strong { color: var(--color-text); }
+
+/* Loading: same footprint as a real card, so the list does not jump. */
+.nd-card--skeleton { pointer-events: none; }
+.nd-skeleton { display: block; background: var(--color-border); border-radius: var(--radius-md); }
+@media (prefers-reduced-motion: no-preference) {
+  .nd-skeleton { animation: nd-pulse 1.4s ease-in-out infinite; }
+}
+@keyframes nd-pulse { 50% { opacity: .55; } }
+
+/* ---------- Results sheet (below 900px) / list column (900px and up) ---------- */
+.nd-sheet {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: var(--size-sheet-peek);
+  height: var(--sheet-h, 320px);
+  background: var(--color-bg);
+  border-radius: var(--radius-sheet) var(--radius-sheet) 0 0;
+  box-shadow: var(--shadow-sheet);
+  transition: height var(--motion-fast) var(--motion-ease);
+}
+.nd-sheet__handle {
+  flex: none;
+  display: flex;
+  justify-content: center;
+  padding: var(--space-12) 0;
+  cursor: ns-resize;
+  touch-action: none;
+}
+.nd-sheet__handle::before {
+  content: "";
+  width: 40px;
+  height: 5px;
+  border-radius: var(--radius-pill);
+  background: var(--color-border-input);
+}
+.nd-sheet__bar { display: flex; align-items: center; justify-content: space-between; gap: var(--space-8); padding: 0 var(--space-16) var(--space-8); }
+.nd-sheet__list { flex: 1; overflow: auto; display: grid; grid-auto-rows: max-content; gap: var(--space-12); align-content: start; padding: var(--space-4) var(--space-12) var(--space-12); }
+.nd-status { font: var(--type-sm); color: var(--color-text-muted); }
+.nd-section-head { margin: var(--space-8) 0 0; font: var(--type-label); letter-spacing: var(--type-label-tracking); text-transform: var(--type-label-transform); color: var(--color-text-muted); }
+
+/* ---------- Pagination ---------- */
+.nd-pagination { display: flex; align-items: center; justify-content: center; gap: var(--space-8); margin: 0; padding: var(--space-8) 0; list-style: none; }
+.nd-pagination .nd-btn { min-width: var(--size-control-sm); min-height: var(--size-control-sm); padding: 0 var(--space-12); }
+.nd-pagination [aria-current="page"] { color: var(--color-on-primary); background: var(--color-primary); border-color: var(--color-primary); }
+
+/* ---------- Empty state ---------- */
+.nd-empty { display: grid; justify-items: center; gap: var(--space-8); padding: var(--space-32) var(--space-16); text-align: center; }
+.nd-empty svg { width: 48px; height: 48px; color: var(--color-text-muted); }
+.nd-empty h3 { margin: 0; font: var(--type-lg); }
+.nd-empty p { margin: 0; max-width: 32ch; color: var(--color-text-muted); }
+
+/* ---------- Map ---------- */
+.nd-map { position: relative; background: var(--color-map-bg); overflow: hidden; min-height: 240px; }
+.nd-map svg { display: block; width: 100%; height: 100%; }
+.nd-map__note { position: absolute; left: var(--space-8); top: var(--space-8); padding: var(--space-4) var(--space-8); font: var(--type-xs); color: var(--color-text-muted); background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-sharp); }
+.route-line { fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.route-line--casing { stroke: var(--color-surface); stroke-width: 7; }
+.route-line--easy     { stroke: var(--color-route-easy);     stroke-width: 3.5; }
+.route-line--moderate { stroke: var(--color-route-moderate); stroke-width: 3.5; stroke-dasharray: 9 6; }
+.route-line--hard     { stroke: var(--color-route-hard);     stroke-width: 3.5; stroke-dasharray: 1 7; }
+.route-line.is-selected { stroke-width: 5.5; }
+
+/* ---------- Highlight marker, tip ---------- */
+.nd-marker {
+  display: inline-grid;
+  place-items: center;
+  width: var(--size-control-sm);
+  height: var(--size-control-sm);
+  color: var(--color-text);
+  background: var(--color-surface);
+  border: 2px solid var(--color-border-input);
+  border-radius: var(--radius-pill);
+  box-shadow: var(--shadow-card);
+  cursor: pointer;
+}
+.nd-marker svg { width: 16px; height: 16px; }
+.nd-marker:hover { border-color: var(--color-primary); }
+.nd-marker[aria-pressed="true"] { border-color: var(--color-accent-bright); box-shadow: var(--shadow-card-selected); }
+@media (pointer: coarse) { .nd-marker { width: var(--size-target-touch); height: var(--size-target-touch); } }
+
+.nd-tip { margin: 0; padding: var(--space-12) var(--space-16); background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-md); }
+.nd-tip__by { margin: 0 0 var(--space-4); font: var(--type-xs); color: var(--color-text-muted); }
+.nd-tip__text { margin: 0; font: var(--type-sm); }
+.nd-tip__photos { display: flex; gap: var(--space-8); margin: var(--space-8) 0 0; padding: 0; list-style: none; }
+.nd-tip__photos img,
+.nd-tip__photos .nd-photo { width: 64px; height: 64px; object-fit: cover; border-radius: var(--radius-sharp); background: var(--color-border); }
+
+/* ---------- Discover layout ---------- */
+.nd-discover { position: relative; display: grid; grid-template-rows: auto 1fr; min-height: 0; }
+.nd-filterbar { display: flex; flex-wrap: wrap; align-items: flex-end; gap: var(--space-16) var(--space-24); padding: var(--space-12) var(--space-16); background: var(--color-surface); border-bottom: 1px solid var(--color-border); }
+.nd-split { position: relative; display: grid; min-height: 0; }
+
+/* Filters: collapsed behind a button below 900px so the map keeps its room,
+   always open at 900px and up. <details open> in the markup, closed by a few
+   lines of script on narrow screens, so without script they simply stay open. */
+.nd-filters { flex: 1 1 100%; }
+.nd-filters > summary { list-style: none; width: fit-content; }
+.nd-filters > summary::-webkit-details-marker { display: none; }
+.nd-filters__body { display: flex; flex-wrap: wrap; align-items: flex-end; gap: var(--space-16) var(--space-24); padding-top: var(--space-12); }
+.nd-split > .nd-map { grid-area: 1 / 1; }
+.nd-split > .nd-sheet { grid-area: 1 / 1; align-self: end; z-index: 1; }
+
+/* 900px and up: a list column beside the map, not a sheet over it. */
+@media (min-width: 900px) {
+  .nd-filters { flex: 1 1 auto; }
+  .nd-filters > summary { display: none; }
+  .nd-filters__body { padding-top: 0; }
+  .nd-split { grid-template-columns: var(--size-list-column) 1fr; }
+  .nd-split > .nd-sheet { grid-area: 1 / 1; align-self: stretch; height: auto; border-radius: 0; box-shadow: none; border-right: 1px solid var(--color-border); }
+  .nd-split > .nd-map { grid-area: 1 / 2; }
+  .nd-sheet__handle { display: none; }
+}
+@media (pointer: coarse) { .nd-sheet__handle { padding: var(--space-24) 0; } }
+
+/* ---------- Helpers ---------- */
+.nd-sr-only { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }

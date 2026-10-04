@@ -1,0 +1,320 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Naarad Discover design check</title>
+<!-- Not part of the site. Open locally. Fonts load from Google Fonts when online; offline it falls back to the system sans. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Playfair+Display:wght@700&display=swap">
+<link rel="stylesheet" href="tokens.css">
+<link rel="stylesheet" href="primitives.css">
+<style>
+  /* Page chrome for this preview only. Not a component. */
+  body { margin: 0; background: var(--color-bg); color: var(--color-text); font: var(--type-base); font-family: var(--font-sans); }
+  .pv { max-width: var(--size-container); margin: 0 auto; padding: var(--space-24) var(--space-16) var(--space-48); }
+  .pv h1 { font: var(--type-heading); margin: 0 0 var(--space-8); }
+  .pv h2 { font: var(--type-lg); margin: var(--space-48) 0 var(--space-12); }
+  .pv h3 { font: var(--type-sm); font-weight: 700; margin: var(--space-24) 0 var(--space-8); }
+  .pv p.lede { max-width: 70ch; color: var(--color-text-muted); margin: 0; }
+  .pv .row { display: flex; flex-wrap: wrap; gap: var(--space-16); align-items: flex-end; }
+  .pv .grid { display: grid; gap: var(--space-16); grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); align-items: start; }
+  .pv .swatches { display: grid; gap: var(--space-8) var(--space-16); grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); margin: 0; padding: 0; list-style: none; }
+  .pv .swatches li { display: flex; align-items: center; gap: var(--space-8); font: var(--type-xs); }
+  .pv .swatches i { flex: none; width: 28px; height: 28px; border-radius: var(--radius-md); border: 1px solid var(--color-border-input); }
+  .pv .swatches b { font-weight: 600; }
+  .pv .note { font: var(--type-xs); color: var(--color-text-muted); margin: var(--space-4) 0 0; }
+  .pv .frame { border: 1px solid var(--color-border); border-radius: var(--radius-md); overflow: hidden; }
+</style>
+</head>
+<body>
+<main class="pv nd">
+  <h1>Naarad Discover design check</h1>
+  <p class="lede">Every colour, size, radius, shadow and duration on this page comes from <code>tokens.css</code>.
+    Values were measured from Naarad's own rendered Discover page, not from Komoot (which could not be read).
+    All route names, distances and tips below are <strong>sample data</strong>, and the map is a placeholder.</p>
+
+  <h2 id="h-comp">Composition</h2>
+  <p class="note">Resize the window. At 900px and up the results are a list column beside the map. Below that they are a sheet over the map, and its handle works with the mouse, touch and the arrow keys.</p>
+
+  <div class="frame">
+  <div class="nd nd-discover" style="height: 680px;">
+    <div class="nd-filterbar" role="search" aria-label="Find routes">
+      <div class="nd-field" style="flex: 1 1 200px; min-width: 180px;">
+        <label class="nd-field__label" for="place">Place</label>
+        <input class="nd-field__control" id="place" type="text" value="Chennai, Tamil Nadu" autocomplete="off">
+      </div>
+      <details class="nd-filters" id="filters" open>
+        <summary class="nd-btn">Filters</summary>
+        <div class="nd-filters__body">
+          <fieldset class="nd-options">
+            <legend>Sport</legend>
+            <label class="nd-option"><input type="radio" name="sport" checked><span>Hike</span></label>
+            <label class="nd-option"><input type="radio" name="sport"><span>Walk</span></label>
+            <label class="nd-option"><input type="radio" name="sport"><span>Cycle</span></label>
+            <label class="nd-option"><input type="radio" name="sport"><span>Run</span></label>
+          </fieldset>
+          <div class="nd-range" style="width: 190px;">
+            <div class="nd-range__head"><label for="len">Longest route</label><span class="nd-range__value" id="len-v">30 km</span></div>
+            <input id="len" type="range" min="1" max="200" value="30" data-out="len-v" data-unit=" km">
+          </div>
+          <div>
+            <span class="nd-field__label" id="diff-l">Difficulty</span>
+            <div class="nd-chips" role="group" aria-labelledby="diff-l" style="margin-top: var(--space-4);">
+              <button class="nd-chip" type="button" aria-pressed="false">Easy</button>
+              <button class="nd-chip" type="button" aria-pressed="false">Moderate</button>
+              <button class="nd-chip" type="button" aria-pressed="false">Hard</button>
+            </div>
+          </div>
+        </div>
+      </details>
+    </div>
+
+    <div class="nd-split">
+      <div class="nd-map">
+        <svg viewBox="0 0 800 520" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Map placeholder with three sample routes: one solid line for easy, one dashed for moderate, one dotted for hard">
+          <g>
+            <path class="route-line route-line--casing" d="M120 400 C 200 330, 260 360, 330 290 S 460 200, 520 230"/>
+            <path class="route-line route-line--easy is-selected" d="M120 400 C 200 330, 260 360, 330 290 S 460 200, 520 230"/>
+            <path class="route-line route-line--casing" d="M300 120 C 360 160, 420 120, 500 170 S 620 190, 700 150"/>
+            <path class="route-line route-line--moderate" d="M300 120 C 360 160, 420 120, 500 170 S 620 190, 700 150"/>
+            <path class="route-line route-line--casing" d="M560 440 C 600 380, 660 400, 700 340 S 740 300, 720 260"/>
+            <path class="route-line route-line--hard" d="M560 440 C 600 380, 660 400, 700 340 S 740 300, 720 260"/>
+          </g>
+          <g fill="#FFFFFF" stroke-width="3">
+            <circle cx="120" cy="400" r="8" stroke="#15803D"/>
+            <circle cx="300" cy="120" r="8" stroke="#B45309"/>
+            <circle cx="560" cy="440" r="8" stroke="#B91C1C"/>
+          </g>
+        </svg>
+        <p class="nd-map__note">Map placeholder</p>
+      </div>
+
+      <section class="nd-sheet" id="sheet" aria-labelledby="res-h" style="--sheet-h: 340px;">
+        <div class="nd-sheet__handle" id="handle" role="separator" tabindex="0" aria-orientation="horizontal"
+             aria-label="Resize results panel" aria-valuemin="80" aria-valuemax="560" aria-valuenow="340"></div>
+        <div class="nd-sheet__bar">
+          <h3 id="res-h" class="nd-sr-only">Results</h3>
+          <p class="nd-status" role="status">3 routes within 30 km</p>
+          <button class="nd-btn" type="button" style="min-height: var(--size-control-sm);">Clear filters</button>
+        </div>
+        <div class="nd-sheet__list">
+          <a class="nd-card" href="#" aria-current="true">
+            <div class="nd-card__media" aria-hidden="true">
+              <svg viewBox="0 0 200 90" fill="none"><path class="route-line route-line--casing" d="M12 70 C 50 60, 70 30, 110 40 S 160 20, 188 14"/><path class="route-line route-line--easy" d="M12 70 C 50 60, 70 30, 110 40 S 160 20, 188 14"/></svg>
+            </div>
+            <div class="nd-card__body">
+              <h4 class="nd-card__title">Marina Beach Trail</h4>
+              <p class="nd-card__meta">Chennai, Tamil Nadu</p>
+              <ul class="nd-card__stats"><li><strong>14.8 km</strong></li><li><strong>3 h 30 m</strong></li><li><strong>20 m</strong> up</li></ul>
+            </div>
+            <div class="nd-card__foot"><span class="nd-badge nd-badge--easy">Easy</span><span><strong>4.5</strong> (120)</span></div>
+          </a>
+          <a class="nd-card" href="#">
+            <div class="nd-card__media" aria-hidden="true">
+              <svg viewBox="0 0 200 90" fill="none"><path class="route-line route-line--casing" d="M14 20 C 60 40, 80 14, 120 30 S 168 52, 188 40"/><path class="route-line route-line--moderate" d="M14 20 C 60 40, 80 14, 120 30 S 168 52, 188 40"/></svg>
+            </div>
+            <div class="nd-card__body">
+              <h4 class="nd-card__title">Velachcheri to Mylapore</h4>
+              <p class="nd-card__meta">Chennai, Tamil Nadu</p>
+              <ul class="nd-card__stats"><li><strong>9.8 km</strong></li><li><strong>2 h 15 m</strong></li><li><strong>35 m</strong> up</li></ul>
+            </div>
+            <div class="nd-card__foot"><span class="nd-badge nd-badge--moderate">Moderate</span><span><strong>4.0</strong> (48)</span></div>
+          </a>
+          <a class="nd-card" href="#">
+            <div class="nd-card__media" aria-hidden="true">
+              <svg viewBox="0 0 200 90" fill="none"><path class="route-line route-line--casing" d="M16 74 C 60 70, 70 40, 108 56 S 150 78, 186 30"/><path class="route-line route-line--hard" d="M16 74 C 60 70, 70 40, 108 56 S 150 78, 186 30"/></svg>
+            </div>
+            <div class="nd-card__body">
+              <h4 class="nd-card__title">Coorg Plantation Hike</h4>
+              <p class="nd-card__meta">Coorg, Karnataka</p>
+              <ul class="nd-card__stats"><li><strong>12.2 km</strong></li><li><strong>5 h</strong></li><li><strong>420 m</strong> up</li></ul>
+            </div>
+            <div class="nd-card__foot"><span class="nd-badge nd-badge--hard">Hard</span><span><strong>4.8</strong> (31)</span></div>
+          </a>
+        </div>
+      </section>
+    </div>
+  </div>
+  </div>
+
+  <h2 id="h-color">Colour roles</h2>
+  <ul class="swatches" id="swatches"></ul>
+  <p class="note">Contrast for every text and control pair: <code>python3 .claude/skills/replica-design/contrast.py replica/design/tokens.json</code>.</p>
+
+  <h2>Controls</h2>
+  <h3>Buttons</h3>
+  <div class="row">
+    <button class="nd-btn nd-btn--primary" type="button">Search this area</button>
+    <button class="nd-btn nd-btn--accent" type="button">Save route</button>
+    <button class="nd-btn" type="button">Clear filters</button>
+    <button class="nd-btn nd-btn--primary" type="button" disabled>Disabled</button>
+    <button class="nd-btn" type="button" aria-busy="true" disabled>Searching…</button>
+  </div>
+
+  <h3>Filter chips</h3>
+  <div class="nd-chips">
+    <button class="nd-chip" type="button" aria-pressed="false">Heritage walk</button>
+    <button class="nd-chip" type="button" aria-pressed="true">Temple trail</button>
+    <button class="nd-chip" type="button" aria-pressed="false">Nature hike</button>
+    <button class="nd-chip" type="button" aria-pressed="false" disabled>Photography</button>
+  </div>
+
+  <h3>Difficulty</h3>
+  <div class="row">
+    <span class="nd-badge nd-badge--easy">Easy</span>
+    <span class="nd-badge nd-badge--moderate">Moderate</span>
+    <span class="nd-badge nd-badge--hard">Hard</span>
+  </div>
+
+  <h3>Ranges</h3>
+  <div class="grid">
+    <div class="nd-range">
+      <div class="nd-range__head"><label for="r1">Longest route</label><span class="nd-range__value" id="r1-v">50 km</span></div>
+      <input id="r1" type="range" min="1" max="200" value="50" data-out="r1-v" data-unit=" km">
+    </div>
+    <fieldset class="nd-range-pair">
+      <legend>Time on foot</legend>
+      <div class="nd-range">
+        <div class="nd-range__head"><label for="r2">At least</label><span class="nd-range__value" id="r2-v">1 h</span></div>
+        <input id="r2" type="range" min="0" max="10" value="1" data-out="r2-v" data-unit=" h">
+      </div>
+      <div class="nd-range">
+        <div class="nd-range__head"><label for="r3">At most</label><span class="nd-range__value" id="r3-v">4 h</span></div>
+        <input id="r3" type="range" min="0" max="10" value="4" data-out="r3-v" data-unit=" h">
+      </div>
+    </fieldset>
+  </div>
+
+  <h3>Option groups</h3>
+  <div class="row">
+    <fieldset class="nd-options"><legend>Surface</legend>
+      <label class="nd-option"><input type="radio" name="surf" checked><span>No preference</span></label>
+      <label class="nd-option"><input type="radio" name="surf"><span>Paved</span></label>
+      <label class="nd-option"><input type="radio" name="surf"><span>Off-road</span></label>
+    </fieldset>
+    <fieldset class="nd-options"><legend>Route type</legend>
+      <label class="nd-option"><input type="radio" name="rt" checked><span>Any</span></label>
+      <label class="nd-option"><input type="radio" name="rt"><span>Loop</span></label>
+      <label class="nd-option"><input type="radio" name="rt"><span>Out and back</span></label>
+    </fieldset>
+  </div>
+
+  <h3>Text field</h3>
+  <div class="grid">
+    <div class="nd-field"><label class="nd-field__label" for="f1">Place</label><input class="nd-field__control" id="f1" placeholder="City, address or landmark" aria-describedby="f1-h"><span class="nd-field__hint" id="f1-h">Press Enter to search.</span></div>
+    <div class="nd-field"><label class="nd-field__label" for="f2">Place</label><input class="nd-field__control" id="f2" value="Zzxqv" aria-invalid="true" aria-describedby="f2-e"><span class="nd-field__error" id="f2-e">We could not find that place. Check the spelling or try a nearby city.</span></div>
+    <div class="nd-field"><label class="nd-field__label" for="f3">Place</label><input class="nd-field__control" id="f3" value="Locating you…" disabled></div>
+  </div>
+
+  <h2>Cards</h2>
+  <div class="grid">
+    <a class="nd-card" href="#">
+      <div class="nd-card__media" aria-hidden="true"><svg viewBox="0 0 200 90" fill="none"><path class="route-line route-line--casing" d="M12 70 C 50 60, 70 30, 110 40 S 160 20, 188 14"/><path class="route-line route-line--easy" d="M12 70 C 50 60, 70 30, 110 40 S 160 20, 188 14"/></svg></div>
+      <div class="nd-card__body"><h3 class="nd-card__title">Default card</h3><p class="nd-card__meta">Sample place</p><ul class="nd-card__stats"><li><strong>8 km</strong></li><li><strong>2 h</strong></li></ul></div>
+      <div class="nd-card__foot"><span class="nd-badge nd-badge--easy">Easy</span><span><strong>4.2</strong> (12)</span></div>
+    </a>
+    <a class="nd-card" href="#" aria-current="true">
+      <div class="nd-card__media" aria-hidden="true"><svg viewBox="0 0 200 90" fill="none"><path class="route-line route-line--casing" d="M14 20 C 60 40, 80 14, 120 30 S 168 52, 188 40"/><path class="route-line route-line--moderate is-selected" d="M14 20 C 60 40, 80 14, 120 30 S 168 52, 188 40"/></svg></div>
+      <div class="nd-card__body"><h3 class="nd-card__title">Selected card</h3><p class="nd-card__meta">Sample place</p><ul class="nd-card__stats"><li><strong>8 km</strong></li><li><strong>2 h</strong></li></ul></div>
+      <div class="nd-card__foot"><span class="nd-badge nd-badge--moderate">Moderate</span><span><strong>4.2</strong> (12)</span></div>
+    </a>
+    <div class="nd-card nd-card--skeleton" aria-hidden="true">
+      <div class="nd-card__media"></div>
+      <div class="nd-card__body"><span class="nd-skeleton" style="height: 16px; width: 70%;"></span><span class="nd-skeleton" style="height: 12px; width: 40%; margin: 8px 0 12px;"></span><span class="nd-skeleton" style="height: 12px; width: 60%;"></span></div>
+      <div class="nd-card__foot"><span class="nd-skeleton" style="height: 20px; width: 64px;"></span><span class="nd-skeleton" style="height: 12px; width: 48px;"></span></div>
+    </div>
+  </div>
+  <p class="note">Default, selected (<code>aria-current="true"</code>), loading skeleton. Hover and keyboard focus show on interaction.</p>
+
+  <h2>Empty state, pagination</h2>
+  <div class="grid">
+    <div class="nd-card" style="box-shadow: none; border: 1px solid var(--color-border);">
+      <div class="nd-empty">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3M8 11h6"/></svg>
+        <h3>No routes match</h3>
+        <p>Nothing starts within 30 km with these filters. Try a longer distance or fewer filters.</p>
+        <button class="nd-btn nd-btn--primary" type="button">Clear filters</button>
+      </div>
+    </div>
+    <nav aria-label="Result pages">
+      <ul class="nd-pagination">
+        <li><button class="nd-btn" type="button" disabled>Previous</button></li>
+        <li><button class="nd-btn" type="button" aria-current="page" aria-label="Page 1, current page">1</button></li>
+        <li><button class="nd-btn" type="button" aria-label="Page 2">2</button></li>
+        <li><button class="nd-btn" type="button" aria-label="Page 3">3</button></li>
+        <li><button class="nd-btn" type="button">Next</button></li>
+      </ul>
+    </nav>
+  </div>
+
+  <h2>Highlights</h2>
+  <div class="row">
+    <button class="nd-marker" type="button" aria-label="Viewpoint: Sunrise Point" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-6-5.2-6-10a6 6 0 1112 0c0 4.8-6 10-6 10z"/><circle cx="12" cy="11" r="2"/></svg></button>
+    <button class="nd-marker" type="button" aria-label="Viewpoint: Sunrise Point (selected)" aria-pressed="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-6-5.2-6-10a6 6 0 1112 0c0 4.8-6 10-6 10z"/><circle cx="12" cy="11" r="2"/></svg></button>
+  </div>
+  <div class="grid" style="margin-top: var(--space-16);">
+    <figure class="nd-tip" style="margin: 0;">
+      <figcaption class="nd-tip__by">Tip from a walker, sample data</figcaption>
+      <p class="nd-tip__text">Go before 6 am. The light is better and the path is quiet.</p>
+      <ul class="nd-tip__photos"><li><span class="nd-photo" role="img" aria-label="Photo placeholder" style="display:block"></span></li></ul>
+    </figure>
+    <figure class="nd-tip" style="margin: 0;">
+      <p class="nd-tip__text" style="color: var(--color-text-muted);">No tips yet. Be the first to add one.</p>
+    </figure>
+  </div>
+</main>
+
+<script>
+  // Preview behaviour only. The real wiring happens in replica-build.
+  (function () {
+    // colour swatches, straight from tokens.css
+    var names = ['bg','surface','border','border-input','text','text-muted','primary','on-primary','accent','on-accent','accent-bright','focus','success','success-bg','warning','warning-bg','danger','danger-bg','route-easy','route-moderate','route-hard','map-bg'];
+    var cs = getComputedStyle(document.documentElement), ul = document.getElementById('swatches');
+    names.forEach(function (n) {
+      var v = cs.getPropertyValue('--color-' + n).trim(), li = document.createElement('li');
+      li.innerHTML = '<i style="background:' + v + '"></i><span><b>' + n + '</b> ' + v + '</span>';
+      ul.appendChild(li);
+    });
+    // filters: closed on narrow screens, always open at 900px and up
+    var filters = document.getElementById('filters'), wide = matchMedia('(min-width: 900px)');
+    function syncFilters() { filters.open = wide.matches ? true : filters.open && filters.dataset.touched === '1'; }
+    filters.querySelector('summary').addEventListener('click', function () { filters.dataset.touched = '1'; });
+    wide.addEventListener('change', syncFilters); syncFilters();
+    // chips toggle
+    document.querySelectorAll('.nd-chip:not(:disabled)').forEach(function (c) {
+      c.addEventListener('click', function () { c.setAttribute('aria-pressed', c.getAttribute('aria-pressed') === 'true' ? 'false' : 'true'); });
+    });
+    // range value text
+    document.querySelectorAll('input[type=range][data-out]').forEach(function (r) {
+      var out = document.getElementById(r.dataset.out);
+      r.addEventListener('input', function () { out.textContent = r.value + r.dataset.unit; });
+    });
+    // sheet handle: mouse, touch and keyboard (window splitter pattern)
+    var sheet = document.getElementById('sheet'), handle = document.getElementById('handle');
+    var MIN = +handle.getAttribute('aria-valuemin'), MAX = +handle.getAttribute('aria-valuemax');
+    function setH(h) {
+      h = Math.max(MIN, Math.min(MAX, Math.round(h)));
+      sheet.style.setProperty('--sheet-h', h + 'px');
+      handle.setAttribute('aria-valuenow', h);
+      return h;
+    }
+    var startY = 0, startH = 0, drag = false;
+    function down(e) { drag = true; startY = (e.touches ? e.touches[0] : e).clientY; startH = sheet.offsetHeight; sheet.style.transition = 'none'; }
+    function move(e) { if (drag) setH(startH + startY - (e.touches ? e.touches[0] : e).clientY); }
+    function up() { if (drag) { drag = false; sheet.style.transition = ''; } }
+    handle.addEventListener('mousedown', down); window.addEventListener('mousemove', move); window.addEventListener('mouseup', up);
+    handle.addEventListener('touchstart', down, { passive: true }); window.addEventListener('touchmove', move, { passive: true }); window.addEventListener('touchend', up);
+    handle.addEventListener('keydown', function (e) {
+      var h = sheet.offsetHeight;
+      if (e.key === 'ArrowUp') setH(h + 24);
+      else if (e.key === 'ArrowDown') setH(h - 24);
+      else if (e.key === 'Home') setH(MIN);
+      else if (e.key === 'End') setH(MAX);
+      else return;
+      e.preventDefault();
+    });
+  })();
+</script>
+</body>
+</html>

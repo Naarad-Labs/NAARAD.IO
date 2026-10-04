@@ -1,0 +1,88 @@
+/* GENERATED from tokens.json by build-tokens.py. Do not edit by hand. */
+
+:root {
+  --color-bg: #FAF8F2;
+  --color-surface: #FFFFFF;
+  --color-border: #E2DDD4;
+  --color-border-input: #8A8577;
+  --color-text: #172752;
+  --color-text-muted: #4A5068;
+  --color-primary: #172752;
+  --color-on-primary: #F9F1DC;
+  --color-accent: #B35920;
+  --color-on-accent: #FFFFFF;
+  --color-accent-bright: #DD6E27;
+  --color-focus: #172752;
+  --color-success: #166534;
+  --color-success-bg: #DCFCE7;
+  --color-warning: #854D0E;
+  --color-warning-bg: #FEF9C3;
+  --color-danger: #991B1B;
+  --color-danger-bg: #FEE2E2;
+  --color-route-easy: #15803D;
+  --color-route-moderate: #B45309;
+  --color-route-hard: #B91C1C;
+  --color-map-bg: #E9E4D8;
+
+  --font-sans: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-serif: 'Playfair Display', Georgia, serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --type-xs: 400 12px/16px var(--font-sans);
+  --type-label: 700 12px/16px var(--font-sans);
+  --type-label-tracking: 0.1em;
+  --type-label-transform: uppercase;
+  --type-sm: 400 14px/20px var(--font-sans);
+  --type-card-title: 700 14px/20px var(--font-sans);
+  --type-base: 400 16px/24px var(--font-sans);
+  --type-lg: 600 20px/28px var(--font-sans);
+  --type-heading: 700 28px/34px var(--font-serif);
+
+  --space-0: 0px;
+  --space-4: 4px;
+  --space-8: 8px;
+  --space-12: 12px;
+  --space-16: 16px;
+  --space-24: 24px;
+  --space-32: 32px;
+  --space-48: 48px;
+  --space-64: 64px;
+
+  --radius-sharp: 2px;
+  --radius-md: 8px;
+  --radius-lg: 14px;
+  --radius-sheet: 20px;
+  --radius-pill: 999px;
+
+  --shadow-card: 0 1px 4px rgba(0,0,0,.06);
+  --shadow-card-hover: 0 4px 16px rgba(23,39,82,.12);
+  --shadow-card-selected: 0 4px 20px rgba(221,110,39,.22);
+  --shadow-sheet: 0 -6px 24px rgba(23,39,82,.18);
+  --shadow-pop: 0 8px 32px rgba(0,0,0,.18);
+
+  --motion-fast: 200ms;
+  --motion-base: 250ms;
+  --motion-ease: ease;
+
+  --size-target-min: 24px;
+  --size-target-touch: 44px;
+  --size-control-sm: 32px;
+  --size-control-md: 40px;
+  --size-control-lg: 48px;
+  --size-nav-height: 68px;
+  --size-list-column: 380px;
+  --size-sheet-peek: 80px;
+  --size-container: 1280px;
+}
+
+/* Breakpoints cannot be custom properties. Use these numbers in @media:
+   sm 640px, md 768px, split 900px, lg 1024px. */
+
+/* Users who ask for less motion get none. Components animate through the
+   --motion-* durations, so this one rule covers all of them. */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --motion-fast: 0ms;
+    --motion-base: 0ms;
+  }
+}
