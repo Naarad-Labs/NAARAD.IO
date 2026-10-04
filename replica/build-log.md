@@ -13,8 +13,9 @@ One line per screen, then what was found along the way. Dates are 2026-10-04.
 | S04 | tour detail | not started | everything. 6 of the 12 curated routes get an "Open route page" button to the page they already had. | n/a |
 | S05 to S08 | highlight, create highlight, planner, import and export | not started | n/a | n/a |
 
-Feature matrix: `features.csv`. Parity 45.3 of 100, must-haves 5 of 7 done (the other two are partial). Not shippable by the
-pack's own rule until place search has a dropped pin and S04 exists.
+Feature matrix: `features.csv`. Parity 48.1 of 100 (it was 45.3 before testing corrected the Plan mode rows; see `parity.md`),
+must-haves 5 of 7 done (the other two are partial). Not shippable by the pack's own rule until place search has a dropped pin and
+S04 exists.
 
 ## How it was checked
 

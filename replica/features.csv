@@ -21,11 +21,11 @@ Map view can be switched on or off,map,could,yes,no,Source: only the map=true UR
 Highlights on the map: points and segments with photos and tips,highlights,should,yes,no,Source: help summary. Closest in Naarad: waypoints and audio stops
 "Create a Highlight: pin, name, sport, tip, photos",highlights,could,yes,no,Source: help summary. Closest in Naarad: the Creator audio annotations
 Rate Highlights after an activity and add a tip or photo,highlights,could,yes,no,"Source: help summary. Needs activity recording, so depends on a feature outside this slice"
-Plan a route on the web from waypoints,planning,should,yes,partial,"Naarad's Plan mode, untouched. Its own search box does nothing: it geocodes and then pans window.discMap, which nothing sets"
-"Add a waypoint by clicking the map, auto-placed in the best position",planning,could,yes,no,Source: help summary
+Plan a route on the web from waypoints,planning,should,yes,partial,"Naarad's Plan mode, untouched by the rebuild. Tested: add, remove, clear, export all work (F06). Two open bugs: BUG-006 (the empty list says click the map, but a button press is needed first), BUG-007 (its search box does nothing)."
+"Add a waypoint by clicking the map, auto-placed in the best position",planning,could,yes,partial,"A click adds a waypoint at the end of the list, one per press of the Add button. It is never re-ordered into the best position (F06-H1, BUG-006)."
 Add Highlights and places of interest as waypoints,planning,could,yes,no,Source: help summary
 "Import GPX, TCX or FIT",planning,should,yes,no,"Source: help summary. Naarad only has an offline build script (convert-gpx.js), not a user feature"
-"Export a route as GPX (line only, no waypoints)",planning,should,yes,no,Source: help summary
+"Export a route as GPX (line only, no waypoints)",planning,should,yes,partial,Plan mode exports the route you draw as GPX: waypoints and a track (test F06-H1). A route found in Discover cannot be exported.
 Plan multi-day routes as stages,planning,could,yes,no,Source: help summary. A Premium feature in the original
 Offline maps for chosen regions,offline,should,yes,no,"Source: help summary. Naarad's pricing.json and routes.json claim offline, implementation not audited"
 Community network of millions of tours and user Highlights,content,could,yes,skip,The network and its content are not a feature you can rebuild. Seed with Naarad's own routes
@@ -34,3 +34,5 @@ Heatmaps,premium,could,yes,skip,Aggregate data they own
 Turn-by-turn navigation and activity recording,navigation,must,yes,skip,"A separate project, outside the Discover slice"
 Garmin and watch sync,integrations,could,yes,skip,"Partner integrations, not part of the product you can rebuild"
 "One free region, then Maps or Premium purchase",pricing,could,yes,skip,Naarad has its own pricing model (data/pricing.json)
+"Filter by theme: heritage walk, temple trail, nature hike, cultural tour, coastal walk, photography",search,should,no,yes,Naarad's own route types. Several at once. Added in the rebuild
+"Open the full route page from a result card (story, map and tabs)",tour detail,could,no,yes,6 of the 12 curated routes have a page. Reuses the pages Naarad already had
