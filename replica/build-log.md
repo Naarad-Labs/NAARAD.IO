@@ -33,6 +33,10 @@ geocoder. 27 scenarios, all passing:
 Also: `discover/data.test.js` (11 tests, ported from `schema.test.sql`), `schema.test.sql` (66 assertions, on PostgreSQL 16 with
 PostGIS), `replica/design/check-preview.js`, `contrast.py` (20 pairs, 0 failing AA).
 
+The proper regression suite is `e2e/` (62 tests, run by `/replica-test`; plan in `replica/test-plan.md`, findings in
+`replica/bugs.md`). It found 9 bugs the checks above missed, 7 of them fixed (including the route page Back button, which left the
+site). `check-discover.js` is kept as a quick script.
+
 Not checked: real map tiles (blocked in the test environment), real Nominatim, a real phone, Safari and Firefox, any screen reader.
 
 ## Lessons from the build
