@@ -47,7 +47,7 @@ create table public.tours (
   summary         text not null default '',
   location_label  text not null,
   sport           text not null check (sport in ('hike', 'walk', 'cycle', 'run')),
-  theme           text check (theme in ('heritage-walk', 'temple-trail', 'nature-hike', 'cultural-tour')),
+  theme           text check (theme in ('heritage-walk', 'temple-trail', 'nature-hike', 'cultural-tour', 'photography')),
   difficulty      text not null check (difficulty in ('easy', 'moderate', 'hard')),
   route_type      text not null check (route_type in ('loop', 'out_and_back', 'point_to_point')),
   surface         text not null default 'mixed' check (surface in ('paved', 'mixed', 'off_road')),

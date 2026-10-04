@@ -3,14 +3,14 @@ feature,area,priority,original,clone,notes
 "Search state lives in the URL: place, centre point, sport, max distance, page",search,should,yes,no,Source: the URL the user gave. Shareable and bookmarkable. Unverified how it behaves on change
 Filter by sport,search,must,yes,partial,"Naarad has a basic version in index.html (read in the code, not run). Naarad filters by route type (heritage walk, temple trail, nature hike, cultural tour, cycling), not by sport"
 Filter by maximum distance,search,must,yes,partial,"Naarad has a basic version in index.html (read in the code, not run). Slider 5 to 200 km. Komoot's help says 0 m to 200 km; whether it is a range or a max-only is unconfirmed. The URL's max_distance may instead be the search radius: unconfirmed"
-"Filter by difficulty: easy, intermediate, expert, colour coded",search,must,yes,no,Source: help summary. Naarad's data has difficulty (easy or moderate only) but no filter or hard level
+"Filter by difficulty: easy, intermediate, expert, colour coded",search,must,yes,no,"Source: help summary. All three levels already exist in Naarad's data (8 easy, 3 moderate, 1 hard) and cards show them, but the filter bar has no difficulty control"
 "Filter by duration range, 30 minutes to 10 hours",search,should,yes,no,Source: help summary. routes.json has duration_min
 Filter by elevation gain range,search,should,yes,no,"Source: help summary. routes.json has one elevation_m, meaning of the number unconfirmed"
 "Filter by surface: no preference, paved, off-road",search,could,yes,no,Source: help summary. No surface field in Naarad's data
 Filter by route type: loop or out and back,search,could,yes,no,Source: press summary. No such field in Naarad's data
 Results as cards with key stats,search,must,yes,partial,"Naarad has a basic version in index.html (read in the code, not run). rt-card list exists. What Komoot's card shows is unconfirmed (not seen)"
 Result count,search,should,yes,partial,"Naarad has a basic version in index.html (read in the code, not run). disc-count shows a route count. Komoot's equivalent is unconfirmed"
-Paginated results,search,could,yes,no,Source: pageNumber in the URL. Only worth it with more than a few dozen routes. Naarad has 6
+Paginated results,search,could,yes,no,"Source: pageNumber in the URL. Only worth it with more than a few dozen routes. Naarad has about 20 (12 curated, 9 unique tracks)"
 Ranked or personalised recommendation order,search,should,yes,skip,"Needs their user data. Use a plain relevance order (distance from the centre, then rating) instead"
 Split view: list and map side by side,map,must,yes,partial,"Naarad has a basic version in index.html (read in the code, not run). disc-split with a Leaflet map exists"
 Tour lines on the map coloured by difficulty,map,should,yes,no,Source: press summary

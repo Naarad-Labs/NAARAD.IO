@@ -78,13 +78,15 @@ Decisions in the schema:
 
 - **`distance_m`, `start_point` and `path_preview` are derived from `path` by a
   trigger** and cannot be set by hand. A tour's distance must agree with its
-  line. This is why the 6 curated routes cannot be ingested yet (see below).
+  line. This is why the 12 curated routes cannot be ingested yet (see below).
 - **`path` is 2D.** Elevation is reduced to `ascent_m` and `descent_m` by the
   ingest script. A 3D line does not fit the column type.
 - **`sport` and `theme` are separate columns.** Naarad's current `type` mixes
-  them (`cycling` is a sport, `heritage-walk` is a theme).
-- **Difficulty has three values**, `easy`, `moderate`, `hard`. The data has no
-  `hard` row yet, but the card's CSS already has a `diff-hard` class.
+  them (`cycling` is a sport; `heritage-walk`, `temple-trail`, `nature-hike`,
+  `cultural-tour` and `photography` are themes).
+- **Difficulty has three values**, `easy`, `moderate`, `hard`. One of the 12
+  curated routes (Coorg) is already `hard`, and the card's CSS has a `diff-hard`
+  class.
 - **Search is "starts within a radius"**, with `p_radius_m` (how far from the
   centre a tour may start) and `p_max_distance_m` (how long it may be) as two
   separate parameters. The recon could not confirm which one Komoot's
@@ -98,7 +100,7 @@ Decisions in the schema:
 
 `replica/schema.test.sql` applies `schema.sql` to a throwaway PostgreSQL 16 +
 PostGIS 3.4.2 with the Supabase pieces stubbed (the `auth` schema, `auth.uid()`,
-the `anon`, `authenticated` and `service_role` roles). 56 assertions, all
+the `anon`, `authenticated` and `service_role` roles). 57 assertions, all
 passing: derived columns, every filter, ordering, paging, bad input, what each
 role can and cannot read, write attempts denied, moderation, constraints, delete
 rules, and the plan using the spatial index on 20,000 generated tours.
@@ -165,11 +167,12 @@ Webhooks out: none. Jobs: none.
   hold the same routes under different names: 16 entries are 9 unique tracks
   (matched on point count and first and last point). Discover merges both
   today, so users see duplicates. Ingest must dedupe.
-- **The 6 curated routes have placeholder paths.** Each `path` in `routes.json`
-  is 4 or 5 points, and its length is 21 to 39% of the stated `distance_km`.
-  Because the database derives distance from the line, ingesting them would
-  print distances 3 to 5 times too short. They need real GPS tracks before they
-  can become tours.
+- **The 12 curated routes have placeholder paths.** Discover lists the inline
+  `ROUTES` array in `index.html` (12 routes; 6 of them are also in
+  `routes.json`). Each `path` is 4 or 5 points, and its length is 21 to 40% of
+  the stated distance. Because the database derives distance from the line,
+  ingesting them would print distances 2.5 to 5 times too short. They need real
+  GPS tracks before they can become tours.
 - **Moderation.** Highlights, tips and photos are user content. The schema
   forces `pending`, but someone has to review the queue, and there is no report
   flow yet.
@@ -215,7 +218,7 @@ Webhooks out: none. Jobs: none.
    Someone with access runs `schema.sql` on a staging copy first.
 3. **Which tile source** replaces `tile.openstreetmap.org` before launch, and
    what budget?
-4. **Real GPS tracks** for the 6 curated routes, or leave them out of Discover.
+4. **Real GPS tracks** for the 12 curated routes, or leave them out of Discover.
 5. **Tie routes to payments** (the "1 free route, District Pass" model in
    `data/pricing.json`)? That needs an entitlements table and the Razorpay
    webhook. It is not in this slice, and not in the recon.

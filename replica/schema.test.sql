@@ -74,6 +74,24 @@ select id, p, n, st_geogfromtext(w) from public.tours,
           (1, 'Viewpoint', 'SRID=4326;POINT(80.2450 12.9900)')) as s(p, n, w)
 where slug in ('marina-loop', 'draft-trail');
 
+-- Naarad's data has a 'photography' route type (Udaipur). It must be accepted,
+-- and an unknown theme must still be rejected.
+do $$
+declare ok boolean := false;
+begin
+  insert into public.tours (slug, name, location_label, sport, theme, difficulty, route_type, duration_min, status, path)
+  values ('photo-walk', 'Photo Walk', 'Udaipur', 'walk', 'photography', 'moderate', 'loop', 60, 'draft',
+          st_geogfromtext('SRID=4326;LINESTRING(73.68 24.57, 73.69 24.58)'));
+  begin
+    insert into public.tours (slug, name, location_label, sport, theme, difficulty, route_type, duration_min, status, path)
+    values ('bogus-theme', 'Bogus Theme', 'x', 'walk', 'skydiving', 'easy', 'loop', 10, 'draft',
+            st_geogfromtext('SRID=4326;LINESTRING(73.68 24.57, 73.69 24.58)'));
+  exception when check_violation then ok := true;
+  end;
+  assert ok, 'an unknown theme must be rejected';
+  delete from public.tours where slug = 'photo-walk';
+end $$;
+
 -- ---------------------------------------------------------------------------
 -- derived columns
 -- ---------------------------------------------------------------------------

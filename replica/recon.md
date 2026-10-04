@@ -166,21 +166,24 @@ personalised (press) and **unknown**.
 
 ### Naarad's current data, for the architect
 
-`routes.json` already has `distance_km`, `duration_min`, `elevation_m`,
-`difficulty`, `type`, `lat/lng`, `bbox`, `path`, `waypoints`, `rating`. Gaps
-against the list above:
+Discover's curated list is the inline `ROUTES` array in `index.html`: 12 routes
+with `dist`, `time`, `elev`, `diff`, `type`, `lat/lng`, `path`, `rating`.
+`routes.json` holds 6 of them with richer fields (`distance_km`, `bbox`,
+`waypoints`, `languages`...). Gaps against the list above:
 
-- difficulty is `easy` or `moderate` in the current data. Komoot has three
-  levels, so `hard` is missing.
+- difficulty already has all three levels (8 easy, 3 moderate, 1 hard).
+  Nothing is missing there, but the filter bar has no difficulty control.
 - no loop or out-and-back flag, no surface field, no sport field (`type`
-  mixes sport and theme: `heritage-walk`, `cycling`).
+  mixes sport and theme: `heritage-walk`, `cycling`, `photography`). The
+  filter bar has chips for 5 of the 6 types, so the one `photography` route
+  shows only under All Routes.
 - elevation is a single number. Komoot's filter implies elevation gain.
-- 6 curated routes, plus 16 entries in `routes/geo-tracks.json` and
+- 12 curated routes, plus 16 entries in `routes/geo-tracks.json` and
   `routes/gpx-tracks.json`. Those 16 are only **9 unique tracks**: the two
   files hold the same routes under different names (matched on point count
   and first and last point), and Discover shows the duplicates today.
-- The 6 curated routes' `path` arrays are 4 or 5 placeholder points, 21 to 39%
-  of each route's stated `distance_km`. They have no real track yet.
+- The 12 curated routes' `path` arrays are 4 or 5 placeholder points, 21 to 40%
+  of each route's stated distance. They have no real track yet.
 - Pagination and ranking only matter once there is volume.
 
 ## Feature matrix
@@ -231,7 +234,7 @@ screenshots in `replica/screens/` and the user's own browser:
 
 Screens 8, flows 6, entities 5 (SearchQuery, Tour, Highlight, Tip, Region).
 Hard parts: ranking and relevance without Komoot's data, the route-quality
-and content volume problem (6 routes versus millions), geocoding and
+and content volume problem (about 20 routes versus millions), geocoding and
 reverse-geocoding for the location field, drawing and clustering many tour
 lines on a map without lag, difficulty classification from geometry.
 Size: **S** to **M** for the Discover slice on top of Naarad's existing view
