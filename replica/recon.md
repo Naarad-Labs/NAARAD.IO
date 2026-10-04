@@ -118,7 +118,7 @@ All variants and states below are unverified. Rows marked guess are not evidence
 | Tour card | needs confirming (guess: image, title, distance, duration, elevation, difficulty) | needs confirming | S01 |
 | Difficulty badge | easy (blue), intermediate (red), expert (black) (help) | n/a | S01, S04 |
 | Range slider (two handles) | duration 30 min to 10 h; elevation gain in metres (help) | needs confirming | S02 |
-| Distance control | 0 m to 200 km (help). The URL carries `max_distance=30000`, so metres, max only | needs confirming | S02 |
+| Distance control | 0 m to 200 km (help). The URL carries `max_distance=30000` (metres), but whether that caps the tour's length or is the search radius around the centre point is **unconfirmed** | needs confirming | S02 |
 | Segmented or option filter | surface: No preference, Road or paved, Off-road (help); route type: loop, out and back (press) | needs confirming | S02 |
 | Sport selector | hike (url); also cycling and running (press) | needs confirming | S01, S07 |
 | Location field | current location, address, dropped pin (press) | permission denied, not found: needs confirming | S03 |
@@ -130,7 +130,8 @@ All variants and states below are unverified. Rows marked guess are not evidence
 ## Inferred data model
 
 ```
-SearchQuery  place_label, center_lat, center_lng, sport, max_distance_m,
+SearchQuery  place_label, center_lat, center_lng, sport,
+             max_distance_m (tour length cap OR search radius: unconfirmed),
              duration_min..max, elevation_min..max, difficulty[], surface,
              route_type, page
              evidence: S01 URL (place, centre, sport, max_distance, page: high);
@@ -174,8 +175,13 @@ against the list above:
 - no loop or out-and-back flag, no surface field, no sport field (`type`
   mixes sport and theme: `heritage-walk`, `cycling`).
 - elevation is a single number. Komoot's filter implies elevation gain.
-- 6 routes only, plus 14 GPX and GeoJSON files in `routes/` not yet in the
-  list. Pagination and ranking only matter once there is volume.
+- 6 curated routes, plus 16 entries in `routes/geo-tracks.json` and
+  `routes/gpx-tracks.json`. Those 16 are only **9 unique tracks**: the two
+  files hold the same routes under different names (matched on point count
+  and first and last point), and Discover shows the duplicates today.
+- The 6 curated routes' `path` arrays are 4 or 5 placeholder points, 21 to 39%
+  of each route's stated `distance_km`. They have no real track yet.
+- Pagination and ranking only matter once there is volume.
 
 ## Feature matrix
 
@@ -215,7 +221,10 @@ screenshots in `replica/screens/` and the user's own browser:
 3. Read the **terms of use** (row 12) before using any account.
 4. Confirm S04, the tour detail page, exists as guessed, and what is on it.
 5. Count the happy-path clicks for F01. The number to beat is unknown.
-6. Confirm whether the list reacts to the map (pan to search this area,
+6. Confirm what `max_distance` means in the URL: the tour's length cap or the
+   search radius around the centre. The architecture takes both as separate
+   parameters, so either answer works, but the UI differs.
+7. Confirm whether the list reacts to the map (pan to search this area,
    hover or select a card to highlight its line). Nothing read says so.
 
 ## Size

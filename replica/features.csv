@@ -2,7 +2,7 @@ feature,area,priority,original,clone,notes
 "Search tours by place: current location, address or dropped pin",search,must,yes,no,Source: press summary. Naarad's Discover has no place search in the code read; the planner has a search box (not audited)
 "Search state lives in the URL: place, centre point, sport, max distance, page",search,should,yes,no,Source: the URL the user gave. Shareable and bookmarkable. Unverified how it behaves on change
 Filter by sport,search,must,yes,partial,"Naarad has a basic version in index.html (read in the code, not run). Naarad filters by route type (heritage walk, temple trail, nature hike, cultural tour, cycling), not by sport"
-Filter by maximum distance,search,must,yes,partial,"Naarad has a basic version in index.html (read in the code, not run). Slider 5 to 200 km. Komoot's help says 0 m to 200 km; whether it is a range or a max-only is unconfirmed"
+Filter by maximum distance,search,must,yes,partial,"Naarad has a basic version in index.html (read in the code, not run). Slider 5 to 200 km. Komoot's help says 0 m to 200 km; whether it is a range or a max-only is unconfirmed. The URL's max_distance may instead be the search radius: unconfirmed"
 "Filter by difficulty: easy, intermediate, expert, colour coded",search,must,yes,no,Source: help summary. Naarad's data has difficulty (easy or moderate only) but no filter or hard level
 "Filter by duration range, 30 minutes to 10 hours",search,should,yes,no,Source: help summary. routes.json has duration_min
 Filter by elevation gain range,search,should,yes,no,"Source: help summary. routes.json has one elevation_m, meaning of the number unconfirmed"
