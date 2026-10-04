@@ -1,8 +1,7 @@
 /* Naarad Discover primitives. Built on tokens.css (load that first).
    Every colour, size, radius, shadow and duration comes from a token.
-   Class names are prefixed nd- so they cannot collide with the live site's
-   .disc-* and .rt-* rules. Not wired into index.html yet: that is replica-build.
-   Specs for each component are in components.md. */
+   Class names are prefixed nd- so they cannot collide with the rest of the
+   site's CSS. Specs for each component are in replica/design/components.md. */
 
 .nd,
 .nd * { box-sizing: border-box; }
@@ -150,6 +149,7 @@
 
 /* ---------- Tour card ---------- */
 .nd-card {
+  position: relative;
   display: block;
   color: inherit;
   text-decoration: none;
@@ -163,7 +163,7 @@
               transform var(--motion-base) var(--motion-ease);
 }
 .nd-card:hover { border-color: var(--color-primary); box-shadow: var(--shadow-card-hover); transform: translateY(-1px); }
-.nd-card[aria-current="true"] { border-color: var(--color-accent-bright); box-shadow: var(--shadow-card-selected); }
+.nd-card.is-selected { border-color: var(--color-accent-bright); box-shadow: var(--shadow-card-selected); }
 .nd-card__media {
   height: 112px;
   background: var(--color-bg);
@@ -175,6 +175,15 @@
 .nd-card__media svg { width: 88%; height: 80%; }
 .nd-card__body { padding: var(--space-12) var(--space-16); }
 .nd-card__title { margin: 0; font: var(--type-card-title); }
+/* The one primary action of a card: the title, stretched over the whole card so a
+   click anywhere selects it and the card is a single tab stop. */
+.nd-card__link { font: inherit; color: inherit; text-align: left; text-decoration: none; background: none; border: 0; padding: 0; margin: 0; cursor: pointer; }
+.nd-card__link::after { content: ""; position: absolute; inset: 0; }
+.nd .nd-card__link:focus-visible { outline: none; }
+/* The ring sits inside the card: the card clips anything outside its edge. */
+.nd .nd-card__link:focus-visible::after { outline: 3px solid var(--color-focus); outline-offset: -3px; border-radius: var(--radius-lg); }
+/* A second, separate action sits above the stretched one. */
+.nd-card__more { position: relative; z-index: 1; font: var(--type-xs); font-weight: 600; color: var(--color-accent); background: none; border: 0; padding: var(--space-4) 0; cursor: pointer; text-decoration: underline; text-underline-offset: 2px; }
 .nd-card__meta { margin: var(--space-4) 0 var(--space-8); font: var(--type-xs); color: var(--color-text-muted); }
 .nd-card__stats { display: flex; flex-wrap: wrap; gap: var(--space-4) var(--space-16); margin: 0; padding: 0; list-style: none; font: var(--type-xs); color: var(--color-text-muted); }
 .nd-card__stats strong { font-weight: 600; color: var(--color-text); }
@@ -233,7 +242,8 @@
 .nd-empty p { margin: 0; max-width: 32ch; color: var(--color-text-muted); }
 
 /* ---------- Map ---------- */
-.nd-map { position: relative; background: var(--color-map-bg); overflow: hidden; min-height: 240px; }
+.nd-map { position: relative; z-index: 0; isolation: isolate; background: var(--color-map-bg); overflow: hidden; min-height: 240px; }
+.nd-map__canvas { position: absolute; inset: 0; background: var(--color-map-bg); }
 .nd-map svg { display: block; width: 100%; height: 100%; }
 .nd-map__note { position: absolute; left: var(--space-8); top: var(--space-8); padding: var(--space-4) var(--space-8); font: var(--type-xs); color: var(--color-text-muted); background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-sharp); }
 .route-line { fill: none; stroke-linecap: round; stroke-linejoin: round; }
@@ -241,7 +251,15 @@
 .route-line--easy     { stroke: var(--color-route-easy);     stroke-width: 3.5; }
 .route-line--moderate { stroke: var(--color-route-moderate); stroke-width: 3.5; stroke-dasharray: 9 6; }
 .route-line--hard     { stroke: var(--color-route-hard);     stroke-width: 3.5; stroke-dasharray: 1 7; }
+.route-line--unknown  { stroke: var(--color-primary);        stroke-width: 3.5; }
 .route-line.is-selected { stroke-width: 5.5; }
+/* Start of a route on the map (a Leaflet circle marker). Ring colour follows difficulty. */
+.nd-start { fill: var(--color-surface); fill-opacity: 1; stroke-width: 3; cursor: pointer; }
+.nd-start--easy     { stroke: var(--color-route-easy); }
+.nd-start--moderate { stroke: var(--color-route-moderate); }
+.nd-start--hard     { stroke: var(--color-route-hard); }
+.nd-start--unknown  { stroke: var(--color-primary); }
+.nd-start.is-selected { stroke-width: 5; }
 
 /* ---------- Highlight marker, tip ---------- */
 .nd-marker {
@@ -269,7 +287,7 @@
 .nd-tip__photos .nd-photo { width: 64px; height: 64px; object-fit: cover; border-radius: var(--radius-sharp); background: var(--color-border); }
 
 /* ---------- Discover layout ---------- */
-.nd-discover { position: relative; display: grid; grid-template-rows: auto 1fr; min-height: 0; }
+.nd-discover { position: relative; display: grid; grid-template-rows: auto 1fr; min-height: 0; height: 100%; }
 .nd-filterbar { display: flex; flex-wrap: wrap; align-items: flex-end; gap: var(--space-16) var(--space-24); padding: var(--space-12) var(--space-16); background: var(--color-surface); border-bottom: 1px solid var(--color-border); }
 .nd-split { position: relative; display: grid; min-height: 0; }
 

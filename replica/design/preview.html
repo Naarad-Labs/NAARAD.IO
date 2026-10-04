@@ -7,8 +7,8 @@
 <!-- Not part of the site. Open locally. Fonts load from Google Fonts when online; offline it falls back to the system sans. -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Playfair+Display:wght@700&display=swap">
-<link rel="stylesheet" href="tokens.css">
-<link rel="stylesheet" href="primitives.css">
+<link rel="stylesheet" href="../../discover/tokens.css">
+<link rel="stylesheet" href="../../discover/primitives.css">
 <style>
   /* Page chrome for this preview only. Not a component. */
   body { margin: 0; background: var(--color-bg); color: var(--color-text); font: var(--type-base); font-family: var(--font-sans); }
@@ -99,39 +99,39 @@
           <button class="nd-btn" type="button" style="min-height: var(--size-control-sm);">Clear filters</button>
         </div>
         <div class="nd-sheet__list">
-          <a class="nd-card" href="#" aria-current="true">
+          <article class="nd-card is-selected">
             <div class="nd-card__media" aria-hidden="true">
               <svg viewBox="0 0 200 90" fill="none"><path class="route-line route-line--casing" d="M12 70 C 50 60, 70 30, 110 40 S 160 20, 188 14"/><path class="route-line route-line--easy" d="M12 70 C 50 60, 70 30, 110 40 S 160 20, 188 14"/></svg>
             </div>
             <div class="nd-card__body">
-              <h4 class="nd-card__title">Marina Beach Trail</h4>
+              <h4 class="nd-card__title"><button type="button" class="nd-card__link" aria-current="true">Marina Beach Trail</button></h4>
               <p class="nd-card__meta">Chennai, Tamil Nadu</p>
               <ul class="nd-card__stats"><li><strong>14.8 km</strong></li><li><strong>3 h 30 m</strong></li><li><strong>20 m</strong> up</li></ul>
             </div>
             <div class="nd-card__foot"><span class="nd-badge nd-badge--easy">Easy</span><span><strong>4.5</strong> (120)</span></div>
-          </a>
-          <a class="nd-card" href="#">
+          </article>
+          <article class="nd-card">
             <div class="nd-card__media" aria-hidden="true">
               <svg viewBox="0 0 200 90" fill="none"><path class="route-line route-line--casing" d="M14 20 C 60 40, 80 14, 120 30 S 168 52, 188 40"/><path class="route-line route-line--moderate" d="M14 20 C 60 40, 80 14, 120 30 S 168 52, 188 40"/></svg>
             </div>
             <div class="nd-card__body">
-              <h4 class="nd-card__title">Velachcheri to Mylapore</h4>
+              <h4 class="nd-card__title"><button type="button" class="nd-card__link">Velachcheri to Mylapore</button></h4>
               <p class="nd-card__meta">Chennai, Tamil Nadu</p>
               <ul class="nd-card__stats"><li><strong>9.8 km</strong></li><li><strong>2 h 15 m</strong></li><li><strong>35 m</strong> up</li></ul>
             </div>
             <div class="nd-card__foot"><span class="nd-badge nd-badge--moderate">Moderate</span><span><strong>4.0</strong> (48)</span></div>
-          </a>
-          <a class="nd-card" href="#">
+          </article>
+          <article class="nd-card">
             <div class="nd-card__media" aria-hidden="true">
               <svg viewBox="0 0 200 90" fill="none"><path class="route-line route-line--casing" d="M16 74 C 60 70, 70 40, 108 56 S 150 78, 186 30"/><path class="route-line route-line--hard" d="M16 74 C 60 70, 70 40, 108 56 S 150 78, 186 30"/></svg>
             </div>
             <div class="nd-card__body">
-              <h4 class="nd-card__title">Coorg Plantation Hike</h4>
+              <h4 class="nd-card__title"><button type="button" class="nd-card__link">Coorg Plantation Hike</button></h4>
               <p class="nd-card__meta">Coorg, Karnataka</p>
               <ul class="nd-card__stats"><li><strong>12.2 km</strong></li><li><strong>5 h</strong></li><li><strong>420 m</strong> up</li></ul>
             </div>
             <div class="nd-card__foot"><span class="nd-badge nd-badge--hard">Hard</span><span><strong>4.8</strong> (31)</span></div>
-          </a>
+          </article>
         </div>
       </section>
     </div>
@@ -209,23 +209,23 @@
 
   <h2>Cards</h2>
   <div class="grid">
-    <a class="nd-card" href="#">
+    <article class="nd-card">
       <div class="nd-card__media" aria-hidden="true"><svg viewBox="0 0 200 90" fill="none"><path class="route-line route-line--casing" d="M12 70 C 50 60, 70 30, 110 40 S 160 20, 188 14"/><path class="route-line route-line--easy" d="M12 70 C 50 60, 70 30, 110 40 S 160 20, 188 14"/></svg></div>
-      <div class="nd-card__body"><h3 class="nd-card__title">Default card</h3><p class="nd-card__meta">Sample place</p><ul class="nd-card__stats"><li><strong>8 km</strong></li><li><strong>2 h</strong></li></ul></div>
+      <div class="nd-card__body"><h3 class="nd-card__title"><button type="button" class="nd-card__link">Default card</button></h3><p class="nd-card__meta">Sample place</p><ul class="nd-card__stats"><li><strong>8 km</strong></li><li><strong>2 h</strong></li></ul></div>
       <div class="nd-card__foot"><span class="nd-badge nd-badge--easy">Easy</span><span><strong>4.2</strong> (12)</span></div>
-    </a>
-    <a class="nd-card" href="#" aria-current="true">
+    </article>
+    <article class="nd-card is-selected">
       <div class="nd-card__media" aria-hidden="true"><svg viewBox="0 0 200 90" fill="none"><path class="route-line route-line--casing" d="M14 20 C 60 40, 80 14, 120 30 S 168 52, 188 40"/><path class="route-line route-line--moderate is-selected" d="M14 20 C 60 40, 80 14, 120 30 S 168 52, 188 40"/></svg></div>
-      <div class="nd-card__body"><h3 class="nd-card__title">Selected card</h3><p class="nd-card__meta">Sample place</p><ul class="nd-card__stats"><li><strong>8 km</strong></li><li><strong>2 h</strong></li></ul></div>
+      <div class="nd-card__body"><h3 class="nd-card__title"><button type="button" class="nd-card__link" aria-current="true">Selected card</button></h3><p class="nd-card__meta">Sample place</p><ul class="nd-card__stats"><li><strong>8 km</strong></li><li><strong>2 h</strong></li></ul></div>
       <div class="nd-card__foot"><span class="nd-badge nd-badge--moderate">Moderate</span><span><strong>4.2</strong> (12)</span></div>
-    </a>
+    </article>
     <div class="nd-card nd-card--skeleton" aria-hidden="true">
       <div class="nd-card__media"></div>
       <div class="nd-card__body"><span class="nd-skeleton" style="height: 16px; width: 70%;"></span><span class="nd-skeleton" style="height: 12px; width: 40%; margin: 8px 0 12px;"></span><span class="nd-skeleton" style="height: 12px; width: 60%;"></span></div>
       <div class="nd-card__foot"><span class="nd-skeleton" style="height: 20px; width: 64px;"></span><span class="nd-skeleton" style="height: 12px; width: 48px;"></span></div>
     </div>
   </div>
-  <p class="note">Default, selected (<code>aria-current="true"</code>), loading skeleton. Hover and keyboard focus show on interaction.</p>
+  <p class="note">Default, selected (<code>.is-selected</code> on the card, <code>aria-current="true"</code> on its title button), loading skeleton. A card has one tab stop: the title, stretched over the card. Hover and keyboard focus show on interaction.</p>
 
   <h2>Empty state, pagination</h2>
   <div class="grid">

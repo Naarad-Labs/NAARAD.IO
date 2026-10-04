@@ -1,7 +1,8 @@
 # Components: Naarad Discover
 
 Specs for every component in `replica/recon.md`, plus the ones the real page
-needed. Values are token names from `tokens.json`; pixels are in `tokens.css`.
+needed. Values are token names from `replica/design/tokens.json`; pixels are in
+`discover/tokens.css` (generated). The components are in `discover/primitives.css`.
 
 **Where these come from.** Komoot's pages could not be read and `replica/screens/`
 is empty, so **nothing here records how Komoot's components look.** The recon
@@ -11,12 +12,12 @@ WCAG 2.2 AA. The recon marks the component list as unconfirmed, so this list
 may grow once the real pages are read.
 
 **Stack note.** Naarad is a static site with no Tailwind, so there is no Tailwind
-mapping. `tokens.css` is the mapping: custom properties named `--color-*`,
+mapping. `discover/tokens.css` is the mapping: custom properties named `--color-*`,
 `--type-*`, `--space-*`, `--radius-*`, `--shadow-*`, `--motion-*`, `--size-*`.
 Classes in `primitives.css` are prefixed `nd-` so they cannot collide with the
 live `.disc-*` and `.rt-*` rules.
 
-**Status key.** *built* = in `primitives.css`, shown in `preview.html`, passes
+**Status key.** *built* = in `discover/primitives.css`, shown in `replica/design/preview.html`, passes
 `check-preview.js`. *spec only* = specified, not built. *live* = the class that
 exists in `index.html` today.
 
@@ -144,9 +145,12 @@ Tour card                           [built]  live: .rt-card
   states    default, hover (border primary, shadow card-hover, 1px lift), selected (border accent-bright,
             shadow card-selected), focus-visible, loading (skeleton, same footprint), long title (wraps, no clip)
   tokens    bg surface, radius lg, shadow card, title type card-title, meta and stats type xs/text-muted
-  a11y      one <a href> for the whole card, so one tab stop. Title is a heading, one level under the
-            list's heading. The selected card has aria-current="true". The route silhouette in the media
-            area is aria-hidden: the stats say it all in text.
+  a11y      one tab stop: the title is a <button> (or a link, where a detail page exists) inside the
+            heading, stretched over the whole card, so a click anywhere selects it. A second action,
+            such as "Open route page", sits above it as its own button. Title is a heading one level
+            under the list's heading. The selected card has .is-selected and its title button has
+            aria-current="true". The focus ring is drawn inside the card because the card clips its
+            edge. The route silhouette in the media area is aria-hidden: the stats say it in text.
   used on   S01
 ```
 

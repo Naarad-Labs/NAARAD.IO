@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
-"""Generate tokens.css from tokens.json. Standard library only.
+"""Generate discover/tokens.css from replica/design/tokens.json. Standard library only.
 
     python3 replica/design/build-tokens.py            # write tokens.css
     python3 replica/design/build-tokens.py --check    # exit 1 if tokens.css is stale
 
 tokens.json is the source of truth. Edit it, rerun this, commit both.
+tokens.css lives in discover/ because the site loads it.
 Custom property names are prefixed by kind (--color-, --type-, --space-...) and
 do not collide with the site's existing short names (--navy, --or, --bd...).
 """
@@ -15,7 +16,7 @@ import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 SRC = os.path.join(HERE, "tokens.json")
-OUT = os.path.join(HERE, "tokens.css")
+OUT = os.path.join(HERE, "..", "..", "discover", "tokens.css")
 
 
 def build(tokens):
@@ -95,7 +96,7 @@ def main():
         return 0
     with open(OUT, "w", encoding="utf-8") as fh:
         fh.write(css)
-    print("wrote %s" % os.path.relpath(OUT))
+    print("wrote %s" % os.path.relpath(os.path.normpath(OUT)))
     return 0
 
 
