@@ -113,7 +113,7 @@
       '<div class="nd-filterbar" role="search" aria-label="Find routes">' +
         '<div class="nd-field nd-field--grow">' +
           '<label class="nd-field__label" for="nd-place">Place</label>' +
-          '<div class="nd-field__row"><input class="nd-field__control" id="nd-place" type="text" autocomplete="off" placeholder="City or landmark" aria-describedby="nd-place-hint"><button class="nd-btn" id="nd-locate" type="button">Use my location</button></div>' +
+          '<div class="nd-field__row"><input class="nd-field__control" id="nd-place" type="text" autocomplete="off" maxlength="120" placeholder="City or landmark" aria-describedby="nd-place-hint"><button class="nd-btn" id="nd-locate" type="button">Use my location</button></div>' +
           '<span class="nd-field__hint" id="nd-place-hint">Press Enter to search. Leave it empty to see all of India.</span>' +
           '<span class="nd-field__error" id="nd-place-error" role="alert" hidden></span>' +
         '</div>' +
@@ -132,7 +132,7 @@
         '<div class="nd-map"><div class="nd-map__canvas" id="nd-map"></div><p class="nd-map__note" id="nd-map-note" hidden></p></div>' +
         '<section class="nd-sheet" id="nd-sheet" aria-labelledby="nd-results-h">' +
           '<div class="nd-sheet__handle" id="nd-handle" role="separator" tabindex="0" aria-orientation="horizontal" aria-label="Resize results panel" aria-valuemin="80" aria-valuemax="560" aria-valuenow="320"></div>' +
-          '<div class="nd-sheet__bar"><h2 id="nd-results-h" class="nd-sr-only">Routes</h2><p class="nd-status" id="nd-status" role="status"></p><button class="nd-btn nd-btn--sm" id="nd-clear" type="button" hidden>Clear filters</button></div>' +
+          '<div class="nd-sheet__bar"><h2 id="nd-results-h" class="nd-sr-only" tabindex="-1">Routes</h2><p class="nd-status" id="nd-status" role="status"></p><button class="nd-btn nd-btn--sm" id="nd-clear" type="button" hidden>Clear filters</button></div>' +
           '<ul class="nd-sheet__list" id="nd-list" role="list"></ul>' +
         '</section>' +
       '</div>' +
@@ -238,13 +238,23 @@
     listEl.setAttribute('aria-busy', 'false');
     listEl.textContent = '';
     statusEl.textContent = statusText();
-    clearBtn.hidden = !(filterCount() || state.lat != null);
+    clearBtn.hidden = !(filterCount() || state.lat != null) || !rows.length;   // the empty state has its own button
     clearBtn.textContent = filterCount() ? 'Clear filters' : 'Show all of India';
-    if (!rows.length) { showEmpty(); drawMap(); return; }
+    if (!rows.length) { showEmpty(); drawMap(); settleFocus(); return; }
     rows.forEach(function (row) { listEl.appendChild(cardFor(row)); });
     if (selectedId && !rows.some(function (r) { return r.id === selectedId; })) selectedId = null;
     markSelected();
     drawMap();
+    settleFocus();
+  }
+
+  // The control that was just used often disappears when the list redraws (Clear filters, Try again), and
+  // focus would drop to the page. Put it somewhere sensible instead: the results heading.
+  var focusPending = false;
+  function settleFocus() {
+    if (!focusPending) return;
+    focusPending = false;
+    $('nd-results-h').focus({ preventScroll: true });
   }
 
   function showEmpty() {
@@ -254,6 +264,9 @@
     box.appendChild(el('p', null, state.lat != null
       ? 'Nothing starts within ' + state.radiusKm + ' km of ' + (shortPlace(state.q) || 'your place') + ' with these filters. Try a wider distance or fewer filters.'
       : 'No route fits these filters. Try fewer filters.'));
+    var out = el('button', 'nd-btn nd-btn--primary', filterCount() ? 'Clear filters' : 'Show all of India'); out.type = 'button';
+    out.addEventListener('click', clearAll);
+    box.appendChild(out);
     li.appendChild(box); listEl.appendChild(li);
   }
 
@@ -265,9 +278,10 @@
     box.appendChild(el('h3', null, 'We could not load routes'));
     box.appendChild(el('p', null, 'Check your connection and try again.'));
     var retry = el('button', 'nd-btn nd-btn--primary', 'Try again'); retry.type = 'button';
-    retry.addEventListener('click', refresh);
+    retry.addEventListener('click', function () { focusPending = true; refresh(); });
     box.appendChild(retry); li.appendChild(box); listEl.appendChild(li);
     clearBtn.hidden = true;
+    if (focusPending) { focusPending = false; retry.focus(); }   // it failed again: keep focus on the new button
     if (window.console && err) console.warn('[Discover] search failed:', err.message || err);
   }
 
@@ -435,13 +449,17 @@
   }
 
   function submitPlace() {
-    var q = place.value.trim();
+    if (place.getAttribute('aria-busy') === 'true') return;   // one request at a time: the geocoder allows 1 a second
+    var q = place.value.trim().slice(0, 120);
     setPlaceError('');
     if (!q) { state.lat = state.lng = null; state.q = ''; selectedId = null; changed(); return; }
     if (typeof window.forwardGeocode !== 'function') { setPlaceError('Place search is not available right now. Try again in a moment.'); return; }
     place.setAttribute('aria-busy', 'true');
+    var hint = $('nd-place-hint'), hintText = hint.textContent;
+    hint.textContent = 'Searching…';
     window.forwardGeocode(q, function (err, results) {   // Nominatim, on Enter only: its policy forbids search-as-you-type
       place.removeAttribute('aria-busy');
+      hint.textContent = hintText;
       if (err) { setPlaceError('Place search is not available right now. Check your connection and try again.'); return; }
       if (!results || !results.length) { setPlaceError('We could not find that place. Check the spelling or try a nearby city.'); return; }
       var r = results[0], lat = parseFloat(r.lat), lng = parseFloat(r.lon);
@@ -473,12 +491,14 @@
   radius.addEventListener('input', function () { state.radiusKm = parseInt(radius.value, 10); changed(200); });
   longest.addEventListener('input', function () { state.longestKm = parseInt(longest.value, 10); changed(200); });
 
-  clearBtn.addEventListener('click', function () {
+  function clearAll() {
+    focusPending = true;
     if (filterCount()) { state.sport = ''; state.themes = []; state.diff = []; state.longestKm = DEFAULTS.longestKm; }
     else { state.lat = state.lng = null; state.q = ''; place.value = ''; state.radiusKm = DEFAULTS.radiusKm; setPlaceError(''); }
     selectedId = null;
     changed();
-  });
+  }
+  clearBtn.addEventListener('click', clearAll);
 
   // Filters: always open at 900px and up, collapsed behind a button below. Open in the markup,
   // so without script they simply stay open.

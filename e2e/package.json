@@ -1,0 +1,13 @@
+{
+  "name": "naarad-e2e",
+  "private": true,
+  "description": "End-to-end tests for Naarad Discover (replica/test-plan.md). Run from this folder: npm install, then npx playwright test.",
+  "scripts": {
+    "test": "playwright test"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "^4.10.0",
+    "@playwright/test": "^1.56.1",
+    "leaflet": "1.9.4"
+  }
+}
