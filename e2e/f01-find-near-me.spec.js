@@ -1,5 +1,5 @@
 // F01 Find a hike near me. Cases are in replica/test-plan.md.
-const { test, expect, root, statusOf, articles, placeField, isPhone, ready, openFilters, goDiscover, axeViolations, installRoutes, watch, DESKTOP, PHONE } = require('./fixtures');
+const { test, expect, root, statusOf, articles, placeField, isPhone, ready, openPanel, openFilters, openSport, openWithin, pickSport, goDiscover, axeViolations, installRoutes, watch, DESKTOP, PHONE } = require('./fixtures');
 
 const chip = (page, name) => root(page).getByRole('button', { name, exact: true });
 const sport = (page, name) => root(page).getByRole('radio', { name });
@@ -34,13 +34,13 @@ for (const vp of [DESKTOP, PHONE]) {
 
     test(`F01-H2 filters narrow the list and the URL follows (${vp.name})`, async ({ page }) => {
       await goDiscover(page);
-      await openFilters(page);
 
-      await sport(page, 'Cycle').check();
+      await pickSport(page, 'Cycle');
       await expect(statusOf(page)).toHaveText('1 route');
-      await sport(page, 'Any').check();
+      await pickSport(page, 'Any');
       await expect(statusOf(page)).toHaveText('21 routes');
 
+      await openFilters(page);
       await chip(page, 'Easy').click();
       await expect(statusOf(page)).toHaveText('8 routes');
       await chip(page, 'Hard').click();
@@ -54,7 +54,7 @@ for (const vp of [DESKTOP, PHONE]) {
 
       await slider(page, 'Longest route').fill('10');
       await expect(statusOf(page)).not.toHaveText('21 routes');
-      const lengths = await articles(page).evaluateAll((els) => els.map((e) => parseFloat((e.querySelector('.nd-card__stats li') || {}).textContent)));
+      const lengths = await articles(page).evaluateAll((els) => els.map((e) => parseFloat((e.querySelector('[data-stat="distance"]') || {}).textContent)));
       expect(lengths.length).toBeGreaterThan(0);
       for (const km of lengths) expect(km).toBeLessThanOrEqual(10);
       expect(page.url()).toContain('max=10');
@@ -63,8 +63,9 @@ for (const vp of [DESKTOP, PHONE]) {
     test(`F01-H3 a filtered URL restores the search (${vp.name})`, async ({ page }) => {
       await goDiscover(page, '&mode=discover&sport=hike&diff=hard&max=100');
       await expect(statusOf(page)).toHaveText('1 route');
-      await openFilters(page);
+      await openSport(page);
       await expect(sport(page, 'Hike')).toBeChecked();
+      await openFilters(page);
       await expect(chip(page, 'Hard')).toHaveAttribute('aria-pressed', 'true');
       await expect(slider(page, 'Longest route')).toHaveValue('100');
     });
@@ -84,8 +85,7 @@ for (const vp of [DESKTOP, PHONE]) {
       await goDiscover(page);
       await title(page, 'Marina Beach Trail').click();
       await expect(page.locator('#nd-map path.is-selected').first()).toBeAttached();
-      await openFilters(page);
-      await sport(page, 'Cycle').check();
+      await pickSport(page, 'Cycle');
       await expect(statusOf(page)).toHaveText('1 route');
       await expect(articles(page).filter({ hasText: 'Marina' })).toHaveCount(0);
       await expect(articles(page).locator('.is-selected, [aria-current="true"]')).toHaveCount(0);
@@ -114,8 +114,7 @@ for (const vp of [DESKTOP, PHONE]) {
 
     test(`F01-N6 nothing matches: the empty state says why and offers a way out (${vp.name})`, async ({ page }) => {
       await goDiscover(page);
-      await openFilters(page);
-      await sport(page, 'Run').check();
+      await pickSport(page, 'Run');
       await expect(root(page).getByRole('heading', { name: 'No routes match' })).toBeVisible();
       await expect(statusOf(page)).toHaveText('0 routes');
       await root(page).getByRole('button', { name: 'Clear filters' }).first().click();
@@ -130,10 +129,14 @@ for (const vp of [DESKTOP, PHONE]) {
       found.push(...(await axeViolations(page, 'selected')));
       await openFilters(page);
       found.push(...(await axeViolations(page, 'filters open')));
-      await sport(page, 'Run').check();
+      await openSport(page);
+      found.push(...(await axeViolations(page, 'sport open')));
+      await openWithin(page);
+      found.push(...(await axeViolations(page, 'within open')));
+      await pickSport(page, 'Run');
       await expect(root(page).getByRole('heading', { name: 'No routes match' })).toBeVisible();
       found.push(...(await axeViolations(page, 'empty')));
-      await sport(page, 'Any').check();
+      await pickSport(page, 'Any');
       await placeField(page).fill('Chennai'); await placeField(page).press('Enter');
       await expect(statusOf(page)).toContainText('of Chennai, Tamil Nadu');
       found.push(...(await axeViolations(page, 'place set')));
@@ -385,25 +388,45 @@ test.describe('F01 text input', () => {
 test.describe('F01 phone', () => {
   test.use({ viewport: PHONE.size });
 
+  // Every control, in every panel, must be on screen and not under the sheet or the chips.
+  const reach = (page, selector) => page.evaluate((sel) => {
+    const sheet = document.getElementById('nd-sheet'), blocked = [];
+    document.querySelectorAll(sel).forEach((t) => {
+      t.scrollIntoView({ block: 'center' });
+      const r = t.getBoundingClientRect(), top = document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2);
+      if (!top || !(t === top || t.contains(top) || top.contains(t)) || sheet.contains(top) || r.right > innerWidth + 1 || r.left < -1) blocked.push((t.id || t.textContent).trim().slice(0, 24));
+    });
+    return blocked;
+  }, selector);
+
   for (const width of [390, 320]) {
     test(`F01-E12 ${width}px: no horizontal scroll and every control reachable`, async ({ page }) => {
       await page.setViewportSize({ width, height: 700 });
       await goDiscover(page);
-      await openFilters(page);
-      const result = await page.evaluate(() => {
-        const sheet = document.getElementById('nd-sheet'), blocked = [];
-        const targets = document.querySelectorAll('#nd-place, #nd-locate, #nd-sport label, #nd-themes .nd-chip, #nd-radius, #nd-longest, #nd-diffs .nd-chip');
-        targets.forEach((t) => {
-          t.scrollIntoView({ block: 'center' });
-          const r = t.getBoundingClientRect(), top = document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2);
-          if (!top || !(t === top || t.contains(top) || top.contains(t)) || sheet.contains(top) || r.right > innerWidth + 1 || r.left < -1) blocked.push((t.id || t.textContent).trim().slice(0, 24));
-        });
-        return { blocked, overflow: document.documentElement.scrollWidth > innerWidth };
-      });
-      expect(result.overflow, 'horizontal scroll').toBe(false);
-      expect(result.blocked, 'controls covered or off screen').toEqual([]);
+      const blocked = [...(await reach(page, '#nd-place, #nd-locate, .nd-pillbtn'))];
+      for (const [panel, targets] of [['nd-sport-pop', '#nd-sport label'], ['nd-within-pop', '#nd-radius'], ['nd-filters', '#nd-themes .nd-chip, #nd-longest, #nd-diffs .nd-chip']]) {
+        await openPanel(page, panel);
+        blocked.push(...(await reach(page, targets)));
+      }
+      expect(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth), 'horizontal scroll').toBe(false);
+      expect(blocked, 'controls covered or off screen').toEqual([]);
     });
   }
+
+  test('F01-E23 a place search does not widen the page', async ({ page }) => {
+    // Found while rebuilding the phone layout: with an auto-sized grid column the chips, once one said "Within 30 km",
+    // were wider than the screen, and the pill, the chips and every card went with them.
+    await goDiscover(page);
+    await placeField(page).fill('Chennai'); await placeField(page).press('Enter');
+    await expect(statusOf(page)).toContainText('of Chennai');
+    const m = await page.evaluate(() => {
+      const bar = document.getElementById('nd-filterbar').getBoundingClientRect(), card = document.querySelector('#nd-list .nd-card').getBoundingClientRect();
+      return { barRight: Math.round(bar.right), cardRight: Math.round(card.right), W: innerWidth, sw: document.documentElement.scrollWidth };
+    });
+    expect(m.barRight, 'the control bar should fit the screen').toBeLessThanOrEqual(m.W);
+    expect(m.cardRight, 'cards should fit the screen').toBeLessThanOrEqual(m.W);
+    expect(m.sw).toBeLessThanOrEqual(m.W);
+  });
 
   test('F01-E19 dragging the sheet handle moves it, within its limits', async ({ page }) => {
     await goDiscover(page);
@@ -437,45 +460,62 @@ for (const vp of [DESKTOP, PHONE]) {
       await page.keyboard.type('Chennai'); await page.keyboard.press('Enter');
       await expect(statusOf(page)).toContainText('of Chennai');
 
-      if (isPhone(page)) {                                  // open the filters with the keyboard
-        await page.keyboard.press('Tab'); await page.keyboard.press('Tab');   // locate button, then the Filters summary
-        await expect(root(page).locator('summary')).toBeFocused();
-        await page.keyboard.press('Enter');
-        await expect(page.locator('#nd-filters')).toHaveJSProperty('open', true);
-      }
+      // walk the Tab order from the place field through Discover and record what receives focus
+      const walk = async () => {
+        await placeField(page).focus();
+        const visited = [];
+        for (let i = 0; i < 90; i++) {
+          await page.keyboard.press('Tab');
+          const info = await page.evaluate(() => {
+            const e = document.activeElement, inside = !!e.closest('#nd-root');
+            if (!inside) return { inside: false };
+            const cs = getComputedStyle(e), after = getComputedStyle(e, '::after'), pill = e.closest('.nd-search__pill');
+            const ring = (cs.outlineStyle !== 'none' && parseFloat(cs.outlineWidth) > 0) || cs.boxShadow !== 'none' || (after.outlineStyle !== 'none' && parseFloat(after.outlineWidth) > 0)
+              || (!!pill && getComputedStyle(pill).outlineStyle !== 'none');   // the pill shows the ring for the field inside it
+            const name = e.getAttribute('aria-label') || (e.labels && e.labels[0] && e.labels[0].textContent) || e.textContent || e.id || e.className;
+            return { inside: true, tag: e.tagName, type: e.type || '', name: String(name).trim().slice(0, 32), ring };
+          });
+          if (!info.inside) break;
+          visited.push(info);
+        }
+        return visited;
+      };
+      const check = (visited, label) => {
+        const names = visited.map((v) => `${v.tag}:${v.name}`);
+        expect(names.length, label + ': focus should leave Discover (no keyboard trap)').toBeLessThan(90);
+        expect(new Set(names).size, label + ': no control should be visited twice').toBe(names.length);
+        expect(visited.some((v) => v.name.includes('Use my location')), label + ': Use my location in the order').toBe(true);
+        expect(visited.some((v) => /East Coast Beach Route/.test(v.name)), label + ': a result card title is reachable').toBe(true);
+        expect(visited.filter((v) => !v.ring).map((v) => v.name), label + ': every focused control should show a focus indicator').toEqual([]);
+      };
 
-      // walk the Tab order through Discover and record what receives focus
-      await placeField(page).focus();
-      const visited = [];
-      for (let i = 0; i < 90; i++) {
-        await page.keyboard.press('Tab');
-        const info = await page.evaluate(() => {
-          const e = document.activeElement, inside = !!e.closest('#nd-root');
-          if (!inside) return { inside: false };
-          const cs = getComputedStyle(e), after = getComputedStyle(e, '::after');
-          const ring = (cs.outlineStyle !== 'none' && parseFloat(cs.outlineWidth) > 0) || cs.boxShadow !== 'none' || (after.outlineStyle !== 'none' && parseFloat(after.outlineWidth) > 0);
-          const name = e.getAttribute('aria-label') || (e.labels && e.labels[0] && e.labels[0].textContent) || e.textContent || e.id || e.className;
-          return { inside: true, tag: e.tagName, type: e.type || '', name: String(name).trim().slice(0, 32), ring };
-        });
-        if (!info.inside) break;
-        visited.push(info);
+      if (!isPhone(page)) {
+        const visited = await walk();
+        check(visited, 'desktop');
+        expect(visited.filter((v) => v.type === 'radio').length, 'the sport radios are one tab stop').toBe(1);
+        expect(visited.filter((v) => v.type === 'range').length, 'both sliders').toBe(2);
+        for (const name of ['Heritage walk', 'Easy', 'Moderate', 'Hard']) expect(visited.some((v) => v.name.toLowerCase() === name.toLowerCase()), name + ' reachable').toBe(true);
+      } else {
+        // Each chip opens from the keyboard (Enter on the focused chip), and its controls follow it in the Tab order.
+        const seen = [];
+        for (const [id, label] of [['nd-sport-pop', 'sport'], ['nd-within-pop', 'within'], ['nd-filters', 'filters']]) {
+          await page.locator('#' + id + ' summary').focus();
+          await page.keyboard.press('Enter');
+          await expect(page.locator('#' + id)).toHaveJSProperty('open', true);
+          const visited = await walk();
+          check(visited, label);
+          seen.push({ id, visited });
+        }
+        expect(seen[0].visited.filter((v) => v.type === 'radio').length, 'the sport radios are one tab stop').toBe(1);
+        expect(seen[1].visited.filter((v) => v.type === 'range').length, 'the Within slider').toBe(1);
+        expect(seen[2].visited.filter((v) => v.type === 'range').length, 'the Longest route slider').toBe(1);
+        for (const name of ['Heritage walk', 'Easy', 'Moderate', 'Hard']) expect(seen[2].visited.some((v) => v.name.toLowerCase() === name.toLowerCase()), name + ' reachable').toBe(true);
       }
-      const names = visited.map((v) => `${v.tag}:${v.name}`);
-      expect(names.length, 'focus should leave Discover (no keyboard trap)').toBeLessThan(90);
-      expect(new Set(names).size, 'no control should be visited twice').toBe(names.length);
-      expect(visited.some((v) => v.name.includes('Use my location')), 'Use my location in the order').toBe(true);
-      expect(visited.filter((v) => v.type === 'radio').length, 'the sport radios are one tab stop').toBe(1);
-      expect(visited.filter((v) => v.type === 'range').length, 'both sliders').toBe(2);
-      for (const name of ['Heritage walk', 'Easy', 'Moderate', 'Hard']) expect(visited.some((v) => v.name.toLowerCase() === name.toLowerCase()), name + ' reachable').toBe(true);
-      expect(visited.some((v) => /East Coast Beach Route/.test(v.name)), 'a result card title is reachable').toBe(true);
-      expect(visited.filter((v) => !v.ring).map((v) => v.name), 'every focused control should show a focus indicator').toEqual([]);
-
     });
 
     test(`F01-E20 focus stays inside Discover after an action (${vp.name})`, async ({ page, env }) => {
       await goDiscover(page);
-      await openFilters(page);
-      await sport(page, 'Run').check();
+      await pickSport(page, 'Run');
       await expect(root(page).getByRole('heading', { name: 'No routes match' })).toBeVisible();
       const clear = root(page).getByRole('button', { name: 'Clear filters' }).first();
       await clear.focus(); await page.keyboard.press('Enter');

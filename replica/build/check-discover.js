@@ -92,6 +92,13 @@ async function axeCheck(page, label) {
   return res;
 }
 
+// Below 900px the controls sit behind three chips, one panel open at a time. No-op at 900px and up.
+async function panel(p, tag, id) {
+  if (tag !== 'mobile') return;
+  if (!(await p.evaluate((i) => document.getElementById(i).open, id))) await p.click('#' + id + ' summary');
+  await p.waitForTimeout(100);
+}
+
 async function scenario(name, fn) {
   if (process.env.ONLY && !name.includes(process.env.ONLY)) return;   // ONLY=keyboard node ... runs one scenario
   ran++; console.log('- ' + name);
@@ -150,10 +157,12 @@ async function main() {
 
     await scenario('every control is reachable with the filters open (nothing hides under the results sheet)', async () => {
       const p = await open({ w, h }); await ready(p);
-      if (tag === 'mobile') await p.click('#nd-filters-summary');
-      const unreachable = await p.evaluate(() => {
+      const unreachable = [];
+      for (const [id, sel] of [[null, tag === 'mobile' ? '#nd-place, #nd-locate, .nd-pillbtn' : '#nd-place, #nd-locate'], ['nd-sport-pop', '#nd-sport label'], ['nd-within-pop', '#nd-radius'], ['nd-filters', '#nd-themes .nd-chip, #nd-longest, #nd-diffs .nd-chip']]) {
+      if (id) await panel(p, tag, id);
+      unreachable.push(...await p.evaluate((sel) => {
         const out = [];
-        const targets = [...document.querySelectorAll('#nd-place, #nd-locate, #nd-sport label, #nd-themes .nd-chip, #nd-radius, #nd-longest, #nd-diffs .nd-chip')];
+        const targets = [...document.querySelectorAll(sel)];
         targets.forEach((t) => {
           t.scrollIntoView({ block: 'center' });
           const r = t.getBoundingClientRect(), top = document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2);
@@ -161,17 +170,21 @@ async function main() {
           if (!visibleHere || !top || !(t === top || t.contains(top) || top.contains(t)) || top.closest('.nd-sheet')) out.push((t.id || t.textContent || t.className).trim().slice(0, 30));
         });
         return out;
-      });
+      }, sel));
+      }
       ok(unreachable.length === 0, 'controls hidden or covered: ' + unreachable.join(', '));
       await done(p);
     });
 
     await scenario('S02 filters: sport, theme, difficulty and longest narrow the list; the URL follows', async () => {
       const p = await open({ w, h }); await ready(p);
-      if (tag === 'mobile') { await p.click('#nd-filters-summary'); await p.screenshot({ path: `${SHOTS}S02-filters-mobile.png` }); }
+      if (tag === 'mobile') { await panel(p, tag, 'nd-filters'); await p.screenshot({ path: `${SHOTS}S02-filters-mobile.png` }); }
+      await panel(p, tag, 'nd-sport-pop');
       await p.getByRole('radio', { name: 'Cycle' }).check(); await p.waitForTimeout(150);
       ok((await status(p)) === '1 route', 'Cycle should give 1 route, got ' + (await status(p)));
+      await panel(p, tag, 'nd-sport-pop');
       await p.getByRole('radio', { name: 'Any' }).check(); await p.waitForTimeout(150);
+      await panel(p, tag, 'nd-filters');
       await p.getByRole('button', { name: 'Easy', exact: true }).click(); await p.waitForTimeout(150);
       ok((await status(p)) === '8 routes', 'Easy should give 8 routes, got ' + (await status(p)));
       await p.getByRole('button', { name: 'Hard', exact: true }).click(); await p.waitForTimeout(150);
@@ -182,7 +195,7 @@ async function main() {
       await p.getByRole('button', { name: 'Temple trail' }).click();
       await p.locator('#nd-longest').fill('10'); await p.waitForTimeout(400);
       const n = await cards(p).count(); ok(n > 0 && n < 21, 'longest 10 km should narrow the list, got ' + n);
-      const lens = await p.$$eval('#nd-list .nd-card__stats li:first-child strong', (els) => els.map((e) => parseFloat(e.textContent)));
+      const lens = await p.$$eval('#nd-list [data-stat="distance"] strong', (els) => els.map((e) => parseFloat(e.textContent)));
       ok(lens.every((x) => x <= 10), 'every route should be 10 km or less: ' + lens.join(','));
       ok((await p.evaluate(() => location.search)).includes('max=10'), 'URL should carry max=10');
       if (tag === 'mobile') ok((await p.locator('#nd-filters-summary').innerText()).includes('(1)'), 'the Filters button should count active filters');
@@ -191,9 +204,10 @@ async function main() {
 
     await scenario('URL state restores the search on load', async () => {
       const p = await open({ w, h, url: '/?page=planner&mode=discover&sport=hike&diff=hard&max=100' }); await ready(p);
-      if (tag === 'mobile') await p.click('#nd-filters-summary');
       ok((await status(p)) === '1 route', 'hike + hard should give 1 route (Coorg), got ' + (await status(p)));
+      await panel(p, tag, 'nd-sport-pop');
       ok(await p.getByRole('radio', { name: 'Hike' }).isChecked(), 'Hike radio should be checked');
+      await panel(p, tag, 'nd-filters');
       ok((await p.getByRole('button', { name: 'Hard', exact: true }).getAttribute('aria-pressed')) === 'true', 'Hard chip should be pressed');
       ok((await p.inputValue('#nd-longest')) === '100', 'longest slider should be 100');
       await done(p);
@@ -201,7 +215,7 @@ async function main() {
 
     await scenario('empty state explains itself and Clear filters recovers', async () => {
       const p = await open({ w, h }); await ready(p);
-      if (tag === 'mobile') await p.click('#nd-filters-summary');
+      await panel(p, tag, 'nd-sport-pop');
       await p.getByRole('radio', { name: 'Run' }).check(); await p.waitForTimeout(150);
       ok((await p.locator('.nd-empty h3').innerText()) === 'No routes match', 'empty heading');
       ok((await status(p)) === '0 routes', 'status should say 0 routes');
@@ -290,19 +304,20 @@ async function main() {
 
     await scenario('keyboard only: place, sport, chips, card and (phone) the sheet handle', async () => {
       const p = await open({ w, h }); await ready(p);
-      if (tag === 'mobile') await p.click('#nd-filters-summary');
       await p.focus('#nd-place'); await p.keyboard.type('Chennai'); await p.keyboard.press('Enter'); await p.waitForTimeout(500);
       ok((await status(p)).includes('Chennai'), 'Enter in the place field should search');
       await p.focus('#nd-list .nd-card__link'); await p.keyboard.press('Enter'); await p.waitForTimeout(200);
       ok((await p.locator('#nd-list .nd-card.is-selected').count()) === 1, 'Enter on a title should select the card');
       const ring = await p.evaluate(() => { const b = document.querySelector('#nd-list .nd-card__link'); b.focus(); return getComputedStyle(b, '::after').outlineStyle; });
       ok(ring === 'solid', 'a focused card should show a ring, got ' + ring);
+      await panel(p, tag, 'nd-sport-pop');
       await p.focus('input[name="nd-sport"][value=""]'); await p.keyboard.press('ArrowRight'); await p.waitForTimeout(200);
       ok(await p.locator('input[name="nd-sport"][value="walk"]').isChecked(), 'ArrowRight should move the sport to Walk');
+      await panel(p, tag, 'nd-filters');
       await p.focus('#nd-diffs .nd-chip'); await p.keyboard.press('Space'); await p.waitForTimeout(200);
       ok((await p.locator('#nd-diffs .nd-chip').first().getAttribute('aria-pressed')) === 'true', 'Space should press a chip');
       if (tag === 'mobile') {
-        await p.click('#nd-filters-summary'); await p.waitForTimeout(400);   // close the filters: the sheet has room to grow again
+        await p.click('#nd-filters-summary'); await p.waitForTimeout(400);   // close the panel
         await p.focus('#nd-handle'); const a = +(await p.getAttribute('#nd-handle', 'aria-valuenow'));
         await p.keyboard.press('ArrowUp'); await p.keyboard.press('ArrowUp'); const b = +(await p.getAttribute('#nd-handle', 'aria-valuenow'));
         ok(b > a, `ArrowUp should grow the sheet (${a} -> ${b})`);

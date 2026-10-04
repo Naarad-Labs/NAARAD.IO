@@ -1,0 +1,7 @@
+# Screenshots of the original app stay on your machine.
+# This repo is public and GitHub Pages serves it. The originals are another company's interface, and
+# screenshots from a real account show a name, places and dates.
+# Describe what they show in ../screens-notes.md instead (text only, no personal data).
+*
+!.gitignore
+!README.md

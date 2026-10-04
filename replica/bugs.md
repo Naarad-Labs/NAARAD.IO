@@ -1,13 +1,14 @@
 # Bugs: Naarad Discover
 
-Found by `e2e/` (see `replica/test-plan.md`). Build tested: `e50cd0e`. Browser: Chromium (Playwright 1.56.1), 1440x900 and 390x844
-unless stated. Fixes are in `f761f99`.
+Found by `e2e/` (see `replica/test-plan.md`). Build tested: `e50cd0e`, then the phone layout rebuilt from the app screenshots.
+Browser: Chromium (Playwright 1.56.1), 1440x900 and 390x844 unless stated. BUG-001 to BUG-009 were fixed in `f761f99`; BUG-010 and
+BUG-011 were found and fixed while rebuilding the phone layout, before it shipped.
 
 | severity | open | fixed |
 | --- | --- | --- |
 | S1 | 0 | 0 |
-| S2 | 0 | 1 |
-| S3 | 2 | 6 |
+| S2 | 0 | 2 |
+| S3 | 2 | 7 |
 | S4 | 0 | 0 |
 
 Nothing open at S1 or S2. Two S3 bugs are open and both are in Plan mode, which the Discover rebuild did not touch.
@@ -175,6 +176,42 @@ Evidence: test `F01-E22 a landscape phone stays usable` (109 received, 120 or mo
 Status: fixed in f761f99, partly. The hint under the place field is hidden and the bar is tighter on short screens: 145px now. Still
 cramped, but the sheet can be dragged up. The site's own header and planner bar take about 130px of a 390px screen and are outside Discover.
 
+### BUG-010: after a place search the phone page is wider than the screen
+
+- Severity: S2
+- Flow / case: F01 / F01-E23
+- Screen: S01, S03
+- Build: the phone layout rebuild, not yet shipped. Browser / device: Chromium, 390px
+- Pre-existing: no. Introduced and fixed within the rebuild.
+
+Steps
+1. On a 390px screen, search "Chennai" so the radius chip reads "Within 30 km".
+
+Expected: the pill, the chips and the cards fit the screen.
+Actual: the control bar was 430px wide on a 390px screen. The pill's locate button and every card ran off the right edge.
+Evidence: test `F01-E23`, which failed with the bar's right edge at 430 and passes now. Found first in a screenshot.
+Suspected cause: the control bar and the page grid had an auto-sized column, which grows to the widest content, here the three chips
+in one line, instead of the width of the screen.
+Status: fixed. Both grids use `minmax(0, 1fr)`.
+
+### BUG-011: a card's rating is not read as "rated 4.9 out of 5 by 356 people"
+
+- Severity: S3
+- Flow / case: F01 / F01-E29
+- Screen: S01
+- Build: `e50cd0e` and after. Browser / device: Chromium, design preview page
+- Pre-existing: yes, from the first Discover build.
+
+Steps
+1. Run axe-core on the design preview page with a card in it.
+
+Expected: nothing to review.
+Actual: axe listed `aria-prohibited-attr` as "needs review". The rating was a plain `<span aria-label="Rated 4.9 out of 5 ...">`. An
+aria-label on an element with no role is ignored by screen readers, so they read "4.9 (356)" with no meaning. The real page's axe run
+reports violations only, so it did not show this.
+Evidence: test `F01-E29` now asserts the role, and fails without it (received "", expected "img").
+Status: fixed. The rating is `role="img"`, so its label is read whole.
+
 ---
 
 ## To check
@@ -189,6 +226,12 @@ Not reproduced, or not possible here. None of these is a finding.
 - **Tab order.** The map (its zoom buttons and attribution links) comes before the results in the DOM, so a keyboard user passes
   about four extra stops to reach the first card. Not a failure of any rule; a skip link or reordering would help.
 - **Sport: Run** is offered but no route has it, so choosing it always empties the list. A product question: hide sports with no routes?
+- **The serif face.** Playfair Display could not load here, so card titles were tested in the system serif. A real title in Playfair
+  is a little narrower than the stand-in, so wrapping should only get better. Check long names on a real device.
+- **Chips at 320px.** All three fit one row at 390px. At 320px they wrap to two rows and the overlay takes about 56px more of the
+  map. No overflow (F01-E12), but cramped.
+- **The hint over the chips.** On a phone the "Press Enter to search" hint floats over the chips while you type, and steps aside after
+  Enter. A phone's own keyboard Go key may not fire Enter in every browser: untested.
 - **History.** After Back from a route page the visit has an extra history entry, so the browser's own Back button may step through a
   duplicate. Not reproduced as a failure.
 - **Re-searching the same place** flashes "Loading routes…" for a moment. Cosmetic.

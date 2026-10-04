@@ -7,20 +7,35 @@ One line per screen, then what was found along the way. Dates are 2026-10-04.
 | ID | screen | status | what is missing | what was harder than expected |
 | --- | --- | --- | --- | --- |
 | shell | tokens, primitives, data layer | done | the data layer is the local seed, not Supabase. `schema.sql` is not applied anywhere. | the stylesheet was already damaged (see below), so the shell avoids it instead of building on it |
-| S01 | Discover results and map | done | pagination (21 routes fit on one page). Route lines for the 12 curated routes: they have no real GPS track, so they show a start marker only. | the map. A rule of mine broke every SVG Leaflet draws, and the tests passed anyway (see below) |
-| S02 | filters | partial | duration and elevation ranges, surface, loop or out-and-back. The data has no values for them. | filters on a phone: the open panel ran under the results sheet and its lower controls were unreachable |
-| S03 | place search | partial | a dropped pin. Place name suggestions as you type: the geocoder's policy forbids them, so search runs on Enter only. | nothing, apart from deciding what to do about two search boxes (the planner bar's now hides in Discover mode) |
+| S01 | Discover results and map | done, **rebuilt** after the screenshots | pagination (21 routes fit on one page). Route lines for the 12 curated routes. Photos on cards. A people count. "Search this area". | the phone layout: three chips that each open a panel, and keeping them on one row at 390px |
+| S02 | filters | partial: on a phone, three chips (Sport, Within, Filters) | duration and elevation ranges, surface, loop or out-and-back. The data has no values for them. | one panel open at a time, and closing it with Escape, a tap outside or a pick, without breaking arrow keys on the sport list |
+| S03 | place search | partial | a dropped pin. Place name suggestions as you type: the geocoder's policy forbids them, so search runs on Enter only. | a hint that must not sit on the chips while you type |
 | S04 | tour detail | not started | everything. 6 of the 12 curated routes get an "Open route page" button to the page they already had. | n/a |
 | S05 to S08 | highlight, create highlight, planner, import and export | not started | n/a | n/a |
 
-Feature matrix: `features.csv`. Parity 48.1 of 100 (it was 45.3 before testing corrected the Plan mode rows; see `parity.md`),
-must-haves 5 of 7 done (the other two are partial). Not shippable by the pack's own rule until place search has a dropped pin and
-S04 exists.
+Feature matrix: `features.csv`. Parity **45.2 of 100** (`parity.md` says why that is lower than the 48.1 first reported, and
+what raises it), must-haves 4 of 7 done. Not shippable by the pack's own rule until place search has a dropped pin, S04 exists and
+cards have photos.
+
+### What changed in the second pass (same day)
+
+The user supplied seven screenshots of Komoot's Android app, the pitch deck and the brand kit.
+
+- **Layout.** Below 900px Discover is map-first: a search pill and three chips float over the map, the results rise from the bottom
+  in a sheet with a centred count, a tap on the handle opens the full-height list, and a Map button comes back. Cards follow the
+  original's order: media with the difficulty badge over it, rating, title, place, then time, length and climb with icons.
+  From 900px up it is the same bar as before with every control open, restyled.
+- **Look.** Palette from the brand kit and the deck, serif card titles, pill controls, outline icons, a contour pattern behind routes
+  with no photo, a mandala line drawing in the empty state. `replica/brand-review.md` says what came from where, where the kit, deck
+  and site disagree, and what was not taken (Cinzel, the kit's navy, mustard).
+- **Evidence.** `replica/screens-notes.md`; the recon's open questions 4, 6 and 7 are answered (partly) in `recon.md`.
+- **Privacy.** The repo is public and served by GitHub Pages, so the screenshots are kept out of it (`replica/screens/.gitignore`).
+- **Service worker** cache name bumped to `naarad-v7`.
 
 ## How it was checked
 
 `replica/build/check-discover.js` loads the real `index.html` in Chromium at 1440x900 and 390x844 with real Leaflet and a stub
-geocoder. 27 scenarios, all passing:
+geocoder. 27 scenarios, all passing, rerun after the rebuild (on a phone each control is reached through its chip):
 
 - filled, filters, empty, loading (skeletons), error and retry, long content, URL state, selecting, place found, not found,
   search down, location granted and denied
@@ -34,11 +49,12 @@ geocoder. 27 scenarios, all passing:
 Also: `discover/data.test.js` (11 tests, ported from `schema.test.sql`), `schema.test.sql` (66 assertions, on PostgreSQL 16 with
 PostGIS), `replica/design/check-preview.js`, `contrast.py` (20 pairs, 0 failing AA).
 
-The proper regression suite is `e2e/` (62 tests, run by `/replica-test`; plan in `replica/test-plan.md`, findings in
-`replica/bugs.md`). It found 9 bugs the checks above missed, 7 of them fixed (including the route page Back button, which left the
-site). `check-discover.js` is kept as a quick script.
+The proper regression suite is `e2e/` (71 tests; plan in `replica/test-plan.md`, findings in `replica/bugs.md`). It found 9 bugs
+the checks above missed, 7 of them fixed (including the route page Back button, which left the site), and the rebuild added 9
+tests, two of which caught bugs of its own (BUG-010, BUG-011). `check-discover.js` is kept as a quick script, and it takes the
+screenshots in `replica/clone-screens/`. `replica/build/diff-screens.js` takes the ones for the layout diff.
 
-Not checked: real map tiles (blocked in the test environment), real Nominatim, a real phone, Safari and Firefox, any screen reader.
+Not checked: real map tiles (blocked in the test environment), the real serif face, real Nominatim, a real phone, Safari and Firefox, any screen reader.
 
 ## Lessons from the build
 
@@ -49,6 +65,17 @@ Not checked: real map tiles (blocked in the test environment), real Nominatim, a
 - **The filter panel fix needed its own test.** "Every control is reachable with the filters open" now runs at both widths. It
   failed first, which is how the cause was found: with the filters open the sheet kept its old height, grew upward and covered
   the Difficulty chips. It is capped to its container now.
+
+- **An auto-sized grid column made the whole page wider than the screen.** The three chips in one line were wider than 390px, so the
+  column grew to fit them and the pill and every card went with it (BUG-010). Seen first in a screenshot after a place search, then
+  pinned by `F01-E23`, which I confirmed fails with the old CSS. Both grids now use `minmax(0, 1fr)`.
+- **A control's name can collide with a field's label.** The first clear button was called "Clear place", and the test that finds the
+  field by its label "Place" matched both. "Clear search" says what it does and does not clash; a voice-control user saying "Place"
+  gets the field.
+- **The brand kit's secondary button fails the deck's own accessibility promise.** White on the kit's orange is 3.06:1. Orange fills
+  carry a navy label (4.7:1) instead.
+- **Fitting three chips on one row was a design decision, not a styling one.** At 390px it took shorter labels ("Sport", not "Any
+  sport"), no chevron on the radius chip, and tighter padding.
 
 ## Found along the way, not fixed
 
@@ -86,10 +113,22 @@ These are in the existing site. I did not change them, except where noted.
 4. **Map tiles are unchanged** (`tile.openstreetmap.org`). `architecture.md` explains why that is not enough for launch.
 5. **Pages stay at `/?page=planner&...`** rather than path URLs, because `404.html` drops the query string.
 
+6. **The brand kit's heading face (Cinzel) is not used; Playfair Display is.** The deck and the live site use Playfair, and Cinzel
+   has no lowercase. Reverse it if the kit is the authority and the site should change. `brand-review.md`, section 1.
+7. **Navy stays the site's `#172752`, not the kit's `#0B1D3A`.** The planner's own navy bar sits right above Discover, and the deck
+   matches the site. One token to change, plus `--navy` in `index.html` to change everywhere.
+8. **Orange is a fill with a navy label, never white text on it.** The kit's own secondary button (white on orange) is 3.06:1 and fails
+   the deck's WCAG 2.1 AA promise.
+9. **"Within N km" is the main distance control; "Longest route" moved into Filters.** The original's control row has a radius chip and
+   no length cap. Longest route is Naarad's own extra, and the original's Filters panel was not seen.
+10. **No "Plan New" in the search pill and no bottom tab bar.** The planner's own tab bar (Discover Routes, Plan Route) is above it.
+11. **The Map button is orange**, as in the original, which makes it the one element that is a near copy. See `brand-review.md`,
+    "How close is too close".
+
 ## To ship this
 
 - Merge [PR #3](https://github.com/Naarad-Labs/NAARAD.IO/pull/3). It changes `index.html` and `sw.js`, so it changes the live site.
-  The service worker cache name is now `naarad-v6` so existing visitors pick the new files up. **Bump it again whenever a cached
+  The service worker cache name is now `naarad-v7` so existing visitors pick the new files up. **Bump it again whenever a cached
   file changes.**
 - Not required to ship, but next: apply `schema.sql` to a staging copy of the Supabase project, write `scripts/ingest-tours.mjs`,
   and swap `discover/data.js` for `supabase.rpc` calls (`/replica-backend`).

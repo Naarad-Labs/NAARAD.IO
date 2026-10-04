@@ -1,0 +1,33 @@
+{
+  "mode": "layout",
+  "original": {
+    "width": 1080,
+    "height": 1938
+  },
+  "clone": {
+    "width": 780,
+    "height": 1458
+  },
+  "compared_at": {
+    "width": 480,
+    "height": 861
+  },
+  "height_delta_pct": 4.2,
+  "score": 17.9,
+  "verdict": "different",
+  "regions": [
+    {
+      "x": 0,
+      "y": 0,
+      "w": 1080,
+      "h": 1938,
+      "cells": 198,
+      "where": "middle centre"
+    }
+  ],
+  "files": {
+    "original": "replica/screens/crop-map-chennai.png",
+    "clone": "replica/clone-screens/D-map-place.png"
+  },
+  "diff_image": "replica/diffs/D-map-place.png"
+}

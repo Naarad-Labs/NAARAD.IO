@@ -1,6 +1,9 @@
 /* Naarad Discover: find routes near a place, narrow them, compare them on a map.
  *
  * Screens built here: S01 results and map, S02 filters, S03 place search.
+ * Layout on a phone follows replica/screens-notes.md: a search pill and three chips float over a full-bleed
+ * map, results sit in a bottom sheet, and a Map button comes back from the full-height list. From 900px
+ * up the controls sit in a bar above a list column and the map.
  * Components come from primitives.css (specs: replica/design/components.md).
  * Data comes from window.NaaradDiscoverData only (data.js), so swapping the local
  * seed for Supabase changes nothing in this file.
@@ -15,6 +18,28 @@
   if (!mount || !Data) return;
 
   /* ---------------------------------------------------------------- copy */
+
+  // Icons: outline, 2px stroke, round caps, drawn for this file (brand kit, "Iconography").
+  var ICON = {
+    search: '<circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/>',
+    locate: '<circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="2"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/>',
+    x: '<path d="M6 6l12 12M18 6L6 18"/>',
+    chevron: '<path d="M6 9l6 6 6-6"/>',
+    walk: '<circle cx="13" cy="4.5" r="1.8"/><path d="M12.5 8l-2.5 4.5 3.5 2.5 1 5M10 12.5L7 14M14 14.5l3 1.5M10 12.5l-1.5 6.5"/>',
+    radius: '<circle cx="12" cy="12" r="2"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="10" stroke-dasharray="2 3"/>',
+    funnel: '<path d="M3 5h18l-7 8.5V20l-4-2v-4.5z"/>',
+    clock: '<circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2M9.5 3h5"/>',
+    length: '<path d="M3 12h18M7 8l-4 4 4 4M17 8l4 4-4 4"/>',
+    ascent: '<path d="M5 19L19 5M10 5h9v9"/>',
+    star: '<path fill="currentColor" d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/>',
+    map: '<path d="M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2zM9 4v14M15 6v14"/>',
+    flower: '<circle cx="12" cy="12" r="1.6"/>' + [0, 45, 90, 135, 180, 225, 270, 315].map(function (a) {
+      return '<ellipse cx="12" cy="6.2" rx="1.8" ry="3.6" transform="rotate(' + a + ' 12 12)"/>';
+    }).join('')
+  };
+  function icon(name, cls) {
+    return '<svg class="nd-icon' + (cls ? ' ' + cls : '') + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">' + ICON[name] + '</svg>';
+  }
 
   var SPORTS = [['', 'Any'], ['walk', 'Walk'], ['hike', 'Hike'], ['cycle', 'Cycle'], ['run', 'Run']];
   var THEMES = [
@@ -94,9 +119,9 @@
 
   function fmtKm(m) { return (m / 1000).toFixed(m < 100000 ? 1 : 0) + ' km'; }
   function fmtDuration(min) {
-    if (min < 60) return min + ' m';
+    if (min < 60) return min + ' min';
     var h = Math.floor(min / 60), r = min % 60;
-    return h + ' h' + (r ? ' ' + r + ' m' : '');
+    return h + ' h' + (r ? ' ' + r + ' min' : '');
   }
   // "Chennai, Chennai district, Tamil Nadu, India" -> "Chennai, Tamil Nadu"
   function shortPlace(label) {
@@ -108,25 +133,38 @@
   /* -------------------------------------------------------------- markup */
 
   mount.className = 'nd';
+  // The three <details> are open in the markup, so without script every control simply shows.
   mount.innerHTML =
-    '<div class="nd-discover">' +
-      '<div class="nd-filterbar" role="search" aria-label="Find routes">' +
-        '<div class="nd-field nd-field--grow">' +
-          '<label class="nd-field__label" for="nd-place">Place</label>' +
-          '<div class="nd-field__row"><input class="nd-field__control" id="nd-place" type="text" autocomplete="off" maxlength="120" placeholder="City or landmark" aria-describedby="nd-place-hint"><button class="nd-btn" id="nd-locate" type="button">Use my location</button></div>' +
-          '<span class="nd-field__hint" id="nd-place-hint">Press Enter to search. Leave it empty to see all of India.</span>' +
-          '<span class="nd-field__error" id="nd-place-error" role="alert" hidden></span>' +
-        '</div>' +
-        '<details class="nd-filters" id="nd-filters" open>' +
-          '<summary class="nd-btn" id="nd-filters-summary">Filters</summary>' +
-          '<div class="nd-filters__body">' +
-            '<fieldset class="nd-options" id="nd-sport"><legend>Sport</legend></fieldset>' +
-            '<div><span class="nd-field__label" id="nd-theme-l">Theme</span><div class="nd-chips nd-chips--labelled" id="nd-themes" role="group" aria-labelledby="nd-theme-l"></div></div>' +
-            '<div class="nd-range nd-range--narrow"><div class="nd-range__head"><label for="nd-radius">Within</label><span class="nd-range__value" id="nd-radius-v"></span></div><input id="nd-radius" type="range" min="5" max="200" step="5"></div>' +
-            '<div class="nd-range nd-range--narrow"><div class="nd-range__head"><label for="nd-longest">Longest route</label><span class="nd-range__value" id="nd-longest-v"></span></div><input id="nd-longest" type="range" min="5" max="200" step="5"></div>' +
-            '<div><span class="nd-field__label" id="nd-diff-l">Difficulty</span><div class="nd-chips nd-chips--labelled" id="nd-diffs" role="group" aria-labelledby="nd-diff-l"></div></div>' +
+    '<div class="nd-discover" id="nd-discover">' +
+      '<div class="nd-filterbar" id="nd-filterbar" role="search" aria-label="Find routes">' +
+        '<div class="nd-search" id="nd-search">' +
+          '<div class="nd-search__pill">' + icon('search', 'nd-search__icon') +
+            '<label class="nd-sr-only" for="nd-place">Place</label>' +
+            '<input class="nd-search__input" id="nd-place" type="text" autocomplete="off" maxlength="120" placeholder="Search a city or landmark" aria-describedby="nd-place-hint">' +
+            '<button class="nd-iconbtn" id="nd-place-clear" type="button" aria-label="Clear search" hidden>' + icon('x') + '</button>' +
+            '<button class="nd-iconbtn" id="nd-locate" type="button" aria-label="Use my location">' + icon('locate') + '</button>' +
           '</div>' +
-        '</details>' +
+          '<span class="nd-search__hint" id="nd-place-hint">Press Enter to search. Leave it empty to see all of India.</span>' +
+          '<span class="nd-search__error" id="nd-place-error" role="alert" hidden></span>' +
+        '</div>' +
+        '<div class="nd-chiprow">' +
+          '<details class="nd-pop" id="nd-sport-pop" open>' +
+            '<summary class="nd-pillbtn" id="nd-sport-summary">' + icon('walk') + '<span id="nd-sport-label">Sport</span>' + icon('chevron', 'nd-pillbtn__chev') + '</summary>' +
+            '<div class="nd-pop__panel"><fieldset class="nd-options" id="nd-sport"><legend>Sport</legend></fieldset></div>' +
+          '</details>' +
+          '<details class="nd-pop" id="nd-within-pop" open>' +
+            '<summary class="nd-pillbtn" id="nd-within-summary">' + icon('radius') + '<span id="nd-within-label">All of India</span></summary>' +
+            '<div class="nd-pop__panel"><div class="nd-range nd-range--narrow"><div class="nd-range__head"><label for="nd-radius">Within</label><span class="nd-range__value" id="nd-radius-v"></span></div><input id="nd-radius" type="range" min="5" max="200" step="5"></div></div>' +
+          '</details>' +
+          '<details class="nd-pop nd-filters" id="nd-filters" open>' +
+            '<summary class="nd-pillbtn" id="nd-filters-summary">' + icon('funnel') + '<span id="nd-filters-label">Filters</span></summary>' +
+            '<div class="nd-pop__panel nd-filters__body">' +
+              '<div><span class="nd-field__label" id="nd-theme-l">Theme</span><div class="nd-chips nd-chips--labelled" id="nd-themes" role="group" aria-labelledby="nd-theme-l"></div></div>' +
+              '<div class="nd-range nd-range--narrow"><div class="nd-range__head"><label for="nd-longest">Longest route</label><span class="nd-range__value" id="nd-longest-v"></span></div><input id="nd-longest" type="range" min="5" max="200" step="5"></div>' +
+              '<div><span class="nd-field__label" id="nd-diff-l">Difficulty</span><div class="nd-chips nd-chips--labelled" id="nd-diffs" role="group" aria-labelledby="nd-diff-l"></div></div>' +
+            '</div>' +
+          '</details>' +
+        '</div>' +
       '</div>' +
       '<div class="nd-split">' +
         '<div class="nd-map"><div class="nd-map__canvas" id="nd-map"></div><p class="nd-map__note" id="nd-map-note" hidden></p></div>' +
@@ -136,16 +174,20 @@
           '<ul class="nd-sheet__list" id="nd-list" role="list"></ul>' +
         '</section>' +
       '</div>' +
+      '<button class="nd-mapbtn" id="nd-mapbtn" type="button" hidden>' + icon('map') + 'Map</button>' +
     '</div>';
 
   var place = $('nd-place'), placeError = $('nd-place-error'), listEl = $('nd-list'), statusEl = $('nd-status'),
-      clearBtn = $('nd-clear'), sheet = $('nd-sheet'), handle = $('nd-handle'), filters = $('nd-filters'),
-      radius = $('nd-radius'), longest = $('nd-longest');
+      clearBtn = $('nd-clear'), sheet = $('nd-sheet'), handle = $('nd-handle'),
+      radius = $('nd-radius'), longest = $('nd-longest'), discover = $('nd-discover'), filterbar = $('nd-filterbar'),
+      mapBtn = $('nd-mapbtn'), pops = Array.prototype.slice.call(document.querySelectorAll('#nd-root .nd-pop'));
 
   SPORTS.forEach(function (s, i) {
     var label = el('label', 'nd-option'), input = el('input'), span = el('span', null, s[1]);
     input.type = 'radio'; input.name = 'nd-sport'; input.value = s[0]; input.checked = s[0] === state.sport;
     input.addEventListener('change', function () { state.sport = input.value; changed(); });
+    // A tap or click picks and closes the dropdown. Arrow keys also fire "click", with detail 0: those keep it open.
+    input.addEventListener('click', function (e) { if (e.detail > 0 && !wide.matches) closePops(); });
     label.appendChild(input); label.appendChild(span); $('nd-sport').appendChild(label);
   });
   function chips(host, list, key) {
@@ -165,9 +207,11 @@
 
   /* ------------------------------------------------------- state -> screen */
 
-  function filterCount() {
-    return (state.sport ? 1 : 0) + (state.themes.length ? 1 : 0) + (state.diff.length ? 1 : 0) + (state.longestKm < DEFAULTS.longestKm ? 1 : 0);
+  function panelFilterCount() {      // what the Filters chip counts: everything in its panel
+    return (state.themes.length ? 1 : 0) + (state.diff.length ? 1 : 0) + (state.longestKm < DEFAULTS.longestKm ? 1 : 0);
   }
+  function filterCount() { return (state.sport ? 1 : 0) + panelFilterCount(); }
+  function syncClear() { $('nd-place-clear').hidden = !place.value; }
 
   function syncControls() {      // does not touch the place field: the user may be typing in it
     Array.prototype.forEach.call(document.querySelectorAll('input[name="nd-sport"]'), function (r) { r.checked = r.value === state.sport; });
@@ -178,8 +222,17 @@
     $('nd-radius-v').textContent = hasPlace ? state.radiusKm + ' km' : 'Choose a place';
     longest.value = state.longestKm;
     $('nd-longest-v').textContent = state.longestKm >= DEFAULTS.longestKm ? 'Any' : state.longestKm + ' km';
-    var n = filterCount();
-    $('nd-filters-summary').textContent = n ? 'Filters (' + n + ')' : 'Filters';
+    // The three chips say what is set. A chip that changes the search is filled.
+    var sportName = SPORTS.filter(function (x) { return x[0] === state.sport; })[0][1];
+    $('nd-sport-label').textContent = state.sport ? sportName : 'Sport';
+    $('nd-sport-summary').classList.toggle('is-active', !!state.sport);
+    $('nd-within-label').textContent = hasPlace ? 'Within ' + state.radiusKm + ' km' : 'All of India';
+    $('nd-within-summary').classList.toggle('is-active', hasPlace);
+    var n = panelFilterCount();
+    $('nd-filters-label').textContent = n ? 'Filters (' + n + ')' : 'Filters';
+    $('nd-filters-summary').classList.toggle('is-active', n > 0);
+    syncClear();
+    syncInset();   // a chip's text changed, so the row may have wrapped
   }
 
   function searchArgs() {
@@ -259,7 +312,7 @@
 
   function showEmpty() {
     var li = el('li'), box = el('div', 'nd-empty');
-    box.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3M8 11h6"/></svg>';
+    box.innerHTML = icon('flower', 'nd-empty__icon');   // the kit's mandala motif, as a line drawing
     box.appendChild(el('h3', null, 'No routes match'));
     box.appendChild(el('p', null, state.lat != null
       ? 'Nothing starts within ' + state.radiusKm + ' km of ' + (shortPlace(state.q) || 'your place') + ' with these filters. Try a wider distance or fewer filters.'
@@ -312,6 +365,13 @@
     var hasLine = !!(row.path_preview && row.path_preview.coordinates && row.path_preview.coordinates.length > 1);
     var media = el('div', 'nd-card__media' + (hasLine ? '' : ' nd-card__media--none')); media.setAttribute('aria-hidden', 'true'); media.appendChild(silhouette(row));
     var body = el('div', 'nd-card__body');
+    if (row.rating_avg != null) {
+      var r = el('span', 'nd-card__rating'); r.insertAdjacentHTML('afterbegin', icon('star'));
+      r.appendChild(el('strong', null, row.rating_avg.toFixed(1))); r.appendChild(document.createTextNode(' (' + row.rating_count + ')'));
+      r.setAttribute('role', 'img');   // an aria-label is ignored on a plain span; as an image it is read whole
+      r.setAttribute('aria-label', 'Rated ' + row.rating_avg.toFixed(1) + ' out of 5 by ' + row.rating_count + ' people');
+      body.appendChild(r);
+    }
     var h = el('h3', 'nd-card__title'), link = el('button', 'nd-card__link', row.name); link.type = 'button';
     link.addEventListener('click', function () { select(row.id, 'card'); });
     h.appendChild(link); body.appendChild(h);
@@ -319,10 +379,13 @@
     if (row.centre_distance_m != null) meta += (meta ? ' · ' : '') + fmtKm(row.centre_distance_m) + ' away';
     if (meta) body.appendChild(el('p', 'nd-card__meta', meta));
     var stats = el('ul', 'nd-card__stats'); stats.setAttribute('role', 'list');
-    function stat(strong, rest) { var s = el('li'), b = el('strong', null, strong); s.appendChild(b); if (rest) s.appendChild(document.createTextNode(rest)); stats.appendChild(s); }
-    if (row.distance_m != null) stat(fmtKm(row.distance_m));
-    if (row.duration_min != null) stat(fmtDuration(row.duration_min));
-    if (row.ascent_m != null) stat(Math.round(row.ascent_m) + ' m', ' up');
+    function stat(kind, iconName, strong, rest) {   // time, length, climb: the order the original uses
+      var s = el('li'); s.dataset.stat = kind; s.insertAdjacentHTML('afterbegin', icon(iconName));
+      s.appendChild(el('strong', null, strong)); if (rest) s.appendChild(el('span', 'nd-sr-only', rest)); stats.appendChild(s);
+    }
+    if (row.duration_min != null) stat('duration', 'clock', fmtDuration(row.duration_min));
+    if (row.distance_m != null) stat('distance', 'length', fmtKm(row.distance_m));
+    if (row.ascent_m != null) stat('ascent', 'ascent', Math.round(row.ascent_m) + ' m', ' climb');
     if (stats.children.length) body.appendChild(stats);
     var page = ROUTE_PAGES[row.slug];
     if (page && typeof window.showRoutePage === 'function') {
@@ -331,16 +394,9 @@
       more.addEventListener('click', function () { window.showRoutePage(page); });
       body.appendChild(more);
     }
-    var foot = el('div', 'nd-card__foot');
-    if (row.difficulty) foot.appendChild(el('span', 'nd-badge nd-badge--' + row.difficulty, row.difficulty.charAt(0).toUpperCase() + row.difficulty.slice(1)));
-    else foot.appendChild(el('span'));
-    if (row.rating_avg != null) {
-      var r = el('span'); r.appendChild(el('strong', null, row.rating_avg.toFixed(1))); r.appendChild(document.createTextNode(' (' + row.rating_count + ')'));
-      r.setAttribute('aria-label', 'Rated ' + row.rating_avg.toFixed(1) + ' out of 5 by ' + row.rating_count + ' people');
-      foot.appendChild(r);
-    }
     card.appendChild(media); card.appendChild(body);
-    if (row.difficulty || row.rating_avg != null) card.appendChild(foot);   // a bar with nothing in it is just noise
+    // The badge sits over the media (as in the original) but comes last in the reading order.
+    if (row.difficulty) card.appendChild(el('span', 'nd-badge nd-badge--' + row.difficulty + ' nd-card__badge', row.difficulty.charAt(0).toUpperCase() + row.difficulty.slice(1)));
     li.appendChild(card);
     return li;
   }
@@ -396,10 +452,13 @@
   // Leaves room for the sheet where it covers the map (below 900px).
   function bottomPad() { return window.matchMedia(WIDE).matches ? px('--space-24') : sheet.offsetHeight + px('--space-24'); }
 
+  // And for the controls that float over the top of it.
+  function topPad() { return window.matchMedia(WIDE).matches ? px('--space-24') : inset() + px('--space-8'); }
+
   function fit(bounds, maxZoom) {
     if (!map) return;
     var pad = px('--space-24');
-    map.fitBounds(bounds, { paddingTopLeft: [pad, pad], paddingBottomRight: [pad, bottomPad()], maxZoom: maxZoom || 13, animate: !reduceMotion });
+    map.fitBounds(bounds, { paddingTopLeft: [pad, topPad()], paddingBottomRight: [pad, bottomPad()], maxZoom: maxZoom || 13, animate: !reduceMotion });
   }
 
   function drawMap() {
@@ -439,6 +498,7 @@
   function setPlaceError(msg) {
     placeError.textContent = msg || ''; placeError.hidden = !msg;
     if (msg) place.setAttribute('aria-invalid', 'true'); else place.removeAttribute('aria-invalid');
+    syncInset();   // the message sits in the bar and may make it taller
   }
 
   function usePlace(lat, lng, label) {
@@ -454,11 +514,11 @@
     setPlaceError('');
     if (!q) { state.lat = state.lng = null; state.q = ''; selectedId = null; changed(); return; }
     if (typeof window.forwardGeocode !== 'function') { setPlaceError('Place search is not available right now. Try again in a moment.'); return; }
-    place.setAttribute('aria-busy', 'true');
+    place.setAttribute('aria-busy', 'true'); $('nd-search').classList.add('is-busy');
     var hint = $('nd-place-hint'), hintText = hint.textContent;
     hint.textContent = 'Searching…';
     window.forwardGeocode(q, function (err, results) {   // Nominatim, on Enter only: its policy forbids search-as-you-type
-      place.removeAttribute('aria-busy');
+      place.removeAttribute('aria-busy'); $('nd-search').classList.remove('is-busy');
       hint.textContent = hintText;
       if (err) { setPlaceError('Place search is not available right now. Check your connection and try again.'); return; }
       if (!results || !results.length) { setPlaceError('We could not find that place. Check the spelling or try a nearby city.'); return; }
@@ -468,14 +528,19 @@
     });
   }
 
-  place.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); submitPlace(); } });
+  place.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); $('nd-search').classList.add('is-done'); submitPlace(); } });
+  place.addEventListener('input', function () { $('nd-search').classList.remove('is-done'); syncClear(); });
+  // The hint floats over the map on a phone, so it only shows while the field is in use.
+  place.addEventListener('focus', function () { $('nd-search').classList.add('is-focused'); });
+  place.addEventListener('blur', function () { $('nd-search').classList.remove('is-focused'); });
+  $('nd-place-clear').addEventListener('click', function () { place.value = ''; syncClear(); place.focus(); submitPlace(); });
 
   $('nd-locate').addEventListener('click', function () {
     var btn = $('nd-locate');
     setPlaceError('');
     if (!navigator.geolocation) { setPlaceError('This browser cannot share your location. Type a place instead.'); return; }
-    btn.setAttribute('aria-busy', 'true'); btn.textContent = 'Locating…';
-    function done() { btn.removeAttribute('aria-busy'); btn.textContent = 'Use my location'; }
+    btn.setAttribute('aria-busy', 'true'); btn.setAttribute('aria-label', 'Locating…');
+    function done() { btn.removeAttribute('aria-busy'); btn.setAttribute('aria-label', 'Use my location'); }
     navigator.geolocation.getCurrentPosition(function (pos) {
       done(); usePlace(pos.coords.latitude, pos.coords.longitude, 'My location');
     }, function (err) {
@@ -500,33 +565,55 @@
   }
   clearBtn.addEventListener('click', clearAll);
 
-  // Filters: always open at 900px and up, collapsed behind a button below. Open in the markup,
-  // so without script they simply stay open.
-  var wide = window.matchMedia(WIDE), touched = false;
-  function syncFilters() { filters.open = wide.matches ? true : (touched ? filters.open : false); }
-  $('nd-filters-summary').addEventListener('click', function () { touched = true; });
-  filters.addEventListener('toggle', function () { if (sheetReady) syncHandle(); });   // opening the filters changes the room the sheet has
-  if (wide.addEventListener) wide.addEventListener('change', syncFilters);
-  syncFilters();
+  // The three chips open a panel each below 900px, one at a time. At 900px and up there are no chips:
+  // every control is open in the bar.
+  var wide = window.matchMedia(WIDE);
+  function closePops(except) { pops.forEach(function (d) { if (d !== except && d.open) d.open = false; }); }
+  function syncPops() { pops.forEach(function (d) { d.open = wide.matches; }); }
+  pops.forEach(function (d) {
+    d.addEventListener('toggle', function () { if (!wide.matches && d.open) closePops(d); });
+  });
+  document.addEventListener('pointerdown', function (e) {
+    if (!wide.matches && !(e.target.closest && e.target.closest('.nd-pop'))) closePops();
+  });
+  mount.addEventListener('keydown', function (e) {
+    if (e.key !== 'Escape' || wide.matches) return;
+    var open = pops.filter(function (d) { return d.open; })[0];
+    if (!open) return;
+    open.open = false; open.querySelector('summary').focus(); e.preventDefault();
+  });
+  if (wide.addEventListener) wide.addEventListener('change', syncPops);
+  syncPops();
 
   /* ----------------------------------------------- results sheet (handle) */
 
   var MIN_H = px('--size-sheet-peek');
-  function maxH() { return Math.max(MIN_H + px('--space-64'), sheet.parentNode.offsetHeight - px('--space-48')); }
+  var LIST_AT = 0.7;                 // a sheet this much of the screen is the list view: the Map button shows
+  function holder() { return sheet.parentNode.offsetHeight; }
+  // Below 900px the chips float over the map, and the sheet never grows over them.
+  function inset() { return wide.matches ? 0 : filterbar.offsetHeight + px('--space-12'); }
+  function syncInset() { discover.style.setProperty('--nd-inset', inset() + 'px'); }
+  function maxH() { return Math.max(MIN_H + px('--space-64'), holder() - inset()); }
+  function defaultH() { return Math.max(160, Math.round(holder() * 0.4)); }
   var sheetReady = false;
   function initSheet() {           // measured once the page is visible: hidden elements have no height
     if (sheetReady || !mapVisible()) return;
     sheetReady = true;
-    setH(Math.max(160, Math.round(sheet.parentNode.offsetHeight * 0.4)));
+    syncInset();
+    setH(defaultH());
   }
-  // targetH is what was asked for. The CSS never shows more than the space there is (max-height: 100%),
+  // targetH is what was asked for. The CSS never shows more than the space there is (max-height),
   // so what the user sees, and what the handle reports, is the smaller of the two. It is worked out from
   // the target, not read from the element, because the element is still animating for 200ms after a change.
   var targetH = 0;
-  function shown() { return Math.max(MIN_H, Math.min(targetH, sheet.parentNode.offsetHeight)); }
+  function shown() { return Math.max(MIN_H, Math.min(targetH, holder() - inset())); }
+  function listMode() { return !wide.matches && shown() >= holder() * LIST_AT; }
   function syncHandle() {
     var now = shown();
     handle.setAttribute('aria-valuemax', maxH()); handle.setAttribute('aria-valuenow', now);
+    discover.style.setProperty('--nd-sheet-shown', (wide.matches ? 0 : now) + 'px');   // lifts the map's own controls above the sheet
+    var list = listMode();
+    mapBtn.hidden = !list; discover.classList.toggle('is-list', list);
     return now;
   }
   function setH(h) {
@@ -534,13 +621,17 @@
     sheet.style.setProperty('--sheet-h', targetH + 'px');
     return syncHandle();
   }
-  var startY = 0, startH = 0, dragging = false;
+  var startY = 0, startH = 0, dragging = false, moved = 0;
   handle.addEventListener('pointerdown', function (e) {
-    dragging = true; startY = e.clientY; startH = shown(); sheet.style.transition = 'none';
+    dragging = true; moved = 0; startY = e.clientY; startH = shown(); sheet.style.transition = 'none';
     if (handle.setPointerCapture) handle.setPointerCapture(e.pointerId);
   });
-  handle.addEventListener('pointermove', function (e) { if (dragging) setH(startH + startY - e.clientY); });
-  function endDrag() { if (dragging) { dragging = false; sheet.style.transition = ''; } }
+  handle.addEventListener('pointermove', function (e) { if (dragging) { moved = Math.max(moved, Math.abs(startY - e.clientY)); setH(startH + startY - e.clientY); } });
+  function endDrag(e) {
+    if (!dragging) return;
+    dragging = false; sheet.style.transition = '';
+    if (e && e.type === 'pointerup' && moved < 4) setH(listMode() ? defaultH() : maxH());   // a tap, not a drag: list view or back
+  }
   handle.addEventListener('pointerup', endDrag);
   handle.addEventListener('pointercancel', endDrag);
   handle.addEventListener('keydown', function (e) {   // window splitter pattern
@@ -552,6 +643,8 @@
     else return;
     e.preventDefault();
   });
+  // The way back from the list view to the map. It hides itself, so focus goes to the handle.
+  mapBtn.addEventListener('click', function () { setH(defaultH()); handle.focus({ preventScroll: true }); });
 
   /* ----------------------------------------------------- show, hide, start */
 
@@ -565,7 +658,7 @@
   var resizeTimer = null;
   window.addEventListener('resize', function () {
     clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(function () { if (map && mapVisible()) map.invalidateSize(); if (!wide.matches && sheetReady) setH(shown()); }, 150);
+    resizeTimer = setTimeout(function () { if (map && mapVisible()) map.invalidateSize(); syncInset(); if (sheetReady) setH(wide.matches ? targetH : shown()); }, 150);
   });
 
   var page = $('page-planner');

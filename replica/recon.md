@@ -7,6 +7,14 @@
 > Each row says where it came from and how sure it is. The "Needs a first-hand
 > look" section lists what to confirm before `/replica-design` or
 > `/replica-build` rely on this.
+>
+> **Update, later on 2026-10-04: first-hand evidence added.** The user supplied 7
+> screenshots of Komoot's **Android app** from their own account, plus the app screens
+> in their pitch deck. They are described in `replica/screens-notes.md` and answer
+> items 4, 6 and 7 of "Needs a first-hand look" below (items 4 and 7 only
+> partly). They are the **mobile app, not the website**, and show only the map
+> and list views of Discover. Everything else in this document is still the
+> draft from summaries.
 
 Scope: Discover on the web: find hike tours near a place, filter them, compare
 them on a map, open one. Plus the pieces that feed it (Highlights, GPX
@@ -115,12 +123,12 @@ All variants and states below are unverified. Rows marked guess are not evidence
 | component | variants | states | used on |
 | --- | --- | --- | --- |
 | Map | tour lines coloured by difficulty, direction markers that animate, labelled start points (press) | loading, pan and zoom, selected tour: needs confirming | S01, S04, S07 |
-| Tour card | needs confirming (guess: image, title, distance, duration, elevation, difficulty) | needs confirming | S01 |
-| Difficulty badge | easy (blue), intermediate (red), expert (black) (help) | n/a | S01, S04 |
+| Tour card | **screenshot (app):** media about 140 px tall (photo with a map thumbnail inset, or a map image of the route), difficulty badge over the media, rating and people count, title, then duration, length and ascent. No distance from the centre | seen filled only; no loading, error or no-photo-no-rating card besides the one with the map image | S01 |
+| Difficulty badge | easy (blue), intermediate (red), expert (black) (help). **Screenshot (app):** a dark olive pill reading "Moderate" | n/a | S01, S04 |
 | Range slider (two handles) | duration 30 min to 10 h; elevation gain in metres (help) | needs confirming | S02 |
-| Distance control | 0 m to 200 km (help). The URL carries `max_distance=30000` (metres), but whether that caps the tour's length or is the search radius around the centre point is **unconfirmed** | needs confirming | S02 |
+| Distance control | 0 m to 200 km (help). The URL carries `max_distance=30000` (metres). **Screenshot (app):** the control row has a chip "within 46 km" beside the place, so it is a **search radius**. Not confirmed for the web URL | needs confirming | S02 |
 | Segmented or option filter | surface: No preference, Road or paved, Off-road (help); route type: loop, out and back (press) | needs confirming | S02 |
-| Sport selector | hike (url); also cycling and running (press) | needs confirming | S01, S07 |
+| Sport selector | hike (url); also cycling and running (press). **Screenshot (app):** a dropdown chip (sport icon and chevron) in the control row | options not seen | S01, S07 |
 | Location field | current location, address, dropped pin (press) | permission denied, not found: needs confirming | S03 |
 | Pagination | `pageNumber` in the URL (url). Control not seen | needs confirming | S01 |
 | Highlight marker | point (viewpoint, peak, cafe, park) or segment (scenic single track) (help) | needs confirming | S01, S04, S07 |
@@ -222,13 +230,20 @@ screenshots in `replica/screens/` and the user's own browser:
    selected, no results, a narrow phone width. Then this map can be checked
    against what is on screen.
 3. Read the **terms of use** (row 12) before using any account.
-4. Confirm S04, the tour detail page, exists as guessed, and what is on it.
+4. ~~Confirm S04, the tour detail page, exists as guessed, and what is on it.~~
+   **Partly answered** (screens-notes.md): it exists in the app and has a map with
+   numbered stops, Navigate and Save offline buttons and an elevation profile.
+   Seen only in two cropped deck slides. Web version not seen.
 5. Count the happy-path clicks for F01. The number to beat is unknown.
-6. Confirm what `max_distance` means in the URL: the tour's length cap or the
-   search radius around the centre. The architecture takes both as separate
-   parameters, so either answer works, but the UI differs.
-7. Confirm whether the list reacts to the map (pan to search this area,
-   hover or select a card to highlight its line). Nothing read says so.
+6. ~~Confirm what `max_distance` means in the URL.~~ **Answered for the app:** the
+   control row has "within N km", a search radius. Whether the web URL means the
+   same is still unconfirmed. The architecture takes both as separate parameters.
+7. ~~Confirm whether the list reacts to the map.~~ **Partly answered:** the count in
+   the sheet follows the area, and a "Search this area" button appears over a
+   panned map (one deck frame). Hover or select behaviour not seen.
+8. New: open the **Filters** panel and the **sport dropdown** and screenshot them,
+   with no results, with no connection, and on the website at 1440 px. Those are
+   the states the screenshots did not cover.
 
 ## Size
 

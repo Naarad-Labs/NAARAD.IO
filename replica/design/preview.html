@@ -31,7 +31,8 @@
 <main class="pv nd">
   <h1>Naarad Discover design check</h1>
   <p class="lede">Every colour, size, radius, shadow and duration on this page comes from <code>tokens.css</code>.
-    Values were measured from Naarad's own rendered Discover page, not from Komoot (which could not be read).
+    Values come from Naarad's own page, Brand Kit v1.0 and the pitch deck (<code>replica/brand-review.md</code> says which is which),
+    not from Komoot. The phone layout follows the screenshots described in <code>replica/screens-notes.md</code>.
     All route names, distances and tips below are <strong>sample data</strong>, and the map is a placeholder.</p>
 
   <h2 id="h-comp">Composition</h2>
@@ -39,38 +40,57 @@
 
   <div class="frame">
   <div class="nd nd-discover" style="height: 680px;">
-    <div class="nd-filterbar" role="search" aria-label="Find routes">
-      <div class="nd-field" style="flex: 1 1 200px; min-width: 180px;">
-        <label class="nd-field__label" for="place">Place</label>
-        <div class="nd-field__row">
-          <input class="nd-field__control" id="place" type="text" value="Chennai, Tamil Nadu" autocomplete="off">
-          <button class="nd-btn" type="button">Use my location</button>
+    <div class="nd-filterbar" id="filterbar" role="search" aria-label="Find routes">
+      <div class="nd-search">
+        <div class="nd-search__pill">
+          <svg class="nd-icon nd-search__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>
+          <label class="nd-sr-only" for="place">Place</label>
+          <input class="nd-search__input" id="place" type="text" value="Chennai, Tamil Nadu" autocomplete="off">
+          <button class="nd-iconbtn" type="button" aria-label="Clear search"><svg class="nd-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+          <button class="nd-iconbtn" type="button" aria-label="Use my location"><svg class="nd-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="2"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg></button>
         </div>
       </div>
-      <details class="nd-filters" id="filters" open>
-        <summary class="nd-btn">Filters</summary>
-        <div class="nd-filters__body">
-          <fieldset class="nd-options">
-            <legend>Sport</legend>
-            <label class="nd-option"><input type="radio" name="sport" checked><span>Hike</span></label>
-            <label class="nd-option"><input type="radio" name="sport"><span>Walk</span></label>
-            <label class="nd-option"><input type="radio" name="sport"><span>Cycle</span></label>
-            <label class="nd-option"><input type="radio" name="sport"><span>Run</span></label>
-          </fieldset>
-          <div class="nd-range" style="width: 190px;">
-            <div class="nd-range__head"><label for="len">Longest route</label><span class="nd-range__value" id="len-v">30 km</span></div>
-            <input id="len" type="range" min="1" max="200" value="30" data-out="len-v" data-unit=" km">
+      <div class="nd-chiprow">
+        <details class="nd-pop" id="sport-pop" open>
+          <summary class="nd-pillbtn is-active"><svg class="nd-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="13" cy="4.5" r="1.8"/><path d="M12.5 8l-2.5 4.5 3.5 2.5 1 5M10 12.5L7 14M14 14.5l3 1.5M10 12.5l-1.5 6.5"/></svg><span>Hike</span><svg class="nd-icon nd-pillbtn__chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></summary>
+          <div class="nd-pop__panel">
+            <fieldset class="nd-options">
+              <legend>Sport</legend>
+              <label class="nd-option"><input type="radio" name="sport"><span>Any</span></label>
+              <label class="nd-option"><input type="radio" name="sport"><span>Walk</span></label>
+              <label class="nd-option"><input type="radio" name="sport" checked><span>Hike</span></label>
+              <label class="nd-option"><input type="radio" name="sport"><span>Cycle</span></label>
+              <label class="nd-option"><input type="radio" name="sport"><span>Run</span></label>
+            </fieldset>
           </div>
-          <div>
-            <span class="nd-field__label" id="diff-l">Difficulty</span>
-            <div class="nd-chips" role="group" aria-labelledby="diff-l" style="margin-top: var(--space-4);">
-              <button class="nd-chip" type="button" aria-pressed="false">Easy</button>
-              <button class="nd-chip" type="button" aria-pressed="false">Moderate</button>
-              <button class="nd-chip" type="button" aria-pressed="false">Hard</button>
+        </details>
+        <details class="nd-pop" id="within-pop" open>
+          <summary class="nd-pillbtn is-active"><svg class="nd-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="2"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="10" stroke-dasharray="2 3"/></svg><span>Within 30 km</span></summary>
+          <div class="nd-pop__panel">
+            <div class="nd-range nd-range--narrow">
+              <div class="nd-range__head"><label for="within">Within</label><span class="nd-range__value" id="within-v">30 km</span></div>
+              <input id="within" type="range" min="5" max="200" step="5" value="30" data-out="within-v" data-unit=" km">
             </div>
           </div>
-        </div>
-      </details>
+        </details>
+        <details class="nd-pop nd-filters" id="filters" open>
+          <summary class="nd-pillbtn"><svg class="nd-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 5h18l-7 8.5V20l-4-2v-4.5z"/></svg><span>Filters</span></summary>
+          <div class="nd-pop__panel nd-filters__body">
+            <div>
+              <span class="nd-field__label" id="diff-l">Difficulty</span>
+              <div class="nd-chips nd-chips--labelled" role="group" aria-labelledby="diff-l">
+                <button class="nd-chip" type="button" aria-pressed="false">Easy</button>
+                <button class="nd-chip" type="button" aria-pressed="false">Moderate</button>
+                <button class="nd-chip" type="button" aria-pressed="false">Hard</button>
+              </div>
+            </div>
+            <div class="nd-range nd-range--narrow">
+              <div class="nd-range__head"><label for="len">Longest route</label><span class="nd-range__value" id="len-v">30 km</span></div>
+              <input id="len" type="range" min="5" max="200" step="5" value="30" data-out="len-v" data-unit=" km">
+            </div>
+          </div>
+        </details>
+      </div>
     </div>
 
     <div class="nd-split">
@@ -93,13 +113,12 @@
         <p class="nd-map__note">Map placeholder</p>
       </div>
 
-      <section class="nd-sheet" id="sheet" aria-labelledby="res-h" style="--sheet-h: 340px;">
+      <section class="nd-sheet" id="sheet" aria-labelledby="res-h" style="--sheet-h: 320px;">
         <div class="nd-sheet__handle" id="handle" role="separator" tabindex="0" aria-orientation="horizontal"
-             aria-label="Resize results panel" aria-valuemin="80" aria-valuemax="560" aria-valuenow="340"></div>
+             aria-label="Resize results panel" aria-valuemin="80" aria-valuemax="560" aria-valuenow="320"></div>
         <div class="nd-sheet__bar">
           <h3 id="res-h" class="nd-sr-only">Results</h3>
           <p class="nd-status" role="status">3 routes within 30 km</p>
-          <button class="nd-btn" type="button" style="min-height: var(--size-control-sm);">Clear filters</button>
         </div>
         <div class="nd-sheet__list">
           <article class="nd-card is-selected">
@@ -107,33 +126,36 @@
               <svg viewBox="0 0 200 90" fill="none"><path class="route-line route-line--casing" d="M12 70 C 50 60, 70 30, 110 40 S 160 20, 188 14"/><path class="route-line route-line--easy" d="M12 70 C 50 60, 70 30, 110 40 S 160 20, 188 14"/></svg>
             </div>
             <div class="nd-card__body">
+              <span class="nd-card__rating" role="img" aria-label="Rated 4.5 out of 5 by 120 people"><svg class="nd-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/></svg><strong>4.5</strong> (120)</span>
               <h4 class="nd-card__title"><button type="button" class="nd-card__link" aria-current="true">Marina Beach Trail</button></h4>
               <p class="nd-card__meta">Chennai, Tamil Nadu</p>
-              <ul class="nd-card__stats"><li><strong>14.8 km</strong></li><li><strong>3 h 30 m</strong></li><li><strong>20 m</strong> up</li></ul>
+              <ul class="nd-card__stats"><li><svg class="nd-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2M9.5 3h5"/></svg><strong>3 h 30 min</strong></li><li><svg class="nd-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12h18M7 8l-4 4 4 4M17 8l4 4-4 4"/></svg><strong>14.8 km</strong></li><li><svg class="nd-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 19L19 5M10 5h9v9"/></svg><strong>20 m</strong><span class="nd-sr-only"> climb</span></li></ul>
             </div>
-            <div class="nd-card__foot"><span class="nd-badge nd-badge--easy">Easy</span><span><strong>4.5</strong> (120)</span></div>
+            <span class="nd-badge nd-badge--easy nd-card__badge">Easy</span>
           </article>
           <article class="nd-card">
             <div class="nd-card__media" aria-hidden="true">
               <svg viewBox="0 0 200 90" fill="none"><path class="route-line route-line--casing" d="M14 20 C 60 40, 80 14, 120 30 S 168 52, 188 40"/><path class="route-line route-line--moderate" d="M14 20 C 60 40, 80 14, 120 30 S 168 52, 188 40"/></svg>
             </div>
             <div class="nd-card__body">
+              <span class="nd-card__rating" role="img" aria-label="Rated 4.0 out of 5 by 48 people"><svg class="nd-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/></svg><strong>4.0</strong> (48)</span>
               <h4 class="nd-card__title"><button type="button" class="nd-card__link">Velachcheri to Mylapore</button></h4>
               <p class="nd-card__meta">Chennai, Tamil Nadu</p>
-              <ul class="nd-card__stats"><li><strong>9.8 km</strong></li><li><strong>2 h 15 m</strong></li><li><strong>35 m</strong> up</li></ul>
+              <ul class="nd-card__stats"><li><svg class="nd-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2M9.5 3h5"/></svg><strong>2 h 15 min</strong></li><li><svg class="nd-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12h18M7 8l-4 4 4 4M17 8l4 4-4 4"/></svg><strong>9.8 km</strong></li><li><svg class="nd-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 19L19 5M10 5h9v9"/></svg><strong>35 m</strong><span class="nd-sr-only"> climb</span></li></ul>
             </div>
-            <div class="nd-card__foot"><span class="nd-badge nd-badge--moderate">Moderate</span><span><strong>4.0</strong> (48)</span></div>
+            <span class="nd-badge nd-badge--moderate nd-card__badge">Moderate</span>
           </article>
           <article class="nd-card">
             <div class="nd-card__media" aria-hidden="true">
               <svg viewBox="0 0 200 90" fill="none"><path class="route-line route-line--casing" d="M16 74 C 60 70, 70 40, 108 56 S 150 78, 186 30"/><path class="route-line route-line--hard" d="M16 74 C 60 70, 70 40, 108 56 S 150 78, 186 30"/></svg>
             </div>
             <div class="nd-card__body">
+              <span class="nd-card__rating" role="img" aria-label="Rated 4.8 out of 5 by 31 people"><svg class="nd-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/></svg><strong>4.8</strong> (31)</span>
               <h4 class="nd-card__title"><button type="button" class="nd-card__link">Coorg Plantation Hike</button></h4>
               <p class="nd-card__meta">Coorg, Karnataka</p>
-              <ul class="nd-card__stats"><li><strong>12.2 km</strong></li><li><strong>5 h</strong></li><li><strong>420 m</strong> up</li></ul>
+              <ul class="nd-card__stats"><li><svg class="nd-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2M9.5 3h5"/></svg><strong>5 h</strong></li><li><svg class="nd-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12h18M7 8l-4 4 4 4M17 8l4 4-4 4"/></svg><strong>12.2 km</strong></li><li><svg class="nd-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 19L19 5M10 5h9v9"/></svg><strong>420 m</strong><span class="nd-sr-only"> climb</span></li></ul>
             </div>
-            <div class="nd-card__foot"><span class="nd-badge nd-badge--hard">Hard</span><span><strong>4.8</strong> (31)</span></div>
+            <span class="nd-badge nd-badge--hard nd-card__badge">Hard</span>
           </article>
         </div>
       </section>
@@ -154,6 +176,15 @@
     <button class="nd-btn nd-btn--primary" type="button" disabled>Disabled</button>
     <button class="nd-btn" type="button" aria-busy="true" disabled>Searching…</button>
   </div>
+
+  <h3>Search pill, control chips, Map button</h3>
+  <div class="row" style="align-items: center;">
+    <div class="nd-search" style="width: 320px;"><div class="nd-search__pill"><svg class="nd-icon nd-search__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><label class="nd-sr-only" for="pill-demo">Place</label><input class="nd-search__input" id="pill-demo" placeholder="Search a city or landmark"></div></div>
+    <details class="nd-pop"><summary class="nd-pillbtn"><span>Sport</span></summary></details>
+    <details class="nd-pop"><summary class="nd-pillbtn is-active"><span>Within 30 km</span></summary></details>
+    <button class="nd-mapbtn" type="button" style="position: static; transform: none;"><svg class="nd-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2zM9 4v14M15 6v14"/></svg>Map</button>
+  </div>
+  <p class="note">The pill and chips float over the map below 900px. A chip that changes the search is filled. The Map button is orange with a navy label: white on the kit's orange is 3.06:1.</p>
 
   <h3>Filter chips</h3>
   <div class="nd-chips">
@@ -213,28 +244,49 @@
   <h2>Cards</h2>
   <div class="grid">
     <article class="nd-card">
-      <div class="nd-card__media" aria-hidden="true"><svg viewBox="0 0 200 90" fill="none"><path class="route-line route-line--casing" d="M12 70 C 50 60, 70 30, 110 40 S 160 20, 188 14"/><path class="route-line route-line--easy" d="M12 70 C 50 60, 70 30, 110 40 S 160 20, 188 14"/></svg></div>
-      <div class="nd-card__body"><h3 class="nd-card__title"><button type="button" class="nd-card__link">Default card</button></h3><p class="nd-card__meta">Sample place</p><ul class="nd-card__stats"><li><strong>8 km</strong></li><li><strong>2 h</strong></li></ul></div>
-      <div class="nd-card__foot"><span class="nd-badge nd-badge--easy">Easy</span><span><strong>4.2</strong> (12)</span></div>
-    </article>
-    <article class="nd-card is-selected">
-      <div class="nd-card__media" aria-hidden="true"><svg viewBox="0 0 200 90" fill="none"><path class="route-line route-line--casing" d="M14 20 C 60 40, 80 14, 120 30 S 168 52, 188 40"/><path class="route-line route-line--moderate is-selected" d="M14 20 C 60 40, 80 14, 120 30 S 168 52, 188 40"/></svg></div>
-      <div class="nd-card__body"><h3 class="nd-card__title"><button type="button" class="nd-card__link" aria-current="true">Selected card</button></h3><p class="nd-card__meta">Sample place</p><ul class="nd-card__stats"><li><strong>8 km</strong></li><li><strong>2 h</strong></li></ul></div>
-      <div class="nd-card__foot"><span class="nd-badge nd-badge--moderate">Moderate</span><span><strong>4.2</strong> (12)</span></div>
+            <div class="nd-card__media" aria-hidden="true">
+              <svg viewBox="0 0 200 90" fill="none"><path class="route-line route-line--casing" d="M12 70 C 50 60, 70 30, 110 40 S 160 20, 188 14"/><path class="route-line route-line--easy" d="M12 70 C 50 60, 70 30, 110 40 S 160 20, 188 14"/></svg>
+            </div>
+            <div class="nd-card__body">
+              <span class="nd-card__rating" role="img" aria-label="Rated 4.2 out of 5 by 12 people"><svg class="nd-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/></svg><strong>4.2</strong> (12)</span>
+              <h3 class="nd-card__title"><button type="button" class="nd-card__link">Default card</button></h3>
+              <p class="nd-card__meta">Sample place</p>
+              <ul class="nd-card__stats"><li><svg class="nd-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2M9.5 3h5"/></svg><strong>2 h</strong></li><li><svg class="nd-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12h18M7 8l-4 4 4 4M17 8l4 4-4 4"/></svg><strong>8 km</strong></li><li><svg class="nd-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 19L19 5M10 5h9v9"/></svg><strong>30 m</strong><span class="nd-sr-only"> climb</span></li></ul>
+            </div>
+            <span class="nd-badge nd-badge--easy nd-card__badge">Easy</span>
+          </article>
+          <article class="nd-card is-selected">
+            <div class="nd-card__media" aria-hidden="true">
+              <svg viewBox="0 0 200 90" fill="none"><path class="route-line route-line--casing" d="M14 20 C 60 40, 80 14, 120 30 S 168 52, 188 40"/><path class="route-line route-line--moderate" d="M14 20 C 60 40, 80 14, 120 30 S 168 52, 188 40"/></svg>
+            </div>
+            <div class="nd-card__body">
+              <span class="nd-card__rating" role="img" aria-label="Rated 4.2 out of 5 by 12 people"><svg class="nd-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/></svg><strong>4.2</strong> (12)</span>
+              <h3 class="nd-card__title"><button type="button" class="nd-card__link" aria-current="true">Selected card</button></h3>
+              <p class="nd-card__meta">Sample place</p>
+              <ul class="nd-card__stats"><li><svg class="nd-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2M9.5 3h5"/></svg><strong>2 h</strong></li><li><svg class="nd-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12h18M7 8l-4 4 4 4M17 8l4 4-4 4"/></svg><strong>8 km</strong></li><li><svg class="nd-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 19L19 5M10 5h9v9"/></svg><strong>30 m</strong><span class="nd-sr-only"> climb</span></li></ul>
+            </div>
+            <span class="nd-badge nd-badge--moderate nd-card__badge">Moderate</span>
+          </article>
+    <article class="nd-card">
+      <div class="nd-card__media nd-card__media--none" aria-hidden="true"><svg viewBox="0 0 200 90" fill="none" style="color:var(--color-text-muted)"><g transform="translate(88 21)" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 46s-12-10.4-12-20a12 12 0 1124 0c0 9.6-12 20-12 20z"/><circle cx="12" cy="26" r="4"/></g></svg></div>
+      <div class="nd-card__body">
+        <h3 class="nd-card__title"><button type="button" class="nd-card__link">A route with no track yet</button></h3>
+        <p class="nd-card__meta">Sample place</p>
+        <ul class="nd-card__stats"><li><svg class="nd-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2M9.5 3h5"/></svg><strong>1 h</strong></li><li><svg class="nd-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12h18M7 8l-4 4 4 4M17 8l4 4-4 4"/></svg><strong>3 km</strong></li></ul>
+      </div>
     </article>
     <div class="nd-card nd-card--skeleton" aria-hidden="true">
       <div class="nd-card__media"></div>
       <div class="nd-card__body"><span class="nd-skeleton" style="height: 16px; width: 70%;"></span><span class="nd-skeleton" style="height: 12px; width: 40%; margin: 8px 0 12px;"></span><span class="nd-skeleton" style="height: 12px; width: 60%;"></span></div>
-      <div class="nd-card__foot"><span class="nd-skeleton" style="height: 20px; width: 64px;"></span><span class="nd-skeleton" style="height: 12px; width: 48px;"></span></div>
     </div>
   </div>
-  <p class="note">Default, selected (<code>.is-selected</code> on the card, <code>aria-current="true"</code> on its title button), loading skeleton. A card has one tab stop: the title, stretched over the card. Hover and keyboard focus show on interaction.</p>
+  <p class="note">Default, selected (<code>.is-selected</code> on the card, <code>aria-current="true"</code> on its title button), a route with no real track (a pin on a slim strip, not an invented line), loading skeleton. The difficulty badge sits over the media but comes last in the reading order. A card has one tab stop: the title, stretched over the card.</p>
 
   <h2>Empty state, pagination</h2>
   <div class="grid">
     <div class="nd-card" style="box-shadow: none; border: 1px solid var(--color-border);">
       <div class="nd-empty">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3M8 11h6"/></svg>
+        <svg class="nd-icon nd-empty__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="1.6"/><ellipse cx="12" cy="6.2" rx="1.8" ry="3.6"/><ellipse cx="12" cy="6.2" rx="1.8" ry="3.6" transform="rotate(45 12 12)"/><ellipse cx="12" cy="6.2" rx="1.8" ry="3.6" transform="rotate(90 12 12)"/><ellipse cx="12" cy="6.2" rx="1.8" ry="3.6" transform="rotate(135 12 12)"/><ellipse cx="12" cy="6.2" rx="1.8" ry="3.6" transform="rotate(180 12 12)"/><ellipse cx="12" cy="6.2" rx="1.8" ry="3.6" transform="rotate(225 12 12)"/><ellipse cx="12" cy="6.2" rx="1.8" ry="3.6" transform="rotate(270 12 12)"/><ellipse cx="12" cy="6.2" rx="1.8" ry="3.6" transform="rotate(315 12 12)"/></svg>
         <h3>No routes match</h3>
         <p>Nothing starts within 30 km with these filters. Try a longer distance or fewer filters.</p>
         <button class="nd-btn nd-btn--primary" type="button">Clear filters</button>
@@ -272,18 +324,18 @@
   // Preview behaviour only. The real wiring happens in replica-build.
   (function () {
     // colour swatches, straight from tokens.css
-    var names = ['bg','surface','border','border-input','text','text-muted','primary','on-primary','accent','on-accent','accent-bright','focus','success','success-bg','warning','warning-bg','danger','danger-bg','route-easy','route-moderate','route-hard','map-bg'];
+    var names = ['bg','surface','sand','border','border-input','text','text-muted','primary','on-primary','accent','on-accent','accent-bright','orange','on-orange','forest','on-forest','focus','success','success-bg','warning','warning-bg','danger','danger-bg','route-easy','route-moderate','route-hard','map-bg'];
     var cs = getComputedStyle(document.documentElement), ul = document.getElementById('swatches');
     names.forEach(function (n) {
       var v = cs.getPropertyValue('--color-' + n).trim(), li = document.createElement('li');
       li.innerHTML = '<i style="background:' + v + '"></i><span><b>' + n + '</b> ' + v + '</span>';
       ul.appendChild(li);
     });
-    // filters: closed on narrow screens, always open at 900px and up
-    var filters = document.getElementById('filters'), wide = matchMedia('(min-width: 900px)');
-    function syncFilters() { filters.open = wide.matches ? true : filters.open && filters.dataset.touched === '1'; }
-    filters.querySelector('summary').addEventListener('click', function () { filters.dataset.touched = '1'; });
-    wide.addEventListener('change', syncFilters); syncFilters();
+    // the three chips: all closed on narrow screens (one opens at a time), all open at 900px and up
+    var pops = [].slice.call(document.querySelectorAll('.nd-chiprow .nd-pop')), wide = matchMedia('(min-width: 900px)');
+    function syncPops() { pops.forEach(function (d) { d.open = wide.matches; }); }
+    pops.forEach(function (d) { d.addEventListener('toggle', function () { if (!wide.matches && d.open) pops.forEach(function (o) { if (o !== d) o.open = false; }); }); });
+    wide.addEventListener('change', syncPops); syncPops();
     // chips toggle
     document.querySelectorAll('.nd-chip:not(:disabled)').forEach(function (c) {
       c.addEventListener('click', function () { c.setAttribute('aria-pressed', c.getAttribute('aria-pressed') === 'true' ? 'false' : 'true'); });

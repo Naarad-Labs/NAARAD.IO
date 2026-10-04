@@ -94,13 +94,21 @@ async function ready(page) {
   await expect(page.locator('#nd-list')).toHaveAttribute('aria-busy', 'false');
 }
 
-/** On a phone the filters sit behind a button. Opens them if they are closed. */
-async function openFilters(page) {
+/**
+ * Below 900px the controls sit behind three chips (Sport, Within, Filters), one panel open at a time.
+ * Opens the panel with the given id if it is closed. At 900px and up everything is always open: no-op.
+ */
+async function openPanel(page, id) {
   if (!isPhone(page)) return;
-  const filters = page.locator('#nd-filters');
-  if (!(await filters.evaluate((d) => d.open))) await root(page).locator('summary').click();
-  await expect(filters).toHaveJSProperty('open', true);
+  const pop = page.locator('#' + id);
+  if (!(await pop.evaluate((d) => d.open))) await pop.locator('summary').click();
+  await expect(pop).toHaveJSProperty('open', true);
 }
+const openFilters = (page) => openPanel(page, 'nd-filters');
+const openSport = (page) => openPanel(page, 'nd-sport-pop');
+const openWithin = (page) => openPanel(page, 'nd-within-pop');
+/** Choose a sport, opening its dropdown first on a phone. (Picking closes the dropdown, as in the original.) */
+async function pickSport(page, name) { await openSport(page); await root(page).getByRole('radio', { name }).check(); }
 
 async function goDiscover(page, query = '') {
   await page.goto('/?page=planner' + query);
@@ -115,4 +123,4 @@ async function axeViolations(page, label) {
 const DESKTOP = { name: 'desktop', size: { width: 1440, height: 900 } };
 const PHONE = { name: 'phone', size: { width: 390, height: 844 } };
 
-module.exports = { test, expect, root, statusOf, articles, placeField, isPhone, ready, openFilters, goDiscover, axeViolations, installRoutes, watch, PLACES, DESKTOP, PHONE };
+module.exports = { test, expect, root, statusOf, articles, placeField, isPhone, ready, openPanel, openFilters, openSport, openWithin, pickSport, goDiscover, axeViolations, installRoutes, watch, PLACES, DESKTOP, PHONE };

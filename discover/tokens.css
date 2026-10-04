@@ -1,25 +1,30 @@
 /* GENERATED from tokens.json by build-tokens.py. Do not edit by hand. */
 
 :root {
-  --color-bg: #FAF8F2;
+  --color-bg: #F6F0E6;
+  --color-sand: #F2E8DB;
   --color-surface: #FFFFFF;
-  --color-border: #E2DDD4;
+  --color-border: #E3D9C8;
   --color-border-input: #8A8577;
   --color-text: #172752;
   --color-text-muted: #4A5068;
   --color-primary: #172752;
   --color-on-primary: #F9F1DC;
-  --color-accent: #B35920;
+  --color-accent: #A7542A;
   --color-on-accent: #FFFFFF;
-  --color-accent-bright: #DD6E27;
+  --color-accent-bright: #E0621B;
+  --color-orange: #F26A1C;
+  --color-on-orange: #172752;
+  --color-forest: #1E5B46;
+  --color-on-forest: #FFFFFF;
   --color-focus: #172752;
-  --color-success: #166534;
-  --color-success-bg: #DCFCE7;
+  --color-success: #1E5B46;
+  --color-success-bg: #E1EDE6;
   --color-warning: #854D0E;
   --color-warning-bg: #FEF9C3;
   --color-danger: #991B1B;
   --color-danger-bg: #FEE2E2;
-  --color-route-easy: #15803D;
+  --color-route-easy: #1E5B46;
   --color-route-moderate: #B45309;
   --color-route-hard: #B91C1C;
   --color-map-bg: #E9E4D8;
@@ -33,7 +38,7 @@
   --type-label-tracking: 0.1em;
   --type-label-transform: uppercase;
   --type-sm: 400 14px/20px var(--font-sans);
-  --type-card-title: 700 14px/20px var(--font-sans);
+  --type-card-title: 700 18px/24px var(--font-serif);
   --type-base: 400 16px/24px var(--font-sans);
   --type-lg: 600 20px/28px var(--font-sans);
   --type-heading: 700 28px/34px var(--font-serif);
@@ -50,7 +55,7 @@
 
   --radius-sharp: 2px;
   --radius-md: 8px;
-  --radius-lg: 14px;
+  --radius-lg: 16px;
   --radius-sheet: 20px;
   --radius-pill: 999px;
 
@@ -59,6 +64,7 @@
   --shadow-card-selected: 0 4px 20px rgba(221,110,39,.22);
   --shadow-sheet: 0 -6px 24px rgba(23,39,82,.18);
   --shadow-pop: 0 8px 32px rgba(0,0,0,.18);
+  --shadow-float: 0 2px 12px rgba(23,39,82,.22);
 
   --motion-fast: 200ms;
   --motion-base: 250ms;
@@ -76,6 +82,8 @@
   --size-range: 190px;
   --size-sheet-peek: 80px;
   --size-container: 1280px;
+  --size-search: 56px;
+  --size-fab: 48px;
 }
 
 /* Breakpoints cannot be custom properties. Use these numbers in @media:

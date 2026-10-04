@@ -1,6 +1,7 @@
 # Test plan: Naarad Discover
 
-Build: `e50cd0e` (Discover rebuild)  Date: 2026-10-04  Env: local static server, seed data, real Leaflet, stubbed geocoder
+Build: the Discover rebuild, then the phone layout rebuilt from the app screenshots (`replica/screens-notes.md`) and the brand kit  Date: 2026-10-04
+Env: local static server, seed data, real Leaflet, stubbed geocoder, Chromium 1440x900 and 390x844, Inter installed (the serif title face, Playfair Display, is not available here, so titles render in the system serif and line breaks may differ slightly)
 
 Scope: the flows in `replica/recon.md` that the build covers: **F01** find a hike near me, **F02** search somewhere else.
 **F06** (plan a route and take it with me) is Naarad's existing Plan mode, which the rebuild did not touch. It is tested here because
@@ -33,8 +34,8 @@ Legend. auto: `e2e` runs in the suite. `manual` needs a person or a real service
 | F01-E9 | edge: refresh mid-flow | filter, select a card, refresh | filters kept | e2e | pass |
 | F01-E10 | edge: slow search | a slow search is overtaken by a fast one | the newer result stays | e2e | pass |
 | F01-E11 | edge: offline | load once with the service worker, go offline, reload | Discover still lists the routes | e2e | pass |
-| F01-E12 | edge: mobile width | 390px and 320px | no horizontal scroll, every control reachable | e2e | pass |
-| F01-E13 | edge: keyboard only | do the whole flow with the keyboard | every control reachable in order, visible focus, focus never drops to the page | e2e | pass (desktop, phone) |
+| F01-E12 | edge: mobile width | 390px and 320px, open each of the three chips in turn | no horizontal scroll; the pill, the chips and every control in every panel on screen and not under the sheet | e2e | pass |
+| F01-E13 | edge: keyboard only | do the whole flow with the keyboard. On a phone, open each chip with Enter and walk the Tab order | every control reachable in order, visible focus (the pill shows it for its field), no trap, focus never drops to the page | e2e | pass (desktop, phone) |
 | F01-E14 | edge: screen reader labels | axe on every state; the status line is a live region | no violations | e2e | pass (desktop, phone) |
 | F01-E15 | edge: tampered URL | bad `lat`, `lng`, `r`, `max`, `sport`, `theme`, `diff` | sensible defaults, no errors | e2e | pass |
 | F01-E16 | edge: window resize | cross the 900px breakpoint both ways | the layout follows, nothing lost | e2e | pass |
@@ -44,6 +45,15 @@ Legend. auto: `e2e` runs in the suite. `manual` needs a person or a real service
 | F01-E20 | edge: focus after an action | press Clear filters or Try again from the keyboard | focus stays inside Discover on a control that exists | e2e | pass (desktop, phone) |
 | F01-E21 | edge: slow geocoder | the geocoder takes 1.5 s | a visible sign that the search is running | e2e | pass |
 | F01-E22 | edge: landscape phone | 844x390 | no overflow, the sheet fits its space, the map and results have room | e2e | pass |
+| F01-E23 | edge: page width after a search | on a phone, search a place so a chip reads "Within 30 km" | the bar and the cards stay inside the screen | e2e | pass. Found during the rebuild (an auto-sized grid column); fails with the old CSS (bar right edge 430 on a 390 screen) |
+| F01-E24 | phone: the three chips | read their labels, open one, open another, set filters and a place | one row at 390px; each says what is set ("Sport", "Hike", "All of India", "Within 30 km", "Filters (1)"); a chip that changes the search is filled; opening one closes the other | e2e | pass |
+| F01-E25 | phone: closing a panel | Escape, a tap outside, pick a sport by tap, move it by arrow key | Escape closes and returns focus to the chip; a tap outside closes; a tap on a sport picks and closes; an arrow key moves the choice and keeps it open | e2e | pass |
+| F01-E26 | phone: list view and the Map button | tap the handle; press Map; End and Home on the handle | no Map button over the map; in the full-height list it shows, the list stops below the chips and the map's own controls step aside; Map returns to the map and focus goes to the handle | e2e | pass |
+| F01-E27 | phone: map controls and credit | read where the zoom buttons and the OpenStreetMap credit are | both sit above the sheet (the credit is a licence requirement) | e2e | pass. Fails with the lift removed (credit bottom 870, sheet top 580) |
+| F01-E28 | phone: the pill | focus the empty field, type, press Enter, press clear | a hint only while the field is in use and not after Enter; a clear button only when there is text; clearing goes back to all of India and keeps focus in the field | e2e | pass. Fails if the hint stays after Enter |
+| F01-E29 | desktop: a card | read the card of the first route | the badge sits over the media; rating, title, place, stats from top to bottom; time, length, climb; the climb says so in words; the rating is read as one image | e2e | pass |
+| F01-E30 | desktop: no chips | open the planner at 1440px | no chip is shown; every control is open; the bar is 260px tall or less | e2e | pass |
+| F01-E31 | brand tokens reach the screen | read computed styles | serif card titles; a pressed chip is navy; the kit orange carries a navy label; the text-safe sienna and the cream background are the token values | e2e | pass |
 | F01-N1 | negative: location denied | Use my location without permission | a message that says what to do | e2e | pass |
 | F01-N2 | negative: geocoder down | the geocoder answers 500 | a message, no crash | e2e | pass |
 | F01-N3 | negative: place not found | search for nonsense | a message, the old results stay | e2e | pass |
@@ -51,6 +61,8 @@ Legend. auto: `e2e` runs in the suite. `manual` needs a person or a real service
 | F01-N5 | negative: map library missing | Leaflet fails to load | the list works and says the map is missing | e2e | pass |
 | F01-N6 | negative: nothing matches | a filter combination with no routes | an empty state with the reason and a way out | e2e | pass (desktop, phone) |
 | F01-N7 | negative: deleted record | the selected route is no longer in the results | selection clears | e2e | pass (covered by F01-E17) |
+
+Totals after the rebuild: **71 end-to-end tests pass** (the 62 from before, adapted to the chips, plus F01-E23 and E24 to E31 across two files, `f01-find-near-me.spec.js` and `f01-layout.spec.js`); `replica/build/check-discover.js` 27 of 27; `replica/design/check-preview.js` clean; `discover/data.test.js` 11 of 11; `schema.test.sql` not rerun (the schema did not change); `contrast.py` 24 pairs, 0 failing.
 
 ## F02 Search somewhere else
 
