@@ -1,6 +1,8 @@
 /* Naarad Service Worker — Cache-first for static assets, network-first for API */
 
-const CACHE_NAME = 'naarad-v5';
+// Bump this whenever a cached file changes (index.html, discover/*, creator/*): static files are
+// served cache-first, so visitors keep the old ones until the version changes.
+const CACHE_NAME = 'naarad-v6';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
@@ -18,6 +20,13 @@ const STATIC_ASSETS = [
   '/creator/creator.js',
   '/data/pricing.json',
   '/data/creator-testimonials.json',
+  /* Discover: the seed is the offline copy of the routes */
+  '/discover/tokens.css',
+  '/discover/primitives.css',
+  '/discover/discover.css',
+  '/discover/data.js',
+  '/discover/discover.js',
+  '/discover/seed-tours.json',
 ];
 
 const CDN_CACHE = 'naarad-cdn-v5';

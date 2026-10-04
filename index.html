@@ -283,103 +283,9 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;background:rgba(249,241,220,
 .pp-export-btn{background:#1E3161;color:white;border-color:#1E3161}
 .pp-export-btn:hover{background:#172752;border-color:#172752;color:white}
 
-/* Map containers */
-#disc-map{flex:1;min-height:0;position:relative;z-index:1}
-
-/* Map click hint */
-
-/* ── DISCOVER MODE ── */
-.disc-filterbar{display:flex;align-items:center;gap:10px;padding:10px 16px;background:white;border-bottom:1px solid #E2DDD4;flex-shrink:0;flex-wrap:wrap}
-.disc-act-chips{display:flex;gap:6px;flex-wrap:wrap}
-.disc-chip{display:flex;align-items:center;gap:5px;padding:7px 13px;border-radius:50px;border:1.5px solid #E2DDD4;background:white;font-size:12.5px;font-weight:500;cursor:pointer;font-family:'Inter',sans-serif;transition:all .2s;color:#1A1A2E}
-.disc-chip:hover{border-color:#1E3161;color:#1E3161}
-.disc-chip.active{background:#1E3161;color:white;border-color:#1E3161}
-.disc-sep{width:1px;height:28px;background:#E2DDD4;margin:0 4px}
-.disc-dist-wrap{display:flex;align-items:center;gap:8px;font-size:12.5px;color:#6B6B7B;white-space:nowrap}
-.disc-dist-wrap input[type=range]{accent-color:#E8641A;width:110px;cursor:pointer}
-.disc-dist-label{font-weight:600;color:#1A1A2E;min-width:40px}
-.disc-count{margin-left:auto;font-size:12.5px;color:#6B6B7B}
-
-/* Discover split */
-.disc-split{display:flex;flex:1;min-height:0;overflow:hidden}
-.disc-cards-col{width:380px;flex-shrink:0;overflow-y:auto;background:#FAF8F2;border-right:1px solid #E2DDD4}
-.disc-cards-col::-webkit-scrollbar{width:4px}
-.disc-cards-col::-webkit-scrollbar-thumb{background:#E2DDD4;border-radius:2px}
-.disc-cards-inner{padding:12px}
-
-/* Route card */
-.rt-card{background:white;border-radius:14px;margin-bottom:10px;border:2px solid transparent;cursor:pointer;transition:all .25s;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.06)}
-.rt-card:hover{border-color:#1E3161;box-shadow:0 4px 16px rgba(30,49,97,.12);transform:translateY(-1px)}
-.rt-card.highlighted{border-color:#E8641A;box-shadow:0 4px 20px rgba(232,100,26,.2)}
-.rt-card-img{height:150px;position:relative;overflow:hidden;flex-shrink:0}
-.rt-card-img-bg{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:56px}
-.rt-card-badge{position:absolute;top:10px;left:10px;padding:4px 10px;border-radius:50px;font-size:11px;font-weight:700;letter-spacing:.4px}
-.rt-card-body{padding:13px 14px 14px}
-.rt-card-name{font-size:14px;font-weight:700;color:#1A1A2E;margin-bottom:3px}
-.rt-card-loc{font-size:12px;color:#6B6B7B;margin-bottom:10px;display:flex;align-items:center;gap:4px}
-.rt-card-stats{display:flex;gap:14px}
-.rt-cs{display:flex;align-items:center;gap:4px;font-size:12px;color:#6B6B7B}
-.rt-cs svg{width:13px;height:13px;flex-shrink:0}
-.rt-cs strong{color:#1A1A2E;font-weight:600}
-.rt-card-footer{padding:8px 14px;border-top:1px solid #F0EDE4;display:flex;align-items:center;justify-content:space-between}
-.rt-diff{display:flex;align-items:center;gap:4px;font-size:11.5px}
-.rt-rating{font-size:11.5px;color:#6B6B7B}
-.rt-rating strong{color:#1A1A2E}
-
-/* Difficulty pill */
-.diff-easy{background:#DCFCE7;color:#166534;padding:3px 9px;border-radius:50px;font-size:11px;font-weight:600}
-.diff-moderate{background:#FEF9C3;color:#854D0E;padding:3px 9px;border-radius:50px;font-size:11px;font-weight:600}
-.diff-hard{background:#FEE2E2;color:#991B1B;padding:3px 9px;border-radius:50px;font-size:11px;font-weight:600}
-
 /* Leaflet popup overrides */
 .leaflet-popup-content-wrapper{border-radius:12px!important;box-shadow:0 8px 32px rgba(0,0,0,.18)!important;border:none!important}
 .leaflet-popup-content{margin:14px 16px!important;font-family:'Inter',sans-serif!important}
-.lf-popup-title{font-weight:700;font-size:13px;color:#1E3161;margin-bottom:4px}
-.lf-popup-sub{font-size:12px;color:#6B6B7B}
-.lf-popup-stats{display:flex;gap:12px;margin-top:8px;padding-top:8px;border-top:1px solid #F0EDE4}
-.lf-popup-stat{font-size:11.5px;color:#6B6B7B}.lf-popup-stat strong{color:#1A1A2E;display:block;font-size:13px}
-
-/* No-routes message */
-.no-routes{text-align:center;padding:48px 24px;color:#6B6B7B;font-size:14px}
-.no-routes svg{width:48px;height:48px;margin:0 auto 12px;display:block;opacity:.35}
-
-
-#gpx-track-strip{
-  position:absolute;bottom:0;left:0;right:0;z-index:15;
-  overflow-x:auto;overflow-y:hidden;
-  display:flex;gap:10px;padding:12px 16px 16px;
-  scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;
-  scrollbar-width:none;pointer-events:auto;
-}
-#gpx-track-strip::-webkit-scrollbar{display:none}
-.gpx-card{
-  flex-shrink:0;width:200px;
-  background:white;border-radius:14px;
-  padding:12px 14px 10px;
-  box-shadow:0 4px 18px rgba(0,0,0,.22);
-  cursor:pointer;scroll-snap-align:start;
-  border:2px solid transparent;transition:border-color .2s,box-shadow .2s;
-  pointer-events:auto;
-}
-.gpx-card:hover{box-shadow:0 6px 24px rgba(0,0,0,.28)}
-.gpx-card.gpx-active{border-color:#1E3161;box-shadow:0 6px 24px rgba(30,49,97,.35)}
-.gpx-card-name{font-size:12.5px;font-weight:700;color:#1A1A2E;line-height:1.3;margin-bottom:6px}
-.gpx-card-meta{display:flex;gap:10px;font-size:11px;color:#6B6B7B}
-.gpx-card-meta span{display:flex;align-items:center;gap:3px}
-.gpx-card-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:2px}
-.gpx-card-type{font-size:10px;font-weight:600;letter-spacing:.6px;text-transform:uppercase;
-  color:#E8641A;margin-bottom:4px}
-@media(max-width:899px){
-  #gpx-track-strip{bottom:60px}
-}
-.disc-section-head{font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;
-  color:#6B6B7B;padding:10px 4px 6px;display:flex;align-items:center;gap:6px}
-.disc-section-head::after{content:'';flex:1;height:1px;background:#E2DDD4}
-.rt-card.gpx-rt-card .rt-card-img{height:100px}
-.rt-card.gpx-rt-card .rt-card-img-bg{font-size:2.6rem}
-.rt-card.gpx-rt-card .rt-card-body{padding:10px 14px 10px}
-.rt-card-track-line{height:3px;border-radius:2px;margin:6px 0 2px;opacity:.7}
-.rt-card.highlighted{border-color:#E8641A;box-shadow:0 4px 20px rgba(232,100,26,.22)}
 
 /* Responsive */
 @media(max-width:768px){
@@ -1474,17 +1380,6 @@ footer{background:var(--nv);color:white;padding:68px 32px 28px}
 /* Route pages — editorial content */
 .rp-title{font-family:'Playfair Display',serif;letter-spacing:-0.5px}
 
-/* Discover mode chips */
-.disc-chip{
-  padding:6px 16px;border-radius:2px;border:1px solid var(--slate);
-  background:transparent;font-size:10px;font-weight:700;
-  letter-spacing:1.5px;text-transform:uppercase;
-  cursor:pointer;font-family:'Inter',sans-serif;
-  color:var(--navy);white-space:nowrap;
-  transition:all 400ms cubic-bezier(0.25,1,0.5,1);
-}
-.disc-chip.active,.disc-chip:hover{background:var(--navy);color:var(--linen);border-color:var(--navy);letter-spacing:2px}
-
 /* Planner activity chips */
   display:flex;align-items:center;gap:6px;
   padding:7px 16px;border-radius:2px;border:1px solid var(--slate);
@@ -2271,6 +2166,9 @@ footer{background:var(--navy);color:var(--linen)}
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<link rel="stylesheet" href="/discover/tokens.css"/>
+<link rel="stylesheet" href="/discover/primitives.css"/>
+<link rel="stylesheet" href="/discover/discover.css"/>
 <!-- Creator Programme module styles — scoped to .cr-* classes -->
 <link rel="stylesheet" href="/creator/creator.css"/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -2659,40 +2557,7 @@ if ('serviceWorker' in navigator) {
 
   <!-- ══ DISCOVER MODE ══ -->
   <div id="pmode-discover" class="active">
-
-    <!-- Filter Bar -->
-    <div class="disc-filterbar">
-      <div class="disc-act-chips" role="group" aria-label="Filter by activity type">
-        <button class="disc-chip active" data-dtype="all" onclick="filterDiscover(this,'all')">All Routes</button>
-        <button class="disc-chip" data-dtype="heritage-walk" onclick="filterDiscover(this,'heritage-walk')">🏛️ Heritage Walk</button>
-        <button class="disc-chip" data-dtype="temple-trail" onclick="filterDiscover(this,'temple-trail')">🕌 Temple Trail</button>
-        <button class="disc-chip" data-dtype="nature-hike" onclick="filterDiscover(this,'nature-hike')">🌿 Nature Hike</button>
-        <button class="disc-chip" data-dtype="cultural-tour" onclick="filterDiscover(this,'cultural-tour')">🎭 Cultural Tour</button>
-        <button class="disc-chip" data-dtype="cycling" onclick="filterDiscover(this,'cycling')">🚲 Cycling</button>
-      </div>
-      <div class="disc-sep"></div>
-      <div class="disc-dist-wrap">
-        Max distance:
-        <input type="range" min="5" max="200" value="200" id="disc-max-dist" oninput="onDiscDistChange(this.value)"/>
-        <span class="disc-dist-label" id="disc-dist-label">Any</span>
-      </div>
-      <span class="disc-count" id="disc-count" aria-live="polite" aria-atomic="true">12 routes</span>
-    </div>
-
-    <!-- Mobile view toggle (shown only on small screens) -->
-
-    <!-- Split: Cards + Map -->
-    <div class="disc-split" id="disc-split">
-      <div class="disc-cards-col bottom-sheet">
-        <div class="drag-handle" aria-label="Drag to resize panel" role="separator"></div>
-        <div class="disc-cards-inner" id="disc-cards-inner">
-          <!-- populated by JS -->
-        </div>
-      </div>
-      <div id="disc-map">
-        <div id="gpx-track-strip"></div>
-      </div>
-    </div>
+    <div id="nd-root"><noscript>Route discovery needs JavaScript. Browse the routes page instead.</noscript></div>
   </div>
 
   <!-- ══ PLAN MODE ══ -->
@@ -3423,14 +3288,6 @@ const BADGE_STYLE = {
   'photography':'background:rgba(8,145,178,.85);color:white'
 };
 
-// ── State ──────────────────────────────────────────────────────────────────
-let discMap = null;
-let discFilterType = 'all';
-let discMaxDist = 200;
-let discMarkers = {};
-let highlightedRoute = null;
-let discPolylines = {};
-
 // ── Mode switch ────────────────────────────────────────────────────────────
 window.switchPlannerMode = function switchPlannerMode(mode) {
   ['discover','plan'].forEach(m => {
@@ -3438,7 +3295,7 @@ window.switchPlannerMode = function switchPlannerMode(mode) {
     document.getElementById('pmode-' + m).classList.toggle('active', m === mode);
   });
   if (mode === 'plan' && !planMap) setTimeout(initPlanMap, 80);
-  if (mode === 'discover' && discMap) discMap.invalidateSize();
+  if (window.NaaradDiscover) window.NaaradDiscover.setActive(mode === 'discover');
 }
 
 // ── PLAN MAP ────────────────────────────────────────────────────────────────
@@ -3534,405 +3391,16 @@ window.exportPlanGPX = function exportPlanGPX() {
   a.click();
 }
 
-// ── DISCOVER MAP ───────────────────────────────────────────────────────────
-function initDiscoverMap() {
-  discMap = L.map('disc-map', {zoomControl:false}).setView([20.5937, 78.9629], 5);
-  L.control.zoom({position:'bottomright'}).addTo(discMap);
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution:'© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-    maxZoom:18
-  }).addTo(discMap);
-
-  ROUTES.forEach(r => addDiscoverMarker(r));
-  renderDiscoverCards();
-  fetchGPXTracks(discMap);
-}
-
-function addDiscoverMarker(r) {
-  const ic = L.divIcon({
-    html:`<div style="background:${r.color};color:white;padding:4px 9px;border-radius:50px;font-size:11px;font-weight:700;white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,.25);border:2px solid white">${r.dist} km</div>`,
-    iconSize:[null,null],iconAnchor:[20,14],className:'disc-marker',
-    popupAnchor:[0,-16]
-  });
-  const m = L.marker([r.lat, r.lng], {icon:ic}).addTo(discMap);
-  m.bindPopup(`<div class="lf-popup-title">${r.emoji} ${r.name}</div>
-    <div class="lf-popup-sub">${r.location}</div>
-    <div class="lf-popup-stats">
-      <div class="lf-popup-stat"><strong>${r.dist} km</strong>Distance</div>
-      <div class="lf-popup-stat"><strong>${r.time} min</strong>Duration</div>
-      <div class="lf-popup-stat"><strong>${r.elev} m</strong>Elevation</div>
-    </div>`);
-  m.on('click', function() {
-    highlightRoute(r.id);
-    const card = document.getElementById('rt-card-'+r.id);
-    if (card) card.scrollIntoView({behavior:'smooth',block:'nearest'});
-  });
-  discMarkers[r.id] = m;
-}
-
-// ── GPX tracks: load pre-baked JSON, draw polylines, add sidebar cards ───────
-window.__gpxTracks = null;
-window.__gpxPolylines = {};
-let activeGPXId = null;
-
-function fetchGPXTracks(map) {
-  // Load both track sets in parallel; GeoJSON routes take priority (they're the real uploaded data)
-  const geoFetch = fetch('/routes/geo-tracks.json').then(r => r.json()).catch(() => ({tracks:[]}));
-  const gpxFetch = fetch('/routes/gpx-tracks.json').then(r => r.json()).catch(() => ({tracks:[]}));
-
-  Promise.all([geoFetch, gpxFetch]).then(([geoData, gpxData]) => {
-    // Offset IDs so they don't collide: geo tracks 1-99, gpx tracks 101+
-    const geoTracks = (geoData.tracks || []);
-    const gpxTracks = (gpxData.tracks || []).map(t => ({...t, id: t.id + 100}));
-
-    window.__gpxTracks = [...geoTracks, ...gpxTracks];
-    window.__gpxPolylines = {};
-
-    window.__gpxTracks.forEach(t => {
-      const poly = L.polyline(t.coords, {color: t.color, weight: 4, opacity: 0}).addTo(map);
-      window.__gpxPolylines[t.id] = poly;
-    });
-    renderDiscoverCards();
-  });
-}
-
-window.selectGPXRoute = function(id) {
-  const isActive = activeGPXId === id;
-
-  // Hide all tracks and deselect all cards
-  Object.values(window.__gpxPolylines || {}).forEach(poly => poly.setStyle({opacity: 0, weight: 4}));
-  document.querySelectorAll('.gpx-rt-card').forEach(c => c.classList.remove('highlighted'));
-
-  if (isActive) {
-    // Toggle off — card was already selected
-    activeGPXId = null;
-    return;
-  }
-
-  // Show selected track
-  activeGPXId = id;
-  const poly = (window.__gpxPolylines || {})[id];
-  if (poly) {
-    poly.setStyle({opacity: 1, weight: 6});
-    poly.bringToFront();
-    if (discMap) discMap.fitBounds(poly.getBounds(), {padding: [60, 60], animate: true});
-  }
-  const card = document.getElementById('gpx-rt-card-' + id);
-  if (card) {
-    card.classList.add('highlighted');
-    card.scrollIntoView({behavior: 'smooth', block: 'nearest'});
-  }
-};
-
-window.filterDiscover = function(btn, type) {
-  document.querySelectorAll('.disc-chip').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  discFilterType = type;
-  renderDiscoverCards();
-  updateDiscoverMapMarkers();
-};
-
-window.onDiscDistChange = function(val) {
-  discMaxDist = parseInt(val);
-  document.getElementById('disc-dist-label').textContent = val >= 200 ? 'Any' : val + ' km';
-  renderDiscoverCards();
-  updateDiscoverMapMarkers();
-};
-
-function getFilteredRoutes() {
-  return ROUTES.filter(r => {
-    const typeOk = discFilterType === 'all' || r.type === discFilterType;
-    const distOk = r.dist <= discMaxDist;
-    return typeOk && distOk;
-  });
-}
-
-function renderDiscoverCards() {
-  const inner = document.getElementById('disc-cards-inner');
-  if (!inner) return;
-  const filtered = getFilteredRoutes();
-  const gpxTracks = window.__gpxTracks || [];
-  document.getElementById('disc-count').textContent = (filtered.length + gpxTracks.length) + ' routes';
-
-  let html = '';
-
-  // ── Uploaded track routes section ──────────────────────────────────
-  if (gpxTracks.length) {
-    html += `<div class="disc-section-head">📍 Chennai · Uploaded Routes</div>`;
-    html += gpxTracks.map(t => {
-      const active = activeGPXId === t.id ? ' highlighted' : '';
-      return `<div class="rt-card gpx-rt-card${active}" id="gpx-rt-card-${t.id}" onclick="selectGPXRoute(${t.id})">
-        <div class="rt-card-img">
-          <div class="rt-card-img-bg" style="background:${t.color}18">${t.icon}</div>
-          <div class="rt-card-badge" style="background:${t.color};color:white">GPX Track</div>
-        </div>
-        <div class="rt-card-body">
-          <div class="rt-card-track-line" style="background:${t.color}"></div>
-          <div class="rt-card-name">${t.name}</div>
-          <div class="rt-card-loc">📍 Chennai, Tamil Nadu</div>
-          <div class="rt-card-stats">
-            <div class="rt-cs"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg><strong>${t.dist_km} km</strong></div>
-          </div>
-        </div>
-        <div class="rt-card-footer" style="border-top:1px solid ${t.color}22">
-          <span style="background:${t.color};color:white;padding:3px 9px;border-radius:12px;font-size:11px;font-weight:600">View on map →</span>
-        </div>
-      </div>`;
-    }).join('');
-  }
-
-  // ── Curated India routes section ────────────────────────────────────
-  if (filtered.length) {
-    html += `<div class="disc-section-head">🗺️ Curated Routes · India</div>`;
-    html += filtered.map(r => {
-      const diffClass = r.diff === 'easy' ? 'diff-easy' : r.diff === 'moderate' ? 'diff-moderate' : 'diff-hard';
-      const diffLabel = r.diff.charAt(0).toUpperCase() + r.diff.slice(1);
-      const stars = '★'.repeat(Math.round(r.rating)) + '☆'.repeat(5-Math.round(r.rating));
-      return `<div class="rt-card" id="rt-card-${r.id}" onclick="selectDiscoverRoute(${r.id})">
-        <div class="rt-card-img">
-          <div class="rt-card-img-bg" style="background:${TYPE_GRAD[r.type]}">${r.emoji}</div>
-          <div class="rt-card-badge" style="${BADGE_STYLE[r.type]}">${TYPE_LABEL[r.type]}</div>
-        </div>
-        <div class="rt-card-body">
-          <div class="rt-card-name">${r.name}</div>
-          <div class="rt-card-loc">📍 ${r.location}</div>
-          <div class="rt-card-stats">
-            <div class="rt-cs"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg><strong>${r.dist} km</strong></div>
-            <div class="rt-cs"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg><strong>${r.time < 60 ? r.time+'m' : Math.floor(r.time/60)+'h '+(r.time%60 > 0 ? r.time%60+'m' : '')}</strong></div>
-            <div class="rt-cs"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 17l6-8 4 5 3-4 5 7"/></svg><strong>${r.elev} m</strong></div>
-          </div>
-        </div>
-        <div class="rt-card-footer">
-          <span class="${diffClass}">${diffLabel}</span>
-          <div class="rt-rating"><span style="color:#F59E0B">${stars}</span> <strong>${r.rating}</strong> (${r.reviews})</div>
-        </div>
-      </div>`;
-    }).join('');
-  }
-
-  if (!html) {
-    html = `<div class="no-routes">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 20H3v-2a4 4 0 014-4h2m7 6h6v-2a4 4 0 00-4-4h-2m-2-4a4 4 0 110-8 4 4 0 010 8z"/></svg>
-      No routes match your filters
-    </div>`;
-  }
-
-  inner.innerHTML = html;
-}
-
-window.selectDiscoverRoute = function(id) {
-  highlightRoute(id);
-  if (discMap && discMarkers[id]) {
-    discMap.panTo(discMarkers[id].getLatLng(), {animate:true});
-    setTimeout(() => discMarkers[id].openPopup(), 300);
-  }
-
-  // Draw route polyline on map
-  const r = ROUTES.find(x => x.id === id);
-  if (r && discMap) {
-    // Remove old highlight polylines
-    Object.values(discPolylines).forEach(p => discMap.removeLayer(p));
-    discPolylines = {};
-    if (r.path) {
-      discPolylines[id] = L.polyline(r.path, {color:r.color, weight:5, opacity:.85}).addTo(discMap);
-      discMap.fitBounds(discPolylines[id].getBounds(), {padding:[60,60]});
-    }
-  }
-};
-
-function highlightRoute(id) {
-  if (highlightedRoute) {
-    const prev = document.getElementById('rt-card-'+highlightedRoute);
-    if (prev) prev.classList.remove('highlighted');
-  }
-  highlightedRoute = id;
-  const card = document.getElementById('rt-card-'+id);
-  if (card) card.classList.add('highlighted');
-}
-
-function updateDiscoverMapMarkers() {
-  if (!discMap) return;
-  const filtered = getFilteredRoutes();
-  const filteredIds = new Set(filtered.map(r => r.id));
-  ROUTES.forEach(r => {
-    if (discMarkers[r.id]) {
-      const el = discMarkers[r.id].getElement();
-      if (el) el.style.opacity = filteredIds.has(r.id) ? '1' : '0.25';
-    }
-  });
-}
-
-// ── Planner search ─────────────────────────────────────────────────────────
+// ── Planner search ──────────────────────────────────────────────────
+// The planner bar's search box belongs to Plan mode. Discover has its own place field
+// (discover/discover.js), so the old route-name search that lived here is gone.
 window.handlePlannerSearch = function(val) {};
-window.geocodePlannerSearch = function() {
-  const val = document.getElementById('pm-location-input').value.trim();
-  if (!val) return;
-  const match = ROUTES.find(r => r.name.toLowerCase().includes(val.toLowerCase()) || r.location.toLowerCase().includes(val.toLowerCase()));
-  if (match) {
-    if (planMap) { planMap.setView([match.lat, match.lng], 13); }
-    else if (discMap) { discMap.setView([match.lat, match.lng], 13); selectDiscoverRoute(match.id); }
-  } else if (discMap) {
-    const m2 = ROUTES.find(r => r.name.toLowerCase().includes(val.toLowerCase()) || r.location.toLowerCase().includes(val.toLowerCase()));
-    if (m2) { discMap.setView([m2.lat, m2.lng], 13); selectDiscoverRoute(m2.id); }
-  }
-};
-
-// ── Auto-init plan map when planner page is shown ─────────────────────────
-// Use MutationObserver so we don't depend on script load order
-document.addEventListener('DOMContentLoaded', function() {
-  const plannerPage = document.getElementById('page-planner');
-  if (!plannerPage) return;
-
-  const obs = new MutationObserver(function(mutations) {
-    mutations.forEach(function(m) {
-      if (m.attributeName === 'class' && plannerPage.classList.contains('active')) {
-        const discActive = document.getElementById('pmode-discover').classList.contains('active');
-        if (discActive && !discMap) setTimeout(initDiscoverMap, 80);
-      }
-    });
-  });
-  obs.observe(plannerPage, {attributes: true, attributeFilter: ['class']});
-
-  // Init if already active on load — discover is now the default tab
-  if (plannerPage.classList.contains('active')) setTimeout(initDiscoverMap, 200);
-});
-
-// GPX route definitions
-const GPX_ROUTES = [
-  { file:'adambakkam-velachcheri.gpx',             name:'Adambakkam to Velachcheri',     color:'#16A34A', icon:'🚶' },
-  { file:'chennai.gpx',                             name:'Chennai City Walk',              color:'#1E3161', icon:'🌆' },
-  { file:'iitm-ashtalashmi-temple-chennai.gpx',    name:'IITM to Ashtalakshmi Temple',   color:'#DC2626', icon:'🕌' },
-  { file:'iitm-mercat-reparar-ordinador-aeroport.gpx', name:'IITM Airport Route',        color:'#7C3AED', icon:'✈️' },
-  { file:'velachcheri-mylapore.gpx',               name:'Velachcheri to Mylapore',       color:'#EA580C', icon:'🏛️' },
-  { file:'velachcheri.gpx',                        name:'Velachcheri Trail',             color:'#0891B2', icon:'🌿' },
-  { file:'voltes-pel-barri-taramani-chennai.gpx',  name:'Taramani Walk',                 color:'#DB2777', icon:'🏘️' },
-  { file:'voltes-per-chennai-iitm-lighthouse.gpx', name:'IITM to Marina Lighthouse',    color:'#B45309', icon:'🔦' }
-];
-
-const gpxPolylines = {};
-let activeGpxId = null;
-
-function parseGPX(text) {
-  const doc = new DOMParser().parseFromString(text, 'application/xml');
-  const ns = 'http://www.topografix.com/GPX/1/1';
-  let pts = doc.getElementsByTagNameNS(ns, 'trkpt');
-  if (!pts.length) pts = doc.getElementsByTagName('trkpt');
-  const coords = [];
-  for (let i = 0; i < pts.length; i++) {
-    coords.push([parseFloat(pts[i].getAttribute('lat')), parseFloat(pts[i].getAttribute('lon'))]);
-  }
-  return coords;
-}
-
-function haversineKm(a, b) {
-  const R = 6371, dLat = (b[0]-a[0])*Math.PI/180, dLon = (b[1]-a[1])*Math.PI/180;
-  const s = Math.sin(dLat/2)**2 + Math.cos(a[0]*Math.PI/180)*Math.cos(b[0]*Math.PI/180)*Math.sin(dLon/2)**2;
-  return R * 2 * Math.atan2(Math.sqrt(s), Math.sqrt(1-s));
-}
-
-function loadGPXTracks(map) {
-  const strip = document.getElementById('gpx-track-strip');
-  if (!strip) return;
-  strip.innerHTML = '';
-
-  GPX_ROUTES.forEach((route, idx) => {
-    fetch('/routes/' + route.file)
-      .then(r => r.text())
-      .then(text => {
-        const coords = parseGPX(text);
-        if (!coords.length) return;
-
-        let dist = 0;
-        for (let i = 1; i < coords.length; i++) dist += haversineKm(coords[i-1], coords[i]);
-        route.coords = coords;
-        route.dist = dist;
-
-        const poly = L.polyline(coords, { color: route.color, weight: 4, opacity: 0.5 }).addTo(map);
-        poly.bringToBack();
-        gpxPolylines[idx] = poly;
-
-        const card = document.createElement('div');
-        card.className = 'gpx-card';
-        card.id = 'gpx-card-' + idx;
-        card.innerHTML =
-          `<div class="gpx-card-type">${route.icon} GPX Track</div>` +
-          `<div class="gpx-card-name">${route.name}</div>` +
-          `<div class="gpx-card-meta">` +
-          `<span><span class="gpx-card-dot" style="background:${route.color}"></span>${dist.toFixed(1)} km</span>` +
-          `<span>📍 Chennai</span></div>`;
-        card.addEventListener('click', () => selectGPXTrack(idx, map));
-        strip.appendChild(card);
-      })
-      .catch(e => console.warn('[GPX] Could not load', route.file, e));
-  });
-}
-
-function selectGPXTrack(idx, map) {
-  if (activeGpxId !== null) {
-    const prev = document.getElementById('gpx-card-' + activeGpxId);
-    if (prev) prev.classList.remove('gpx-active');
-    const prevPoly = gpxPolylines[activeGpxId];
-    if (prevPoly) prevPoly.setStyle({ opacity: 0.5, weight: 4 });
-  }
-  activeGpxId = idx;
-  const card = document.getElementById('gpx-card-' + idx);
-  if (card) {
-    card.classList.add('gpx-active');
-    card.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
-  }
-  const poly = gpxPolylines[idx];
-  if (poly) {
-    poly.setStyle({ opacity: 1, weight: 6 });
-    poly.bringToFront();
-    map.fitBounds(poly.getBounds(), { padding: [52, 52], animate: true });
-  }
-}
-
-// ── MOBILE BOTTOM SHEET TOGGLE ─────────────────────────────────────────────
-function initBottomSheets() {
-  // Height-based open/close now handled by the drag IIFE below.
-  // Kept as a no-op so external callers don't throw.
-}
-document.addEventListener('DOMContentLoaded', initBottomSheets);
 
 })();
 </script>
 
-<script>
-(function () {
-  const sheet = document.querySelector('.bottom-sheet');
-  const handle = sheet.querySelector('.drag-handle');
-  const MIN_H = 80;
-  const MAX_H = window.innerHeight - 68;
-  let startY = 0, startH = 0, dragging = false;
-
-  function onStart(e) {
-    dragging = true;
-    startY = e.touches ? e.touches[0].clientY : e.clientY;
-    startH = sheet.offsetHeight;
-    sheet.style.transition = 'none';
-    e.preventDefault();
-  }
-  function onMove(e) {
-    if (!dragging) return;
-    const y = e.touches ? e.touches[0].clientY : e.clientY;
-    const newH = Math.min(MAX_H, Math.max(MIN_H, startH + (startY - y)));
-    sheet.style.height = newH + 'px';
-  }
-  function onEnd() {
-    if (!dragging) return;
-    dragging = false;
-    sheet.style.transition = 'height 0.2s ease';
-  }
-
-  handle.addEventListener('touchstart', onStart, { passive: false });
-  window.addEventListener('touchmove', onMove, { passive: false });
-  window.addEventListener('touchend', onEnd);
-  handle.addEventListener('mousedown', onStart);
-  window.addEventListener('mousemove', onMove);
-  window.addEventListener('mouseup', onEnd);
-})();
-</script>
+<script src="/discover/data.js"></script>
+<script src="/discover/discover.js"></script>
 
 <script>
 // ── LOGO base64 ──

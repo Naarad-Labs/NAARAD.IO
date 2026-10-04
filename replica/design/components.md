@@ -25,7 +25,7 @@ exists in `index.html` today.
 
 | # | change | why | evidence |
 | --- | --- | --- | --- |
-| 1 | List beside the map at 900px and up, sheet over the map below | live is a full-width bottom sheet at every width, so on a 1440px screen each card is 1416px wide | `current-discover-desktop-expanded.png` |
+| 1 | List beside the map at 900px and up, sheet over the map below | live is a full-width bottom sheet at every width, so on a 1440px screen each card is 1416px wide. Cause: stylesheet debris from commit `dde6106` closes the mobile `@media` block early (see `build-log.md`), so a mobile-only rule leaks everywhere. | `current-discover-desktop-expanded.png` |
 | 2 | Difficulty pills restored to their intended colours | a duplicate rule at line 1302 overrides line 330, and the pills render at 1.5 to 2.1:1 | computed styles of the 12 pills on the page (8 easy, 3 moderate, 1 hard), ratios from `contrast.py` |
 | 3 | Control borders darkened to 3.7:1 | live chip border `#B8BEC9` is 1.9:1 | `contrast.py` |
 | 4 | One accent that passes as text (`accent`), one for graphics (`accent-bright`) | live `#E8641A` and `#DD6E27` are 3.3:1, and white labels on them fail | `contrast.py` |

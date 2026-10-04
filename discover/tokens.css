@@ -71,6 +71,9 @@
   --size-control-lg: 48px;
   --size-nav-height: 68px;
   --size-list-column: 380px;
+  --size-field-min: 160px;
+  --size-field-max: 560px;
+  --size-range: 190px;
   --size-sheet-peek: 80px;
   --size-container: 1280px;
 }

@@ -1,27 +1,27 @@
 feature,area,priority,original,clone,notes
-"Search tours by place: current location, address or dropped pin",search,must,yes,no,Source: press summary. Naarad's Discover has no place search in the code read; the planner has a search box (not audited)
-"Search state lives in the URL: place, centre point, sport, max distance, page",search,should,yes,no,Source: the URL the user gave. Shareable and bookmarkable. Unverified how it behaves on change
-Filter by sport,search,must,yes,partial,"Naarad has a basic version in index.html (read in the code, not run). Naarad filters by route type (heritage walk, temple trail, nature hike, cultural tour, cycling), not by sport"
-Filter by maximum distance,search,must,yes,partial,"Naarad has a basic version in index.html (read in the code, not run). Slider 5 to 200 km. Komoot's help says 0 m to 200 km; whether it is a range or a max-only is unconfirmed. The URL's max_distance may instead be the search radius: unconfirmed"
-"Filter by difficulty: easy, intermediate, expert, colour coded",search,must,yes,no,"Source: help summary. All three levels already exist in Naarad's data (8 easy, 3 moderate, 1 hard) and cards show them, but the filter bar has no difficulty control"
+"Search tours by place: current location, address or dropped pin",search,must,yes,partial,Built: address search on Enter (Nominatim) and Use my location. Missing: dropped pin. Verified by check-discover.js
+"Search state lives in the URL: place, centre point, sport, max distance, page",search,should,yes,partial,"Built on /?page=planner&...: place, centre, radius, sport, theme, difficulty, max length. No page (there is no pagination). Restores on load"
+Filter by sport,search,must,yes,yes,"Single-choice Walk, Hike, Cycle, Run. The seed has no run routes, so Run is empty. Naarad's old chips were themes: those are a separate Theme filter now"
+Filter by maximum distance,search,must,yes,yes,"Both readings built, since the recon could not confirm which one Komoot means: Longest route (length cap) and Within (radius from the place)"
+"Filter by difficulty: easy, intermediate, expert, colour coded",search,must,yes,yes,"Easy, Moderate, Hard chips, several at once. The 9 real tracks have no difficulty, so a difficulty filter excludes them"
 "Filter by duration range, 30 minutes to 10 hours",search,should,yes,no,Source: help summary. routes.json has duration_min
 Filter by elevation gain range,search,should,yes,no,"Source: help summary. routes.json has one elevation_m, meaning of the number unconfirmed"
 "Filter by surface: no preference, paved, off-road",search,could,yes,no,Source: help summary. No surface field in Naarad's data
 Filter by route type: loop or out and back,search,could,yes,no,Source: press summary. No such field in Naarad's data
-Results as cards with key stats,search,must,yes,partial,"Naarad has a basic version in index.html (read in the code, not run). rt-card list exists. What Komoot's card shows is unconfirmed (not seen)"
-Result count,search,should,yes,partial,"Naarad has a basic version in index.html (read in the code, not run). disc-count shows a route count. Komoot's equivalent is unconfirmed"
+Results as cards with key stats,search,must,yes,yes,"Cards show only what is known: distance, time, ascent, difficulty, rating. Tracks have distance only"
+Result count,search,should,yes,yes,"Live status line: N routes, or N routes within X km of the place"
 Paginated results,search,could,yes,no,"Source: pageNumber in the URL. Only worth it with more than a few dozen routes. Naarad has about 20 (12 curated, 9 unique tracks)"
 Ranked or personalised recommendation order,search,should,yes,skip,"Needs their user data. Use a plain relevance order (distance from the centre, then rating) instead"
-Split view: list and map side by side,map,must,yes,partial,"Naarad has a basic version in index.html (read in the code, not run). disc-split with a Leaflet map exists"
-Tour lines on the map coloured by difficulty,map,should,yes,no,Source: press summary
+Split view: list and map side by side,map,must,yes,yes,"List column beside the map at 900px and up, results sheet over the map below it"
+Tour lines on the map coloured by difficulty,map,should,yes,partial,"Built: colour and dash per difficulty. But only the 9 real tracks have a line and none has a difficulty, so today they are drawn in the neutral colour"
 Animated direction markers on tour lines,map,could,yes,no,Source: press summary
-Labelled start points on the map,map,should,yes,no,Source: press summary
+Labelled start points on the map,map,should,yes,partial,Built: start markers ringed in the difficulty colour. Not built: text labels
 Map view can be switched on or off,map,could,yes,no,Source: only the map=true URL parameter. Unconfirmed that there is a control
-"Tour detail page: map, distance, duration, elevation, difficulty, description",tour detail,must,yes,no,GUESS. No source read mentions it. Confirm on screen before building (see recon.md)
+"Tour detail page: map, distance, duration, elevation, difficulty, description",tour detail,must,yes,partial,Not built as S04. The 6 curated routes that have a route page get an Open route page button. Tracks and the other 6 have no page
 Highlights on the map: points and segments with photos and tips,highlights,should,yes,no,Source: help summary. Closest in Naarad: waypoints and audio stops
 "Create a Highlight: pin, name, sport, tip, photos",highlights,could,yes,no,Source: help summary. Closest in Naarad: the Creator audio annotations
 Rate Highlights after an activity and add a tip or photo,highlights,could,yes,no,"Source: help summary. Needs activity recording, so depends on a feature outside this slice"
-Plan a route on the web from waypoints,planning,should,yes,partial,"Naarad has a planner mode (index.html, Leaflet), capabilities not audited. Source: help summary"
+Plan a route on the web from waypoints,planning,should,yes,partial,"Naarad's Plan mode, untouched. Its own search box does nothing: it geocodes and then pans window.discMap, which nothing sets"
 "Add a waypoint by clicking the map, auto-placed in the best position",planning,could,yes,no,Source: help summary
 Add Highlights and places of interest as waypoints,planning,could,yes,no,Source: help summary
 "Import GPX, TCX or FIT",planning,should,yes,no,"Source: help summary. Naarad only has an offline build script (convert-gpx.js), not a user feature"

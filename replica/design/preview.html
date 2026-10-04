@@ -42,7 +42,10 @@
     <div class="nd-filterbar" role="search" aria-label="Find routes">
       <div class="nd-field" style="flex: 1 1 200px; min-width: 180px;">
         <label class="nd-field__label" for="place">Place</label>
-        <input class="nd-field__control" id="place" type="text" value="Chennai, Tamil Nadu" autocomplete="off">
+        <div class="nd-field__row">
+          <input class="nd-field__control" id="place" type="text" value="Chennai, Tamil Nadu" autocomplete="off">
+          <button class="nd-btn" type="button">Use my location</button>
+        </div>
       </div>
       <details class="nd-filters" id="filters" open>
         <summary class="nd-btn">Filters</summary>
