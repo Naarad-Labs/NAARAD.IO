@@ -5,7 +5,7 @@ test.use({ viewport: DESKTOP.size });
 
 test('X-1 every page of the site opens without a console error or a 5xx', async ({ page }) => {
   await page.goto('/'); await page.waitForTimeout(500);
-  for (const id of ['routes', 'planner', 'features', 'updates', 'app', 'creator', 'privacy', 'terms', 'accessibility', 'home']) {
+  for (const id of ['planner', 'features', 'updates', 'app', 'creator', 'privacy', 'terms', 'accessibility', 'home']) {
     await page.evaluate((i) => showPage(i), id);
     await expect(page.locator('#page-' + id)).toHaveClass(/active/);
     await page.waitForTimeout(150);
@@ -75,4 +75,21 @@ test('X-5 the planner page opens the Discover module, not the old planner form',
   await expect(page.locator('#page-planner')).toHaveClass(/active/);
   await expect(page.locator('#nd-root')).toBeVisible();
   await expect(page.locator('#nd-root .nd-card').first()).toBeVisible();
+});
+
+test('X-6 the Routes page is gone, its links lead to the planner, and route pages still open', async ({ page, env }) => {
+  env.allow.push('404');   // /routes is an unknown path now: 404.html answers and sends the visitor home
+  await page.goto('/');
+  await expect(page.locator('#nb-routes, #sb-routes, #page-routes')).toHaveCount(0);
+  await expect(page.locator('nav').getByText(/^Routes$/)).toHaveCount(0);
+  await page.getByRole('button', { name: 'Browse all routes →' }).click();
+  await expect(page.locator('#page-planner')).toHaveClass(/active/);
+  await expect(page.locator('#nd-root')).toBeVisible();
+  for (const url of ['/?page=routes', '/routes']) {
+    await page.goto(url); await page.waitForTimeout(300);
+    await expect(page.locator('#page-home')).toHaveClass(/active/);
+    expect(await page.locator('.page.active').count()).toBe(1);
+  }
+  await page.goto('/?page=route-hampi');
+  await expect(page.locator('#page-route-hampi')).toHaveClass(/active/);
 });

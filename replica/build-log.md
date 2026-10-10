@@ -141,6 +141,18 @@ Asked for by the founder, in the same change that puts the new Discover UI on `m
 - Tests: `X-3`, `X-3b`, `X-4`, `X-5` in `e2e/site-smoke.spec.js`. `e2e/serve.js` now answers an unknown path with `404.html` and a
   404 status, as GitHub Pages does.
 
+## Routes page removed; route lines only when selected (2026-10-10)
+
+- **Routes page removed**: the page, its nav and sidebar buttons, its filter buttons and swipe track (JS and CSS), the `/routes`
+  entry in `sitemap.xml` and the `routes` path in `404.html`. "Browse all routes" on the home page and the five footer links
+  "Heritage Routes" now open the planner. The six route pages (`/routes/hampi` and the rest) stay: Discover cards and the home
+  carousel open them. `/routes` and `/?page=routes` land on home.
+- **Discover map**: every start pin is shown; a route's line (white casing and coloured line) is drawn only while the route is
+  selected, from a card or a pin. Selecting another route replaces it. A tap on empty map puts the selection down. The selected
+  pin turns solid with a white ring and pins stay above the line. Before this, all nine tracks were drawn at once.
+- Service worker cache is `naarad-v9`.
+- Tests: `F01-E19` (both widths) and `X-6`; `F01-E8` now leaves Discover through Features instead of Routes.
+
 ## To ship this
 
 - [PR #3](https://github.com/Naarad-Labs/NAARAD.IO/pull/3) was merged on 2026-10-04 with the skill pack only, so none of the

@@ -92,6 +92,37 @@ for (const vp of [DESKTOP, PHONE]) {
       await expect(page.locator('#nd-map path.is-selected')).toHaveCount(0);
     });
 
+    test(`F01-E19 a route's line is drawn only while that route is selected (${vp.name})`, async ({ page }) => {
+      await goDiscover(page);
+      const lines = page.locator('#nd-map path.route-line:not(.route-line--casing)');
+      await expect(page.locator('#nd-map path.nd-start')).toHaveCount(21);
+      await expect(lines).toHaveCount(0);                                              // every start pin, no lines
+      await title(page, 'Marina Beach Trail').click();
+      await expect(lines).toHaveCount(1);
+      await expect(page.locator('#nd-map path.route-line--casing')).toHaveCount(1);
+      await title(page, 'East Coast Beach Route').click();
+      await expect(lines).toHaveCount(1);                                              // the first line went when the second came
+      await title(page, 'Hampi Vijayanagara Circuit').click();                          // no track in the data: the pin alone is selected
+      await expect(lines).toHaveCount(0);
+      await expect(page.locator('#nd-map path.nd-start.is-selected')).toHaveCount(1);
+      await title(page, 'Marina Beach Trail').click();
+      await expect(lines).toHaveCount(1);
+      const spot = await page.evaluate(() => {                                         // empty map: away from every pin and from the controls drawn over it
+        const map = document.getElementById('nd-map').getBoundingClientRect();
+        const pins = [...document.querySelectorAll('#nd-map path.nd-start')].map((e) => e.getBoundingClientRect());
+        for (let y = map.top + 40; y < map.bottom - 40; y += 24) for (let x = map.left + 40; x < map.right - 40; x += 24) {
+          if (pins.some((r) => Math.hypot(r.left + r.width / 2 - x, r.top + r.height / 2 - y) < 40)) continue;
+          const hit = document.elementFromPoint(x, y);
+          if (hit && hit.closest('#nd-map') && !hit.closest('.leaflet-control') && !hit.closest('path')) return { x, y };
+        }
+        return null;
+      });
+      expect(spot, 'there should be empty map to tap').not.toBeNull();
+      await page.mouse.click(spot.x, spot.y);
+      await expect(lines).toHaveCount(0);
+      await expect(root(page).locator('.nd-card.is-selected')).toHaveCount(0);
+    });
+
     test(`F01-E18 clicking a marker selects its card and brings it into view (${vp.name})`, async ({ page }) => {
       await goDiscover(page);
       await page.locator('#nd-map path.nd-start').nth(15).dispatchEvent('click');
@@ -197,8 +228,8 @@ test.describe('F01 happy paths', () => {
   test('F01-E8 the browser Back button returns to Discover with its filters', async ({ page }) => {
     await goDiscover(page, '&sport=hike');
     await expect(statusOf(page)).toHaveText('4 routes');
-    await page.locator('#nb-routes').click();
-    await expect(page.locator('#page-routes')).toHaveClass(/active/);
+    await page.locator('#nb-features').click();
+    await expect(page.locator('#page-features')).toHaveClass(/active/);
     await page.goBack();
     await expect(page.locator('#page-planner')).toHaveClass(/active/);
     await expect(sport(page, 'Hike')).toBeChecked();

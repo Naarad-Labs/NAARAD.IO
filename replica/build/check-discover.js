@@ -127,7 +127,7 @@ async function main() {
         minFont: Math.min(...[...document.querySelectorAll('#nd-root *')].filter((e) => [...e.childNodes].some((n) => n.nodeType === 3 && n.textContent.trim())).map((e) => parseFloat(getComputedStyle(e).fontSize))),
         columns: getComputedStyle(document.querySelector('.nd-split')).gridTemplateColumns, handle: getComputedStyle(document.getElementById('nd-handle')).display,
         filtersOpen: document.getElementById('nd-filters').open, mapH: document.getElementById('nd-map').getBoundingClientRect().height,
-        leaflet: !!document.querySelector('#nd-map .leaflet-pane'), lines: document.querySelectorAll('#nd-map path.route-line--unknown:not(.route-line--casing)').length,
+        leaflet: !!document.querySelector('#nd-map .leaflet-pane'), lines: document.querySelectorAll('#nd-map path.route-line:not(.route-line--casing)').length,
         starts: document.querySelectorAll('#nd-map path.nd-start').length,
         sheetTop: document.getElementById('nd-sheet').getBoundingClientRect().top, filterBottom: document.querySelector('.nd-filterbar').getBoundingClientRect().bottom,
       }));
@@ -147,7 +147,7 @@ async function main() {
       if (tag === 'desktop') ok(vis.hiddenBySheet === 0, 'no marker should be hidden by the list column');
       ok(vis.flagH > 0 && vis.flagH <= 24, `Leaflet's attribution flag should be small, got ${vis.flagH}px`);
       ok(m.starts === 21, `21 start markers expected, got ${m.starts}`);
-      ok(m.lines === 9, `9 real track lines expected (the unknown-difficulty ones), got ${m.lines}`);
+      ok(m.lines === 0, `no route line should be drawn until a route is selected, got ${m.lines}`);
       if (tag === 'desktop') ok(/^380px /.test(m.columns) && m.handle === 'none' && m.filtersOpen, 'desktop: 380px list column, no handle, filters open: ' + JSON.stringify(m));
       else ok(m.handle !== 'none' && !m.filtersOpen && m.sheetTop - m.filterBottom >= 160, 'phone: sheet handle, filters closed, 160px of map: ' + JSON.stringify(m));
       await axeCheck(p, tag);
@@ -293,9 +293,11 @@ async function main() {
       ok(await track.evaluate((e) => e.classList.contains('is-selected')), 'card should be selected');
       ok((await track.getByRole('button', { name: 'Marina Beach Trail' }).getAttribute('aria-current')) === 'true', 'aria-current on the title button');
       ok((await p.locator('#nd-map path.is-selected').count()) >= 1, 'a line or marker on the map should be selected too');
+      ok((await p.locator('#nd-map path.route-line:not(.route-line--casing)').count()) === 1, 'the selected route (it has a track) draws exactly one line');
       // the other way: click a start marker on the map and the card follows
       await p.locator('#nd-map path.nd-start').nth(3).dispatchEvent('click'); await p.waitForTimeout(300);
       ok((await p.locator('#nd-list .nd-card.is-selected').count()) === 1, 'exactly one card selected after a map click');
+      ok((await p.locator('#nd-map path.route-line:not(.route-line--casing)').count()) <= 1, 'never more than one route line on the map');
       const hampi = p.locator('#nd-list .nd-card', { hasText: 'Hampi Vijayanagara Circuit' });
       await hampi.getByRole('button', { name: /Open the route page/ }).click(); await p.waitForTimeout(200);
       ok(await p.evaluate(() => document.getElementById('page-route-hampi').classList.contains('active')), 'the Hampi route page should open');
@@ -344,7 +346,7 @@ async function main() {
     const p = await open({ url: '/' }); await p.waitForSelector('.swipe-card .diff-easy', { timeout: 5000 });   // fails loudly if the home cards do not render
     const pill = await p.evaluate(() => getComputedStyle(document.querySelector('.swipe-card .diff-easy')).color);
     ok(pill === 'rgb(74, 222, 128)', 'swipe card pill colour changed: ' + pill);
-    for (const id of ['routes', 'features', 'updates', 'planner', 'home']) { await p.evaluate((i) => showPage(i), id); await p.waitForTimeout(150); }
+    for (const id of ['features', 'updates', 'planner', 'home']) { await p.evaluate((i) => showPage(i), id); await p.waitForTimeout(150); }
     await done(p);
   });
   await scenario('without the map library the list still works and says so', async () => {

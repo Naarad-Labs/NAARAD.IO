@@ -224,9 +224,6 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;background:rgba(249,241,220,
 .route-stat .rs-l{font-size:11px;color:var(--txm)}
 
 /* Filter bar */
-.filter-bar{display:flex;gap:10px;margin-bottom:28px;flex-wrap:wrap}
-.filter-btn{padding:7px 18px;border-radius:2px;border:1px solid var(--slate);background:transparent;font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;transition:all 400ms cubic-bezier(0.25,1,0.5,1);font-family:'Inter',sans-serif;color:var(--navy)}
-.filter-btn:hover,.filter-btn.active{background:var(--or);color:white;border-color:var(--or)}
 
 /* ════════════════════════════════
   PAGE 2 — PLANNER
@@ -1645,9 +1642,6 @@ if ('serviceWorker' in navigator) {
     <button class="sidebar-close" onclick="closeSidebar()">✕</button>
   </div>
   <nav class="sidebar-nav">
-    <button id="sb-routes" onclick="showPage('routes');closeSidebar()">
-      <span class="sidebar-icon">🗺️</span> Routes
-    </button>
     <button id="sb-planner" onclick="showPage('planner');closeSidebar()">
       <span class="sidebar-icon">🧭</span> Planner
     </button>
@@ -1673,7 +1667,6 @@ if ('serviceWorker' in navigator) {
       <span class="nav-logo-txt">Naarad</span>
     </a>
     <ul class="nav-links" role="list">
-      <li><button onclick="showPage('routes')" id="nb-routes">Routes</button></li>
       <li><button onclick="showPage('planner')" id="nb-planner">Planner</button></li>
       <li><button onclick="showPage('features')" id="nb-features">Features</button></li>
       <li><button onclick="showPage('updates')" id="nb-updates">Updates</button></li>
@@ -1772,7 +1765,7 @@ if ('serviceWorker' in navigator) {
           <span class="sec-tag">Heritage Corridors</span>
           <h2 class="sec-h">Discover India's living history</h2>
         </div>
-        <button class="btn-pri" onclick="showPage('routes')">Browse all routes →</button>
+        <button class="btn-pri" onclick="showPage('planner')">Browse all routes →</button>
       </div>
       <div class="routes-swipe-wrap">
         <div class="routes-swipe-track" id="swipe-home" role="list" aria-label="Featured routes"></div>
@@ -1793,73 +1786,7 @@ if ('serviceWorker' in navigator) {
         </div>
       </div>
       <div class="foot-col"><h4>Explore</h4><ul>
-        <li><a href="#" onclick="showPage('routes')">Heritage Routes</a></li>
-        <li><a href="#" onclick="showPage('planner')">Route Planner</a></li>
-        <li><a href="#" onclick="showPage('features')">Quest Library</a></li>
-        <li><a href="#" onclick="showPage('app')">District Passes</a></li>
-        <li><a href="#" onclick="showPage('creator')">Creator Programme</a></li>
-      </ul></div>
-      <div class="foot-col"><h4>Company</h4><ul>
-        <li><a href="#" onclick="showPage('updates')">Partnerships</a></li>
-        <li><a href="#" onclick="showPage('updates')">FCDO Grant</a></li>
-        <li><a href="#" onclick="showPage('updates')">Press</a></li>
-        <li><a href="mailto:careers@naarad.io">Careers</a></li>
-      </ul></div>
-      <div class="foot-col"><h4>Support</h4><ul>
-        <li><a href="mailto:support@naarad.io">Help Centre</a></li>
-        <li><a href="#" onclick="showPage('accessibility');return false">Accessibility</a></li>
-        <li><a href="#" onclick="showPage('privacy');return false">Privacy Policy</a></li>
-        <li><a href="#" onclick="showPage('terms');return false">Terms of Use</a></li>
-        <li><a href="mailto:hello@naarad.io">Contact Us</a></li>
-      </ul></div>
-    </div>
-    <div class="foot-bot">
-      <p>© 2026 NAARAD — Navigational AI Analytics Research &amp; Development Initiative. Built by Aryan Mishra.</p>
-      <span class="foot-tagline">Stop Touring. Start Traveling.</span>
-    </div>
-  </div>
-</footer>
-</div>
-
-<!-- ══════════ PAGE: ROUTES ══════════ -->
-<div class="page" id="page-routes">
-  <section class="sec" style="background:var(--linen);padding-bottom:0">
-    <div class="container">
-      <span class="sec-tag">All Heritage Routes</span>
-      <h2 class="sec-h">Explore India's living corridors</h2>
-      <p class="sec-sub" style="margin-bottom:28px">60+ curated heritage routes across India. Offline-first. Multilingual. Creator-led.</p>
-      <div class="filter-bar">
-        <button class="filter-btn active">All Routes</button>
-        <button class="filter-btn">Tamil Nadu</button>
-        <button class="filter-btn">Karnataka</button>
-        <button class="filter-btn">Maharashtra</button>
-        <button class="filter-btn">Rajasthan</button>
-        <button class="filter-btn">Odisha</button>
-        <button class="filter-btn">Offline-Ready</button>
-        <button class="filter-btn">Free</button>
-      </div>
-    </div>
-  </section>
-  <section class="sec" style="background:white;padding-top:32px;padding-left:0;padding-right:0">
-    <div style="max-width:1280px;margin:0 auto;padding:0 12px">
-      <div class="routes-swipe-wrap">
-        <div class="routes-swipe-track" id="swipe-routes" role="list" aria-label="All heritage routes"></div>
-      </div>
-      <div class="swipe-dots" id="dots-routes" aria-hidden="true"></div>
-    </div>
-  </section>
-  <footer>
-  <div class="foot-in">
-    <div class="foot-top">
-      <div class="foot-brand">
-        <h3><img src="LOGO_PLACEHOLDER" class="foot-brand-logo" alt=""/>Naarad</h3>
-        <p>The Navigational AI Analytics Research &amp; Development Initiative. Transforming tourists from consumers into creators across India's heritage corridors.</p>
-        <div class="foot-social">
-          <a href="https://twitter.com/naarad_io" class="fsb" target="_blank" rel="noopener" aria-label="X / Twitter">𝕏</a><a href="https://linkedin.com/company/naarad-io" class="fsb" target="_blank" rel="noopener" aria-label="LinkedIn">in</a><a href="https://youtube.com/@naaradio" class="fsb" target="_blank" rel="noopener" aria-label="YouTube">▶</a><a href="https://instagram.com/naarad.io" class="fsb" target="_blank" rel="noopener" aria-label="Instagram">📸</a>
-        </div>
-      </div>
-      <div class="foot-col"><h4>Explore</h4><ul>
-        <li><a href="#" onclick="showPage('routes')">Heritage Routes</a></li>
+        <li><a href="#" onclick="showPage('planner')">Heritage Routes</a></li>
         <li><a href="#" onclick="showPage('planner')">Route Planner</a></li>
         <li><a href="#" onclick="showPage('features')">Quest Library</a></li>
         <li><a href="#" onclick="showPage('app')">District Passes</a></li>
@@ -2040,7 +1967,7 @@ if ('serviceWorker' in navigator) {
         </div>
       </div>
       <div class="foot-col"><h4>Explore</h4><ul>
-        <li><a href="#" onclick="showPage('routes')">Heritage Routes</a></li>
+        <li><a href="#" onclick="showPage('planner')">Heritage Routes</a></li>
         <li><a href="#" onclick="showPage('planner')">Route Planner</a></li>
         <li><a href="#" onclick="showPage('features')">Quest Library</a></li>
         <li><a href="#" onclick="showPage('app')">District Passes</a></li>
@@ -2151,7 +2078,7 @@ if ('serviceWorker' in navigator) {
         </div>
       </div>
       <div class="foot-col"><h4>Explore</h4><ul>
-        <li><a href="#" onclick="showPage('routes')">Heritage Routes</a></li>
+        <li><a href="#" onclick="showPage('planner')">Heritage Routes</a></li>
         <li><a href="#" onclick="showPage('planner')">Route Planner</a></li>
         <li><a href="#" onclick="showPage('features')">Quest Library</a></li>
         <li><a href="#" onclick="showPage('app')">District Passes</a></li>
@@ -2301,7 +2228,7 @@ if ('serviceWorker' in navigator) {
         </div>
       </div>
       <div class="foot-col"><h4>Explore</h4><ul>
-        <li><a href="#" onclick="showPage('routes')">Heritage Routes</a></li>
+        <li><a href="#" onclick="showPage('planner')">Heritage Routes</a></li>
         <li><a href="#" onclick="showPage('planner')">Route Planner</a></li>
         <li><a href="#" onclick="showPage('features')">Quest Library</a></li>
         <li><a href="#" onclick="showPage('app')">District Passes</a></li>
@@ -2504,7 +2431,7 @@ if ('serviceWorker' in navigator) {
         </div>
       </div>
       <div class="foot-col"><h4>Explore</h4><ul>
-        <li><a href="#" onclick="showPage('routes')">Heritage Routes</a></li>
+        <li><a href="#" onclick="showPage('planner')">Heritage Routes</a></li>
         <li><a href="#" onclick="showPage('planner')">Route Planner</a></li>
         <li><a href="#" onclick="showPage('features')">Quest Library</a></li>
         <li><a href="#" onclick="showPage('app')">District Passes</a></li>
@@ -2757,7 +2684,7 @@ const LOGO_SRC = "data:image/png;base64," + LOGO_B64;
 document.querySelectorAll('img[src="LOGO_PLACEHOLDER"]').forEach(img => { img.src = LOGO_SRC; });
 
 // ── PAGE ROUTER ──
-const pages = ['home','routes','planner','features','updates','app','creator','privacy','terms','accessibility'];
+const pages = ['home','planner','features','updates','app','creator','privacy','terms','accessibility'];
 function showPage(id) {
   window.__currentPage = id;
   // The route pages (page-route-*) are not in `pages`, so hide every page here or one opened earlier stays on screen.
@@ -2798,14 +2725,6 @@ function switchTab(tab) {
 }
 document.getElementById('auth-modal').addEventListener('click', e => { if(e.target===e.currentTarget) closeModal(); });
 
-// ── FILTER BUTTONS ──
-document.querySelectorAll('.filter-btn').forEach(btn => {
-  btn.addEventListener('click', function() {
-    this.closest('.filter-bar').querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
-    this.classList.add('active');
-  });
-});
-
 // ── PLAN TAGS ──
 document.querySelectorAll('.plan-tag').forEach(tag => {
   tag.addEventListener('click', function() { this.classList.toggle('on'); });
@@ -2825,7 +2744,6 @@ triggerFades();
 // and the remove-then-add cycle breaks IntersectionObserver timing for
 // .fade-up elements that are already in the viewport on boot.
 window.__currentPage = 'home';
-document.getElementById('nb-routes').classList.add('active');
 setTimeout(triggerFades, 50);
 
 // ── SIDEBAR ──
@@ -4078,7 +3996,7 @@ function switchTab(rid, tab, btn) {
 ══════════════════════════════════════════════ */
 (function() {
   var PAGE_TO_PATH = {
-    'home': '/', 'routes': '/routes', 'planner': '/planner',
+    'home': '/', 'planner': '/planner',
     'features': '/features', 'updates': '/updates',
     'app': '/app', 'privacy': '/privacy', 'terms': '/terms',
     'accessibility': '/accessibility',
@@ -4103,7 +4021,6 @@ function switchTab(rid, tab, btn) {
     // Update document title
     var titles = {
       'home': 'Naarad — Stop Touring. Start Traveling.',
-      'routes': 'Heritage Routes — Naarad',
       'planner': 'Route Planner — Naarad',
       'features': 'Features — Naarad',
       'updates': 'Updates — Naarad',
@@ -4450,7 +4367,7 @@ function switchTab(rid, tab, btn) {
   window.showPage = function(id) {
     if (_origShowPageAnnounce) _origShowPageAnnounce(id);
     var labels = {
-      home: 'Home page', routes: 'Heritage Routes', planner: 'Route Planner',
+      home: 'Home page', planner: 'Route Planner',
       features: 'Platform Features', updates: 'Updates',
       app: 'Get the App', privacy: 'Privacy Policy', terms: 'Terms of Use',
       accessibility: 'Accessibility Statement'
@@ -4609,8 +4526,6 @@ function switchTab(rid, tab, btn) {
   function populateTracks(routes) {
     var homeTrack = document.getElementById('swipe-home');
     var homeDots  = document.getElementById('dots-home');
-    var routesTrack = document.getElementById('swipe-routes');
-    var routesDots  = document.getElementById('dots-routes');
 
     if (homeTrack) {
       homeTrack.innerHTML = '';
@@ -4618,13 +4533,6 @@ function switchTab(rid, tab, btn) {
         homeTrack.appendChild(buildCard(r, i === 0));
       });
       if (homeDots) buildDots(homeTrack, homeDots, routes.slice(0, 4));
-    }
-    if (routesTrack) {
-      routesTrack.innerHTML = '';
-      routes.forEach(function(r, i) {
-        routesTrack.appendChild(buildCard(r, i === 0));
-      });
-      if (routesDots) buildDots(routesTrack, routesDots, routes);
     }
   }
 
@@ -4636,10 +4544,7 @@ function switchTab(rid, tab, btn) {
       if (window.__naaradRoutes) {
         var homeTrack = document.getElementById('swipe-home');
         var homeDots  = document.getElementById('dots-home');
-        var routesTrack = document.getElementById('swipe-routes');
-        var routesDots  = document.getElementById('dots-routes');
         if (homeTrack && homeDots) buildDots(homeTrack, homeDots, window.__naaradRoutes.slice(0, 4));
-        if (routesTrack && routesDots) buildDots(routesTrack, routesDots, window.__naaradRoutes);
       }
     }, 250);
   });
