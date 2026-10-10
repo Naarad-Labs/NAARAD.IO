@@ -125,10 +125,27 @@ These are in the existing site. I did not change them, except where noted.
 11. **The Map button is orange**, as in the original, which makes it the one element that is a near copy. See `brand-review.md`,
     "How close is too close".
 
+## Landing page and About page (2026-10-10)
+
+Asked for by the founder, in the same change that puts the new Discover UI on `main`.
+
+- **Hero headline** is now "Know a new world. Know it with Naarad." and nothing else on the site says it (the old `hero-sub`
+  line that held a version of it is gone). The size follows the column so it stays on two lines from 320 px to a wide desktop.
+- **About page removed**: the page, its nav and sidebar buttons, its script, its CSS, its `pages`, route and title entries, the
+  `sitemap.xml` entry and the `404.html` whitelist entry. The six footer links labelled "About Naarad" went too (they pointed at
+  Updates, not at the About page). `/about` and `/?page=about` now land on home; `initUrlPage` and the `popstate` handler check
+  that the page exists, so an old link can no longer leave a blank screen.
+- Service worker cache is `naarad-v8`.
+- Not touched, on purpose: the old slogan "Stop Touring. Start Traveling." in `<title>`, the Open Graph and Twitter titles, the
+  footer tagline and the home entry of the tab-title map; the About-page photos in `Images/`.
+- Tests: `X-3`, `X-3b`, `X-4`, `X-5` in `e2e/site-smoke.spec.js`. `e2e/serve.js` now answers an unknown path with `404.html` and a
+  404 status, as GitHub Pages does.
+
 ## To ship this
 
-- Merge [PR #3](https://github.com/Naarad-Labs/NAARAD.IO/pull/3). It changes `index.html` and `sw.js`, so it changes the live site.
-  The service worker cache name is now `naarad-v7` so existing visitors pick the new files up. **Bump it again whenever a cached
-  file changes.**
+- [PR #3](https://github.com/Naarad-Labs/NAARAD.IO/pull/3) was merged on 2026-10-04 with the skill pack only, so none of the
+  Discover work reached `main` until the pull request that carries this log. Merging that one is what puts it on the live site.
+  It changes `index.html` and `sw.js`. The service worker cache name is `naarad-v8` so existing visitors pick the new files up.
+  **Bump it again whenever a cached file changes.**
 - Not required to ship, but next: apply `schema.sql` to a staging copy of the Supabase project, write `scripts/ingest-tours.mjs`,
   and swap `discover/data.js` for `supabase.rpc` calls (`/replica-backend`).

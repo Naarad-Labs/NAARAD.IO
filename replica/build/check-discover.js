@@ -344,7 +344,7 @@ async function main() {
     const p = await open({ url: '/' }); await p.waitForSelector('.swipe-card .diff-easy', { timeout: 5000 });   // fails loudly if the home cards do not render
     const pill = await p.evaluate(() => getComputedStyle(document.querySelector('.swipe-card .diff-easy')).color);
     ok(pill === 'rgb(74, 222, 128)', 'swipe card pill colour changed: ' + pill);
-    for (const id of ['routes', 'features', 'about', 'planner', 'home']) { await p.evaluate((i) => showPage(i), id); await p.waitForTimeout(150); }
+    for (const id of ['routes', 'features', 'updates', 'planner', 'home']) { await p.evaluate((i) => showPage(i), id); await p.waitForTimeout(150); }
     await done(p);
   });
   await scenario('without the map library the list still works and says so', async () => {

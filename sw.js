@@ -2,7 +2,7 @@
 
 // Bump this whenever a cached file changes (index.html, discover/*, creator/*): static files are
 // served cache-first, so visitors keep the old ones until the version changes.
-const CACHE_NAME = 'naarad-v7';
+const CACHE_NAME = 'naarad-v8';
 const STATIC_ASSETS = [
   '/',
   '/index.html',

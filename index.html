@@ -180,9 +180,9 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;background:rgba(249,241,220,
 .hero-cnt{position:relative;z-index:2;color:white;padding:0 64px 80px;max-width:1400px;width:100%;display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:flex-end}
 .hero-logo{width:100px;height:100px;object-fit:contain;margin:0 auto 24px;display:block;filter:drop-shadow(0 4px 24px rgba(0,0,0,.5))}
 .hero-eyebrow{display:block;background:none;color:var(--terra);font-size:10px;font-weight:700;letter-spacing:3.5px;text-transform:uppercase;padding:0;border-radius:0;margin-bottom:22px;display:flex;align-items:center;gap:12px}.hero-eyebrow::before{content:'';display:block;width:32px;height:1px;background:var(--terra);flex-shrink:0}
-.hero-title{font-family:'Playfair Display',serif;font-size:clamp(48px,7.5vw,96px);font-weight:700;line-height:0.97;letter-spacing:-2.5px;margin-bottom:22px;text-shadow:none}
+/* Two lines, "Know a new world." / "Know it with Naarad.". The longer line is about 9em wide, so the size follows the column: (viewport - 176px) / 2 is the left column of the two-column hero. */
+.hero-title{font-family:'Playfair Display',serif;font-size:clamp(36px,calc((100vw - 176px) / 18.8),64px);font-weight:700;line-height:0.97;letter-spacing:-0.025em;margin-bottom:40px;text-shadow:none}
 .hero-title span{color:var(--terra);font-style:italic}
-.hero-sub{font-size:15px;opacity:.78;margin-bottom:40px;line-height:1.7;max-width:460px;font-weight:300;letter-spacing:0.1px}
 .hero-btns{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
 .btn-hero{padding:14px 32px;border-radius:2px;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all 400ms cubic-bezier(0.25,1,0.5,1);text-decoration:none;display:inline-flex;align-items:center;gap:10px;font-family:'Inter',sans-serif;border:1px solid transparent}
 .btn-hor{background:var(--terra);border-color:var(--terra);color:white}.btn-hor:hover{background:var(--terra-d);border-color:var(--terra-d);letter-spacing:3px}
@@ -485,7 +485,7 @@ footer{background:var(--nv);color:white;padding:68px 32px 28px}
   .foot-top{grid-template-columns:1fr 1fr}
 }
 @media(max-width:700px){
-  .routes-grid,.feat-grid,.app-feats-grid,.pricing-grid,.about-grid{grid-template-columns:1fr}
+  .routes-grid,.feat-grid,.app-feats-grid,.pricing-grid{grid-template-columns:1fr}
   .route-feat{grid-column:span 1}
   .route-feat .route-img{height:240px}
   .stats-grid{grid-template-columns:repeat(2,1fr)}
@@ -523,66 +523,6 @@ footer{background:var(--nv);color:white;padding:68px 32px 28px}
     rgba(10,22,40,.78) 100%);
 }
 .hero-video-bg video { display: none; }
-.about-grid{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:24px;
-  margin-top:40px;
-}
-.about-card{
-  background:white;
-  border-radius:24px;
-  padding:28px;
-  box-shadow:0 16px 40px rgba(19,28,64,.08);
-}
-.about-card-img{
-  width: 100%;
-  height: 240px;
-  object-fit: cover;
-  border-radius: 16px;
-  margin-bottom: 20px;
-  display: block;
-}
-.about-role{
-  display:inline-block;
-  margin-bottom:14px;
-  color:var(--or);
-  font-size:12px;
-  font-weight:700;
-  letter-spacing:1.5px;
-  text-transform:uppercase;
-}
-.about-name{
-  font-size:22px;
-  font-weight:800;
-  color:var(--nv);
-  margin-bottom:14px;
-}
-.about-copy{
-  font-size:15px;
-  color:var(--txm);
-  line-height:1.8;
-}
-.about-philosophy{
-  background:white;
-  border-radius:24px;
-  padding:32px;
-  box-shadow:0 16px 40px rgba(19,28,64,.06);
-  margin-top:40px;
-}
-.about-philosophy h3{
-  font-size:20px;
-  font-weight:700;
-  color:var(--nv);
-  margin-bottom:18px;
-}
-.about-philosophy p{
-  font-size:15px;
-  color:var(--txm);
-  line-height:1.8;
-  margin-bottom:16px;
-}
-
 /* ── HAMBURGER ── */
 .hamburger {
   display: none;
@@ -1324,6 +1264,7 @@ footer{background:var(--nv);color:white;padding:68px 32px 28px}
 @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.3)}}
 @media(max-width:900px){
   .hero-cnt{grid-template-columns:1fr;padding:0 28px 72px}
+  .hero-title{font-size:clamp(28px,calc((100vw - 56px) / 9.4),72px)}
   .hero-right{display:none}
 }
 
@@ -1368,15 +1309,6 @@ footer{background:var(--nv);color:white;padding:68px 32px 28px}
 .pricing-card:hover{border-color:var(--navy)}
 .pricing-card.featured{background:var(--navy);color:var(--linen);border-color:var(--navy)}
 
-/* About section */
-.about-card{
-  background:white;border-radius:0;
-  padding:36px 28px;border:1px solid var(--slate);
-  box-shadow:none;
-  transition:border-color 400ms cubic-bezier(0.25,1,0.5,1);
-}
-.about-card:hover{border-color:var(--terra)}
-
 /* Route pages — editorial content */
 .rp-title{font-family:'Playfair Display',serif;letter-spacing:-0.5px}
 
@@ -1411,490 +1343,6 @@ footer{background:var(--navy);color:var(--linen)}
 .foot-top a{color:rgba(249,241,220,.55);font-size:13px;font-weight:400;transition:color 400ms cubic-bezier(0.25,1,0.5,1)}
 .foot-top a:hover{color:var(--terra)}
 .foot-copy{border-top:1px solid rgba(184,190,201,.2);color:rgba(249,241,220,.4);font-size:11px;letter-spacing:0.5px}
-
-/* ── ABOUT PAGE — scoped editorial treatment ── */
-#page-about {
-  background: var(--linen);
-}
-#page-about .about-intro {
-  padding: 112px 32px 104px;
-  background: var(--linen);
-}
-#page-about .about-hero-copy {
-  max-width: 760px;
-  margin-bottom: 64px;
-}
-#page-about .about-hero-copy .sec-h {
-  max-width: 720px;
-  font-size: clamp(42px, 6vw, 76px);
-  line-height: .98;
-  letter-spacing: -1.8px;
-  margin-bottom: 24px;
-}
-#page-about .about-hero-copy .sec-sub {
-  max-width: 600px;
-  font-size: 17px;
-  line-height: 1.75;
-}
-#page-about .about-grid {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 16px;
-  margin-top: 0;
-  align-items: start;
-}
-#page-about .about-card {
-  isolation: isolate;
-  padding: 0 0 30px;
-  overflow: hidden;
-  background: white;
-  border: 1px solid var(--slate);
-  border-radius: 24px;
-  transition: transform .35s ease, border-color .35s ease, box-shadow .35s ease;
-}
-#page-about .about-card:nth-child(1) {
-  background: #fffdf8;
-}
-#page-about .about-card:nth-child(2) {
-  background: #f7f8f5;
-}
-#page-about .about-card:nth-child(3) {
-  background: #fffaf4;
-}
-#page-about .about-card:nth-child(2) {
-  margin-top: 40px;
-}
-#page-about .about-card::before {
-  content: '0' counter(about-card);
-  counter-increment: about-card;
-  position: absolute;
-  top: 18px;
-  right: 20px;
-  z-index: 2;
-  color: var(--terra);
-  font: 700 10px 'Inter', sans-serif;
-  letter-spacing: 2px;
-}
-#page-about .about-grid {
-  counter-reset: about-card;
-}
-#page-about .about-card:hover {
-  transform: translateY(-6px);
-  border-color: var(--terra);
-  box-shadow: 0 18px 44px rgba(23,39,82,.12);
-}
-#page-about .about-card-img {
-  position: relative;
-  width: 208px;
-  height: 208px;
-  margin: 34px auto 28px;
-  border: 8px solid var(--linen);
-  border-radius: 50%;
-  outline: 1px solid var(--terra);
-  outline-offset: 7px;
-  object-fit: cover;
-  object-position: center 22%;
-  background: var(--linen-d);
-  filter: saturate(.9) contrast(1.03);
-  transition: transform .55s ease, filter .55s ease, outline-offset .35s ease;
-}
-#page-about .about-card:hover .about-card-img {
-  transform: scale(1.04);
-  filter: saturate(1);
-  outline-offset: 10px;
-}
-#page-about .about-role,
-#page-about .about-name,
-#page-about .about-copy {
-  margin-left: 28px;
-  margin-right: 28px;
-}
-#page-about .about-role {
-  display: table;
-  margin-left: auto;
-  margin-right: auto;
-  padding: 5px 10px 4px;
-  background: var(--linen);
-  border-left: 2px solid var(--terra);
-  margin-bottom: 10px;
-  color: var(--terra);
-  font-size: 10px;
-  letter-spacing: 2px;
-}
-#page-about .about-name {
-  position: relative;
-  text-align: center;
-  font-family: 'Playfair Display', serif;
-  font-size: 27px;
-  line-height: 1.1;
-  letter-spacing: -.3px;
-  margin-bottom: 18px;
-}
-#page-about .about-name::after {
-  content: '';
-  display: block;
-  width: 28px;
-  height: 1px;
-  margin: 12px auto 0;
-  background: var(--terra);
-}
-#page-about .about-linkedin {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 7px;
-  width: fit-content;
-  margin: -6px auto 20px;
-  color: var(--navy);
-  font: 700 10px 'Inter', sans-serif;
-  letter-spacing: 1.2px;
-  text-decoration: none;
-  text-transform: uppercase;
-  transition: color .25s ease, gap .25s ease;
-}
-#page-about .about-linkedin span {
-  color: var(--terra);
-  font-size: 14px;
-  line-height: 1;
-}
-#page-about .about-linkedin:hover {
-  gap: 10px;
-  color: var(--terra);
-}
-#page-about .about-linkedin:focus-visible {
-  outline: 2px solid var(--terra);
-  outline-offset: 4px;
-}
-#page-about .about-copy {
-  font-size: 12px;
-  line-height: 1.75;
-}
-#page-about .about-copy-extra {
-  display: none;
-}
-#page-about .about-card:first-child .about-copy-first {
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 3;
-  overflow: hidden;
-}
-#page-about .about-card.is-open .about-copy-extra {
-  display: inline;
-}
-#page-about .about-card.is-open:first-child .about-copy-first {
-  display: inline;
-  -webkit-line-clamp: unset;
-}
-#page-about .about-read-more {
-  display: block;
-  margin: 20px 28px 0;
-  padding: 0 0 4px;
-  border: 0;
-  border-bottom: 1px solid var(--terra);
-  background: transparent;
-  color: var(--terra);
-  font: 700 10px 'Inter', sans-serif;
-  letter-spacing: 1.6px;
-  text-transform: uppercase;
-  cursor: pointer;
-  transition: color .25s ease, border-color .25s ease;
-}
-#page-about .about-read-more:hover {
-  color: var(--navy);
-  border-color: var(--navy);
-}
-#page-about .about-read-more:focus-visible {
-  outline: 2px solid var(--terra);
-  outline-offset: 4px;
-}
-#page-about .about-card:nth-child(2) .about-card-img {
-  object-position: center 18%;
-}
-#page-about .about-card:nth-child(3) .about-card-img {
-  object-position: center 28%;
-}
-#page-about .about-philosophy {
-  display: grid;
-  grid-template-columns: minmax(180px, .75fr) 1.25fr;
-  column-gap: 72px;
-  margin-top: 72px;
-  padding: 52px 0 0;
-  background: transparent;
-  border-top: 1px solid var(--navy);
-}
-#page-about .about-philosophy h3 {
-  margin: 0;
-  font-family: 'Playfair Display', serif;
-  font-size: 30px;
-  line-height: 1.1;
-}
-#page-about .about-philosophy p {
-  margin: 0 0 16px;
-  font-size: 15px;
-  line-height: 1.8;
-}
-#page-about .about-philosophy p:last-child {
-  margin-bottom: 0;
-}
-#page-about .about-supporters {
-  padding: 72px 32px 80px;
-  background: white;
-  border-top: 1px solid var(--slate);
-  border-bottom: 1px solid var(--slate);
-  border-radius: 28px 28px 0 0;
-}
-#page-about .about-section-heading {
-  display: flex;
-  justify-content: space-between;
-  align-items: end;
-  gap: 32px;
-  margin-bottom: 36px;
-}
-#page-about .about-section-title {
-  max-width: 430px;
-  margin: 0;
-  color: var(--navy);
-  font-family: 'Playfair Display', serif;
-  font-size: clamp(28px, 4vw, 44px);
-  line-height: 1.05;
-  letter-spacing: -.7px;
-}
-#page-about .about-supporter-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  border-top: 1px solid var(--slate);
-  border-bottom: 1px solid var(--slate);
-  border-radius: 16px;
-  overflow: hidden;
-  background: var(--linen);
-}
-#page-about .about-supporter {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  min-height: 104px;
-  padding: 18px;
-  color: var(--navy);
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 1.2px;
-  text-transform: uppercase;
-  border-right: 1px solid var(--slate);
-  background: rgba(255,255,255,.5);
-  transition: background .25s ease, color .25s ease;
-}
-#page-about .about-supporter:nth-child(even) {
-  background: rgba(249,241,220,.72);
-}
-#page-about .about-supporter:hover {
-  background: white;
-  color: var(--terra);
-}
-#page-about .about-supporter:last-child {
-  border-right: none;
-}
-#page-about .about-supporter img {
-  width: 42px;
-  height: 42px;
-  object-fit: contain;
-}
-#page-about .about-cta {
-  padding: 88px 32px;
-  background: var(--navy);
-  color: var(--linen);
-  border-radius: 28px 28px 0 0;
-}
-#page-about .about-cta-inner {
-  display: flex;
-  align-items: end;
-  justify-content: space-between;
-  gap: 40px;
-}
-#page-about .about-cta .sec-tag {
-  color: var(--terra);
-}
-#page-about .about-cta-title {
-  max-width: 620px;
-  margin: 0;
-  color: var(--linen);
-  font-family: 'Playfair Display', serif;
-  font-size: clamp(34px, 5vw, 62px);
-  line-height: 1;
-  letter-spacing: -1.2px;
-}
-#page-about .about-cta-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 18px;
-  flex-shrink: 0;
-  padding: 15px 20px;
-  border: 1px solid var(--terra);
-  background: var(--terra);
-  color: white;
-  font-family: 'Inter', sans-serif;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 1.7px;
-  text-transform: uppercase;
-  cursor: pointer;
-  border-radius: 999px;
-  transition: background .3s ease, border-color .3s ease, gap .3s ease;
-}
-#page-about .about-cta-btn:hover {
-  gap: 26px;
-  background: var(--terra-d);
-  border-color: var(--terra-d);
-}
-#page-about .about-footer {
-  padding: 36px 32px 28px;
-  background: var(--navy);
-  border-top: 1px solid rgba(249,241,220,.16);
-  border-radius: 0 0 28px 28px;
-}
-#page-about .about-footer-inner {
-  display: grid;
-  grid-template-columns: 1.2fr 1fr auto;
-  align-items: center;
-  gap: 28px;
-}
-#page-about .about-footer-brand {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-}
-#page-about .about-footer-brand strong {
-  color: white;
-  font-family: 'Playfair Display', serif;
-  font-size: 24px;
-}
-#page-about .about-footer-brand span,
-#page-about .about-footer-copy {
-  color: rgba(249,241,220,.5);
-  font-size: 11px;
-  line-height: 1.5;
-}
-#page-about .about-footer-links {
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 18px;
-}
-#page-about .about-footer-links button {
-  padding: 0;
-  border: 0;
-  background: transparent;
-  color: rgba(249,241,220,.72);
-  font: 600 10px 'Inter', sans-serif;
-  letter-spacing: 1.2px;
-  text-transform: uppercase;
-  cursor: pointer;
-  transition: color .25s ease;
-}
-#page-about .about-footer-links button:hover {
-  color: var(--terra);
-}
-#page-about .about-footer-copy {
-  margin: 0;
-  text-align: right;
-  white-space: nowrap;
-}
-@media (prefers-reduced-motion: reduce) {
-  #page-about .about-card,
-  #page-about .about-card-img,
-  #page-about .about-cta-btn {
-    transition: none;
-  }
-  #page-about .about-card:hover {
-    transform: none;
-  }
-}
-@media (max-width: 900px) {
-  #page-about .about-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-  #page-about .about-card:nth-child(2) {
-    margin-top: 0;
-  }
-  #page-about .about-card:last-child {
-    grid-column: 1 / -1;
-    max-width: calc(50% - 8px);
-  }
-  #page-about .about-footer-inner {
-    grid-template-columns: 1fr 1fr;
-  }
-  #page-about .about-footer-copy {
-    grid-column: 1 / -1;
-    text-align: left;
-  }
-}
-@media (max-width: 640px) {
-  #page-about .about-intro {
-    padding: 76px 20px 72px;
-  }
-  #page-about .about-hero-copy {
-    margin-bottom: 42px;
-  }
-  #page-about .about-hero-copy .sec-h {
-    font-size: clamp(40px, 13vw, 58px);
-  }
-  #page-about .about-grid {
-    grid-template-columns: 1fr;
-    gap: 16px;
-  }
-  #page-about .about-card:last-child {
-    grid-column: auto;
-    max-width: none;
-  }
-  #page-about .about-card-img {
-    width: 184px;
-    height: 184px;
-  }
-  #page-about .about-philosophy {
-    grid-template-columns: 1fr;
-    gap: 24px;
-    margin-top: 52px;
-    padding-top: 36px;
-  }
-  #page-about .about-supporters {
-    padding: 60px 20px 64px;
-  }
-  #page-about .about-section-heading,
-  #page-about .about-cta-inner {
-    display: block;
-  }
-  #page-about .about-section-heading .sec-tag {
-    margin-bottom: 18px;
-  }
-  #page-about .about-supporter-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  #page-about .about-supporter:nth-child(2) {
-    border-right: none;
-  }
-  #page-about .about-supporter:nth-child(-n+2) {
-    border-bottom: 1px solid var(--slate);
-  }
-  #page-about .about-cta {
-    padding: 68px 20px;
-  }
-  #page-about .about-cta-btn {
-    margin-top: 32px;
-  }
-  #page-about .about-footer {
-    padding: 32px 20px 24px;
-  }
-  #page-about .about-footer-inner {
-    grid-template-columns: 1fr;
-    gap: 24px;
-  }
-  #page-about .about-footer-links {
-    justify-content: flex-start;
-  }
-  #page-about .about-footer-copy {
-    grid-column: auto;
-    white-space: normal;
-  }
-}
 
 /* ── UPDATES PAGE — scoped editorial treatment ── */
 #page-updates { background: var(--linen); }
@@ -2209,9 +1657,6 @@ if ('serviceWorker' in navigator) {
     <button id="sb-updates" onclick="showPage('updates');closeSidebar()">
       <span class="sidebar-icon">📰</span> Updates
     </button>
-    <button id="sb-about" onclick="showPage('about');closeSidebar()">
-      <span class="sidebar-icon">ℹ️</span> About
-    </button>
     <button id="sb-app" onclick="showPage('app');closeSidebar()">
       <span class="sidebar-icon">📱</span> Get the App
     </button>
@@ -2232,7 +1677,6 @@ if ('serviceWorker' in navigator) {
       <li><button onclick="showPage('planner')" id="nb-planner">Planner</button></li>
       <li><button onclick="showPage('features')" id="nb-features">Features</button></li>
       <li><button onclick="showPage('updates')" id="nb-updates">Updates</button></li>
-      <li><button onclick="showPage('about')" id="nb-about">About</button></li>
       <li><button onclick="showPage('app')" id="nb-app">Get the App</button></li>
     </ul>
     <button class="hamburger" id="hamburger-btn" onclick="toggleSidebar()" aria-label="Open navigation menu" aria-expanded="false" aria-controls="sidebar">
@@ -2260,8 +1704,7 @@ if ('serviceWorker' in navigator) {
       <!-- Left: Title + CTA -->
       <div class="hero-left">
         <span class="hero-eyebrow">AI-Powered Heritage Exploration</span>
-        <h1 class="hero-title">Stop Touring.<br/>Start <span>Traveling.</span></h1>
-        <p class="hero-sub">Know A New World Know it with Naarad</p>
+        <h1 class="hero-title">Know a new world.<br/>Know it with <span>Naarad.</span></h1>
         <div class="hero-btns">
           <button class="btn-hero btn-hor" onclick="showPage('planner')">Explore Routes</button>
           <button class="btn-hero btn-hol" onclick="showPage('planner')">Plan a Journey</button>
@@ -2357,7 +1800,6 @@ if ('serviceWorker' in navigator) {
         <li><a href="#" onclick="showPage('creator')">Creator Programme</a></li>
       </ul></div>
       <div class="foot-col"><h4>Company</h4><ul>
-        <li><a href="#" onclick="showPage('updates')">About Naarad</a></li>
         <li><a href="#" onclick="showPage('updates')">Partnerships</a></li>
         <li><a href="#" onclick="showPage('updates')">FCDO Grant</a></li>
         <li><a href="#" onclick="showPage('updates')">Press</a></li>
@@ -2378,97 +1820,6 @@ if ('serviceWorker' in navigator) {
   </div>
 </footer>
 </div>
-
-<!-- ══════════ PAGE: ABOUT ══════════ -->
-<div class="page" id="page-about">
-  <section class="about-intro sec">
-    <div class="container">
-      <div class="about-hero-copy">
-        <span class="sec-tag">Leadership</span>
-        <h2 class="sec-h">Meet the team shaping NAARAD</h2>
-        <p class="sec-sub">NAARAD combines AI systems, accessibility, and India-first operational design to build intelligence that adapts to real-world environments.</p>
-      </div>
-      <div class="about-grid">
-        <div class="about-card">
-          <img class="about-card-img" src="Images/Aryan%20Mishra.webp" alt="Aryan Mishra"/>
-          <span class="about-role">Founder & CEO</span>
-          <div class="about-name">Aryan Mishra</div>
-          <a class="about-linkedin" href="https://www.linkedin.com/in/aryan-mishra-iitm?utm_source=share_via&utm_content=profile&utm_medium=member_android" target="_blank" rel="noopener" aria-label="View Aryan Mishra on LinkedIn">LinkedIn <span aria-hidden="true">↗</span></a>
-          <div class="about-copy">Aryan Mishra is the Founder and CEO of NAARAD, leading the company’s vision across contextual AI, accessibility, and India-first computing systems.<br><br>A Data Science student at the Indian Institute of Technology Madras, his work focuses on building intelligence platforms designed for real-world infrastructure, operational environments, and adaptive human interaction. Through collaborations connected with the Energy Consortium at IIT Madras, he brings a systems-oriented perspective toward institutional compliance, interoperability, and ecosystem-level technological synergy.<br><br>Influenced by industry-facing ecosystems including CII-linked logistics and supply-chain networks, Aryan’s approach combines future-forward product thinking with practical deployment realities across India’s diverse infrastructural landscape.<br><br>At NAARAD, he focuses on creating context-aware interfaces and AI-native systems optimized for accessibility, operational clarity, and India-first user experience design.</div>
-        </div>
-      </div>
-      <div class="about-philosophy">
-        <h3>Our Philosophy</h3>
-        <p>NAARAD is built on the belief that the future of computing will move beyond screens toward context-aware intelligence embedded into everyday environments.</p>
-        <p>Our leadership combines expertise across AI systems, institutional-scale data infrastructure, operational intelligence, and product execution to build technologies that function across complex real-world ecosystems.</p>
-        <p>Together, we are building adaptive intelligence systems designed for accessibility, infrastructure-awareness, and India-first deployment at scale.</p>
-      </div>
-    </div>
-  </section>
-  <section class="about-supporters" aria-labelledby="about-supporters-title">
-    <div class="container">
-      <div class="about-section-heading">
-        <span class="sec-tag">In good company</span>
-        <h2 class="about-section-title" id="about-supporters-title">Built with people who care about place</h2>
-      </div>
-      <div class="about-supporter-grid" role="list" aria-label="Naarad supporters and partners">
-        <div class="about-supporter" role="listitem"><img src="Images/ansi.webp" alt="AnSI"/><span>AnSI</span></div>
-        <div class="about-supporter" role="listitem"><img src="Images/aws.webp" alt="AWS"/><span>AWS</span></div>
-        <div class="about-supporter" role="listitem"><img src="Images/iit%20madras%20logo.webp" alt="IIT Madras"/><span>IIT Madras</span></div>
-        <div class="about-supporter" role="listitem"><img src="Images/nirmaan.webp" alt="Nirmaan"/><span>Nirmaan</span></div>
-      </div>
-    </div>
-  </section>
-  <section class="about-cta" aria-labelledby="about-cta-title">
-    <div class="container about-cta-inner">
-      <div>
-        <span class="sec-tag">The road ahead</span>
-        <h2 class="about-cta-title" id="about-cta-title">Help us make every journey mean more.</h2>
-      </div>
-      <button class="about-cta-btn" onclick="showPage('routes')">Explore Naarad <span aria-hidden="true">↗</span></button>
-    </div>
-  </section>
-  <footer class="about-footer">
-    <div class="container about-footer-inner">
-      <div class="about-footer-brand"><strong>Naarad</strong><span>The Navigational AI Analytics Research &amp; Development Initiative.</span></div>
-      <div class="about-footer-links" aria-label="About page navigation">
-        <button onclick="showPage('routes')">Routes</button>
-        <button onclick="showPage('features')">Features</button>
-        <button onclick="showPage('creator')">Creator Programme</button>
-        <button onclick="showPage('privacy')">Privacy</button>
-      </div>
-      <p class="about-footer-copy">© 2026 NAARAD — Navigational AI Analytics Research &amp; Development Initiative.</p>
-    </div>
-  </footer>
-</div>
-
-<script>
-(function () {
-  var aboutCards = document.querySelectorAll('#page-about .about-card');
-  aboutCards.forEach(function (card) {
-    var copy = card.querySelector('.about-copy');
-    if (!copy) return;
-
-    var paragraphs = copy.innerHTML.split(/<br\s*\/?>\s*<br\s*\/?>/i);
-    if (paragraphs.length < 2) return;
-
-    copy.innerHTML = '<span class="about-copy-first">' + paragraphs[0] + '</span>' +
-      '<span class="about-copy-extra">' + paragraphs.slice(1).join('<br><br>') + '</span>';
-
-    var button = document.createElement('button');
-    button.className = 'about-read-more';
-    button.type = 'button';
-    button.setAttribute('aria-expanded', 'false');
-    button.textContent = 'Read full profile';
-    button.addEventListener('click', function () {
-      var expanded = card.classList.toggle('is-open');
-      button.setAttribute('aria-expanded', String(expanded));
-      button.textContent = expanded ? 'Show less' : 'Read full profile';
-    });
-    card.appendChild(button);
-  });
-})();
-</script>
 
 <!-- ══════════ PAGE: ROUTES ══════════ -->
 <div class="page" id="page-routes">
@@ -2515,7 +1866,6 @@ if ('serviceWorker' in navigator) {
         <li><a href="#" onclick="showPage('creator')">Creator Programme</a></li>
       </ul></div>
       <div class="foot-col"><h4>Company</h4><ul>
-        <li><a href="#" onclick="showPage('updates')">About Naarad</a></li>
         <li><a href="#" onclick="showPage('updates')">Partnerships</a></li>
         <li><a href="#" onclick="showPage('updates')">FCDO Grant</a></li>
         <li><a href="#" onclick="showPage('updates')">Press</a></li>
@@ -2697,7 +2047,6 @@ if ('serviceWorker' in navigator) {
         <li><a href="#" onclick="showPage('creator')">Creator Programme</a></li>
       </ul></div>
       <div class="foot-col"><h4>Company</h4><ul>
-        <li><a href="#" onclick="showPage('updates')">About Naarad</a></li>
         <li><a href="#" onclick="showPage('updates')">Partnerships</a></li>
         <li><a href="#" onclick="showPage('updates')">FCDO Grant</a></li>
         <li><a href="#" onclick="showPage('updates')">Press</a></li>
@@ -2809,7 +2158,6 @@ if ('serviceWorker' in navigator) {
         <li><a href="#" onclick="showPage('creator')">Creator Programme</a></li>
       </ul></div>
       <div class="foot-col"><h4>Company</h4><ul>
-        <li><a href="#" onclick="showPage('updates')">About Naarad</a></li>
         <li><a href="#" onclick="showPage('updates')">Partnerships</a></li>
         <li><a href="#" onclick="showPage('updates')">FCDO Grant</a></li>
         <li><a href="#" onclick="showPage('updates')">Press</a></li>
@@ -2960,7 +2308,6 @@ if ('serviceWorker' in navigator) {
         <li><a href="#" onclick="showPage('creator')">Creator Programme</a></li>
       </ul></div>
       <div class="foot-col"><h4>Company</h4><ul>
-        <li><a href="#" onclick="showPage('updates')">About Naarad</a></li>
         <li><a href="#" onclick="showPage('updates')">Partnerships</a></li>
         <li><a href="#" onclick="showPage('updates')">FCDO Grant</a></li>
         <li><a href="#" onclick="showPage('updates')">Press</a></li>
@@ -3164,7 +2511,6 @@ if ('serviceWorker' in navigator) {
         <li><a href="#" onclick="showPage('creator')">Creator Programme</a></li>
       </ul></div>
       <div class="foot-col"><h4>Company</h4><ul>
-        <li><a href="#" onclick="showPage('updates')">About Naarad</a></li>
         <li><a href="#" onclick="showPage('updates')">Partnerships</a></li>
         <li><a href="#" onclick="showPage('updates')">FCDO Grant</a></li>
         <li><a href="#" onclick="showPage('updates')">Press</a></li>
@@ -3411,7 +2757,7 @@ const LOGO_SRC = "data:image/png;base64," + LOGO_B64;
 document.querySelectorAll('img[src="LOGO_PLACEHOLDER"]').forEach(img => { img.src = LOGO_SRC; });
 
 // ── PAGE ROUTER ──
-const pages = ['home','routes','planner','features','updates','about','app','creator','privacy','terms','accessibility'];
+const pages = ['home','routes','planner','features','updates','app','creator','privacy','terms','accessibility'];
 function showPage(id) {
   window.__currentPage = id;
   // The route pages (page-route-*) are not in `pages`, so hide every page here or one opened earlier stays on screen.
@@ -4724,7 +4070,6 @@ function switchTab(rid, tab, btn) {
      planner       → /planner
      features      → /features
      updates       → /updates
-     about         → /about
      app           → /app
      privacy       → /privacy
      terms         → /terms
@@ -4734,7 +4079,7 @@ function switchTab(rid, tab, btn) {
 (function() {
   var PAGE_TO_PATH = {
     'home': '/', 'routes': '/routes', 'planner': '/planner',
-    'features': '/features', 'updates': '/updates', 'about': '/about',
+    'features': '/features', 'updates': '/updates',
     'app': '/app', 'privacy': '/privacy', 'terms': '/terms',
     'accessibility': '/accessibility',
     'route-hampi': '/routes/hampi', 'route-thanjavur': '/routes/thanjavur',
@@ -4762,7 +4107,6 @@ function switchTab(rid, tab, btn) {
       'planner': 'Route Planner — Naarad',
       'features': 'Features — Naarad',
       'updates': 'Updates — Naarad',
-      'about': 'About — Naarad',
       'app': 'Get the App — Naarad',
       'privacy': 'Privacy Policy — Naarad',
       'terms': 'Terms of Use — Naarad',
@@ -4780,6 +4124,7 @@ function switchTab(rid, tab, btn) {
   // Handle Back/Forward button
   window.addEventListener('popstate', function(e) {
     var page = (e.state && e.state.page) || PATH_TO_PAGE[window.location.pathname] || 'home';
+    if (!document.getElementById('page-' + page)) page = 'home';
     if (_origShowPage) _origShowPage(page); // use original to avoid double-push
     window.__currentPage = page;
   });
@@ -4789,6 +4134,8 @@ function switchTab(rid, tab, btn) {
     var path = window.location.pathname.replace(/\/$/, '') || '/';
     var fallbackPage = new URLSearchParams(window.location.search).get('page');
     var page = fallbackPage || PATH_TO_PAGE[path] || 'home';
+    // An old link such as /?page=about names a page that is gone: land on home instead of a blank screen.
+    if (!/^[a-z0-9-]+$/.test(page) || !document.getElementById('page-' + page)) page = 'home';
     if (page !== 'home') {
       // Replace current state so Back goes somewhere sensible
       history.replaceState({ page: page }, '', window.location.href);
@@ -5104,7 +4451,7 @@ function switchTab(rid, tab, btn) {
     if (_origShowPageAnnounce) _origShowPageAnnounce(id);
     var labels = {
       home: 'Home page', routes: 'Heritage Routes', planner: 'Route Planner',
-      features: 'Platform Features', updates: 'Updates', about: 'About Naarad',
+      features: 'Platform Features', updates: 'Updates',
       app: 'Get the App', privacy: 'Privacy Policy', terms: 'Terms of Use',
       accessibility: 'Accessibility Statement'
     };
