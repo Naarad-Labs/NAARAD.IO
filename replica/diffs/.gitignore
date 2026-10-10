@@ -1,0 +1,3 @@
+# Diff images are made from screenshots of the original app, so they stay local (see ../screens/.gitignore).
+# The .json files next to them hold only scores and regions and are committed.
+*.png

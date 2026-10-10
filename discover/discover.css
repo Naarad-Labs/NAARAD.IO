@@ -1,0 +1,7 @@
+/* Discover on the live site: layout glue only. The components are in primitives.css. */
+
+#nd-root { flex: 1; min-height: 0; display: flex; flex-direction: column; }
+#nd-root > .nd-discover { flex: 1; min-height: 0; }
+
+/* Leaflet draws its own controls: keep them in the site's font. */
+.nd-map .leaflet-container { font-family: var(--font-sans); background: var(--color-map-bg); }

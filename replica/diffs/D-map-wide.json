@@ -1,0 +1,57 @@
+{
+  "mode": "layout",
+  "original": {
+    "width": 1080,
+    "height": 1938
+  },
+  "clone": {
+    "width": 780,
+    "height": 1458
+  },
+  "compared_at": {
+    "width": 480,
+    "height": 861
+  },
+  "height_delta_pct": 4.2,
+  "score": 19.0,
+  "verdict": "different",
+  "regions": [
+    {
+      "x": 0,
+      "y": 0,
+      "w": 1080,
+      "h": 1890,
+      "cells": 174,
+      "where": "middle centre"
+    },
+    {
+      "x": 0,
+      "y": 0,
+      "w": 180,
+      "h": 180,
+      "cells": 3,
+      "where": "top left"
+    },
+    {
+      "x": 450,
+      "y": 1890,
+      "w": 180,
+      "h": 48,
+      "cells": 2,
+      "where": "bottom centre"
+    },
+    {
+      "x": 270,
+      "y": 1260,
+      "w": 90,
+      "h": 90,
+      "cells": 1,
+      "where": "bottom left"
+    }
+  ],
+  "files": {
+    "original": "replica/screens/crop-map-wide.png",
+    "clone": "replica/clone-screens/D-map-wide.png"
+  },
+  "diff_image": "replica/diffs/D-map-wide.png"
+}

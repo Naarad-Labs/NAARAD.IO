@@ -1,0 +1,505 @@
+/* Naarad Discover primitives. Built on tokens.css (load that first).
+   Every colour, size, radius, shadow and duration comes from a token.
+   Class names are prefixed nd- so they cannot collide with the rest of the
+   site's CSS. Specs for each component are in replica/design/components.md. */
+
+.nd,
+.nd * { box-sizing: border-box; }
+/* An author rule such as .nd-btn { display: inline-flex } beats the browser's [hidden], so say it here. */
+.nd [hidden] { display: none !important; }
+
+.nd {
+  font: var(--type-sm);
+  font-family: var(--font-sans);
+  color: var(--color-text);
+  background: var(--color-bg);
+  /* The kit's contour pattern, drawn as three nested closed lines. Faint on purpose: it is texture behind a route. */
+  --nd-contour: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 120' preserveAspectRatio='xMidYMid slice' fill='none' stroke='%23B8A583' stroke-width='1' opacity='.45'%3E%3Cpath d='M100 8c34-3 74 16 80 48s-26 56-72 58-82-18-86-52S66 11 100 8z'/%3E%3Cpath d='M100 24c26-2 56 12 61 37s-20 43-55 45-62-14-65-40 28-40 59-42z'/%3E%3Cpath d='M100 40c18-1 38 9 41 26s-14 30-38 31-42-10-44-28 22-28 41-29z'/%3E%3C/svg%3E");
+}
+.nd-icon { width: 20px; height: 20px; flex: none; }
+
+/* One focus ring for everything: 2px navy, offset so it never touches the fill. */
+.nd :focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+/* ---------- Button ---------- */
+.nd-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-8);
+  min-height: var(--size-control-md);
+  padding: 0 var(--space-16);
+  font: var(--type-sm);
+  font-weight: 600;
+  color: var(--color-text);
+  background: transparent;
+  border: 1px solid var(--color-border-input);
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  transition: background-color var(--motion-fast) var(--motion-ease),
+              border-color var(--motion-fast) var(--motion-ease);
+}
+.nd-btn:hover { border-color: var(--color-primary); background: var(--color-surface); }
+.nd-btn--primary { color: var(--color-on-primary); background: var(--color-primary); border-color: var(--color-primary); }
+.nd-btn--primary:hover { background: var(--color-text); }
+.nd-btn--accent { color: var(--color-on-accent); background: var(--color-accent); border-color: var(--color-accent); }
+.nd-btn--accent:hover { background: var(--color-accent); filter: brightness(.92); }
+.nd-btn:disabled,
+.nd-btn[aria-disabled="true"] {
+  color: var(--color-text-muted);
+  background: var(--color-bg);
+  border-color: var(--color-border);
+  cursor: not-allowed;
+}
+.nd-btn[aria-busy="true"] { cursor: progress; }
+.nd-btn--sm { min-height: var(--size-control-sm); padding: 0 var(--space-12); }
+
+/* ---------- Filter chip (a toggle button: aria-pressed) ---------- */
+.nd-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-4);
+  min-height: var(--size-control-sm);
+  padding: 0 var(--space-12);
+  font: var(--type-label);
+  letter-spacing: var(--type-label-tracking);
+  text-transform: var(--type-label-transform);
+  color: var(--color-text);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-input);
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  transition: background-color var(--motion-fast) var(--motion-ease),
+              border-color var(--motion-fast) var(--motion-ease),
+              color var(--motion-fast) var(--motion-ease);
+}
+.nd-chip:hover { border-color: var(--color-primary); }
+.nd-chip[aria-pressed="true"] { color: var(--color-on-primary); background: var(--color-primary); border-color: var(--color-primary); }
+.nd-chip:disabled { color: var(--color-text-muted); background: var(--color-bg); border-color: var(--color-border); cursor: not-allowed; }
+.nd-chips { display: flex; flex-wrap: wrap; gap: var(--space-8); }
+.nd-chips--labelled { margin-top: var(--space-4); }
+
+/* ---------- Difficulty badge: always a word, never colour alone ---------- */
+.nd-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--space-4) var(--space-8);
+  font: var(--type-label);
+  text-transform: none;
+  letter-spacing: .02em;
+  border-radius: var(--radius-pill);
+}
+.nd-badge--easy     { color: var(--color-success); background: var(--color-success-bg); }
+.nd-badge--moderate { color: var(--color-warning); background: var(--color-warning-bg); }
+.nd-badge--hard     { color: var(--color-danger);  background: var(--color-danger-bg); }
+
+/* ---------- Text field (location search) ---------- */
+.nd-field { display: flex; flex-direction: column; gap: var(--space-4); }
+.nd-field--grow { flex: 1 1 var(--size-field-min); min-width: var(--size-field-min); max-width: var(--size-field-max); }
+.nd-field__label { font: var(--type-sm); font-weight: 600; }
+/* An input with a button beside it: both line up on the same row, the hint sits under the pair. */
+.nd-field__row { display: flex; align-items: stretch; gap: var(--space-8); }
+.nd-field__row .nd-field__control { flex: 1 1 auto; min-width: 0; }
+.nd-field__row .nd-btn { white-space: nowrap; }
+.nd-field__control {
+  min-height: var(--size-control-md);
+  padding: 0 var(--space-12);
+  font: var(--type-sm);
+  font-family: var(--font-sans);
+  color: var(--color-text);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-input);
+  border-radius: var(--radius-md);
+}
+.nd-field__control::placeholder { color: var(--color-text-muted); opacity: 1; }
+.nd-field__control:hover { border-color: var(--color-primary); }
+.nd-field__control:disabled { color: var(--color-text-muted); background: var(--color-bg); border-color: var(--color-border); }
+.nd-field__control[aria-invalid="true"] { border-color: var(--color-danger); border-width: 2px; }
+.nd-field__hint { font: var(--type-xs); color: var(--color-text-muted); }
+.nd-field__error { font: var(--type-xs); font-weight: 600; color: var(--color-danger); }
+
+/* ---------- Range (native input, accent from the token) ---------- */
+.nd-range { display: flex; flex-direction: column; gap: var(--space-4); }
+.nd-range--narrow { width: var(--size-range); }
+.nd-range__head { display: flex; justify-content: space-between; gap: var(--space-8); font: var(--type-sm); }
+.nd-range__head label,
+.nd-range__head legend { font-weight: 600; }
+.nd-range__value { color: var(--color-text-muted); }
+.nd-range input[type="range"] {
+  width: 100%;
+  min-height: var(--size-target-min);
+  margin: 0;
+  accent-color: var(--color-accent-bright);
+  cursor: pointer;
+}
+.nd-range-pair { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-16); border: 0; padding: 0; margin: 0; }
+.nd-range-pair > legend { grid-column: 1 / -1; padding: 0; font: var(--type-sm); font-weight: 600; margin-bottom: var(--space-4); }
+
+/* ---------- Option group (radio set shown as a segmented control) ---------- */
+.nd-options { display: flex; flex-wrap: wrap; border: 0; padding: 0; margin: 0; }
+.nd-options > legend { padding: 0; margin-bottom: var(--space-4); font: var(--type-sm); font-weight: 600; }
+.nd-option { position: relative; }
+.nd-option input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
+.nd-option span {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--size-control-sm);
+  padding: 0 var(--space-12);
+  font: var(--type-sm);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-input);
+  margin-left: -1px;
+  cursor: pointer;
+}
+.nd-option:first-of-type span { margin-left: 0; border-radius: var(--radius-pill) 0 0 var(--radius-pill); padding-left: var(--space-16); }
+.nd-option:last-of-type span  { border-radius: 0 var(--radius-pill) var(--radius-pill) 0; padding-right: var(--space-16); }
+.nd-option input:checked + span { color: var(--color-on-primary); background: var(--color-primary); border-color: var(--color-primary); position: relative; z-index: 1; }
+.nd-option input:focus-visible + span { outline: 2px solid var(--color-focus); outline-offset: 2px; z-index: 2; }
+.nd-option input:disabled + span { color: var(--color-text-muted); background: var(--color-bg); cursor: not-allowed; }
+
+/* ---------- Tour card ----------
+   Media on top with the difficulty badge over it, then rating, title, place and three stats with icons.
+   Same order as the original's card (replica/screens-notes.md). The media is a route drawing on a
+   contour pattern: Naarad has no photos yet. */
+.nd-card {
+  position: relative;
+  display: block;
+  color: inherit;
+  text-decoration: none;
+  background: var(--color-surface);
+  border: 2px solid transparent;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+  transition: border-color var(--motion-base) var(--motion-ease),
+              box-shadow var(--motion-base) var(--motion-ease),
+              transform var(--motion-base) var(--motion-ease);
+}
+.nd-card:hover { border-color: var(--color-primary); box-shadow: var(--shadow-card-hover); transform: translateY(-1px); }
+.nd-card.is-selected { border-color: var(--color-accent-bright); box-shadow: var(--shadow-card-selected); }
+.nd-card__media {
+  height: 140px;
+  background-color: var(--color-sand);
+  background-image: var(--nd-contour);
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.nd-card__media svg { width: 88%; height: 80%; }
+/* A route with no real track gets a slim strip with a pin, not a tall empty box. */
+.nd-card__media--none { height: 64px; }
+.nd-card__media--none svg { height: 90%; }
+.nd-card__badge { position: absolute; top: var(--space-12); left: var(--space-12); }
+.nd-card__body { padding: var(--space-12) var(--space-16) var(--space-16); }
+.nd-card__rating { display: inline-flex; align-items: center; gap: var(--space-4); margin-bottom: var(--space-4); font: var(--type-sm); color: var(--color-text-muted); }
+.nd-card__rating .nd-icon { width: 16px; height: 16px; color: var(--color-accent-bright); }
+.nd-card__rating strong { color: var(--color-text); font-weight: 600; }
+.nd-card__title { margin: 0; font: var(--type-card-title); color: var(--color-text); }
+/* The one primary action of a card: the title, stretched over the whole card so a
+   click anywhere selects it and the card is a single tab stop. */
+.nd-card__link { font: inherit; color: inherit; text-align: left; text-decoration: none; background: none; border: 0; padding: 0; margin: 0; cursor: pointer; }
+.nd-card__link::after { content: ""; position: absolute; inset: 0; }
+.nd .nd-card__link:focus-visible { outline: none; }
+/* The ring sits inside the card: the card clips anything outside its edge. */
+.nd .nd-card__link:focus-visible::after { outline: 3px solid var(--color-focus); outline-offset: -3px; border-radius: var(--radius-lg); }
+/* A second, separate action sits above the stretched one. */
+.nd-card__more { position: relative; z-index: 1; font: var(--type-xs); font-weight: 600; color: var(--color-accent); background: none; border: 0; padding: var(--space-8) 0 0; cursor: pointer; text-decoration: underline; text-underline-offset: 2px; }
+.nd-card__meta { margin: var(--space-4) 0 var(--space-8); font: var(--type-xs); color: var(--color-text-muted); }
+.nd-card__stats { display: flex; flex-wrap: wrap; gap: var(--space-4) var(--space-16); margin: 0; padding: 0; list-style: none; font: var(--type-sm); color: var(--color-text-muted); }
+.nd-card__stats li { display: inline-flex; align-items: center; gap: var(--space-4); }
+.nd-card__stats .nd-icon { width: 16px; height: 16px; }
+.nd-card__stats strong { font-weight: 600; color: var(--color-text); }
+
+/* Loading: same footprint as a real card, so the list does not jump. */
+.nd-card--skeleton { pointer-events: none; }
+.nd-card--skeleton .nd-card__media { background-image: none; }
+.nd-skeleton { display: block; background: var(--color-border); border-radius: var(--radius-md); }
+.nd-skeleton--title { height: var(--space-16); width: 70%; }
+.nd-skeleton--meta  { height: var(--space-12); width: 40%; margin: var(--space-8) 0 var(--space-12); }
+.nd-skeleton--stat  { height: var(--space-12); width: 60%; }
+@media (prefers-reduced-motion: no-preference) {
+  .nd-skeleton { animation: nd-pulse 1.4s ease-in-out infinite; }
+}
+@keyframes nd-pulse { 50% { opacity: .55; } }
+
+/* ---------- Results sheet (below 900px) / list column (900px and up) ---------- */
+.nd-sheet {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: var(--size-sheet-peek);
+  height: var(--sheet-h, 320px);
+  max-height: calc(100% - var(--nd-inset, 0px));   /* never taller than the space it has, and never over the chips above it */
+  background: var(--color-bg);
+  border-radius: var(--radius-sheet) var(--radius-sheet) 0 0;
+  box-shadow: var(--shadow-sheet);
+  transition: height var(--motion-fast) var(--motion-ease);
+}
+.nd-sheet__handle {
+  flex: none;
+  display: flex;
+  justify-content: center;
+  padding: var(--space-12) 0;
+  cursor: ns-resize;
+  touch-action: none;
+}
+.nd-sheet__handle::before {
+  content: "";
+  width: 40px;
+  height: 5px;
+  border-radius: var(--radius-pill);
+  background: var(--color-border-input);
+}
+/* The count is centred, as in the original's sheet. */
+.nd-sheet__bar { display: flex; flex-direction: column; align-items: center; gap: var(--space-4); padding: var(--space-4) var(--space-16) var(--space-8); text-align: center; }
+.nd-sheet__list { margin: 0; list-style: none; flex: 1; overflow: auto; display: grid; grid-auto-rows: max-content; gap: var(--space-12); align-content: start; padding: var(--space-4) var(--space-16) var(--space-12); }
+.nd-status { margin: 0; font: var(--type-sm); font-weight: 600; color: var(--color-text-muted); }
+.nd-section-head { margin: var(--space-8) 0 0; font: var(--type-label); letter-spacing: var(--type-label-tracking); text-transform: var(--type-label-transform); color: var(--color-text-muted); }
+
+/* ---------- Pagination ---------- */
+.nd-pagination { display: flex; align-items: center; justify-content: center; gap: var(--space-8); margin: 0; padding: var(--space-8) 0; list-style: none; }
+.nd-pagination .nd-btn { min-width: var(--size-control-sm); min-height: var(--size-control-sm); padding: 0 var(--space-12); }
+.nd-pagination [aria-current="page"] { color: var(--color-on-primary); background: var(--color-primary); border-color: var(--color-primary); }
+
+/* ---------- Empty state ---------- */
+.nd-empty { display: grid; justify-items: center; gap: var(--space-8); padding: var(--space-32) var(--space-16); text-align: center; }
+.nd-empty__icon { width: 56px; height: 56px; color: var(--color-accent); stroke-width: 1.4; }
+.nd-empty h3 { margin: 0; font: var(--type-lg); font-family: var(--font-serif); font-weight: 700; }
+.nd-empty p { margin: 0; max-width: 32ch; color: var(--color-text-muted); }
+
+/* ---------- Map ---------- */
+.nd-map { position: relative; z-index: 0; isolation: isolate; background: var(--color-map-bg); overflow: hidden; min-height: 240px; }
+.nd-map__canvas { position: absolute; inset: 0; background: var(--color-map-bg); }
+/* The placeholder map in the preview is a direct child. A bare `.nd-map svg` would also stretch every
+   SVG Leaflet draws (route lines, markers, the attribution flag) and break the real map. */
+.nd-map > svg { display: block; width: 100%; height: 100%; }
+.nd-map__note { position: absolute; left: var(--space-8); top: var(--space-8); padding: var(--space-4) var(--space-8); font: var(--type-xs); color: var(--color-text-muted); background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-sharp); }
+.route-line { fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.route-line--casing { stroke: var(--color-surface); stroke-width: 7; }
+.route-line--easy     { stroke: var(--color-route-easy);     stroke-width: 3.5; }
+.route-line--moderate { stroke: var(--color-route-moderate); stroke-width: 3.5; stroke-dasharray: 9 6; }
+.route-line--hard     { stroke: var(--color-route-hard);     stroke-width: 3.5; stroke-dasharray: 1 7; }
+.route-line--unknown  { stroke: var(--color-primary);        stroke-width: 3.5; }
+.route-line.is-selected { stroke-width: 5.5; }
+/* Start of a route on the map (a Leaflet circle marker). Ring colour follows difficulty. */
+.nd-start { fill: var(--color-surface); fill-opacity: 1; stroke-width: 3; cursor: pointer; }
+.nd-start--easy     { stroke: var(--color-route-easy); }
+.nd-start--moderate { stroke: var(--color-route-moderate); }
+.nd-start--hard     { stroke: var(--color-route-hard); }
+.nd-start--unknown  { stroke: var(--color-primary); }
+.nd-start.is-selected { stroke-width: 5; }
+
+/* ---------- Highlight marker, tip ---------- */
+.nd-marker {
+  display: inline-grid;
+  place-items: center;
+  width: var(--size-control-sm);
+  height: var(--size-control-sm);
+  color: var(--color-text);
+  background: var(--color-surface);
+  border: 2px solid var(--color-border-input);
+  border-radius: var(--radius-pill);
+  box-shadow: var(--shadow-card);
+  cursor: pointer;
+}
+.nd-marker svg { width: 16px; height: 16px; }
+.nd-marker:hover { border-color: var(--color-primary); }
+.nd-marker[aria-pressed="true"] { border-color: var(--color-accent-bright); box-shadow: var(--shadow-card-selected); }
+@media (pointer: coarse) { .nd-marker { width: var(--size-target-touch); height: var(--size-target-touch); } }
+
+.nd-tip { margin: 0; padding: var(--space-12) var(--space-16); background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-md); }
+.nd-tip__by { margin: 0 0 var(--space-4); font: var(--type-xs); color: var(--color-text-muted); }
+.nd-tip__text { margin: 0; font: var(--type-sm); }
+.nd-tip__photos { display: flex; gap: var(--space-8); margin: var(--space-8) 0 0; padding: 0; list-style: none; }
+.nd-tip__photos img,
+.nd-tip__photos .nd-photo { width: 64px; height: 64px; object-fit: cover; border-radius: var(--radius-sharp); background: var(--color-border); }
+
+/* ---------- Search pill, control chips, Map button ----------
+   Below 900px these float over the map (replica/screens-notes.md): a pill for the place, then three chips,
+   each opening one panel. At 900px and up there are no chips and every control sits open in a bar. */
+.nd-search { position: relative; }
+.nd-search__pill {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  min-height: var(--nd-search-h, var(--size-search));
+  padding: 0 var(--space-8) 0 var(--space-16);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-input);
+  border-radius: var(--radius-pill);
+  box-shadow: var(--shadow-float);
+}
+.nd-search__pill:focus-within { outline: 2px solid var(--color-focus); outline-offset: 2px; }
+.nd-search__pill:has(input[aria-invalid="true"]) { border-color: var(--color-danger); border-width: 2px; }
+.nd-search__icon { color: var(--color-text-muted); }
+.nd-search__input {
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: var(--size-control-md);
+  padding: 0;
+  font: var(--type-base);
+  font-family: var(--font-sans);
+  color: var(--color-text);
+  background: transparent;
+  border: 0;
+}
+.nd .nd-search__input:focus-visible { outline: none; }   /* the pill shows the ring */
+.nd-search__input::placeholder { color: var(--color-text-muted); opacity: 1; }
+.nd-iconbtn {
+  flex: none;
+  display: inline-grid;
+  place-items: center;
+  width: var(--size-control-md);
+  height: var(--size-control-md);
+  padding: 0;
+  color: var(--color-text);
+  background: transparent;
+  border: 0;
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+}
+.nd-iconbtn:hover { background: var(--color-sand); }
+.nd-iconbtn[aria-busy="true"] { cursor: progress; color: var(--color-text-muted); }
+.nd-search__hint, .nd-search__error { display: block; margin: var(--space-4) var(--space-16) 0; font: var(--type-xs); }
+.nd-search__hint { color: var(--color-text-muted); }
+.nd-search__error { font-weight: 600; color: var(--color-danger); }
+
+.nd-chiprow { position: relative; display: flex; flex-wrap: wrap; gap: var(--space-8); }
+.nd-pop { position: static; }
+.nd-pillbtn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-4);
+  min-height: var(--size-control-lg);
+  padding: 0 var(--space-12);
+  font: var(--type-sm);
+  font-weight: 600;
+  color: var(--color-text);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-input);
+  border-radius: var(--radius-pill);
+  box-shadow: var(--shadow-float);
+  list-style: none;
+  cursor: pointer;
+  user-select: none;
+}
+.nd-pillbtn::-webkit-details-marker { display: none; }
+.nd-pillbtn:hover { border-color: var(--color-primary); }
+.nd-pillbtn.is-active { color: var(--color-on-primary); background: var(--color-primary); border-color: var(--color-primary); }
+.nd-pillbtn__chev { width: 16px; height: 16px; transition: transform var(--motion-fast) var(--motion-ease); }
+.nd-pop[open] > .nd-pillbtn .nd-pillbtn__chev { transform: rotate(180deg); }
+.nd-pop__panel {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(100% + var(--space-8));
+  z-index: 5;
+  max-height: 55dvh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: var(--space-16);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-pop);
+}
+.nd-filters__body { display: grid; gap: var(--space-16); }
+
+/* Back from the full-height list to the map. Orange fill, navy label: white on the kit's orange is 3.06. */
+.nd-mapbtn {
+  position: absolute;
+  left: 50%;
+  bottom: var(--space-16);
+  z-index: 3;
+  transform: translateX(-50%);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-8);
+  min-height: var(--size-fab);
+  padding: 0 var(--space-24);
+  font: var(--type-sm);
+  font-weight: 700;
+  color: var(--color-on-orange);
+  background: var(--color-orange);
+  border: 0;
+  border-radius: var(--radius-pill);
+  box-shadow: var(--shadow-float);
+  cursor: pointer;
+}
+.nd-mapbtn:hover { filter: brightness(.95); }
+
+/* ---------- Discover layout ---------- */
+.nd-discover { position: relative; display: grid; grid-template-rows: auto 1fr; min-height: 0; height: 100%; }
+.nd-split { position: relative; display: grid; grid-template-rows: minmax(0, 1fr); min-height: 0; }
+.nd-split > .nd-map { grid-area: 1 / 1; }
+.nd-split > .nd-sheet { grid-area: 1 / 1; align-self: end; z-index: 1; }
+
+/* Below 900px: the map fills the screen, the controls float over its top and the sheet rises from its bottom. */
+@media (max-width: 899px) {
+  /* minmax(0, 1fr), not auto: an auto column grows to the widest content (the chips in one line) and pushes the page wide. */
+  .nd-discover { grid-template-rows: minmax(0, 1fr); grid-template-columns: minmax(0, 1fr); }
+  .nd-split { grid-area: 1 / 1; min-width: 0; }
+  .nd-filterbar {
+    grid-area: 1 / 1;
+    align-self: start;
+    z-index: 4;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-12);
+    padding: var(--space-12) var(--space-16) 0;
+    pointer-events: none;   /* the map stays draggable between the controls */
+  }
+  .nd-search__pill, .nd-pillbtn, .nd-pop__panel, .nd-search__error { pointer-events: auto; }
+  .nd-search__error { padding: var(--space-4) var(--space-12); background: var(--color-surface); border-radius: var(--radius-md); box-shadow: var(--shadow-float); }
+  /* The hint would cover the chips, so it shows only while the field is in use. */
+  .nd-search__hint { display: none; position: absolute; left: 0; right: 0; top: calc(100% + var(--space-4)); z-index: 6; margin: 0; padding: var(--space-4) var(--space-12); background: var(--color-surface); border-radius: var(--radius-md); box-shadow: var(--shadow-float); }
+  .nd-search.is-focused:not(.is-done) .nd-search__hint, .nd-search.is-busy .nd-search__hint { display: block; }   /* after Enter it steps aside until the text changes */
+  .nd-pop__panel .nd-range--narrow { width: 100%; }
+  /* The sport list is a column of choices. */
+  #nd-sport.nd-options { flex-direction: column; gap: var(--space-8); }
+  #nd-sport .nd-option span { width: 100%; min-height: var(--size-control-md); margin: 0; border-radius: var(--radius-md); }
+  #nd-sport .nd-option:first-of-type span, #nd-sport .nd-option:last-of-type span { border-radius: var(--radius-md); }
+  /* The sheet's list leaves room under it for the Map button. */
+  .nd-sheet__list { padding-bottom: calc(var(--size-fab) + var(--space-32)); }
+  /* Leaflet's own controls and the attribution sit above the sheet, not under it. */
+  .nd .leaflet-bottom { margin-bottom: var(--nd-sheet-shown, 0px); }
+  /* In the full-height list the map is a sliver: its controls would sit on the chips. */
+  .nd-discover.is-list .leaflet-bottom { display: none; }
+}
+
+/* A phone on its side has about 250px of height once the site's own bars are counted. The pill and chips
+   get smaller and the hint can wait. */
+@media (max-width: 899px) and (max-height: 520px) {
+  .nd-discover { --nd-search-h: var(--size-control-lg); }
+  .nd-search__hint { display: none !important; }
+  .nd-filterbar { padding-top: var(--space-8); gap: var(--space-4); }
+  .nd-pillbtn { min-height: var(--size-control-md); }
+  .nd-pop__panel { max-height: 40dvh; }
+}
+
+/* 900px and up: a bar above a list column beside the map. No chips: every control is open. */
+@media (min-width: 900px) {
+  .nd-discover { --nd-search-h: var(--size-control-lg); }
+  .nd-filterbar { position: relative; z-index: 2; display: flex; flex-wrap: wrap; align-items: flex-end; gap: var(--space-16) var(--space-24); padding: var(--space-12) var(--space-16); background: var(--color-surface); border-bottom: 1px solid var(--color-border); }
+  .nd-search { flex: 1 1 var(--size-field-min); min-width: var(--size-field-min); max-width: var(--size-field-max); }
+  .nd-search__pill { box-shadow: none; }
+  .nd-chiprow { display: contents; }
+  .nd-pop > summary { display: none; }
+  .nd-pop__panel { position: static; max-height: none; overflow: visible; padding: 0; background: none; border: 0; border-radius: 0; box-shadow: none; }
+  .nd-filters { flex: 1 1 auto; }
+  .nd-filters__body { display: flex; flex-wrap: wrap; align-items: flex-end; gap: var(--space-16) var(--space-24); }
+  .nd-split { grid-template-columns: var(--size-list-column) 1fr; }
+  .nd-split > .nd-sheet { grid-area: 1 / 1; align-self: stretch; height: auto; border-radius: 0; box-shadow: none; border-right: 1px solid var(--color-border); }
+  .nd-split > .nd-map { grid-area: 1 / 2; }
+  .nd-sheet__handle { display: none; }
+  .nd-sheet__bar { align-items: flex-start; padding-top: var(--space-12); text-align: left; }
+}
+@media (pointer: coarse) { .nd-sheet__handle { padding: var(--space-24) 0; } }
+
+/* ---------- Helpers ---------- */
+.nd-sr-only { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }

@@ -1,0 +1,44 @@
+feature,area,priority,original,clone,notes
+"Search tours by place: current location, address or dropped pin",search,must,yes,partial,Built: address search on Enter (Nominatim) and Use my location. Missing: dropped pin. Verified by check-discover.js
+"Search state lives in the URL: place, centre point, sport, max distance, page",search,should,yes,partial,"Built on /?page=planner&...: place, centre, radius, sport, theme, difficulty, max length. No page (there is no pagination). Restores on load"
+Filter by sport,search,must,yes,yes,"Single-choice Walk, Hike, Cycle, Run. The seed has no run routes, so Run is empty. Naarad's old chips were themes: those are a separate Theme filter now"
+Filter by maximum distance,search,must,yes,yes,"First-hand (app screenshots): the control is a chip reading ""within N km"", a search radius. Naarad's Within matches it. Longest route (a length cap) is Naarad's own extra: it is not in the original's control row (the Filters panel was not seen)"
+"Filter by difficulty: easy, intermediate, expert, colour coded",search,must,yes,yes,"Easy, Moderate, Hard chips, several at once. The 9 real tracks have no difficulty, so a difficulty filter excludes them"
+"Filter by duration range, 30 minutes to 10 hours",search,should,yes,no,Source: help summary. routes.json has duration_min
+Filter by elevation gain range,search,should,yes,no,"Source: help summary. routes.json has one elevation_m, meaning of the number unconfirmed"
+"Filter by surface: no preference, paved, off-road",search,could,yes,no,Source: help summary. No surface field in Naarad's data
+Filter by route type: loop or out and back,search,could,yes,no,Source: press summary. No such field in Naarad's data
+Results as cards with key stats,search,must,yes,partial,"First-hand (app): card has a photo or route map, a difficulty badge, rating and people count, title, duration, length and ascent. Naarad's card has the stats, badge and rating but no photo (none in the data) and no people count"
+Result count,search,should,yes,yes,"Live status line: N routes, or N routes within X km of the place"
+Paginated results,search,could,yes,no,"Source: pageNumber in the URL. Only worth it with more than a few dozen routes. Naarad has about 20 (12 curated, 9 unique tracks)"
+Ranked or personalised recommendation order,search,should,yes,skip,"Needs their user data. Use a plain relevance order (distance from the centre, then rating) instead"
+Split view: list and map side by side,map,must,yes,yes,"List column beside the map at 900px and up, results sheet over the map below it"
+Tour lines on the map coloured by difficulty,map,should,yes,partial,"Built: colour and dash per difficulty. But only the 9 real tracks have a line and none has a difficulty, so today they are drawn in the neutral colour"
+Animated direction markers on tour lines,map,could,yes,no,Source: press summary
+Labelled start points on the map,map,should,yes,partial,Built: start markers ringed in the difficulty colour. Not built: text labels
+Switch between map view and list view (floating Map button over the list),map,should,yes,yes,"First-hand (app): the list is its own view with a floating Map pill. Naarad's list view is the same sheet pulled to full height (a tap on the handle, or End), with a Map button that returns. The handle and count stay above the first card (65 px), where the original starts its list under the chips. Test F01-E26."
+"Tour detail page: map, distance, duration, elevation, difficulty, description",tour detail,must,yes,partial,Not built as S04. The 6 curated routes that have a route page get an Open route page button. Tracks and the other 6 have no page
+Highlights on the map: points and segments with photos and tips,highlights,should,yes,no,Source: help summary. Closest in Naarad: waypoints and audio stops
+"Create a Highlight: pin, name, sport, tip, photos",highlights,could,yes,no,Source: help summary. Closest in Naarad: the Creator audio annotations
+Rate Highlights after an activity and add a tip or photo,highlights,could,yes,no,"Source: help summary. Needs activity recording, so depends on a feature outside this slice"
+Plan a route on the web from waypoints,planning,should,yes,partial,"Naarad's Plan mode, untouched by the rebuild. Tested: add, remove, clear, export all work (F06). Two open bugs: BUG-006 (the empty list says click the map, but a button press is needed first), BUG-007 (its search box does nothing)."
+"Add a waypoint by clicking the map, auto-placed in the best position",planning,could,yes,partial,"A click adds a waypoint at the end of the list, one per press of the Add button. It is never re-ordered into the best position (F06-H1, BUG-006)."
+Add Highlights and places of interest as waypoints,planning,could,yes,no,Source: help summary
+"Import GPX, TCX or FIT",planning,should,yes,no,"Source: help summary. Naarad only has an offline build script (convert-gpx.js), not a user feature"
+"Export a route as GPX (line only, no waypoints)",planning,should,yes,partial,Plan mode exports the route you draw as GPX: waypoints and a track (test F06-H1). A route found in Discover cannot be exported.
+Plan multi-day routes as stages,planning,could,yes,no,Source: help summary. A Premium feature in the original
+Offline maps for chosen regions,offline,should,yes,no,"Source: help summary. Naarad's pricing.json and routes.json claim offline, implementation not audited"
+Community network of millions of tours and user Highlights,content,could,yes,skip,The network and its content are not a feature you can rebuild. Seed with Naarad's own routes
+Heatmaps,premium,could,yes,skip,Aggregate data they own
+"3D maps, live tracking, weather on route",premium,could,yes,skip,Outside the Discover slice
+Turn-by-turn navigation and activity recording,navigation,must,yes,skip,"A separate project, outside the Discover slice"
+Garmin and watch sync,integrations,could,yes,skip,"Partner integrations, not part of the product you can rebuild"
+"One free region, then Maps or Premium purchase",pricing,could,yes,skip,Naarad has its own pricing model (data/pricing.json)
+"Filter by theme: heritage walk, temple trail, nature hike, cultural tour, coastal walk, photography",search,should,no,yes,Naarad's own route types. Several at once. Added in the rebuild
+"Open the full route page from a result card (story, map and tabs)",tour detail,could,no,yes,6 of the 12 curated routes have a page. Reuses the pages Naarad already had
+Map-first phone layout: search pill and control chips float over a full-bleed map,map,should,yes,yes,"Built from the app screenshots: a search pill and three chips (Sport, Within, Filters) float over a full-bleed map, results rise from the bottom in a sheet with a centred count. Measured against the original in replica/parity.md. Tests F01-E24 to E28."
+Search this area: a button over a panned map that searches where the map is now,search,should,yes,no,Deck slide 4 (one frame). Not in the screenshots the user took
+Locate-me button on the map,map,could,yes,partial,"First-hand (app): a round button on the map. Naarad's is an icon button inside the search pill (Use my location), not on the map"
+Map layers switcher,map,could,yes,no,First-hand (app): a Map layers pill. Layer choices not seen
+"Elevation profile on the tour page, with stops marked",tour detail,should,yes,no,"Deck slides 4 and 12 (app screens, cropped). Naarad's route pages have no elevation profile chart"
+Numbered stops along the route on the tour page,tour detail,could,yes,no,Deck slides 4 and 12. Closest in Naarad: audio stops with numbered markers on the route pages

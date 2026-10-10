@@ -1,0 +1,124 @@
+#!/usr/bin/env node
+/* Build discover/seed-tours.json: the stand-in for the `tours` table until the
+ * Supabase schema (replica/schema.sql) is applied.
+ *
+ *   node scripts/make-seed-tours.mjs          # write the file
+ *   node scripts/make-seed-tours.mjs --check  # exit 1 if it is out of date
+ *
+ * Sources, all Naarad's own:
+ *   - the 12 curated routes: the inline ROUTES array in index.html
+ *   - the real GPS tracks: routes/geo-tracks.json and routes/gpx-tracks.json,
+ *     de-duplicated (the two files hold the same routes under different names)
+ *
+ * Nothing is invented. A field the sources do not have is null, and the screens
+ * leave it out. The curated routes have no real GPS line (their `path` is a 4 or
+ * 5 point sketch that is 21 to 40 per cent of the stated distance), so they get
+ * path = null and show as a start point only.
+ */
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+const OUT = path.join(ROOT, 'discover', 'seed-tours.json');
+const read = (p) => fs.readFileSync(path.join(ROOT, p), 'utf8');
+
+const slugify = (s) => s.toLowerCase().normalize('NFKD').replace(/[^\w\s-]/g, '').trim().replace(/[\s_]+/g, '-').replace(/-+/g, '-');
+
+// Douglas-Peucker on [lng, lat] points; tolerance in degrees (0.0003 is about 33 m, the same as the SQL trigger).
+function simplify(pts, tol) {
+  if (pts.length < 3) return pts.slice();
+  const keep = new Uint8Array(pts.length); keep[0] = keep[pts.length - 1] = 1;
+  const stack = [[0, pts.length - 1]];
+  const dist = (p, a, b) => {
+    const dx = b[0] - a[0], dy = b[1] - a[1];
+    if (!dx && !dy) return Math.hypot(p[0] - a[0], p[1] - a[1]);
+    const t = Math.max(0, Math.min(1, ((p[0] - a[0]) * dx + (p[1] - a[1]) * dy) / (dx * dx + dy * dy)));
+    return Math.hypot(p[0] - (a[0] + t * dx), p[1] - (a[1] + t * dy));
+  };
+  while (stack.length) {
+    const [i, j] = stack.pop(); let max = 0, at = -1;
+    for (let k = i + 1; k < j; k++) { const d = dist(pts[k], pts[i], pts[j]); if (d > max) { max = d; at = k; } }
+    if (max > tol) { keep[at] = 1; stack.push([i, at], [at, j]); }
+  }
+  return pts.filter((_, i) => keep[i]);
+}
+const line = (coords) => ({ type: 'LineString', coordinates: coords });
+const r6 = (n) => Math.round(n * 1e6) / 1e6;
+
+// ---- curated routes: the inline ROUTES array in index.html
+const lines = read('index.html').split('\n');
+const start = lines.findIndex((l) => l.startsWith('const ROUTES = ['));
+let end = start; while (!lines[end].startsWith('];')) end++;
+const ROUTES = eval('(' + lines.slice(start, end + 1).join('\n').replace(/^const ROUTES = /, '').replace(/;\s*$/, '') + ')');
+
+const SPORT = { 'heritage-walk': 'walk', 'temple-trail': 'walk', 'nature-hike': 'hike', 'cultural-tour': 'walk', cycling: 'cycle', photography: 'walk' };
+const routesJson = Object.fromEntries(JSON.parse(read('routes.json')).routes.map((r) => [r.name, r.slug]));
+
+const curated = ROUTES.map((r) => ({
+  id: 'cur-' + r.id,
+  slug: routesJson[r.name] || slugify(r.name),
+  name: r.name,
+  location_label: r.location,
+  sport: SPORT[r.type] ?? null,
+  theme: r.type === 'cycling' ? null : r.type,
+  difficulty: r.diff,
+  route_type: null,
+  surface: null,
+  distance_m: Math.round(r.dist * 1000),
+  duration_min: r.time,
+  ascent_m: r.elev,
+  rating_avg: r.rating,
+  rating_count: r.reviews,
+  cover_image_path: null,
+  start_lat: r.lat,
+  start_lng: r.lng,
+  path: null,
+  path_preview: null,
+}));
+
+// ---- real tracks, de-duplicated. geo-tracks.json first: it is the uploaded data.
+const TRACK_SPORT = { 'nature-hike': 'hike', 'heritage-walk': 'walk', 'coastal-walk': 'walk', walk: 'walk' };
+const seen = new Set(); const tracks = [];
+for (const f of ['routes/geo-tracks.json', 'routes/gpx-tracks.json']) {
+  for (const t of JSON.parse(read(f)).tracks) {
+    const key = [t.coords.length, t.coords[0].join(), t.coords.at(-1).join()].join('|');
+    if (seen.has(key)) continue; seen.add(key);
+    const coords = t.coords.map(([lat, lng]) => [r6(lng), r6(lat)]);
+    tracks.push({
+      id: 'trk-' + (tracks.length + 1),
+      slug: slugify(t.name),
+      name: t.name,
+      location_label: 'Chennai, Tamil Nadu',
+      sport: TRACK_SPORT[t.type] ?? null,
+      theme: ['heritage-walk', 'nature-hike', 'coastal-walk'].includes(t.type) ? t.type : null,
+      difficulty: null,
+      route_type: null,
+      surface: null,
+      distance_m: Math.round(t.dist_km * 1000),
+      duration_min: null,
+      ascent_m: null,
+      rating_avg: null,
+      rating_count: 0,
+      cover_image_path: null,
+      start_lat: coords[0][1],
+      start_lng: coords[0][0],
+      path: line(coords),
+      path_preview: line(simplify(coords, 0.0003).map(([x, y]) => [r6(x), r6(y)])),
+    });
+  }
+}
+
+const seed = {
+  _about: 'Stand-in for the tours table until replica/schema.sql is applied. Generated by scripts/make-seed-tours.mjs. Unknown fields are null and the screens leave them out. Curated routes have no real GPS line (path is null).',
+  tours: [...curated, ...tracks],
+};
+const text = JSON.stringify(seed) + '\n';
+
+if (process.argv.includes('--check')) {
+  const cur = fs.existsSync(OUT) ? fs.readFileSync(OUT, 'utf8') : '';
+  if (cur !== text) { console.error('discover/seed-tours.json is out of date. Run: node scripts/make-seed-tours.mjs'); process.exit(1); }
+  console.log('seed-tours.json is up to date'); process.exit(0);
+}
+fs.writeFileSync(OUT, text);
+console.log(`wrote ${path.relative(ROOT, OUT)}: ${curated.length} curated + ${tracks.length} tracks (${seen.size} unique of 16 track entries), ${(text.length / 1024).toFixed(1)} KB`);
