@@ -292,7 +292,12 @@
 .nd-start--moderate { stroke: var(--color-route-moderate); }
 .nd-start--hard     { stroke: var(--color-route-hard); }
 .nd-start--unknown  { stroke: var(--color-primary); }
-.nd-start.is-selected { stroke-width: 5; }
+/* Selected: a solid pin with a white ring, so it reads at once among the others and next to its own line. */
+.nd-start.is-selected { stroke: var(--color-surface); stroke-width: 4; filter: drop-shadow(0 1px 3px rgba(0,0,0,.35)); }
+.nd-start--easy.is-selected     { fill: var(--color-route-easy); }
+.nd-start--moderate.is-selected { fill: var(--color-route-moderate); }
+.nd-start--hard.is-selected     { fill: var(--color-route-hard); }
+.nd-start--unknown.is-selected  { fill: var(--color-primary); }
 
 /* ---------- Highlight marker, tip ---------- */
 .nd-marker {

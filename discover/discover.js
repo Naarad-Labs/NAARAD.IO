@@ -409,12 +409,26 @@
     });
     Object.keys(layers).forEach(function (id) {
       var on = id === selectedId, l = layers[id];
+      showLine(l, on);
+      l.start.setRadius(on ? l.radius + 3 : l.radius);
       [l.line, l.start].forEach(function (p) {
         var node = p && p.getElement && p.getElement(); if (node) node.classList.toggle('is-selected', on);
       });
-      if (on && l.line) l.line.bringToFront();
-      if (on) l.start.bringToFront();
     });
+    // Pins sit above the route line, the selected one last.
+    Object.keys(layers).forEach(function (id) { if (id !== selectedId) layers[id].start.bringToFront(); });
+    if (selectedId && layers[selectedId]) layers[selectedId].start.bringToFront();
+  }
+
+  // A route's line (a white casing under the coloured line) exists only while the route is selected.
+  function showLine(l, on) {
+    if (!layerGroup) return;
+    if (on && l.ll && !l.line) {
+      l.casing = L.polyline(l.ll, { className: 'route-line route-line--casing', interactive: false }).addTo(layerGroup);
+      l.line = L.polyline(l.ll, { className: 'route-line route-line--' + l.kind, bubblingMouseEvents: false }).addTo(layerGroup);
+    } else if (!on && l.line) {
+      layerGroup.removeLayer(l.casing); layerGroup.removeLayer(l.line); l.casing = l.line = null;
+    }
   }
 
   function select(id, from) {
@@ -422,8 +436,8 @@
     markSelected();
     var l = layers[id];
     if (l && map) {
-      var b = l.line ? l.line.getBounds() : L.latLngBounds([l.start.getLatLng()]);
-      fit(b, l.line ? 15 : 12);
+      var b = l.ll ? L.latLngBounds(l.ll) : L.latLngBounds([l.start.getLatLng()]);
+      fit(b, l.ll ? 15 : 12);
     }
     if (from === 'map') {
       var card = listEl.querySelector('.nd-card[data-id="' + id + '"]');
@@ -446,6 +460,8 @@
       attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>', maxZoom: 18
     }).addTo(map);
     layerGroup = L.layerGroup().addTo(map);
+    // Tapping empty map puts the selection down, as in the original: the route line goes with it.
+    map.on('click', function () { if (selectedId) { selectedId = null; markSelected(); } });
     drawMap();
   }
 
@@ -465,19 +481,15 @@
     if (!map) return;
     layerGroup.clearLayers(); layers = {};
     var all = [];
+    var radius = px('--space-8');
     rows.forEach(function (row) {
-      var kind = row.difficulty || 'unknown', rec = {};
+      var kind = row.difficulty || 'unknown', rec = { kind: kind, radius: radius };
       var coords = row.path_preview && row.path_preview.coordinates;
-      if (coords && coords.length > 1) {
-        var ll = coords.map(function (c) { return [c[1], c[0]]; });
-        L.polyline(ll, { className: 'route-line route-line--casing', interactive: false }).addTo(layerGroup);
-        rec.line = L.polyline(ll, { className: 'route-line route-line--' + kind }).addTo(layerGroup);
-        rec.line.on('click', function () { select(row.id, 'map'); });
-        all = all.concat(ll);
-      }
-      rec.start = L.circleMarker([row.start_lat, row.start_lng], { radius: px('--space-8'), className: 'nd-start nd-start--' + kind }).addTo(layerGroup);
+      if (coords && coords.length > 1) rec.ll = coords.map(function (c) { return [c[1], c[0]]; });   // drawn only when the route is selected
+      // bubblingMouseEvents off: a tap on a pin must not also reach the map, which would put the selection straight down again
+      rec.start = L.circleMarker([row.start_lat, row.start_lng], { radius: radius, className: 'nd-start nd-start--' + kind, bubblingMouseEvents: false }).addTo(layerGroup);
       rec.start.on('click', function () { select(row.id, 'map'); });
-      all.push([row.start_lat, row.start_lng]);
+      all.push([row.start_lat, row.start_lng]);   // the map frames the pins; a route's own extent shows when it is selected
       layers[row.id] = rec;
     });
     markSelected();
