@@ -889,6 +889,10 @@ footer{background:var(--nv);color:white;padding:68px 32px 28px}
   min-height: 200px;
   position: relative;
 }
+.rp-map-tools { position:absolute; top:12px; left:12px; z-index:500; display:flex; gap:8px; }
+.rp-map-tool { min-height:38px; padding:0 13px; border:1px solid rgba(30,49,97,.18); border-radius:9px; background:#fff; color:#17243b; box-shadow:0 2px 10px rgba(0,0,0,.14); font:600 13px Inter,Arial,sans-serif; cursor:pointer; }
+.rp-map-tool:hover,.rp-map-tool:focus-visible { border-color:#E8641A; outline:2px solid rgba(232,100,26,.2); }
+.rp-map-note { position:absolute; z-index:500; left:12px; right:12px; bottom:12px; margin:0; padding:8px 11px; border-radius:8px; background:rgba(255,255,255,.94); color:#263247; font:500 12px/1.4 Inter,Arial,sans-serif; box-shadow:0 2px 10px rgba(0,0,0,.14); }
 .rp-map-img { width: 100%; display: block; border-radius: 16px; }
 .rp-map-fallback {
   min-height: 200px;
@@ -1608,6 +1612,138 @@ footer{background:var(--navy);color:var(--linen)}
   #page-updates .incubation-core { width: 64px; height: 64px; font-size: 30px; }
   #page-updates .label-top { top: 18px; }
   #page-updates .label-bottom { bottom: 18px; }
+}
+
+/* Route detail: editorial map-first layout, with the same route and tab state on every device. */
+#page-route-hampi {
+  background: var(--linen, #f6f0e6);
+  color: var(--navy, #172752);
+}
+#page-route-hampi .rp-hero {
+  height: clamp(190px, 24vh, 270px);
+  background-position: center 48%;
+}
+#page-route-hampi .rp-hero-ov {
+  background: linear-gradient(90deg, rgba(11,29,58,.78), rgba(11,29,58,.12) 78%), linear-gradient(0deg, rgba(11,29,58,.54), transparent 72%);
+}
+#page-route-hampi .rp-hero-info { width: min(1520px, 100%); margin: 0 auto; padding: 0 36px 24px; }
+#page-route-hampi .rp-hero-bar { padding: 82px 36px 0; }
+#page-route-hampi .rp-title { font-size: clamp(30px, 3.2vw, 46px); margin-bottom: 8px; }
+#page-route-hampi .rp-badge { background: var(--terra, #a7542a) !important; letter-spacing: .8px; text-transform: uppercase; }
+#page-route-hampi .rp-tabs {
+  top: 68px;
+  justify-content: center;
+  background: rgba(250,247,240,.96);
+  border-bottom-color: #ddd5c6;
+  box-shadow: 0 4px 16px rgba(22,36,64,.06);
+}
+#page-route-hampi .rp-tab { min-height: 52px; padding: 14px 24px; }
+#page-route-hampi .rp-tab.active { color: var(--terra, #a7542a); border-bottom-color: var(--terra, #a7542a); }
+#page-route-hampi .rp-body {
+  display: grid;
+  grid-template-columns: minmax(300px, 34%) minmax(0, 66%);
+  align-items: start;
+  gap: 14px;
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 18px 24px 100px;
+  background: transparent;
+}
+#page-route-hampi .rp-overview {
+  grid-column: 1;
+  grid-row: 1;
+  margin: 0;
+  padding: 22px;
+  border: 1px solid #e2dacb;
+  border-radius: 12px;
+  box-shadow: 0 4px 18px rgba(33,39,52,.05);
+}
+#page-route-hampi .rp-desc { color: #555a64; font-size: 15px; line-height: 1.7; }
+#page-route-hampi .rp-stats-grid { grid-template-columns: repeat(2, minmax(0,1fr)); gap: 14px 18px; }
+#page-route-hampi .rp-stat { padding-left: 12px; border-left: 2px solid #d9cdb9; }
+#page-route-hampi .rp-stat-v { font-family: 'Playfair Display', Georgia, serif; font-size: 21px; }
+#page-route-hampi .rp-tab-panel {
+  grid-column: 1;
+  padding: 18px;
+  border: 1px solid #e2dacb;
+  border-radius: 12px;
+  background: #fbf8f1;
+}
+#page-route-hampi .rp-tab-panel.active#rp-hampi-map {
+  grid-column: 2;
+  grid-row: 1 / span 3;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+#page-route-hampi #rp-hampi-map .rp-section-h { display: none; }
+#page-route-hampi #rp-hampi-map .rp-map-box {
+  height: clamp(480px, 64vh, 760px) !important;
+  min-height: 480px;
+  margin: 0;
+  border: 1px solid #d5cbb8;
+  border-radius: 12px;
+  box-shadow: 0 5px 22px rgba(22,36,64,.12);
+}
+#page-route-hampi .rp-directions-btn { margin-top: 12px; border-radius: 8px; background: var(--navy, #172752); }
+#page-route-hampi .rp-footer {
+  justify-content: center;
+  padding: 10px max(24px, calc((100vw - 1500px) / 2)) calc(10px + env(safe-area-inset-bottom));
+  background: rgba(11,29,58,.97);
+  border-top-color: rgba(255,255,255,.14);
+}
+#page-route-hampi .rp-save-btn { max-width: 190px; background: transparent; border: 1px solid rgba(255,255,255,.35); }
+#page-route-hampi .rp-nav-btn { max-width: 230px; background: #c65c2b; color: white; }
+#page-route-hampi .rp-edit-btn { color: var(--navy, #172752); }
+
+@media (min-width: 1440px) {
+  #page-route-hampi .rp-body { grid-template-columns: minmax(340px, 35%) minmax(0, 65%); }
+}
+@media (max-width: 1023px) {
+  #page-route-hampi .rp-hero { height: 210px; }
+  #page-route-hampi .rp-hero-info { padding: 0 22px 20px; }
+  #page-route-hampi .rp-hero-bar { padding: 78px 22px 0; }
+  #page-route-hampi .rp-body {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 12px 16px 100px;
+  }
+  #page-route-hampi .rp-overview { order: 1; width: 100%; box-sizing: border-box; }
+  #page-route-hampi .rp-tab-panel { width: 100%; box-sizing: border-box; }
+  #page-route-hampi .rp-tab-panel.active#rp-hampi-map { order: 0; width: 100%; }
+  #page-route-hampi #rp-hampi-map .rp-map-box {
+    height: clamp(360px, 54svh, 560px) !important;
+    min-height: 360px;
+  }
+  #page-route-hampi .rp-tabs { justify-content: flex-start; padding: 0 8px; }
+  #page-route-hampi .rp-tab { min-height: 50px; padding: 13px 17px; }
+}
+@media (max-width: 639px) {
+  #page-route-hampi .rp-hero { height: 190px; }
+  #page-route-hampi .rp-hero-info { padding: 0 18px 17px; }
+  #page-route-hampi .rp-hero-bar { padding: 76px 18px 0; }
+  #page-route-hampi .rp-title { font-size: 28px; }
+  #page-route-hampi .rp-type-chip { font-size: 11px; padding: 5px 9px; }
+  #page-route-hampi .rp-tab { min-height: 48px; padding: 12px 14px; font-size: 13px; }
+  #page-route-hampi .rp-body { padding: 10px 10px calc(88px + env(safe-area-inset-bottom)); gap: 10px; }
+  #page-route-hampi .rp-tab-panel.active#rp-hampi-map { padding: 0; }
+  #page-route-hampi #rp-hampi-map .rp-map-box {
+    height: clamp(320px, 49svh, 450px) !important;
+    min-height: 320px;
+    border-radius: 10px;
+  }
+  #page-route-hampi .rp-overview { padding: 17px 16px; border-radius: 10px; }
+  #page-route-hampi .rp-desc { margin-bottom: 16px; font-size: 15px; }
+  #page-route-hampi .rp-stats-grid { gap: 13px 10px; }
+  #page-route-hampi .rp-stat-l { font-size: 11px; }
+  #page-route-hampi .rp-stat-v { font-size: 19px; }
+  #page-route-hampi .rp-footer { gap: 8px; padding: 9px 10px calc(9px + env(safe-area-inset-bottom)); }
+  #page-route-hampi .rp-save-btn, #page-route-hampi .rp-nav-btn { min-height: 48px; padding: 11px 8px; font-size: 14px; }
+  #page-route-hampi .rp-edit-btn { width: 48px; height: 48px; flex: 0 0 48px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  #page-route-hampi .rp-tab, #page-route-hampi .rp-back-btn { transition: none; }
 }
 
 </style>
@@ -3796,51 +3932,105 @@ function switchTab(rid, tab, btn) {
 ══════════════════════════════════════════════ */
 (function() {
   var ROUTE_MAPS = {
-    hampi:     { lat: 15.3350, lng: 76.4620, zoom: 14, label: 'Hampi, Karnataka',
-                 path: [[15.335,76.462],[15.340,76.468],[15.338,76.475],[15.332,76.480],[15.328,76.474]] },
-    thanjavur: { lat: 10.7828, lng: 79.1318, zoom: 14, label: 'Thanjavur, Tamil Nadu',
-                 path: [[10.783,79.131],[10.782,79.133],[10.784,79.136],[10.786,79.134]] },
-    iitmadras: { lat: 12.9916, lng: 80.2336, zoom: 14, label: 'IIT Madras, Chennai',
-                 path: [[12.991,80.233],[12.995,80.237],[12.998,80.235],[12.994,80.231]] },
-    mysore:    { lat: 12.3052, lng: 76.6552, zoom: 14, label: 'Mysore Palace, Karnataka',
-                 path: [[12.305,76.655],[12.306,76.658],[12.308,76.657],[12.307,76.654]] },
-    varanasi:  { lat: 25.3176, lng: 83.0062, zoom: 14, label: 'Dashashwamedh Ghat, Varanasi',
-                 path: [[25.317,83.006],[25.312,83.009],[25.308,83.011],[25.305,83.008]] },
-    jaipur:    { lat: 26.9124, lng: 75.7873, zoom: 14, label: 'Hawa Mahal, Jaipur',
-                 path: [[26.912,75.787],[26.919,75.793],[26.924,75.800],[26.920,75.808],[26.912,75.801]] }
+    hampi:     { slug: 'hampi-vijayanagara-circuit', label: 'Hampi, Karnataka' },
+    thanjavur: { slug: 'thanjavur-brihadeeswarar-trail', label: 'Thanjavur, Tamil Nadu' },
+    iitmadras: { slug: 'iit-madras-forest-loop', label: 'IIT Madras, Chennai' },
+    mysore:    { slug: 'mysore-palace-heritage-walk', label: 'Mysore Palace, Karnataka' },
+    varanasi:  { slug: 'varanasi-ghats-dawn-walk', label: 'Dashashwamedh Ghat, Varanasi' },
+    jaipur:    { slug: 'jaipur-pink-city-cycling', label: 'Hawa Mahal, Jaipur' }
   };
 
   var initializedMaps = {};
+  var pendingMaps = {};
 
   function initRouteMap(rid) {
-    if (initializedMaps[rid]) return;
     var container = document.getElementById('rp-map-' + rid);
-    if (!container || typeof L === 'undefined') return;
-
-    var r = ROUTE_MAPS[rid];
-    if (!r) return;
-
-    var map = L.map(container, { zoomControl: true, scrollWheelZoom: false })
-               .setView([r.lat, r.lng], r.zoom);
-
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-      maxZoom: 18
-    }).addTo(map);
-
-    if (r.path && r.path.length) {
-      var poly = L.polyline(r.path, { color: '#E8641A', weight: 4, opacity: 0.85 }).addTo(map);
-      map.fitBounds(poly.getBounds(), { padding: [30, 30] });
-
-      // Start and end markers
-      var startIcon = L.divIcon({ html: '<div style="background:#22c55e;color:white;width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;border:2px solid white;box-shadow:0 2px 6px rgba(0,0,0,.3)">A</div>', iconSize:[26,26], iconAnchor:[13,13], className:'' });
-      var endIcon   = L.divIcon({ html: '<div style="background:#E8641A;color:white;width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;border:2px solid white;box-shadow:0 2px 6px rgba(0,0,0,.3)">B</div>', iconSize:[26,26], iconAnchor:[13,13], className:'' });
-      L.marker(r.path[0], { icon: startIcon }).addTo(map).bindPopup('<strong>Start</strong>');
-      L.marker(r.path[r.path.length - 1], { icon: endIcon }).addTo(map).bindPopup('<strong>End</strong>');
+    var config = ROUTE_MAPS[rid];
+    if (!container || !config) return;
+    if (initializedMaps[rid] || pendingMaps[rid]) return;
+    if (typeof L === 'undefined') {
+      if (!container.querySelector('.rp-map-fallback')) {
+        container.innerHTML = '<div class="rp-map-fallback" role="status">🗺️<p>Interactive map is unavailable. Route details are still available below.</p></div>';
+      }
+      return;
     }
 
+    var route = null;
+    var source = window.NaaradDiscoverData;
+    if (source && typeof source.getTour === 'function') {
+      pendingMaps[rid] = true;
+      source.getTour(config.slug).then(function (row) {
+        pendingMaps[rid] = false;
+        if (!row) {
+          container.innerHTML = '<div class="rp-map-fallback" role="status">🗺️<p>Route location data is not available yet.</p></div>';
+          return;
+        }
+        route = row;
+        renderRouteMap(rid, container, config, row);
+      }).catch(function () {
+        pendingMaps[rid] = false;
+        container.innerHTML = '<div class="rp-map-fallback" role="status">🗺️<p>Route map data could not be loaded. Try again when you are back online.</p></div>';
+      });
+    } else renderRouteMap(rid, container, config, route);
+  }
+
+  function renderRouteMap(rid, container, config, route) {
+    if (initializedMaps[rid]) return;
+    var lat = route && Number(route.start_lat), lng = route && Number(route.start_lng);
+    if (!isFinite(lat) || !isFinite(lng)) { lat = 20.5937; lng = 78.9629; }
+    var map = L.map(container, { zoomControl: false, scrollWheelZoom: false }).setView([lat, lng], 14);
+    L.control.zoom({ position: 'bottomright' }).addTo(map);
+    var streets = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>', maxZoom: 19
+    });
+    var satellite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+      attribution: 'Tiles © Esri', maxZoom: 19
+    });
+    var routeLayer = null;
+    streets.addTo(map);
+
+    var tools = document.createElement('div');
+    tools.className = 'rp-map-tools';
+    tools.innerHTML = '<button type="button" class="rp-map-tool" data-action="layers" aria-pressed="false">Satellite</button><button type="button" class="rp-map-tool" data-action="fit">Fit route</button>';
+    container.appendChild(tools);
+    tools.addEventListener('click', function (event) {
+      var button = event.target.closest('button[data-action]');
+      if (!button) return;
+      if (button.dataset.action === 'layers') {
+        var useSatellite = button.getAttribute('aria-pressed') !== 'true';
+        button.setAttribute('aria-pressed', String(useSatellite));
+        button.textContent = useSatellite ? 'Map' : 'Satellite';
+        if (useSatellite) { map.removeLayer(streets); satellite.addTo(map); }
+        else { map.removeLayer(satellite); streets.addTo(map); }
+      } else if (routeLayer && routeLayer.getBounds) {
+        map.fitBounds(routeLayer.getBounds(), { padding: [36, 36], maxZoom: 16 });
+      } else map.setView([lat, lng], 15);
+    });
+
+    var coordinates = route && route.path_preview && route.path_preview.coordinates;
+    var path = coordinates && coordinates.length > 1 ? coordinates.map(function (point) { return [point[1], point[0]]; }) : null;
+    if (path) {
+      routeLayer = L.polyline(path, { color: '#E8641A', weight: 5, opacity: 0.9 }).addTo(map);
+      routeLayer.bindPopup('<strong>' + escapeMapText(route.name) + '</strong><br>' + (route.distance_m ? (route.distance_m / 1000).toFixed(1) + ' km' : 'Route'));
+      map.fitBounds(routeLayer.getBounds(), { padding: [36, 36], maxZoom: 16 });
+      L.circleMarker(path[0], { radius: 8, color: '#fff', weight: 3, fillColor: '#1E3161', fillOpacity: 1 }).addTo(map).bindPopup('<strong>Start</strong>');
+      L.circleMarker(path[path.length - 1], { radius: 8, color: '#fff', weight: 3, fillColor: '#E8641A', fillOpacity: 1 }).addTo(map).bindPopup('<strong>Finish</strong>');
+    } else {
+      L.marker([lat, lng]).addTo(map).bindPopup('<strong>' + escapeMapText(config.label) + '</strong><br>Starting point');
+      var note = document.createElement('p');
+      note.className = 'rp-map-note';
+      note.textContent = 'Route geometry is not available yet. This map shows the published starting point.';
+      container.appendChild(note);
+      map.setView([lat, lng], 14);
+    }
     initializedMaps[rid] = map;
     setTimeout(function() { map.invalidateSize(); }, 100);
+  }
+
+  function escapeMapText(value) {
+    var node = document.createElement('span');
+    node.textContent = value || '';
+    return node.innerHTML;
   }
 
   // Hook into existing showRoutePage to init map when route page shown
