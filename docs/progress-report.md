@@ -1,64 +1,72 @@
 # NAARAD responsive rebuild: progress report
 
-Date: 2026-10-13 · Branch: `claude/trusting-ritchie-i9vvsi` · Basis: static review of the repository at commit `23adca4`.
-Not done for this report: the Playwright suite was not run, and nothing was measured in a browser. Sizes below are file sizes from disk, and compressed sizes come from `gzip -9`.
+Date: 2026-10-13 · Branch: `claude/trusting-ritchie-i9vvsi`
+
+Supersedes the earlier report on this branch. Measurements below come from a local Chromium run against the static server in `e2e`, not from field data.
 
 ## 1. Where we are
 
-The vertical slice from section 10 of the plan is mostly built: **homepage, catalogue, and a route-detail page with an interactive map, in separate desktop and mobile compositions.** Commit `23adca4` ("Rebuild Naarad as responsive heritage atlas") replaced the old 4,900-line monolithic `index.html` with a 11 KB shell plus `app/` modules.
+The vertical slice in section 10 of the plan is **complete, and the pages beyond it are built**: home, explore, route detail, story, Creator Studio and My Journey all exist in distinct desktop and phone compositions, driven by one route model and one map.
 
-In plan terms we are roughly at **weeks 5–10 of 18, partial**. Home, Explore and Route detail exist. The audio, creator, offline and field-testing phases have not started. Several features are present as honest "not published yet" empty states, because the route data does not contain the underlying records.
+Against the 18-week plan we are through weeks 1–10 and most of 11–13, with offline bundles (14–15) and field testing (16–17) still open.
 
 ## 2. Status against the plan
 
-| Plan item | Status | Evidence |
+| Plan item | Status | Where |
 |---|---|---|
-| One domain, one app, shared design system | Done | Single `index.html` + `app/`; Playfair Display and DM Sans self-hosted (OFL); tokens in `app/styles.css` |
-| Distinct desktop / mobile compositions | Done for route detail, home and catalogue | `@media` at 1450, 1120, 800/760, 430 px. Desktop: sidebar + map + lower cards. Mobile: map-first with expandable bottom sheet |
-| Breakpoints per plan (640 / 1024 / 1440) | **Differs** | Built at 800 / 1120 / 1450 px. No distinct tablet (640–1023) composition; it just reflows |
-| Homepage hero: priority load, responsive | Done | `fetchpriority="high"`, `srcset` 800w / 1600w WebP (130 KB / 470 KB) |
-| Below-the-fold images lazy-loaded | Done | `loading="lazy" decoding="async"` on cards and stories |
-| Map engine loaded only when needed | Done | `import('./map.js')` on route open; Leaflet is vendored and not in the home path |
-| Single route engine, shared by both layouts | Done | One `#map`, one route state; no duplicate map mounted |
-| Explore / discovery | Partial | Searchable catalogue of 21 routes. No filter sheet, no pagination, no map preview |
-| Magazine feel via transitions | Partial | Editorial typography and layouts exist. No chapter slide/reveal transitions |
-| Numbered story nodes | **Not populated** | Marker code exists in `app/map.js`, but no route has story stops |
-| Elevation / terrain profile | **Not populated** | UI card and metrics exist; no sampled elevation data, so it shows an empty state. 12 of 21 routes have total ascent only |
-| Route geometry on map | Partial | Routes with published GeoJSON draw a line. In `discover/seed-tours.json`, 0 of 21 records carry a `path`; the line comes from `routes/*.geojson` and the Hampi route has none (start point only) |
-| Static route-map previews | Not started | No generated preview images |
-| Audio guides and persistent player | Not started | Buttons are disabled with "Audio is not available" |
-| Story pages (magazine spread) | Placeholder | One "Listen closer." page with a single feature |
-| Creator Studio (desktop editor, mobile wizard) | Not started in new app | Old `creator/` module is still in the repo and no longer wired to the new shell |
-| My Journey | Not started | |
-| Offline route bundles | Not started, and **regressed** | See risk 1 |
-| Server rendering / pre-rendering | Not started | Client-rendered static site on GitHub Pages; each view is a query-string URL |
-| Image pipeline (AVIF, 7 widths, crops) | Minimal | Only the hero has two WebP widths. No AVIF, no `<picture>` art direction |
-| Attribution / licence per image | Started | `app/media.js` carries a rights record per image; inherited images are labelled **unverified** |
-| Performance budgets | Looks promising, unmeasured | Home JS (gzip): `main.js` 6.7 KB + `data.js` 2.3 KB + `map.js` 4.5 KB lazy. Leaflet 42 KB gzip, loaded only with a route. CSS ~11 KB gzip |
-| Real-device and Core Web Vitals testing | Not started | No field or lab numbers yet |
+| One domain, one app, shared design system | Done | `app/base.css` tokens; views load their own stylesheet |
+| Distinct desktop / phone compositions | Done | Phone route page leads with the map, raises a sheet, fixes the walk actions |
+| Breakpoints | Done at 1240 / 1023 / 639 px | Plan suggested 640/1024/1440; chosen where the content needed the space |
+| Homepage per reference | Done | Hero, 4 featured routes, voices band, language band, magazine strip |
+| Route detail per reference | Done | Header, 8-cell facts, tabs, map, stop story, stop rail, elevation |
+| Story page per reference | Done | On-this-page rail, pull quotes, credited figures, route and related rails |
+| Creator Studio per reference | Done as far as the client can go | 5-step builder, drafts in-browser; publishing needs the backend |
+| My Journey per reference | Done, local-first | Saved routes, walks, journal, badges from this device |
+| Numbered story nodes | Done | 8 real Hampi stops, on the map, the rail, the profile and the previews |
+| Elevation / terrain profile | Done, real data | NASA SRTM 30 m, ~90 m spacing, +153 m on Hampi |
+| Route geometry | Done | Editorial connecting lines (labelled) + 8 real recorded Chennai tracks |
+| Static route previews | Done | SVG from the route's own geometry, with numbered stops; no map instance |
+| Map loaded only where needed | Done | Leaflet imported by the route page only; verified by a test |
+| Audio guides, persistent player | Partial | Player survives navigation; device read-aloud until recordings exist |
+| Image pipeline (AVIF/WebP, widths, crops) | Done | 29 photos, 4 widths per role, AVIF + WebP |
+| Attribution per image | Done | `content/photo-sources.json`; credit shown on the page |
+| Rendering: pre-render / SSR | **Not done** | Still client-rendered; hero markup is inline for LCP |
+| Offline route bundles | **Not done** | Stated as unavailable in the interface |
+| Accounts | **Not done** | My Journey and Studio are device-local by design for now |
 
-## 3. Tests
+## 3. Measurements
 
-`e2e/revamp.spec.js` has Playwright cases covering route detail with honest empty states, catalogue search opening a mapped route, the mobile sheet with no horizontal overflow, home and Stories navigation, mobile nav with deep links and history, and map place search. These were not run for this report.
+| | Home | Route detail |
+|---|---|---|
+| LCP (local) | 208 ms | 248 ms |
+| CLS | 0.0014 | 0.0014 |
+| JS transferred (uncompressed) | 75 KB | 249 KB (includes Leaflet) |
+| CSS | 47 KB | 69 KB |
+| Fonts | 142 KB | 142 KB |
 
-The older Discover tests remain in `e2e/` as an archive. The `replica/` folder holds the earlier Komoot-Discover clone work (parity 45.2/100, "not shippable") and is now largely superseded by this rebuild.
+Plan budgets: homepage JS under 150 KB compressed — met with room to spare (75 KB before compression). No map library on the homepage — verified by test. Fonts subset by coverage: 578 KB → 142 KB.
 
-## 4. Risks and gaps, in priority order
+These are lab numbers on a fast local server. Field Core Web Vitals at the 75th percentile are still to be collected.
 
-1. **Offline is broken by the rebuild.** `sw.js` (cache `naarad-v8`) still pre-caches the old `discover/*` and `creator/*` files and does **not** list `/app/*`, the fonts, Leaflet or the hero images. It also caches via `unpkg.com` and Google Fonts, which the new app no longer uses. Needs a rewrite and a version bump.
-2. **Content is the bottleneck, not code.** No story stops, audio, elevation samples, or covers in the seed data, so the headline features of the plan (numbered nodes, terrain profile, audio) cannot be demonstrated yet. A real data/CMS source is needed.
-3. **Image rights are unverified** for inherited photos. The plan requires genuine, licensed photographs. Confirm or replace before wider syndication.
-4. **Repo weight.** `Images/Hero.webp` is 3.5 MB and `video_b64.txt` is 2.6 MB in the repo root. Neither is used by the new shell; candidates for removal.
-5. **SEO regression risk.** The sitemap lists only query-string views, and content is rendered client-side. The plan calls for pre-rendered pages, and clean URLs would help sharing and indexing.
-6. **Breakpoint and tablet mismatch** with the plan (800 vs 640/1024). Decide whether to adopt the plan's values.
-7. **Route detail shows only the Hampi start point**: 8.4 km, no line. The default landing view is therefore the weakest route in terms of data.
+## 4. Data honesty
 
-## 5. Recommended next steps
+Nothing fills a gap with a plausible-looking number:
 
-1. Fix `sw.js` for the new asset set and bump the cache version (small, high value).
-2. Run `cd e2e && npm install && npm test`, then run Lighthouse on home and a route at mobile settings to get real LCP/CLS/INP baselines.
-3. Choose one flagship route (ideally Hampi) and fill in a GPX/GeoJSON line, 5–8 ordered story stops, and sampled elevation, to complete the section-10 slice.
-4. Add the image pipeline: AVIF + WebP, 3–4 widths for cards and stories, and `<picture>` mobile/desktop crops for the hero.
-5. Generate static route-preview images for cards.
-6. Remove unused heavyweight files and decide the fate of `replica/`, `discover/` and the old `creator/`.
-7. Then begin the audio player, story spreads, and the Creator Studio wizard.
+- Editorial route lines are interpolated between real stop coordinates and **recorded and labelled as connecting lines**, not surveys. The Chennai tracks are real recordings and marked as such.
+- Elevation is sampled from NASA SRTM 30 m. A route with no samples shows an empty state.
+- All 29 photographs are CC0, Public Domain Mark, CC BY or CC BY-SA, with author and licence per file. The previously unverified inherited imagery is no longer used.
+- No creator narration exists, so the player reads the published text with the device's own speech synthesis and says so on the bar.
+- Publishing, transcription, translation, offline bundles and accounts state that they need the backend.
+
+## 5. Tests
+
+20 Playwright checks in `e2e/site.spec.js`, all passing: homepage facts and lazy-loading, no map engine on home, licence display, route facts and stops, one map instance with 8 markers, stop selection and URL, honest empty state for a route without stops, save-to-journey, story structure and credits, catalogue filtering, studio wizard and draft, journal entry, phone map-first order, no horizontal overflow on six pages, 44px touch targets, history, one `h1` per page, and alt text.
+
+## 6. What is left, in order
+
+1. **Offline route bundles** (plan §7, weeks 14–15): versioned bundles of tiles, audio and transcripts, with explicit download. The interface already has the slot and says it is unavailable.
+2. **Creator backend**: audio storage, transcription, translation and review. The Studio's draft shape matches what a submission endpoint would take.
+3. **Pre-rendering** (plan §7): the plan asks for server-rendered or pre-rendered home, destination and story pages. A small pre-render step over the existing views would fit the current structure.
+4. **Field performance** (weeks 16–17): real-device testing on low-end Android and iOS Safari, on poor networks.
+5. **Accounts**, so My Journey follows a person between devices.
+6. **More routes and stories**: the engine is ready; this is now content work.
