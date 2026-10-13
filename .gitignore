@@ -3,3 +3,22 @@ e2e/node_modules/
 e2e/test-results/
 e2e/results.json
 e2e/playwright-report/
+
+# Agent skill packs installed locally (npx skills add ...). They are tooling for
+# whoever is working on the site, not part of the site, and the symlinks in
+# .claude/skills point into .agents.
+.agents/
+.claude/skills/brandkit
+.claude/skills/design-taste-frontend
+.claude/skills/design-taste-frontend-v1
+.claude/skills/design-taste-frontend-v2-experimental
+.claude/skills/full-output-enforcement
+.claude/skills/gpt-taste
+.claude/skills/high-end-visual-design
+.claude/skills/image-to-code
+.claude/skills/imagegen-frontend-mobile
+.claude/skills/imagegen-frontend-web
+.claude/skills/industrial-brutalist-ui
+.claude/skills/minimalist-ui
+.claude/skills/redesign-existing-projects
+.claude/skills/stitch-design-taste
