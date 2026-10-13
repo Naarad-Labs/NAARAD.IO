@@ -1,16 +1,21 @@
-// Runs against a local static server (serve.js) on the repo root. No network: external hosts are blocked and
-// answered by the fixture (see fixtures.js). Install first: npm install && npx playwright install chromium
+// Current responsive atlas checks run against the local static server.
+// Install from this folder with npm install, then run npm test.
 const { defineConfig } = require('@playwright/test');
+const fs = require('fs');
 
 module.exports = defineConfig({
   testDir: '.',
-  testMatch: '*.spec.js',
+  testMatch: 'revamp.spec.js',
   outputDir: 'test-results',
   fullyParallel: true,
   retries: 0,
   reporter: [['list'], ['json', { outputFile: 'results.json' }]],
   use: {
     baseURL: 'http://127.0.0.1:4173',
+    launchOptions: {
+      executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE ||
+        (fs.existsSync('/usr/bin/chromium') ? '/usr/bin/chromium' : undefined),
+    },
     viewport: { width: 1440, height: 900 },
     serviceWorkers: 'block',      // the offline spec turns it on for itself
     trace: 'retain-on-failure',
