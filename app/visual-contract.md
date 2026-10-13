@@ -1,22 +1,65 @@
-# Visual structure contract
+# Visual contract
 
-`index.html` supplies the page shell and `app/styles.css` styles it. `app/main.js` owns data and interaction behavior. Preserve these stable IDs for the runtime: `#app`, `#app-content`, `#map`, `#route-title`, `#route-stops`, `#route-comparisons`, `#elevation-profile`, `#route-search`, `#map-layers`, `#map-satellite`, `#fit-route`, and `#route-tabs`.
+What the markup and the stylesheets promise each other. Keep these stable, or
+change them in both places at once.
 
-## Root structure and classes
+## Stable hooks the runtime needs
 
-- `.site-shell`: parchment page background and full viewport shell.
-- `.site-header`: masthead. Contains `.brand`, `.primary-nav`, `.header-search`, `.header-actions`; `.menu-toggle` is the small-screen nav control.
-- `.route-layout`: desktop two-column route page.
-- `.route-sidebar`: left column with `.back-link`, `.route-heading`, `.route-location`, `.route-description`, `.route-stats`, `.route-overview`, `.tag-list`, `.stops-heading`, and `#route-stops`.
-- `.route-workspace`: right column with `.map-toolbar`, `#map`, `.map-controls`, `.map-legend`, `.lower-grid`.
-- `.story-panel`, `.elevation-card`, `.compare-card`: bottom editorial/map companion cards. `#route-comparisons` is hydrated from available route data.
-- `.mobile-route-bar`, `.mobile-map-sheet`, `#route-tabs`, `.mobile-actions`: compact map-first mobile composition and expandable route sheet.
-- `.site-footer`: dark navy closing strip.
+`#app`, `#app-content`, `#map`, `#route-title`, `#home-title`, `#catalogue-grid`,
+`#catalogue-count`, `#catalogue-query`, `#route-search`, and the `data-` hooks
+`data-view`, `data-route`, `data-story`, `data-stop`, `data-select-stop`,
+`data-action`, `data-tab`, `data-stop-tab`, `data-journey-tab`,
+`data-journey-panel`, `data-studio*`, `data-map`, `data-filter-*`.
 
-## Reusable visual classes
+`main.js` owns routing and every event; a view module returns markup and nothing
+else. A view exports `render()`, a `stylesheet` path, and `meta` (an object, or a
+function of the thing being shown).
 
-Use `.eyebrow`, `.section-title`, `.icon-button`, `.pill`, `.button`, `.button-primary`, `.metric`, `.stop-card`, `.route-card`, `.map-control`, `.empty-state`, `.elevation-empty`, and `.sr-only` as needed. Keep data gaps explicit in editorial empty states; do not imply audio, geometry, elevation samples, or route facts without published records. Interactive elements should be native buttons/links, focus-visible, and carry accessible labels. Do not encode visual meaning only in color.
+## Layout vocabulary
+
+- `.site-shell` / `.site-header` / `.site-footer` — the chrome, on every page.
+- `.home-hero`, `.route-hero`, `.story-hero`, `.journey-hero`, `.studio-hero` —
+  a copy column beside a full-bleed photograph, which carries `.torn-left`.
+- `.route-facts` — the eight-cell fact grid raised over the hero.
+- `.route-bar` — sticky tabs and walk actions; on a phone its two halves separate
+  (`display: contents`) into a sticky tab strip and a fixed action bar.
+- `.route-workspace` — map, stop story, stop rail. Flattened on a phone so the
+  map can lead.
+- `.stop-panel`, `.stop-rail`, `.stop-item`, `.stop-index` — the stop being read
+  and the list of the rest.
+- `.story-body` — on-this-page rail, article column, route and related rails.
+- `.route-card`, `.route-card-grid` — a photograph, a generated map preview and
+  the route's real facts. Used on home, explore, related and journey.
+- `.listen-bar` — the player, outside the view container so it survives
+  navigation.
+
+## Primitives
+
+`.eyebrow` (`.eyebrow-mark` adds the orange square), `.display`, `.section-title`,
+`.lede`, `.data-note`, `.button` (`-primary`, `-ghost`, `-sm`), `.icon-button`,
+`.text-link`, `.chip`, `.chip-list`, `.pin-chip`, `.metric`, `.metric-row`,
+`.empty-state`, `.note-card`, `.note-plain` (`.note-over-photo` when it sits on a
+photograph), `.photo`, `.photo-credit`, `.caption`, `.breadcrumb`, `.byline-mark`,
+`.sr-only`, `.ico`.
+
+Generated graphics: `.route-preview` with `.rp-line`, `.rp-pin`, `.rp-num`;
+`.elevation-svg` with `.ep-area`, `.ep-line`, `.ep-pin`, `.ep-num`, `.ep-axis`,
+and `.is-spark` for the card sparkline.
 
 ## Art direction
 
-Warm ivory/paper (#f7f2e8), deep ink navy (#102444), burnt orange (#c95013), muted sage and stone. Use an elegant high contrast serif for display headings and a restrained sans-serif for controls and supporting text. Desktop should read like a heritage atlas: a narrow information rail, expansive satellite map, map overlays, and structured route details beneath. Under 760px, switch to a map-first composition with a compact masthead, map occupying most of the first viewport, overlaid controls, and a raised route sheet. Avoid generic rounded dashboard styling; prefer fine rules, small radii, tactile paper surfaces, generous typography, and restrained shadows.
+Paper `#f8f3e9`, ink navy `#12294a`, terracotta `#c6511b`, sage `#6f8156`, gold
+`#c9a227`. Playfair Display for display type, DM Sans for everything working,
+Caveat for the handwritten notes. Fine rules, small radii, restrained shadows,
+generous type. A photograph meets paper on a torn edge, never a hard rectangle.
+
+## Rules
+
+- Keep data gaps explicit. An empty state says what is missing and why; it never
+  implies stops, audio, elevation or geometry that nobody published.
+- Every photograph shows its author and licence, or says the rights are not
+  recorded.
+- Interactive things are real `button`s and `a`s, focus-visible, with labels.
+- Never encode meaning in colour alone.
+- One map instance, ever. Cards use the generated SVG preview.
+- Touch targets on phone action bars are at least 44px.

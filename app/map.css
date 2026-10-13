@@ -131,3 +131,27 @@
     scroll-behavior: auto !important;
   }
 }
+
+/* Numbered stop markers, matched to the static previews. */
+.nr-map-stop-marker {
+  display: grid; place-items: center; width: 32px; height: 32px; border-radius: 50%;
+  background: #c6511b; color: #fff; font: 700 13px/1 'DM Sans', system-ui, sans-serif;
+  border: 2.5px solid #fff; box-shadow: 0 2px 8px rgba(12, 28, 51, .35);
+  transition: transform .18s;
+}
+.nr-map-stop-marker.is-selected {
+  width: 38px; height: 38px; font-size: 15px; background: #12294a;
+  box-shadow: 0 4px 14px rgba(12, 28, 51, .45);
+}
+.nr-map-marker-shell:hover .nr-map-stop-marker { transform: scale(1.08); }
+.nr-map-start-marker {
+  display: block; width: 24px; height: 24px; border-radius: 50%;
+  background: #6f8156; border: 3px solid #fff; box-shadow: 0 2px 8px rgba(12, 28, 51, .35);
+}
+@media (prefers-reduced-motion: reduce) { .nr-map-stop-marker { transition: none; } }
+
+/* The static preview stays beneath the live map until real tiles load. */
+.nr-map-host .map-placeholder.is-behind {
+  position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none;
+}
+.nr-map-host .leaflet-pane { z-index: 1; }

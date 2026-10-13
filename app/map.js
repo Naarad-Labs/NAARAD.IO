@@ -97,6 +97,12 @@ function routeLines(route) {
   // A GeoJSON line is an explicit published track. Legacy [lat, lng] sketches
   // are intentionally ignored because they often imply a route that does not exist.
   const geometry = route?.geometry ?? route?.geometryPreview ?? route?.path ?? route?.path_preview;
+
+  // The route model carries { kind, coordinates } with [lng, lat] pairs, which
+  // is a GeoJSON LineString in all but name.
+  if (geometry && !geometry.type && Array.isArray(geometry.coordinates)) {
+    return geoJsonLines({ type: 'LineString', coordinates: geometry.coordinates });
+  }
   return geoJsonLines(geometry);
 }
 
@@ -107,7 +113,11 @@ function explicitStops(route) {
     const lat = Number(stop?.lat ?? stop?.latitude);
     const lng = Number(stop?.lng ?? stop?.lon ?? stop?.longitude);
     if (!Number.isFinite(lat) || !Number.isFinite(lng) || lat < -90 || lat > 90 || lng < -180 || lng > 180) return null;
-    return { data: stop, index, latlng: [lat, lng], title: stop.name || stop.title || `Story stop ${index + 1}` };
+    return {
+      data: stop, index, latlng: [lat, lng],
+      order: Number(stop.order) || index + 1,
+      title: stop.name || stop.title || `Story stop ${index + 1}`,
+    };
   }).filter(Boolean);
 }
 
@@ -135,14 +145,14 @@ function makeStatus(container, message, actionLabel, action, kind = 'notice') {
   return status;
 }
 
-function markerIcon(L, number) {
+function markerIcon(L, number, selected = false) {
   return L.divIcon({
     className: 'nr-map-marker-shell',
     html: number == null
       ? '<span class="nr-map-start-marker" aria-hidden="true"></span>'
-      : `<span class="nr-map-stop-marker" aria-hidden="true">${number}</span>`,
-    iconSize: number == null ? [24, 24] : [32, 32],
-    iconAnchor: number == null ? [12, 12] : [16, 16],
+      : `<span class="nr-map-stop-marker${selected ? ' is-selected' : ''}" aria-hidden="true">${number}</span>`,
+    iconSize: number == null ? [24, 24] : selected ? [38, 38] : [32, 32],
+    iconAnchor: number == null ? [12, 12] : selected ? [19, 19] : [16, 16],
   });
 }
 
@@ -178,6 +188,20 @@ export async function mountRouteMap(container, route, options = {}) {
       if (!state.map || !Number.isFinite(latitude) || !Number.isFinite(longitude) || Math.abs(latitude) > 90 || Math.abs(longitude) > 180) return false;
       state.map.flyTo([latitude, longitude], Math.max(2, Math.min(19, Number(zoom) || 15)), { duration: 0.65 });
       return true;
+    },
+    /** Highlight a stop and bring it into view, without re-mounting the map. */
+    selectStop(order, { pan = true } = {}) {
+      if (!state.map || !state.stopMarkers?.size || order == null) return;
+      const L = window.L;
+      for (const [key, entry] of state.stopMarkers) {
+        entry.marker.setIcon(markerIcon(L, key, key === Number(order)));
+        if (key === Number(order)) {
+          entry.marker.setZIndexOffset(600);
+          if (pan) state.map.panTo(entry.stop.latlng, { animate: true, duration: 0.5 });
+        } else {
+          entry.marker.setZIndexOffset(0);
+        }
+      }
     },
     zoomIn() { state.map?.zoomIn(); },
     zoomOut() { state.map?.zoomOut(); },
@@ -225,6 +249,11 @@ export async function mountRouteMap(container, route, options = {}) {
     const L = await loadLeaflet();
     if (state.destroyed) return instance;
     state.status?.remove();
+    // A static preview may have been rendered into this container while the
+    // engine loaded. Keep it behind the map until real tiles arrive, so a
+    // blocked tile server leaves the route visible instead of an empty box.
+    state.placeholder = container.querySelector('.map-placeholder');
+    if (state.placeholder) state.placeholder.classList.add('is-behind');
     state.map = L.map(container, { zoomControl: false, scrollWheelZoom: true, preferCanvas: true });
     const attributionOSM = '© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap contributors</a>';
     const attributionEsri = 'Tiles © <a href="https://www.esri.com/" target="_blank" rel="noopener">Esri</a>, Maxar, Earthstar Geographics, and the GIS User Community';
@@ -238,6 +267,7 @@ export async function mountRouteMap(container, route, options = {}) {
       let tileErrors = 0;
       layer.on('tileload', () => {
         tileSuccess = true;
+        if (state.placeholder) { state.placeholder.remove(); state.placeholder = null; }
         if (state.activeLayer === name && state.status?.dataset.kind === 'tile') {
           state.status.remove();
           state.status = null;
@@ -267,6 +297,9 @@ export async function mountRouteMap(container, route, options = {}) {
       state.start = [Number(route.lat), Number(route.lng)];
     }
     if (!state.start && Array.isArray(route?.start)) state.start = [Number(route.start[0]), Number(route.start[1])];
+    if (!state.start && Number.isFinite(Number(route?.startLat)) && Number.isFinite(Number(route?.startLng))) {
+      state.start = [Number(route.startLat), Number(route.startLng)];
+    }
     if (state.start && (!state.start.every(Number.isFinite) || Math.abs(state.start[0]) > 90 || Math.abs(state.start[1]) > 180)) state.start = null;
 
     const lines = routeLines(route);
@@ -290,10 +323,12 @@ export async function mountRouteMap(container, route, options = {}) {
     }
 
     const stops = explicitStops(route);
+    state.stopMarkers = new Map();
     stops.forEach((stop) => {
-      const marker = L.marker(stop.latlng, { icon: markerIcon(L, stop.index + 1), title: stop.title, alt: `Story stop ${stop.index + 1}: ${stop.title}` }).addTo(state.map);
-      marker.bindPopup(`<strong>${stop.index + 1}. ${escapeHtml(stop.title)}</strong>`);
-      marker.on('click', () => options.onSelectStop?.(stop.data, stop.index, route));
+      const marker = L.marker(stop.latlng, { icon: markerIcon(L, stop.order), title: stop.title, alt: `Story stop ${stop.order}: ${stop.title}` }).addTo(state.map);
+      marker.bindPopup(`<strong>${stop.order}. ${escapeHtml(stop.title)}</strong>`);
+      marker.on('click', () => options.onSelectStop?.(stop.order, stop.data, route));
+      state.stopMarkers.set(stop.order, { marker, stop });
     });
 
     if (state.routeLayer?.getBounds().isValid()) state.map.fitBounds(state.routeLayer.getBounds(), { padding: [42, 42], maxZoom: 16 });

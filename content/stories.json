@@ -1,0 +1,169 @@
+{
+  "note": "Long-form stories written for Naarad. Each one is tied to a route and, where it describes a specific place on that route, to a stop. Reading times are computed from the word count; listening times are null until narration is recorded.",
+  "stories": [
+    {
+      "slug": "stone-chariot-of-hampi",
+      "title": "The Stone Chariot of Hampi",
+      "titleAccent": "of Hampi",
+      "standfirst": "More than a monument, the Stone Chariot is the emblem of an empire, an exercise in showing off, and a reminder that the people who built it meant it to move.",
+      "route": "hampi-heritage-trail",
+      "stopOrder": null,
+      "location": "Hampi, Karnataka",
+      "heroPhoto": "hampi-stone-chariot",
+      "themes": ["Architecture", "Temples", "Vijayanagara"],
+      "published": "2026-09-18",
+      "sections": [
+        {
+          "id": "a-city-of-wonders",
+          "eyebrow": "The story",
+          "heading": "A City of Wonders",
+          "photo": null,
+          "body": [
+            "In the heart of Hampi, among granite boulders that look stacked by hand, stands the Vittala temple complex. It is the most ambitious thing the Vijayanagara empire built, and the chariot in its courtyard is the piece everyone photographs.",
+            "The complex went up in the sixteenth century, under Krishnadevaraya and the kings who followed him. By then Vijayanagara had been the dominant power in southern India for close to two hundred years, and its architects had stopped being modest. The temple's pillared halls were cut from single blocks. Its gateways were tall enough to be seen from across the river."
+          ],
+          "pullQuote": {
+            "text": "In stone, they captured movement; in silence, they left behind a song.",
+            "source": "Hampi Heritage Trail"
+          }
+        },
+        {
+          "id": "the-chariot-up-close",
+          "eyebrow": "The chariot up close",
+          "heading": "A Masterpiece in Granite",
+          "photo": "hampi-chariot-wheel",
+          "caption": "The carved wheels of the Stone Chariot, cut as separate discs and set on axles.",
+          "body": [
+            "The chariot is a shrine to Garuda, the eagle who carries Vishnu, and it faces the temple's main sanctum exactly as a real processional chariot would. It is not carved from one rock, which is the common claim. It is assembled from granite blocks, fitted so carefully that the joints disappear under the ornament.",
+            "The wheels are the detail worth standing in front of. Each is a separate disc, carved with concentric floral bands, and each was mounted on an axle so that it could turn. They do not turn now; the wheels were fixed in place during later conservation work to stop them being pushed. The elephants at the front are a replacement too. The originals were a pair of horses, and you can still see the broken limbs of those horses behind the elephants' legs."
+          ]
+        },
+        {
+          "id": "belief-and-symbolism",
+          "eyebrow": "Belief and symbolism",
+          "heading": "Why a Chariot at All",
+          "photo": null,
+          "body": [
+            "South Indian temples put their gods on wheels. During festivals the deity leaves the sanctum and is pulled through the streets on a wooden chariot the size of a house, which is how a temple reaches people who cannot enter it. Building that chariot in stone, permanently, in the courtyard, makes a claim: this procession never stops.",
+            "Garuda sits where he always sits, facing his lord. The shrine that once held his image is empty now. What remains is the vehicle, which is the part the sculptors treated as the subject."
+          ]
+        },
+        {
+          "id": "artisans-and-ingenuity",
+          "eyebrow": "Artisans and ingenuity",
+          "heading": "The Hands That Cut It",
+          "photo": "hampi-vittala-hall",
+          "caption": "The pillared hall of the Vittala temple, where slender columns ring out when struck.",
+          "body": [
+            "Nobody recorded the names of the people who made this. What they left instead is evidence of method: granite is unforgiving, and the ornament here is cut to a depth that leaves almost no room for error.",
+            "A few steps away, the temple's great hall has the musical pillars, slender columns that ring at different pitches when struck. Enough visitors tested them that the Archaeological Survey of India had to rope them off. The ringing is a property of the rock and the proportions the carvers chose, and it is the clearest evidence we have that these were people who understood their material completely."
+          ]
+        },
+        {
+          "id": "through-the-centuries",
+          "eyebrow": "Through the centuries",
+          "heading": "After 1565",
+          "photo": null,
+          "body": [
+            "In 1565 the Vijayanagara armies lost the battle of Talikota to a coalition of Deccan sultanates, and the city was systematically dismantled over the months that followed. The Vittala complex was damaged and abandoned. Hampi became a village among ruins, and stayed that way for three centuries.",
+            "The chariot survived because it was granite and because it was not worth melting down. It has since appeared on the Indian fifty-rupee note, which is how most people in India first see it."
+          ]
+        },
+        {
+          "id": "today-and-tomorrow",
+          "eyebrow": "Today and tomorrow",
+          "heading": "Standing in Front of It",
+          "photo": null,
+          "body": [
+            "Hampi became a UNESCO World Heritage Site in 1986, and the Vittala complex is now the most protected part of it. You reach the chariot on foot or by electric buggy from the gate; vehicles are kept away from the temple.",
+            "Go early. The granite takes colour from low light, and the courtyard is quiet enough to hear what the carvers were listening to."
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "bazaar-that-sold-the-world",
+      "title": "The Bazaar That Sold the World",
+      "titleAccent": "Sold the World",
+      "standfirst": "A kilometre of colonnaded shopfronts where Persian horses, Golconda diamonds and Chinese silk changed hands, and the travellers who could not believe what they were seeing.",
+      "route": "hampi-heritage-trail",
+      "stopOrder": 3,
+      "location": "Hampi, Karnataka",
+      "heroPhoto": "hampi-bazaar",
+      "themes": ["Trade", "Living Culture"],
+      "published": "2026-09-22",
+      "sections": [
+        {
+          "id": "a-market-a-mile-long",
+          "eyebrow": "The story",
+          "heading": "A Market a Mile Long",
+          "photo": null,
+          "body": [
+            "The street running east from the Virupaksha temple was the commercial spine of Vijayanagara. Both sides were lined with colonnades, and behind each arch was a shop. The scale is still legible: you can walk the length of it and watch the stone frame continue long after you expect it to stop.",
+            "Foreign visitors wrote about this street because it embarrassed the markets they knew at home. Domingos Paes, a Portuguese traveller who saw the city around 1520, described precious stones sold in the open. Abdur Razzaq, an envoy from Herat, counted the bazaars and gave up on comparisons."
+          ],
+          "pullQuote": {
+            "text": "They were shops where you could buy anything the known world made, and a great deal that it did not.",
+            "source": "Hampi Heritage Trail"
+          }
+        },
+        {
+          "id": "horses-and-power",
+          "eyebrow": "Horses and power",
+          "heading": "Why Horses Mattered",
+          "photo": null,
+          "body": [
+            "The most valuable thing traded here was not gems. It was horses. The Deccan does not breed cavalry mounts well, so Vijayanagara imported Arab and Persian horses through the west coast ports at enormous expense, and its wars depended on the supply.",
+            "That dependency shaped the empire's foreign policy: whoever controlled the ports controlled the cavalry, which is part of why the Portuguese arrival on the coast mattered so much so quickly."
+          ]
+        },
+        {
+          "id": "what-remains",
+          "eyebrow": "What remains",
+          "heading": "The Frame Without the Noise",
+          "photo": "hampi-virupaksha",
+          "caption": "The Virupaksha temple at the head of the bazaar street, still in daily worship.",
+          "body": [
+            "Families lived and traded along this street into the 2010s, when the area was cleared to protect the monuments. That clearance is still debated in Hampi, and you will hear both sides from people who live here.",
+            "What stands now is the architecture without its purpose: a row of empty colonnades pointing at a temple that is still full."
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "water-that-built-a-capital",
+      "title": "The Water That Built a Capital",
+      "titleAccent": "Built a Capital",
+      "standfirst": "Half a million people lived here through Deccan summers. The reason was not the temples. It was the aqueducts, tanks and channels under your feet.",
+      "route": "hampi-heritage-trail",
+      "stopOrder": 5,
+      "location": "Hampi, Karnataka",
+      "heroPhoto": "hampi-tungabhadra",
+      "themes": ["Engineering", "History"],
+      "published": "2026-09-29",
+      "sections": [
+        {
+          "id": "a-dry-place",
+          "eyebrow": "The story",
+          "heading": "A Dry Place to Put a City",
+          "photo": null,
+          "body": [
+            "Hampi sits in one of the drier parts of Karnataka, on granite that holds nothing. The Tungabhadra runs past it, and everything the city managed to be was built on the work of getting that water up, across and into the places people lived.",
+            "The royal centre is threaded with stone channels. Some are open, some run under courtyards, and they feed tanks that are still watertight five hundred years later."
+          ]
+        },
+        {
+          "id": "the-stepped-tank",
+          "eyebrow": "The stepped tank",
+          "heading": "Found in 1980",
+          "photo": "hampi-royal-enclosure",
+          "caption": "The royal enclosure, where the stepped tank was excavated from under centuries of silt.",
+          "body": [
+            "The stepped tank in the royal enclosure was dug out of the silt only in the 1980s. It is a precise pyramid of black schist steps, and the blocks are numbered with mason's marks showing where each one belonged, because the stone was cut elsewhere and brought here to be assembled.",
+            "That is a supply chain, recorded in the stone, for a bathing tank."
+          ]
+        }
+      ]
+    }
+  ]
+}

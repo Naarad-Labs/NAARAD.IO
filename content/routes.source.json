@@ -1,0 +1,226 @@
+{
+  "note": "Editorial routes published by Naarad. Coordinates are the real locations of each monument; the route line that scripts/build-routes.py derives from them is a connecting walking line through the published stops, not a surveyed GPS track, and the data records it as such. Elevation comes from NASA SRTM 30 m samples along that line. Stop texts are written for Naarad.",
+  "routes": [
+    {
+      "slug": "hampi-heritage-trail",
+      "name": "Hampi Heritage Trail",
+      "subtitle": "Temples, bazaars and the story of a remarkable empire.",
+      "location": "Hampi, Karnataka",
+      "region": "Karnataka",
+      "sport": "walk",
+      "themes": [
+        "Temples",
+        "History",
+        "Living Culture"
+      ],
+      "difficulty": "moderate",
+      "routeType": "loop",
+      "surface": "Stone paths, sand and granite steps",
+      "durationMin": 165,
+      "photo": "hampi-gopuram",
+      "cardPhoto": "hampi-virupaksha",
+      "lede": "Walk through a landscape where kings, poets, traders and common people shaped an extraordinary civilisation. Hear its stories at the very places where they unfolded.",
+      "overview": "Vijayanagara, the city the world knew as Hampi, was one of the largest cities on earth in the sixteenth century. This walk crosses it from the temple that never stopped praying to the hill the empire watched its enemies from, taking in the bazaar where Persian horses were sold and the enclosure where kings reviewed their armies.",
+      "languages": [
+        "en",
+        "hi",
+        "kn",
+        "ta",
+        "te"
+      ],
+      "stops": [
+        {
+          "name": "Virupaksha Temple",
+          "tagline": "Living faith across centuries",
+          "lat": 15.335,
+          "lng": 76.4601,
+          "photo": "hampi-virupaksha",
+          "summary": "Begin where Hampi has never stopped: a temple to Shiva that has held daily worship since long before the empire rose around it.",
+          "story": "The gopuram above you is the tallest thing in Hampi for a reason. Virupaksha was here before Vijayanagara, a small shrine on the Tungabhadra, and it was still here after the city fell. Kings extended it, armies passed it, ruin spread around it, and the lamps stayed lit. When you step into the courtyard you are joining a queue of worshippers that has not broken in roughly fourteen centuries. Look for the pinhole image in the inner chamber, where light through a small opening throws the main tower upside down on the wall: an accident of architecture the temple has kept as a gift."
+        },
+        {
+          "name": "Sasivekalu Ganesha",
+          "tagline": "Monumental beginnings",
+          "lat": 15.3337,
+          "lng": 76.462,
+          "photo": "hampi-sasivekalu",
+          "summary": "A monolithic Ganesha, over two metres tall, carved from a single boulder on the slope of Hemakuta Hill.",
+          "story": "Sasivekalu means mustard seed, and the name is a joke about scale: this Ganesha is carved from one block of granite and stands more than two metres high. Walk around the back and you will find the reason for the name's other half. A snake is tied around his belly. The story goes that Ganesha ate so much that his stomach threatened to burst, so he caught a serpent and used it as a belt. The carvers of Vijayanagara liked their gods immense and their jokes intact."
+        },
+        {
+          "name": "Hampi Bazaar",
+          "tagline": "A marketplace of the world",
+          "lat": 15.3348,
+          "lng": 76.4645,
+          "photo": "hampi-bazaar",
+          "summary": "Stand where merchants from across Asia once traded horses, silk, spices and ideas along a colonnaded street a kilometre long.",
+          "story": "This street ran for more than a kilometre, and the colonnades along it were shops. Portuguese and Persian travellers who saw it wrote home in disbelief: Domingos Paes described diamonds sold openly by the heap, and Abdur Razzaq counted the bazaars of the city and ran out of superlatives. Arab horses came up from the coast to be sold here, because Vijayanagara's cavalry was its answer to the sultanates to the north. What remains is the stone frame of a market. The noise you have to supply yourself."
+        },
+        {
+          "name": "Krishna Temple",
+          "tagline": "Devotion in stone",
+          "lat": 15.33,
+          "lng": 76.4588,
+          "photo": "hampi-krishna-temple",
+          "summary": "Built in 1513 by Krishnadevaraya to mark a victory, and decorated with the campaign that paid for it.",
+          "story": "Krishnadevaraya came back from the eastern campaign at Udayagiri in 1513 with an image of the infant Krishna and the confidence of a king at the height of his powers. He built this temple to house it, and had the walls carved with scenes from the war that brought it here, so that worship and record keeping happened in the same room. The temple's bazaar street runs east in front of you, a smaller echo of the one you just walked."
+        },
+        {
+          "name": "Royal Enclosure",
+          "tagline": "Power, people and palaces",
+          "lat": 15.327,
+          "lng": 76.465,
+          "photo": "hampi-royal-enclosure",
+          "summary": "The administrative heart of the empire, built around the great stepped platform of the Mahanavami Dibba.",
+          "story": "The platform in front of you is where the empire made itself visible. During the Mahanavami festival the king sat here for nine days while armies, elephants, dancers, tribute and envoys passed below. The carved friezes around the base show exactly that procession, which makes this one of the few places in Hampi where the building tells you what it was for. Underfoot, the enclosure is threaded with aqueducts and tanks: water engineering was how a city of half a million people survived a dry Deccan summer."
+        },
+        {
+          "name": "Queen's Bath",
+          "tagline": "A glimpse into royal life",
+          "lat": 15.3243,
+          "lng": 76.4707,
+          "photo": "hampi-queens-bath",
+          "summary": "A plain box from outside, an arcaded water pavilion within: the clearest Indo-Islamic architecture in Hampi.",
+          "story": "From the road it is a dull rectangle. Step inside and it opens into a sunken basin ringed by arched balconies, with stucco ornament that borrows openly from the Deccan sultanates the empire spent its life fighting. That borrowing is the point. Vijayanagara's architects worked in whatever idiom pleased them, and its kings employed Muslim officers and archers. The name is later romance; nobody knows which royals bathed here, or whether they did."
+        },
+        {
+          "name": "Elephant Stables",
+          "tagline": "Engineering for an empire",
+          "lat": 15.333,
+          "lng": 76.4722,
+          "photo": "hampi-elephant-stables",
+          "summary": "Eleven domed chambers, each built for a single war elephant, in a row of deliberate symmetry.",
+          "story": "Eleven chambers, each with a dome, and no two adjacent domes quite the same shape. Each held one war elephant, with openings above for the mahouts and iron rings still set in the stone. The building is a statement of logistics: an elephant corps needed feeding, housing and parading, and an empire that could do that at this scale was advertising the fact. The central chamber is taller, almost certainly for musicians during ceremonial parades."
+        },
+        {
+          "name": "Matanga Hill Viewpoint",
+          "tagline": "Hampi through time",
+          "lat": 15.3357,
+          "lng": 76.4694,
+          "photo": "hampi-matanga",
+          "summary": "The highest point in Hampi, and the only place the whole city makes sense at once.",
+          "story": "Climb the granite steps and the plan of Vijayanagara finally resolves. The Tungabhadra below, the temple complexes strung along it, the bazaar streets running arrow straight, the royal centre away to the south, and boulders to the horizon in every direction. This is where the city watched for the armies that eventually came in 1565, after the battle of Talikota, and spent months dismantling it. Come at first light if you can; the granite turns the colour of the temple lamps."
+        }
+      ]
+    },
+    {
+      "slug": "thanjavur-living-heritage",
+      "name": "Thanjavur Living Heritage",
+      "subtitle": "A thousand-year-old temple and the city that still works around it.",
+      "location": "Thanjavur, Tamil Nadu",
+      "region": "Tamil Nadu",
+      "sport": "walk",
+      "themes": [
+        "Chola Heritage",
+        "Temples",
+        "Art & Music"
+      ],
+      "difficulty": "easy",
+      "routeType": "point",
+      "surface": "Pavement and temple courtyards",
+      "durationMin": 150,
+      "photo": "thanjavur-temple",
+      "cardPhoto": "thanjavur-temple",
+      "lede": "Rajaraja Chola's great temple is still the tallest thing in Thanjavur, and the city has spent a millennium arranging itself around it.",
+      "overview": "Thanjavur holds the Brihadisvara temple, the Maratha palace that came after the Cholas, and one of the oldest working libraries in Asia, all within a short walk. This route moves from the temple's granite vimana to the palace quarter, taking in the art gallery's Chola bronzes on the way.",
+      "languages": [
+        "en",
+        "ta",
+        "hi"
+      ],
+      "stops": [
+        {
+          "name": "Brihadisvara Temple",
+          "tagline": "A thousand years of granite",
+          "lat": 10.7828,
+          "lng": 79.1317,
+          "photo": "thanjavur-temple",
+          "summary": "Rajaraja Chola completed it in 1010 CE, and it has stood through every century since.",
+          "story": "The vimana above the sanctum rises about sixty-six metres, and it was built without mortar, from granite that had to be brought from far outside the delta. The inscriptions around the base are the reason historians know so much about Chola administration: they list the dancers, musicians, accountants and oil suppliers the temple employed, by name. It is a cathedral and a civil service record in the same building."
+        },
+        {
+          "name": "Thanjavur Palace",
+          "tagline": "After the Cholas",
+          "lat": 10.787,
+          "lng": 79.1378,
+          "photo": "thanjavur-temple",
+          "summary": "The Nayak and Maratha rulers' quarter, built long after the temple and in a different world.",
+          "story": "The palace complex belongs to the Nayaks of the sixteenth century and the Marathas who followed them, and it feels nothing like the temple. Courtyards, a durbar hall with painted plaster, and a bell tower that looks out over the city. The Marathas of Thanjavur were patrons of music and Sanskrit scholarship, which is how the library next door came to hold what it does."
+        },
+        {
+          "name": "Saraswathi Mahal Library",
+          "tagline": "A library of palm leaves",
+          "lat": 10.7869,
+          "lng": 79.1372,
+          "photo": "thanjavur-bronze",
+          "summary": "One of the oldest libraries in Asia still in use, holding tens of thousands of palm-leaf manuscripts.",
+          "story": "Serfoji II, the Maratha ruler who governed Thanjavur under the East India Company's shadow, collected manuscripts the way other rulers collected territory. The library holds Sanskrit, Tamil, Marathi and Telugu works on medicine, music and astronomy, many of them on palm leaf, and scholars still read them here. It is a reminder that this city's inheritance is not only architecture."
+        },
+        {
+          "name": "Thanjavur Art Gallery",
+          "tagline": "Chola bronzes up close",
+          "lat": 10.7868,
+          "lng": 79.1381,
+          "photo": "thanjavur-bronze",
+          "summary": "A hall of Chola bronzes and stone sculpture housed in the palace complex.",
+          "story": "Chola bronze casting is the art this region is known for worldwide, and this gallery lets you stand very close to it. The figures were made to be carried in procession, which is why they are balanced the way they are, and why the best of them seem to be in motion even when standing still."
+        }
+      ]
+    },
+    {
+      "slug": "auroville-explorer",
+      "name": "Auroville Explorer",
+      "subtitle": "An experiment in living, set in a forest that was planted by hand.",
+      "location": "Auroville, Tamil Nadu",
+      "region": "Tamil Nadu",
+      "sport": "walk",
+      "themes": [
+        "Community",
+        "Architecture",
+        "Nature"
+      ],
+      "difficulty": "easy",
+      "routeType": "loop",
+      "surface": "Red earth paths and shaded tracks",
+      "durationMin": 140,
+      "photo": "auroville-matrimandir",
+      "cardPhoto": "auroville-matrimandir",
+      "lede": "A township founded in 1968 on eroded land, now walking distance through forest its residents grew themselves.",
+      "overview": "Auroville was laid out around the Matrimandir on a plateau that had been stripped almost bare. Several million trees later the walk between its landmarks runs mostly in shade. This route takes in the Matrimandir gardens, the amphitheatre with the urn of soil from 124 nations, and the visitor centre.",
+      "languages": [
+        "en",
+        "ta",
+        "hi"
+      ],
+      "stops": [
+        {
+          "name": "Matrimandir Viewpoint",
+          "tagline": "The golden sphere",
+          "lat": 12.0085,
+          "lng": 79.8107,
+          "photo": "auroville-matrimandir",
+          "summary": "The geodesic sphere at the centre of Auroville, finished in gold discs and surrounded by twelve gardens.",
+          "story": "Construction began in 1971 and took decades. Inside is a white marble chamber with a single crystal lit by a shaft of sunlight, intended for silent concentration rather than worship. From the viewpoint you see the whole sphere and the gardens radiating out, each named for a quality its designers thought a person might cultivate."
+        },
+        {
+          "name": "The Amphitheatre and Urn",
+          "tagline": "Soil from 124 nations",
+          "lat": 12.0078,
+          "lng": 79.8112,
+          "photo": "auroville-matrimandir",
+          "summary": "Where Auroville was inaugurated in 1968, with handfuls of earth from around the world.",
+          "story": "At the founding ceremony on 28 February 1968, representatives of 124 nations and all Indian states placed soil from home into a lotus-shaped urn. Around five thousand people attended on a plateau that was then almost treeless. The urn is still here, at the centre of the amphitheatre, and the trees around it did not exist that day."
+        },
+        {
+          "name": "Visitor Centre",
+          "tagline": "How a township works",
+          "lat": 12.0043,
+          "lng": 79.8099,
+          "photo": "auroville-matrimandir",
+          "summary": "Exhibits on the township's land, economy and building experiments, plus its craft units.",
+          "story": "Auroville's interest for a visitor is less mystical than structural: a settlement of a few thousand people from dozens of countries that runs its own schools, farms, building research and reforestation. The exhibits here explain the land plan and the long argument over how to live on it, which is the honest version of the story."
+        }
+      ]
+    }
+  ]
+}

@@ -1,30 +1,26 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Naarad</title>
+    <meta name="robots" content="noindex">
     <script>
+      // GitHub Pages serves this for any unknown path. The app is a single
+      // document, so carry the path across as a query and let the router
+      // resolve it; an unrecognised path simply opens the home page.
       (function () {
-        var path = window.location.pathname.replace(/^\/+|\/+$/g, "");
-        var page =
-          path === "routes" ||
-          path === "planner" ||
-          path === "features" ||
-          path === "updates" ||
-          path === "app" ||
-          path === "privacy" ||
-          path === "terms" ||
-          path === "accessibility"
-            ? path
-            : path.indexOf("routes/") === 0
-              ? "route-" + path.slice(7).replace("iit-madras", "iitmadras")
-              : "home";
-        window.location.replace("/?page=" + encodeURIComponent(page));
+        var path = location.pathname.replace(/^\/+|\/+$/g, '');
+        var views = ['explore', 'routes', 'stories', 'creators', 'journey', 'about'];
+        var target = '/';
+        if (path.indexOf('route/') === 0) target = '/?route=' + encodeURIComponent(path.slice(6));
+        else if (path.indexOf('story/') === 0) target = '/?story=' + encodeURIComponent(path.slice(6));
+        else if (views.indexOf(path) !== -1) target = '/?view=' + encodeURIComponent(path);
+        location.replace(target + location.hash);
       })();
     </script>
   </head>
   <body>
-    Loading Naarad...
+    <p>Taking you to <a href="/">naarad.io</a>…</p>
   </body>
 </html>

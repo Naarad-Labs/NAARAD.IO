@@ -1,15 +1,23 @@
 {
-  "name": "Naarad Heritage Explorer",
+  "name": "Naarad · Walk a place. Hear its story.",
   "short_name": "Naarad",
-  "description": "Explore published heritage routes and stories across India.",
+  "description": "Heritage walking routes across India with place stories, real route data and audio guides.",
   "start_url": "/",
-  "display": "browser",
-  "background_color": "#f7f3eb",
-  "theme_color": "#f7f3eb",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#f8f3e9",
+  "theme_color": "#f8f3e9",
   "lang": "en-IN",
-  "categories": ["travel", "education"],
+  "categories": ["travel", "education", "navigation"],
   "icons": [
     { "src": "/Images/naarad-icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
-    { "src": "/Images/naarad-icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }
+    { "src": "/Images/naarad-icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/Images/naarad-icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Explore routes", "url": "/?view=routes" },
+    { "name": "Stories", "url": "/?view=stories" },
+    { "name": "My Journey", "url": "/?view=journey" }
   ]
 }

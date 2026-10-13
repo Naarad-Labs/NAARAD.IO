@@ -1,0 +1,5 @@
+.cache/
+e2e/node_modules/
+e2e/test-results/
+e2e/results.json
+e2e/playwright-report/

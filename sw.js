@@ -1,168 +1,121 @@
-/* Naarad Service Worker — Cache-first for static assets, network-first for API */
+/* Naarad service worker.
+ *
+ * Static files are served cache-first and versioned by CACHE: bump VERSION
+ * whenever the shell, a view module or a stylesheet changes, or visitors keep
+ * the old one. Content JSON is served network-first so new routes and stories
+ * appear without a new worker. Photographs and map tiles are cached as they
+ * are used, with the tile cache kept small.
+ */
 
-// Bump this whenever a cached file changes (index.html, discover/*, creator/*): static files are
-// served cache-first, so visitors keep the old ones until the version changes.
-const CACHE_NAME = 'naarad-v8';
-const STATIC_ASSETS = [
+const VERSION = 'v9';
+const SHELL = `naarad-shell-${VERSION}`;
+const CONTENT = `naarad-content-${VERSION}`;
+const MEDIA = `naarad-media-${VERSION}`;
+const TILES = `naarad-tiles-${VERSION}`;
+const TILE_LIMIT = 220;
+
+/* The shell: everything the homepage needs to render offline. */
+const SHELL_ASSETS = [
   '/',
   '/index.html',
   '/manifest.json',
+  '/app/base.css',
+  '/app/home.css',
+  '/app/main.js',
+  '/app/data.js',
+  '/app/media.js',
+  '/app/icons.js',
+  '/app/previews.js',
+  '/app/audio.js',
+  '/app/journey-store.js',
+  '/app/studio-store.js',
+  '/app/views/home.js',
+  '/app/fonts/DMSans.woff2',
+  '/app/fonts/PlayfairDisplay.woff2',
+  '/app/fonts/Caveat-latin.woff2',
   '/Images/cropped_logo.png',
-  '/robots.txt',
-  '/Images/Hampi.webp',
-  '/Images/Mysore Palace.webp',
-  '/Images/Varanasi.webp',
-  '/Images/Jaipur.webp',
-  '/Images/thanjavur.webp',
-  '/Images/IIt_Madras.webp',
-  /* Creator Programme modules — must be cached for offline-first operation */
-  '/creator/creator.css',
-  '/creator/creator.js',
-  '/data/pricing.json',
-  '/data/creator-testimonials.json',
-  /* Discover: the seed is the offline copy of the routes */
-  '/discover/tokens.css',
-  '/discover/primitives.css',
-  '/discover/discover.css',
-  '/discover/data.js',
-  '/discover/discover.js',
-  '/discover/seed-tours.json',
 ];
 
-const CDN_CACHE = 'naarad-cdn-v5';
-const CDN_ORIGINS = [
-  'https://fonts.googleapis.com',
-  'https://fonts.gstatic.com',
-  'https://unpkg.com',
-];
+const isContent = (url) => url.pathname.startsWith('/content/') || url.pathname.startsWith('/discover/') || url.pathname.startsWith('/routes/');
+const isMedia = (url) => url.pathname.startsWith('/Images/');
+const isTile = (url) => /tile\.openstreetmap\.org|server\.arcgisonline\.com/.test(url.host);
+const isAppCode = (url) => url.pathname.startsWith('/app/');
 
-// ── Install: pre-cache static assets ─────────────────────────────────────
-self.addEventListener('install', function(event) {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then(function(cache) {
-      return cache.addAll(STATIC_ASSETS).catch(function(err) {
-        console.warn('[SW] Pre-cache failed for some assets:', err);
-      });
-    }).then(function() {
-      return self.skipWaiting();
-    })
-  );
+self.addEventListener('install', (event) => {
+  event.waitUntil((async () => {
+    const cache = await caches.open(SHELL);
+    // One missing file must not fail the whole install.
+    await Promise.all(SHELL_ASSETS.map((asset) => cache.add(asset).catch(() => {})));
+    await self.skipWaiting();
+  })());
 });
 
-// ── Activate: clean up old caches ─────────────────────────────────────────
-self.addEventListener('activate', function(event) {
-  event.waitUntil(
-    caches.keys().then(function(keys) {
-      return Promise.all(
-        keys.filter(function(k) { return k !== CACHE_NAME && k !== CDN_CACHE; })
-            .map(function(k) { return caches.delete(k); })
-      );
-    }).then(function() {
-      return self.clients.claim();
-    })
-  );
+self.addEventListener('activate', (event) => {
+  event.waitUntil((async () => {
+    const keep = new Set([SHELL, CONTENT, MEDIA, TILES]);
+    const names = await caches.keys();
+    await Promise.all(names.filter((name) => !keep.has(name)).map((name) => caches.delete(name)));
+    await self.clients.claim();
+  })());
 });
 
-// ── Fetch: strategy by request type ──────────────────────────────────────
-self.addEventListener('fetch', function(event) {
-  var url = new URL(event.request.url);
-
-  // Skip non-GET requests and chrome-extension requests
-  if (event.request.method !== 'GET') return;
-  if (url.protocol === 'chrome-extension:') return;
-
-  // Map tiles (OpenStreetMap) — cache-first with 7-day expiry
-  if (url.hostname.includes('tile.openstreetmap.org')) {
-    event.respondWith(cacheTiles(event.request));
-    return;
-  }
-
-  // CDN assets (fonts, Leaflet, Supabase) — stale-while-revalidate
-  if (CDN_ORIGINS.some(function(o) { return url.origin === o || url.href.startsWith(o); })) {
-    event.respondWith(staleWhileRevalidate(event.request, CDN_CACHE));
-    return;
-  }
-
-  // Supabase API — network-first with cache fallback
-  if (url.hostname.includes('supabase.co')) {
-    event.respondWith(networkFirst(event.request));
-    return;
-  }
-
-  // Static assets — cache-first
-  if (url.origin === self.location.origin) {
-    event.respondWith(cacheFirst(event.request));
-    return;
-  }
-});
-
-// ── Strategy implementations ──────────────────────────────────────────────
-function cacheFirst(request) {
-  return caches.match(request).then(function(cached) {
-    if (cached) return cached;
-    return fetch(request).then(function(response) {
-      if (!response || response.status !== 200 || response.type === 'opaque') return response;
-      var clone = response.clone();
-      caches.open(CACHE_NAME).then(function(c) { c.put(request, clone); });
-      return response;
-    });
-  }).catch(function() {
-    return caches.match('/index.html');
-  });
+async function trim(cacheName, limit) {
+  const cache = await caches.open(cacheName);
+  const keys = await cache.keys();
+  if (keys.length <= limit) return;
+  await Promise.all(keys.slice(0, keys.length - limit).map((key) => cache.delete(key)));
 }
 
-function networkFirst(request) {
-  return fetch(request).then(function(response) {
-    if (response && response.status === 200) {
-      var clone = response.clone();
-      caches.open(CACHE_NAME).then(function(c) { c.put(request, clone); });
-    }
+async function cacheFirst(request, cacheName) {
+  const cache = await caches.open(cacheName);
+  const hit = await cache.match(request);
+  if (hit) return hit;
+  const response = await fetch(request);
+  if (response.ok || response.type === 'opaque') cache.put(request, response.clone());
+  return response;
+}
+
+async function networkFirst(request, cacheName) {
+  const cache = await caches.open(cacheName);
+  try {
+    const response = await fetch(request);
+    if (response.ok) cache.put(request, response.clone());
     return response;
-  }).catch(function() {
-    return caches.match(request);
-  });
+  } catch (error) {
+    const hit = await cache.match(request);
+    if (hit) return hit;
+    throw error;
+  }
 }
 
-function staleWhileRevalidate(request, cacheName) {
-  var cache = caches.open(cacheName);
-  return cache.then(function(c) {
-    return c.match(request).then(function(cached) {
-      var fetchPromise = fetch(request).then(function(response) {
-        if (response && response.status === 200) c.put(request, response.clone());
-        return response;
-      });
-      return cached || fetchPromise;
-    });
-  });
-}
+self.addEventListener('fetch', (event) => {
+  const { request } = event;
+  if (request.method !== 'GET') return;
+  const url = new URL(request.url);
 
-function cacheTiles(request) {
-  return caches.open('naarad-tiles-v1').then(function(cache) {
-    return cache.match(request).then(function(cached) {
-      if (cached) return cached;
-      return fetch(request).then(function(response) {
-        if (response && response.status === 200) {
-          cache.put(request, response.clone());
-        }
-        return response;
-      }).catch(function() {
-        // Return a blank transparent tile when offline
-        return new Response(
-          '<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256"><rect width="256" height="256" fill="#F0EDE4"/></svg>',
-          { headers: { 'Content-Type': 'image/svg+xml' } }
-        );
-      });
-    });
-  });
-}
+  if (isTile(url)) {
+    event.respondWith(cacheFirst(request, TILES).then(async (response) => {
+      await trim(TILES, TILE_LIMIT);
+      return response;
+    }).catch(() => Response.error()));
+    return;
+  }
 
-// ── Background sync for offline route saves ───────────────────────────────
-self.addEventListener('sync', function(event) {
-  if (event.tag === 'naarad-sync-routes') {
-    event.waitUntil(syncPendingRoutes());
+  if (url.origin !== location.origin) return;
+
+  if (isContent(url)) { event.respondWith(networkFirst(request, CONTENT)); return; }
+  if (isMedia(url)) { event.respondWith(cacheFirst(request, MEDIA)); return; }
+  if (isAppCode(url)) { event.respondWith(cacheFirst(request, SHELL)); return; }
+
+  // Navigations: every route resolves to the one shell document.
+  if (request.mode === 'navigate') {
+    event.respondWith((async () => {
+      try {
+        return await fetch(request);
+      } catch (error) {
+        const cache = await caches.open(SHELL);
+        return (await cache.match('/index.html')) || (await cache.match('/')) || Response.error();
+      }
+    })());
   }
 });
-
-function syncPendingRoutes() {
-  return Promise.resolve(); // Placeholder — implement with IndexedDB when backend is live
-}

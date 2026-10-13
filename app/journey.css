@@ -1,0 +1,144 @@
+/* My Journey: a travel journal spread on desktop, a vertical feed on a phone. */
+
+.journey { display: block; padding-bottom: 60px; }
+
+/* ── Hero ──────────────────────────────────────────────────────── */
+.journey-hero { display: grid; grid-template-columns: minmax(340px, 46%) 1fr; align-items: center; min-height: 380px; }
+.journey-hero-copy { padding: 32px clamp(24px, 2.6vw, 48px) 36px clamp(24px, 4vw, 64px); }
+.journey-hero-copy h1 { font-size: clamp(38px, 4.2vw, 62px); margin: 10px 0 14px; }
+.journey-hero-copy .lede { max-width: 46ch; }
+.journey-hero-media { position: relative; align-self: stretch; min-height: 380px; }
+.journey-hero-media .photo { position: absolute; inset: 0; }
+.journey-hero-media .photo img { width: 100%; height: 100%; object-fit: cover; }
+.journey-hero-note {
+  position: absolute; right: clamp(20px, 3vw, 48px); top: clamp(22px, 4vw, 48px); max-width: 220px;
+  text-align: right; font-size: 23px;
+}
+
+/* ── Tabs ──────────────────────────────────────────────────────── */
+.journey-tabs {
+  display: flex; gap: 2px; width: min(100% - 48px, var(--wrap)); margin: 20px auto 0;
+  padding: 6px; background: var(--paper-bright); border: 1px solid var(--line); border-radius: var(--radius);
+  overflow-x: auto; scrollbar-width: none;
+}
+.journey-tabs::-webkit-scrollbar { display: none; }
+.journey-tabs button {
+  display: inline-flex; align-items: center; gap: 8px; white-space: nowrap; padding: 10px 16px;
+  border-radius: 7px; font-size: 14px; font-weight: 600; color: var(--ink-soft);
+}
+.journey-tabs .ico { width: 17px; height: 17px; }
+.journey-tabs button:hover { background: var(--paper-deep); }
+.journey-tabs button[aria-selected='true'] { background: var(--orange-wash); color: var(--orange); }
+
+.journey-panel { width: min(100% - 48px, var(--wrap)); margin: 26px auto 0; }
+.journey-panel[hidden] { display: none; }
+
+/* ── Overview ──────────────────────────────────────────────────── */
+.journey-overview {
+  display: grid; grid-template-columns: minmax(280px, .9fr) minmax(0, 1.4fr); gap: 26px; align-items: center;
+  padding: 24px clamp(18px, 2vw, 30px); background: var(--paper-bright);
+  border: 1px solid var(--line); border-radius: var(--radius);
+}
+.journey-progress { display: flex; align-items: center; gap: 20px; }
+.journey-ring { position: relative; width: 130px; height: 130px; flex: none; }
+.journey-ring svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+.ring-track { fill: none; stroke: var(--paper-deep); stroke-width: 10; }
+.ring-value { fill: none; stroke: var(--orange); stroke-width: 10; stroke-linecap: round; transition: stroke-dashoffset .5s; }
+.journey-ring-copy { position: absolute; inset: 0; display: grid; place-content: center; text-align: center; }
+.journey-ring-copy b { display: block; font-family: var(--serif); font-size: 34px; line-height: 1; }
+.journey-ring-copy span { font-size: 12px; color: var(--ink-muted); }
+.journey-progress h2 { font-size: 21px; margin-bottom: 7px; }
+
+.journey-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(132px, 1fr)); gap: 16px; }
+.journey-stats li { display: flex; align-items: center; gap: 11px; }
+.journey-stats .ico { width: 21px; height: 21px; }
+.journey-stats b { display: block; font-family: var(--serif); font-size: 22px; line-height: 1.1; }
+.journey-stats small { font-size: 11.5px; color: var(--ink-muted); }
+
+.journey-section { margin-top: 36px; }
+.journey-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
+
+/* ── Cards ─────────────────────────────────────────────────────── */
+.journey-card {
+  display: flex; flex-direction: column; overflow: hidden; background: var(--paper-bright);
+  border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow-sm);
+}
+.journey-card-media { position: relative; display: grid; grid-template-columns: 1fr .7fr; gap: 1px; background: var(--line); }
+.journey-card-media .photo img { height: 100%; }
+.journey-card-map { background: #eef2e6; }
+.journey-card-map .route-preview { width: 100%; height: 100%; }
+.journey-card-flag {
+  position: absolute; left: 10px; top: 10px; display: inline-flex; align-items: center; gap: 5px;
+  padding: 5px 10px; border-radius: 999px; background: rgba(253, 250, 244, .94);
+  font-size: 11px; font-weight: 700; color: var(--orange);
+}
+.journey-card-flag.is-done { color: var(--sage); }
+.journey-card-flag .ico { width: 13px; height: 13px; }
+.journey-card-body { display: grid; gap: 7px; padding: 15px 16px 17px; }
+.journey-card-body strong { font-family: var(--serif); font-size: 18px; line-height: 1.2; }
+.journey-card-body > small { font-size: 12px; color: var(--ink-muted); }
+.journey-card-actions { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 4px; }
+.journey-card-actions .icon-button { width: 32px; height: 32px; }
+.journey-card-actions .ico { width: 15px; height: 15px; }
+
+/* ── Journal ───────────────────────────────────────────────────── */
+.journal-form {
+  display: grid; gap: 13px; max-width: 620px; padding: 20px;
+  background: var(--paper-bright); border: 1px solid var(--line); border-radius: var(--radius);
+}
+.journal-form .field input, .journal-form .field textarea {
+  width: 100%; padding: 10px 12px; border: 1px solid var(--line-strong); border-radius: 8px;
+  background: var(--paper); font-size: 14px; font-family: var(--sans);
+}
+.journal-form button { justify-self: start; }
+.journal-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 18px; margin-top: 26px; }
+.journal-note {
+  position: relative; padding: 20px 18px 18px; background: var(--paper-bright);
+  border: 1px solid var(--line); border-radius: 3px; box-shadow: var(--shadow-sm);
+  transform: rotate(-.5deg);
+}
+.journal-note:nth-child(even) { transform: rotate(.6deg); }
+.journal-note::before {
+  content: ''; position: absolute; top: -9px; left: 50%; transform: translateX(-50%) rotate(-2deg);
+  width: 72px; height: 19px; background: rgba(201, 162, 39, .32); border-radius: 2px;
+}
+.journal-note-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+.journal-note-head b { font-family: var(--serif); font-size: 17px; }
+.journal-note-head span { font-size: 11px; color: var(--ink-muted); }
+.journal-note > small { display: block; margin-top: 3px; font-size: 12px; color: var(--orange); }
+.journal-note p { margin-top: 9px; font-family: var(--script); font-size: 19px; line-height: 1.35; color: var(--ink-soft); }
+.journal-note .icon-button { position: absolute; right: 10px; bottom: 10px; width: 30px; height: 30px; opacity: 0; }
+.journal-note:hover .icon-button, .journal-note:focus-within .icon-button { opacity: 1; }
+.journal-note .ico { width: 14px; height: 14px; }
+
+/* ── Badges ────────────────────────────────────────────────────── */
+.badge-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 18px; margin-bottom: 18px; }
+.badge {
+  display: grid; justify-items: center; gap: 8px; padding: 22px 16px; text-align: center;
+  background: var(--paper-bright); border: 1px solid var(--line); border-radius: var(--radius); opacity: .6;
+}
+.badge .ico { width: 30px; height: 30px; color: var(--ink-muted); }
+.badge b { font-family: var(--serif); font-size: 15.5px; }
+.badge small { font-size: 11.5px; color: var(--ink-muted); }
+.badge.is-earned { opacity: 1; border-color: var(--orange); background: var(--orange-wash); }
+.badge.is-earned .ico { color: var(--orange); }
+
+/* ── Tablet and phone ──────────────────────────────────────────── */
+@media (max-width: 1240px) {
+  .journey-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .journey-overview { grid-template-columns: 1fr; }
+}
+@media (max-width: 1023px) {
+  .journey-hero { grid-template-columns: 1fr; }
+  .journey-hero-copy { order: 2; padding: 26px 20px 30px; }
+  .journey-hero-media { order: 1; min-height: 40vh; }
+  .journey-hero-media .photo { position: relative; }
+  .journey-hero-media .photo.torn-left { -webkit-mask-image: none; mask-image: none; }
+}
+@media (max-width: 639px) {
+  .journey-tabs, .journey-panel { width: calc(100% - 28px); }
+  .journey-grid { grid-template-columns: 1fr; }
+  .journey-progress { flex-direction: column; align-items: flex-start; }
+  .journal-list { grid-template-columns: 1fr; }
+  .journey-hero-note { font-size: 18px; max-width: 150px; }
+}

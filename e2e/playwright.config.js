@@ -5,7 +5,7 @@ const fs = require('fs');
 
 module.exports = defineConfig({
   testDir: '.',
-  testMatch: 'revamp.spec.js',
+  testMatch: 'site.spec.js',
   outputDir: 'test-results',
   fullyParallel: true,
   retries: 0,
@@ -14,7 +14,8 @@ module.exports = defineConfig({
     baseURL: 'http://127.0.0.1:4173',
     launchOptions: {
       executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE ||
-        (fs.existsSync('/usr/bin/chromium') ? '/usr/bin/chromium' : undefined),
+        ['/opt/pw-browsers/chromium-1194/chrome-linux/chrome', '/usr/bin/chromium'].find((path) => fs.existsSync(path)),
+      args: ['--no-sandbox'],
     },
     viewport: { width: 1440, height: 900 },
     serviceWorkers: 'block',      // the offline spec turns it on for itself

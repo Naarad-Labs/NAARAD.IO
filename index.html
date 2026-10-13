@@ -3,107 +3,106 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#f7f3eb">
-  <meta name="description" content="Explore the Hampi Vijayanagara Circuit with Naarad. Discover heritage routes across India.">
+  <meta name="theme-color" content="#f8f3e9">
+  <meta name="description" content="Heritage walking routes across India with place stories, real route data and audio guides. Explore, listen, connect.">
   <link rel="icon" type="image/png" href="/Images/cropped_logo.png">
+  <link rel="apple-touch-icon" href="/Images/naarad-icon-192.png">
   <link rel="manifest" href="/manifest.json">
   <link rel="canonical" href="https://naarad.io/">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Naarad">
-  <meta property="og:title" content="Hampi Vijayanagara Circuit · Naarad">
-  <meta property="og:description" content="Explore a published heritage route in Hampi, Karnataka.">
-  <meta property="og:image" content="https://naarad.io/Images/Hampi.webp">
-  <title>Hampi Vijayanagara Circuit · Naarad</title>
-  <link rel="stylesheet" href="/app/styles.css">
+  <meta property="og:title" content="Naarad · Walk a place. Hear its story.">
+  <meta property="og:description" content="Heritage walking routes across India with place stories, real route data and audio guides.">
+  <meta property="og:image" content="https://naarad.io/Images/photos/hampi-landscape-1200.webp">
+  <meta name="twitter:card" content="summary_large_image">
+  <title>Naarad · Walk a place. Hear its story.</title>
+
+  <link rel="stylesheet" href="/app/base.css">
+  <link rel="stylesheet" href="/app/home.css">
+  <link rel="preload" as="font" type="font/woff2" href="/app/fonts/PlayfairDisplay.woff2" crossorigin>
+  <link rel="preload" as="font" type="font/woff2" href="/app/fonts/DMSans.woff2" crossorigin>
+  <link rel="preload" as="image" type="image/avif" href="/Images/photos/hampi-landscape-1600.avif"
+    imagesrcset="/Images/photos/hampi-landscape-800.avif 800w, /Images/photos/hampi-landscape-1200.avif 1200w, /Images/photos/hampi-landscape-1600.avif 1600w"
+    imagesizes="(max-width: 1023px) 100vw, 62vw" fetchpriority="high">
 </head>
 <body>
-  <a class="skip-link" href="#app-content">Skip to route</a>
+  <a class="skip-link" href="#app-content">Skip to content</a>
   <div id="app" class="site-shell">
     <header class="site-header">
       <a id="nav-home" class="brand" href="/" data-view="home" aria-label="Naarad home">
-        <span class="brand-mark" aria-hidden="true"><img src="/Images/cropped_logo.png" alt=""></span>
-        <span class="brand-copy"><span class="brand-name">NAARAD</span><span class="brand-motto">Explore. Listen. Connect.</span></span>
+        <img src="/Images/cropped_logo.png" alt="" width="52" height="52">
+        <span class="brand-copy">
+          <span class="brand-name">NAARAD</span>
+          <span class="brand-motto">Explore. Listen. Connect.</span>
+        </span>
       </a>
       <nav class="primary-nav" aria-label="Main navigation">
-        <a id="nav-explore" href="/?view=explore" data-view="explore">Explore <span aria-hidden="true">⌄</span></a>
-        <a id="nav-routes" class="is-current" href="/?view=routes" data-view="routes" aria-current="page">Routes</a>
+        <a id="nav-explore" href="/?view=explore" data-view="explore">Explore</a>
+        <a id="nav-routes" href="/?view=routes" data-view="routes">Routes</a>
         <a id="nav-stories" href="/?view=stories" data-view="stories">Stories</a>
         <a id="nav-creators" href="/?view=creators" data-view="creators">Creators</a>
+        <a id="nav-journey" href="/?view=journey" data-view="journey">My Journey</a>
         <a id="nav-about" href="/?view=about" data-view="about">About</a>
       </nav>
-      <form class="header-search" role="search" action="/discover/">
-        <label class="sr-only" for="route-search">Search places, routes, and stories</label>
+      <form class="header-search" role="search" action="/?view=explore">
+        <label class="sr-only" for="route-search">Search places, routes and stories</label>
         <input id="route-search" type="search" name="q" placeholder="Search places, routes, stories…" autocomplete="off">
-        <button class="search-submit" type="submit" aria-label="Search"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8"></circle><path d="m16 16 5 5"></path></svg></button>
+        <button type="submit" aria-label="Search">
+          <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.6"/><path d="m15.8 15.8 4.4 4.4"/></svg>
+        </button>
       </form>
-      <a class="button button-primary header-cta" href="/?view=explore" data-view="explore">Start exploring <span aria-hidden="true">→</span></a>
-      <button class="menu-toggle icon-button" type="button" aria-label="Open navigation" aria-expanded="false"><span></span><span></span></button>
+      <a class="button button-primary header-cta" href="/?view=explore" data-view="explore">
+        Start Exploring
+        <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 12h15"/><path d="m13.6 6 5.9 6-5.9 6"/></svg>
+      </a>
+      <button class="menu-toggle" type="button" aria-label="Open navigation" aria-expanded="false"><span></span><span></span><span></span></button>
     </header>
 
-    <main id="app-content" class="route-layout">
-      <aside class="route-sidebar" aria-labelledby="route-title">
-        <a class="back-link" href="/?view=routes"><span aria-hidden="true">←</span> Back to routes</a>
-        <div class="route-heading">
-          <p class="eyebrow">Heritage walk</p>
-          <h1 id="route-title">Hampi Vijayanagara Circuit</h1>
-          <div class="route-location"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 10c0 5-7 12-7 12S5 15 5 10a7 7 0 1 1 14 0Z"></path><circle cx="12" cy="10" r="2.3"></circle></svg><span>Hampi, Karnataka</span></div>
-          <p class="route-description">Explore the published Hampi route. Place stories and detailed route geometry will appear as Naarad creators publish them.</p>
+    <main id="app-content" class="view-home">
+      <!-- The hero is server-independent markup so the largest image starts
+           loading before the view module runs; main.js replaces it. -->
+      <section class="home-hero" aria-labelledby="home-title">
+        <div class="home-hero-copy">
+          <p class="eyebrow">A living heritage, a shared human story</p>
+          <h1 id="home-title" class="display">Walk a place.<br><span class="accent">Hear its story.</span></h1>
+          <p class="lede">Heritage walks across India, told at the places where the stories happened: real routes, local history and audio you can take with you.</p>
+          <a class="button button-primary home-hero-cta" href="/?view=explore" data-view="explore">Start Exploring</a>
         </div>
-        <div class="route-stats" aria-label="Route at a glance">
-          <div class="metric"><span class="metric-icon" aria-hidden="true">♙</span><strong>8.4 km</strong><span>Distance</span></div>
-          <div class="metric"><span class="metric-icon" aria-hidden="true">◷</span><strong>3 hrs</strong><span>Estimated time</span></div>
-          <div class="metric"><span class="metric-icon orange" aria-hidden="true">▥</span><strong>Moderate</strong><span>Difficulty</span></div>
-        </div>
-        <section class="route-overview" aria-labelledby="overview-title">
-          <h2 id="overview-title" class="section-title">Route overview</h2>
-          <div class="overview-topline"><div><strong><span aria-hidden="true">↗</span> +120 m</strong><span>Elevation gain</span></div></div>
-          <p class="data-note">Elevation loss and surface breakdown are not in the published route data.</p>
-        </section>
-        <section class="route-tags" aria-labelledby="tags-title">
-          <h2 id="tags-title" class="section-title">Tags</h2>
-          <ul class="tag-list"><li>Heritage walk</li><li>Moderate</li><li>Hampi</li></ul>
-        </section>
-        <section class="stops-section" aria-labelledby="stops-title">
-          <div class="stops-heading"><h2 id="stops-title" class="section-title">Story stops</h2></div>
-          <ol id="route-stops" class="stop-list" aria-live="polite"><li class="empty-state"><span class="empty-state-mark" aria-hidden="true">✳</span><span>Story stops have not been published for this route yet.</span></li></ol>
-        </section>
-      </aside>
-
-      <section class="route-workspace" aria-label="Explore the route">
-        <div class="mobile-route-bar"><a class="mobile-back" href="/?view=routes" aria-label="Back to routes">←</a><div><span class="eyebrow">Karnataka, India</span><strong>Hampi Vijayanagara Circuit</strong></div><button class="icon-button mobile-share" type="button" aria-label="Share this route">↗</button></div>
-        <div class="map-frame">
-          <div id="map" class="route-map" role="application" aria-label="Interactive map of the Hampi Vijayanagara Circuit"></div>
-          <form class="map-search" role="search"><label class="sr-only" for="map-search-input">Search along this route</label><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8"></circle><path d="m16 16 5 5"></path></svg><input id="map-search-input" type="search" placeholder="Search along this route…" autocomplete="off"></form>
-          <div class="map-toolbar" aria-label="Map options"><button id="map-layers" class="map-control" type="button" aria-label="Choose map layers"><span aria-hidden="true">▱</span><span>Layers</span><span aria-hidden="true">⌄</span></button><button id="map-satellite" class="map-control" type="button" aria-pressed="true"><span aria-hidden="true">▦</span><span>Satellite</span></button><button id="fit-route" class="map-control" type="button"><span aria-hidden="true">◎</span><span>Fit route</span></button></div>
-          <div class="map-controls" aria-label="Map controls"><button class="map-control map-zoom" type="button" data-map-zoom="in" aria-label="Zoom in">+</button><button class="map-control map-zoom" type="button" data-map-zoom="out" aria-label="Zoom out">−</button><button class="map-control map-location" type="button" aria-label="Show my location">◎</button></div>
-        </div>
-        <div class="mobile-map-sheet" aria-label="Route details on mobile">
-          <div class="sheet-grabber" aria-hidden="true"></div>
-          <div class="sheet-route-title"><div><p class="eyebrow">Heritage walk · Hampi, Karnataka</p><h1>Hampi Vijayanagara Circuit</h1></div><button class="icon-button sheet-expand" type="button" aria-label="Expand route details">⌃</button></div>
-          <p class="sheet-description">The route listing is published. Stops, stories and a measured GPS line are not available yet.</p>
-          <div class="sheet-metrics"><span><b>8.4 km</b> Distance</span><span><b>3 hrs</b> Est. time</span><span><b>Moderate</b> Difficulty</span></div>
-          <div id="route-tabs" class="route-tabs" role="group" aria-label="Route detail views"><button class="is-active" type="button" aria-pressed="true">Route</button><button type="button" aria-pressed="false">Overview</button><button type="button" aria-pressed="false">Stories</button></div>
-          <div class="mobile-stops-preview"><div class="mobile-stop-art empty-art" aria-hidden="true">✳</div><div><span class="eyebrow">Creator stories</span><h2>Stories are on their way</h2><p>There are no published stop recordings yet.</p></div></div>
-          <a class="button button-primary mobile-begin" href="#elevation-title">Explore route details <span aria-hidden="true">→</span></a>
-        </div>
-        <div class="lower-grid">
-          <section class="elevation-card" aria-labelledby="elevation-title">
-            <div class="card-heading"><h2 id="elevation-title" class="section-title">Elevation profile</h2><span class="eyebrow">Route terrain</span></div>
-            <div class="elevation-metrics"><span><b>↗ 120 m</b> Ascent</span><span><b>8.4 km</b> Route distance</span><span><b>3 hrs</b> Estimated time</span></div>
-            <div id="elevation-profile" class="elevation-chart elevation-empty" role="status"><span class="empty-state-mark" aria-hidden="true">⌁</span><div><strong>No elevation profile yet</strong><p>A measured height profile has not been published for this route.</p></div></div>
-          </section>
-          <section class="compare-card" aria-labelledby="compare-title">
-            <div class="card-heading"><h2 id="compare-title" class="section-title">Compare routes</h2><a href="/?view=routes" data-view="routes">View all routes <span aria-hidden="true">→</span></a></div>
-            <div id="route-comparisons" class="compare-empty" role="status">More route comparisons will appear here when route data is available.</div>
-          </section>
-          <section class="story-panel" aria-label="Stories along the route"><img src="/Images/Hampi.webp" alt="Naarad route cover for Hampi" loading="lazy"><div class="story-quote"><span class="eyebrow">Creator stories</span><blockquote>Bring the place to life, one voice at a time.</blockquote></div><p>Story stops and audio are not included in the published data for this route. Naarad creators can add place-based stories as they become available.</p></section>
+        <div class="home-hero-media">
+          <picture class="photo home-hero-photo torn-left">
+            <source type="image/avif" srcset="/Images/photos/hampi-landscape-800.avif 800w, /Images/photos/hampi-landscape-1200.avif 1200w, /Images/photos/hampi-landscape-1600.avif 1600w" sizes="(max-width: 1023px) 100vw, 62vw">
+            <source type="image/webp" srcset="/Images/photos/hampi-landscape-800.webp 800w, /Images/photos/hampi-landscape-1200.webp 1200w, /Images/photos/hampi-landscape-1600.webp 1600w" sizes="(max-width: 1023px) 100vw, 62vw">
+            <img src="/Images/photos/hampi-landscape-1200.webp" alt="The boulder landscape of Hampi, Karnataka, with temple towers among the rocks" fetchpriority="high" decoding="async" width="1600" height="1067">
+          </picture>
+          <div class="note-card home-hero-note">
+            <p class="script">Every stone has a story.<br>All you have to do is listen.</p>
+          </div>
         </div>
       </section>
     </main>
-    <footer class="site-footer"><a class="footer-brand" href="/" data-view="home" aria-label="Naarad home"><img src="/Images/cropped_logo.png" alt=""><span>NAARAD<small>Explore. Listen. Connect.</small></span></a><nav aria-label="Footer navigation"><a href="/?view=explore" data-view="explore">Explore</a><a href="/?view=routes" data-view="routes">Routes</a><a href="/?view=stories" data-view="stories">Stories</a><a href="/?view=creators" data-view="creators">Creators</a><a href="/?view=about" data-view="about">About</a></nav><p>A living heritage. A shared human story.</p><a class="button button-primary footer-cta" href="/?view=explore" data-view="explore">Explore routes <span aria-hidden="true">→</span></a></footer>
+
+    <footer class="site-footer">
+      <a class="footer-brand" href="/" data-view="home" aria-label="Naarad home">
+        <img src="/Images/cropped_logo.png" alt="" width="40" height="40">
+        <span><b>NAARAD</b><small>EXPLORE. LISTEN. CONNECT.</small></span>
+      </a>
+      <nav aria-label="Footer navigation">
+        <a href="/?view=explore" data-view="explore">Explore</a>
+        <a href="/?view=routes" data-view="routes">Routes</a>
+        <a href="/?view=stories" data-view="stories">Stories</a>
+        <a href="/?view=creators" data-view="creators">Creators</a>
+        <a href="/?view=journey" data-view="journey">My Journey</a>
+        <a href="/?view=about" data-view="about">About</a>
+      </nav>
+      <p class="footer-script script">Real places. Deeper stories.</p>
+    </footer>
   </div>
-  <script defer src="/app/media.js"></script>
-  <script defer src="/app/data.js"></script>
+
   <script type="module" src="/app/main.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      addEventListener('load', () => navigator.serviceWorker.register('/sw.js').catch(() => {}));
+    }
+  </script>
 </body>
 </html>

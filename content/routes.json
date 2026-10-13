@@ -1,0 +1,1415 @@
+{
+  "note": "Editorial routes published by Naarad. Coordinates are the real locations of each monument; the route line that scripts/build-routes.py derives from them is a connecting walking line through the published stops, not a surveyed GPS track, and the data records it as such. Elevation comes from NASA SRTM 30 m samples along that line. Stop texts are written for Naarad.",
+  "generator": "scripts/build-routes.py",
+  "routes": [
+    {
+      "slug": "hampi-heritage-trail",
+      "name": "Hampi Heritage Trail",
+      "subtitle": "Temples, bazaars and the story of a remarkable empire.",
+      "location": "Hampi, Karnataka",
+      "region": "Karnataka",
+      "sport": "walk",
+      "themes": [
+        "Temples",
+        "History",
+        "Living Culture"
+      ],
+      "difficulty": "moderate",
+      "routeType": "loop",
+      "surface": "Stone paths, sand and granite steps",
+      "durationMin": 165,
+      "photo": "hampi-gopuram",
+      "cardPhoto": "hampi-virupaksha",
+      "lede": "Walk through a landscape where kings, poets, traders and common people shaped an extraordinary civilisation. Hear its stories at the very places where they unfolded.",
+      "overview": "Vijayanagara, the city the world knew as Hampi, was one of the largest cities on earth in the sixteenth century. This walk crosses it from the temple that never stopped praying to the hill the empire watched its enemies from, taking in the bazaar where Persian horses were sold and the enclosure where kings reviewed their armies.",
+      "languages": [
+        "en",
+        "hi",
+        "kn",
+        "ta",
+        "te"
+      ],
+      "distanceM": 5186,
+      "ascentM": 153,
+      "descentM": 154,
+      "stopCount": 8,
+      "geometry": {
+        "kind": "connecting-line",
+        "note": "A line interpolated between the published stop coordinates. It is not a surveyed GPS track.",
+        "coordinates": [
+          [
+            76.4601,
+            15.335
+          ],
+          [
+            76.460417,
+            15.334783
+          ],
+          [
+            76.460733,
+            15.334567
+          ],
+          [
+            76.46105,
+            15.33435
+          ],
+          [
+            76.461367,
+            15.334133
+          ],
+          [
+            76.461683,
+            15.333917
+          ],
+          [
+            76.462,
+            15.3337
+          ],
+          [
+            76.462357,
+            15.333857
+          ],
+          [
+            76.462714,
+            15.334014
+          ],
+          [
+            76.463071,
+            15.334171
+          ],
+          [
+            76.463429,
+            15.334329
+          ],
+          [
+            76.463786,
+            15.334486
+          ],
+          [
+            76.464143,
+            15.334643
+          ],
+          [
+            76.4645,
+            15.3348
+          ],
+          [
+            76.464215,
+            15.33456
+          ],
+          [
+            76.46393,
+            15.33432
+          ],
+          [
+            76.463645,
+            15.33408
+          ],
+          [
+            76.46336,
+            15.33384
+          ],
+          [
+            76.463075,
+            15.3336
+          ],
+          [
+            76.46279,
+            15.33336
+          ],
+          [
+            76.462505,
+            15.33312
+          ],
+          [
+            76.46222,
+            15.33288
+          ],
+          [
+            76.461935,
+            15.33264
+          ],
+          [
+            76.46165,
+            15.3324
+          ],
+          [
+            76.461365,
+            15.33216
+          ],
+          [
+            76.46108,
+            15.33192
+          ],
+          [
+            76.460795,
+            15.33168
+          ],
+          [
+            76.46051,
+            15.33144
+          ],
+          [
+            76.460225,
+            15.3312
+          ],
+          [
+            76.45994,
+            15.33096
+          ],
+          [
+            76.459655,
+            15.33072
+          ],
+          [
+            76.45937,
+            15.33048
+          ],
+          [
+            76.459085,
+            15.33024
+          ],
+          [
+            76.4588,
+            15.33
+          ],
+          [
+            76.459144,
+            15.329833
+          ],
+          [
+            76.459489,
+            15.329667
+          ],
+          [
+            76.459833,
+            15.3295
+          ],
+          [
+            76.460178,
+            15.329333
+          ],
+          [
+            76.460522,
+            15.329167
+          ],
+          [
+            76.460867,
+            15.329
+          ],
+          [
+            76.461211,
+            15.328833
+          ],
+          [
+            76.461556,
+            15.328667
+          ],
+          [
+            76.4619,
+            15.3285
+          ],
+          [
+            76.462244,
+            15.328333
+          ],
+          [
+            76.462589,
+            15.328167
+          ],
+          [
+            76.462933,
+            15.328
+          ],
+          [
+            76.463278,
+            15.327833
+          ],
+          [
+            76.463622,
+            15.327667
+          ],
+          [
+            76.463967,
+            15.3275
+          ],
+          [
+            76.464311,
+            15.327333
+          ],
+          [
+            76.464656,
+            15.327167
+          ],
+          [
+            76.465,
+            15.327
+          ],
+          [
+            76.465335,
+            15.326841
+          ],
+          [
+            76.465671,
+            15.326682
+          ],
+          [
+            76.466006,
+            15.326524
+          ],
+          [
+            76.466341,
+            15.326365
+          ],
+          [
+            76.466676,
+            15.326206
+          ],
+          [
+            76.467012,
+            15.326047
+          ],
+          [
+            76.467347,
+            15.325888
+          ],
+          [
+            76.467682,
+            15.325729
+          ],
+          [
+            76.468018,
+            15.325571
+          ],
+          [
+            76.468353,
+            15.325412
+          ],
+          [
+            76.468688,
+            15.325253
+          ],
+          [
+            76.469024,
+            15.325094
+          ],
+          [
+            76.469359,
+            15.324935
+          ],
+          [
+            76.469694,
+            15.324776
+          ],
+          [
+            76.470029,
+            15.324618
+          ],
+          [
+            76.470365,
+            15.324459
+          ],
+          [
+            76.4707,
+            15.3243
+          ],
+          [
+            76.470762,
+            15.324662
+          ],
+          [
+            76.470825,
+            15.325025
+          ],
+          [
+            76.470887,
+            15.325387
+          ],
+          [
+            76.47095,
+            15.32575
+          ],
+          [
+            76.471013,
+            15.326112
+          ],
+          [
+            76.471075,
+            15.326475
+          ],
+          [
+            76.471137,
+            15.326837
+          ],
+          [
+            76.4712,
+            15.3272
+          ],
+          [
+            76.471262,
+            15.327562
+          ],
+          [
+            76.471325,
+            15.327925
+          ],
+          [
+            76.471387,
+            15.328288
+          ],
+          [
+            76.47145,
+            15.32865
+          ],
+          [
+            76.471513,
+            15.329012
+          ],
+          [
+            76.471575,
+            15.329375
+          ],
+          [
+            76.471637,
+            15.329738
+          ],
+          [
+            76.4717,
+            15.3301
+          ],
+          [
+            76.471762,
+            15.330462
+          ],
+          [
+            76.471825,
+            15.330825
+          ],
+          [
+            76.471887,
+            15.331188
+          ],
+          [
+            76.47195,
+            15.33155
+          ],
+          [
+            76.472013,
+            15.331912
+          ],
+          [
+            76.472075,
+            15.332275
+          ],
+          [
+            76.472138,
+            15.332638
+          ],
+          [
+            76.4722,
+            15.333
+          ],
+          [
+            76.47192,
+            15.33327
+          ],
+          [
+            76.47164,
+            15.33354
+          ],
+          [
+            76.47136,
+            15.33381
+          ],
+          [
+            76.47108,
+            15.33408
+          ],
+          [
+            76.4708,
+            15.33435
+          ],
+          [
+            76.47052,
+            15.33462
+          ],
+          [
+            76.47024,
+            15.33489
+          ],
+          [
+            76.46996,
+            15.33516
+          ],
+          [
+            76.46968,
+            15.33543
+          ],
+          [
+            76.4694,
+            15.3357
+          ],
+          [
+            76.469028,
+            15.335672
+          ],
+          [
+            76.468656,
+            15.335644
+          ],
+          [
+            76.468284,
+            15.335616
+          ],
+          [
+            76.467912,
+            15.335588
+          ],
+          [
+            76.46754,
+            15.33556
+          ],
+          [
+            76.467168,
+            15.335532
+          ],
+          [
+            76.466796,
+            15.335504
+          ],
+          [
+            76.466424,
+            15.335476
+          ],
+          [
+            76.466052,
+            15.335448
+          ],
+          [
+            76.46568,
+            15.33542
+          ],
+          [
+            76.465308,
+            15.335392
+          ],
+          [
+            76.464936,
+            15.335364
+          ],
+          [
+            76.464564,
+            15.335336
+          ],
+          [
+            76.464192,
+            15.335308
+          ],
+          [
+            76.46382,
+            15.33528
+          ],
+          [
+            76.463448,
+            15.335252
+          ],
+          [
+            76.463076,
+            15.335224
+          ],
+          [
+            76.462704,
+            15.335196
+          ],
+          [
+            76.462332,
+            15.335168
+          ],
+          [
+            76.46196,
+            15.33514
+          ],
+          [
+            76.461588,
+            15.335112
+          ],
+          [
+            76.461216,
+            15.335084
+          ],
+          [
+            76.460844,
+            15.335056
+          ],
+          [
+            76.460472,
+            15.335028
+          ],
+          [
+            76.4601,
+            15.335
+          ]
+        ]
+      },
+      "elevation": {
+        "source": "NASA SRTM 30 m via OpenTopoData",
+        "samples": [
+          {
+            "d": 0,
+            "e": 427.0
+          },
+          {
+            "d": 83,
+            "e": 425.0
+          },
+          {
+            "d": 167,
+            "e": 430.0
+          },
+          {
+            "d": 250,
+            "e": 427.0
+          },
+          {
+            "d": 334,
+            "e": 424.0
+          },
+          {
+            "d": 418,
+            "e": 423.0
+          },
+          {
+            "d": 502,
+            "e": 425.0
+          },
+          {
+            "d": 585,
+            "e": 425.0
+          },
+          {
+            "d": 666,
+            "e": 424.0
+          },
+          {
+            "d": 747,
+            "e": 424.0
+          },
+          {
+            "d": 829,
+            "e": 433.0
+          },
+          {
+            "d": 910,
+            "e": 443.0
+          },
+          {
+            "d": 991,
+            "e": 449.0
+          },
+          {
+            "d": 1072,
+            "e": 448.0
+          },
+          {
+            "d": 1153,
+            "e": 443.0
+          },
+          {
+            "d": 1234,
+            "e": 435.0
+          },
+          {
+            "d": 1315,
+            "e": 433.0
+          },
+          {
+            "d": 1397,
+            "e": 430.0
+          },
+          {
+            "d": 1480,
+            "e": 434.0
+          },
+          {
+            "d": 1563,
+            "e": 433.0
+          },
+          {
+            "d": 1645,
+            "e": 431.0
+          },
+          {
+            "d": 1728,
+            "e": 431.0
+          },
+          {
+            "d": 1811,
+            "e": 431.0
+          },
+          {
+            "d": 1893,
+            "e": 430.0
+          },
+          {
+            "d": 1976,
+            "e": 432.0
+          },
+          {
+            "d": 2059,
+            "e": 429.0
+          },
+          {
+            "d": 2140,
+            "e": 428.0
+          },
+          {
+            "d": 2220,
+            "e": 430.0
+          },
+          {
+            "d": 2300,
+            "e": 430.0
+          },
+          {
+            "d": 2380,
+            "e": 433.0
+          },
+          {
+            "d": 2460,
+            "e": 437.0
+          },
+          {
+            "d": 2541,
+            "e": 440.0
+          },
+          {
+            "d": 2621,
+            "e": 447.0
+          },
+          {
+            "d": 2701,
+            "e": 450.0
+          },
+          {
+            "d": 2781,
+            "e": 453.0
+          },
+          {
+            "d": 2863,
+            "e": 464.0
+          },
+          {
+            "d": 2944,
+            "e": 469.0
+          },
+          {
+            "d": 3026,
+            "e": 488.0
+          },
+          {
+            "d": 3108,
+            "e": 480.0
+          },
+          {
+            "d": 3189,
+            "e": 456.0
+          },
+          {
+            "d": 3271,
+            "e": 434.0
+          },
+          {
+            "d": 3353,
+            "e": 425.0
+          },
+          {
+            "d": 3435,
+            "e": 422.0
+          },
+          {
+            "d": 3516,
+            "e": 425.0
+          },
+          {
+            "d": 3598,
+            "e": 424.0
+          },
+          {
+            "d": 3680,
+            "e": 431.0
+          },
+          {
+            "d": 3762,
+            "e": 448.0
+          },
+          {
+            "d": 3846,
+            "e": 453.0
+          },
+          {
+            "d": 3931,
+            "e": 443.0
+          },
+          {
+            "d": 4016,
+            "e": 431.0
+          },
+          {
+            "d": 4101,
+            "e": 424.0
+          },
+          {
+            "d": 4186,
+            "e": 419.0
+          },
+          {
+            "d": 4266,
+            "e": 429.0
+          },
+          {
+            "d": 4346,
+            "e": 440.0
+          },
+          {
+            "d": 4426,
+            "e": 433.0
+          },
+          {
+            "d": 4506,
+            "e": 417.0
+          },
+          {
+            "d": 4586,
+            "e": 420.0
+          },
+          {
+            "d": 4666,
+            "e": 423.0
+          },
+          {
+            "d": 4746,
+            "e": 426.0
+          },
+          {
+            "d": 4826,
+            "e": 427.0
+          },
+          {
+            "d": 4906,
+            "e": 427.0
+          },
+          {
+            "d": 4986,
+            "e": 428.0
+          },
+          {
+            "d": 5066,
+            "e": 427.0
+          },
+          {
+            "d": 5146,
+            "e": 428.0
+          },
+          {
+            "d": 5186,
+            "e": 427.0
+          }
+        ]
+      },
+      "stops": [
+        {
+          "order": 1,
+          "slug": "hampi-heritage-trail-01",
+          "name": "Virupaksha Temple",
+          "tagline": "Living faith across centuries",
+          "lat": 15.335,
+          "lng": 76.4601,
+          "photo": "hampi-virupaksha",
+          "summary": "Begin where Hampi has never stopped: a temple to Shiva that has held daily worship since long before the empire rose around it.",
+          "story": "The gopuram above you is the tallest thing in Hampi for a reason. Virupaksha was here before Vijayanagara, a small shrine on the Tungabhadra, and it was still here after the city fell. Kings extended it, armies passed it, ruin spread around it, and the lamps stayed lit. When you step into the courtyard you are joining a queue of worshippers that has not broken in roughly fourteen centuries. Look for the pinhole image in the inner chamber, where light through a small opening throws the main tower upside down on the wall: an accident of architecture the temple has kept as a gift.",
+          "distanceM": 0,
+          "elevationM": 427,
+          "audio": null
+        },
+        {
+          "order": 2,
+          "slug": "hampi-heritage-trail-02",
+          "name": "Sasivekalu Ganesha",
+          "tagline": "Monumental beginnings",
+          "lat": 15.3337,
+          "lng": 76.462,
+          "photo": "hampi-sasivekalu",
+          "summary": "A monolithic Ganesha, over two metres tall, carved from a single boulder on the slope of Hemakuta Hill.",
+          "story": "Sasivekalu means mustard seed, and the name is a joke about scale: this Ganesha is carved from one block of granite and stands more than two metres high. Walk around the back and you will find the reason for the name's other half. A snake is tied around his belly. The story goes that Ganesha ate so much that his stomach threatened to burst, so he caught a serpent and used it as a belt. The carvers of Vijayanagara liked their gods immense and their jokes intact.",
+          "distanceM": 250,
+          "elevationM": 427,
+          "audio": null
+        },
+        {
+          "order": 3,
+          "slug": "hampi-heritage-trail-03",
+          "name": "Hampi Bazaar",
+          "tagline": "A marketplace of the world",
+          "lat": 15.3348,
+          "lng": 76.4645,
+          "photo": "hampi-bazaar",
+          "summary": "Stand where merchants from across Asia once traded horses, silk, spices and ideas along a colonnaded street a kilometre long.",
+          "story": "This street ran for more than a kilometre, and the colonnades along it were shops. Portuguese and Persian travellers who saw it wrote home in disbelief: Domingos Paes described diamonds sold openly by the heap, and Abdur Razzaq counted the bazaars of the city and ran out of superlatives. Arab horses came up from the coast to be sold here, because Vijayanagara's cavalry was its answer to the sultanates to the north. What remains is the stone frame of a market. The noise you have to supply yourself.",
+          "distanceM": 544,
+          "elevationM": 425,
+          "audio": null
+        },
+        {
+          "order": 4,
+          "slug": "hampi-heritage-trail-04",
+          "name": "Krishna Temple",
+          "tagline": "Devotion in stone",
+          "lat": 15.33,
+          "lng": 76.4588,
+          "photo": "hampi-krishna-temple",
+          "summary": "Built in 1513 by Krishnadevaraya to mark a victory, and decorated with the campaign that paid for it.",
+          "story": "Krishnadevaraya came back from the eastern campaign at Udayagiri in 1513 with an image of the infant Krishna and the confidence of a king at the height of his powers. He built this temple to house it, and had the walls carved with scenes from the war that brought it here, so that worship and record keeping happened in the same room. The temple's bazaar street runs east in front of you, a smaller echo of the one you just walked.",
+          "distanceM": 1356,
+          "elevationM": 433,
+          "audio": null
+        },
+        {
+          "order": 5,
+          "slug": "hampi-heritage-trail-05",
+          "name": "Royal Enclosure",
+          "tagline": "Power, people and palaces",
+          "lat": 15.327,
+          "lng": 76.465,
+          "photo": "hampi-royal-enclosure",
+          "summary": "The administrative heart of the empire, built around the great stepped platform of the Mahanavami Dibba.",
+          "story": "The platform in front of you is where the empire made itself visible. During the Mahanavami festival the king sat here for nine days while armies, elephants, dancers, tribute and envoys passed below. The carved friezes around the base show exactly that procession, which makes this one of the few places in Hampi where the building tells you what it was for. Underfoot, the enclosure is threaded with aqueducts and tanks: water engineering was how a city of half a million people survived a dry Deccan summer.",
+          "distanceM": 2100,
+          "elevationM": 429,
+          "audio": null
+        },
+        {
+          "order": 6,
+          "slug": "hampi-heritage-trail-06",
+          "name": "Queen's Bath",
+          "tagline": "A glimpse into royal life",
+          "lat": 15.3243,
+          "lng": 76.4707,
+          "photo": "hampi-queens-bath",
+          "summary": "A plain box from outside, an arcaded water pavilion within: the clearest Indo-Islamic architecture in Hampi.",
+          "story": "From the road it is a dull rectangle. Step inside and it opens into a sunken basin ringed by arched balconies, with stucco ornament that borrows openly from the Deccan sultanates the empire spent its life fighting. That borrowing is the point. Vijayanagara's architects worked in whatever idiom pleased them, and its kings employed Muslim officers and archers. The name is later romance; nobody knows which royals bathed here, or whether they did.",
+          "distanceM": 2781,
+          "elevationM": 453,
+          "audio": null
+        },
+        {
+          "order": 7,
+          "slug": "hampi-heritage-trail-07",
+          "name": "Elephant Stables",
+          "tagline": "Engineering for an empire",
+          "lat": 15.333,
+          "lng": 76.4722,
+          "photo": "hampi-elephant-stables",
+          "summary": "Eleven domed chambers, each built for a single war elephant, in a row of deliberate symmetry.",
+          "story": "Eleven chambers, each with a dome, and no two adjacent domes quite the same shape. Each held one war elephant, with openings above for the mahouts and iron rings still set in the stone. The building is a statement of logistics: an elephant corps needed feeding, housing and parading, and an empire that could do that at this scale was advertising the fact. The central chamber is taller, almost certainly for musicians during ceremonial parades.",
+          "distanceM": 3762,
+          "elevationM": 448,
+          "audio": null
+        },
+        {
+          "order": 8,
+          "slug": "hampi-heritage-trail-08",
+          "name": "Matanga Hill Viewpoint",
+          "tagline": "Hampi through time",
+          "lat": 15.3357,
+          "lng": 76.4694,
+          "photo": "hampi-matanga",
+          "summary": "The highest point in Hampi, and the only place the whole city makes sense at once.",
+          "story": "Climb the granite steps and the plan of Vijayanagara finally resolves. The Tungabhadra below, the temple complexes strung along it, the bazaar streets running arrow straight, the royal centre away to the south, and boulders to the horizon in every direction. This is where the city watched for the armies that eventually came in 1565, after the battle of Talikota, and spent months dismantling it. Come at first light if you can; the granite turns the colour of the temple lamps.",
+          "distanceM": 4186,
+          "elevationM": 419,
+          "audio": null
+        }
+      ]
+    },
+    {
+      "slug": "thanjavur-living-heritage",
+      "name": "Thanjavur Living Heritage",
+      "subtitle": "A thousand-year-old temple and the city that still works around it.",
+      "location": "Thanjavur, Tamil Nadu",
+      "region": "Tamil Nadu",
+      "sport": "walk",
+      "themes": [
+        "Chola Heritage",
+        "Temples",
+        "Art & Music"
+      ],
+      "difficulty": "easy",
+      "routeType": "point",
+      "surface": "Pavement and temple courtyards",
+      "durationMin": 150,
+      "photo": "thanjavur-temple",
+      "cardPhoto": "thanjavur-temple",
+      "lede": "Rajaraja Chola's great temple is still the tallest thing in Thanjavur, and the city has spent a millennium arranging itself around it.",
+      "overview": "Thanjavur holds the Brihadisvara temple, the Maratha palace that came after the Cholas, and one of the oldest working libraries in Asia, all within a short walk. This route moves from the temple's granite vimana to the palace quarter, taking in the art gallery's Chola bronzes on the way.",
+      "languages": [
+        "en",
+        "ta",
+        "hi"
+      ],
+      "distanceM": 979,
+      "ascentM": 8,
+      "descentM": 14,
+      "stopCount": 4,
+      "geometry": {
+        "kind": "connecting-line",
+        "note": "A line interpolated between the published stop coordinates. It is not a surveyed GPS track.",
+        "coordinates": [
+          [
+            79.1317,
+            10.7828
+          ],
+          [
+            79.132005,
+            10.78301
+          ],
+          [
+            79.13231,
+            10.78322
+          ],
+          [
+            79.132615,
+            10.78343
+          ],
+          [
+            79.13292,
+            10.78364
+          ],
+          [
+            79.133225,
+            10.78385
+          ],
+          [
+            79.13353,
+            10.78406
+          ],
+          [
+            79.133835,
+            10.78427
+          ],
+          [
+            79.13414,
+            10.78448
+          ],
+          [
+            79.134445,
+            10.78469
+          ],
+          [
+            79.13475,
+            10.7849
+          ],
+          [
+            79.135055,
+            10.78511
+          ],
+          [
+            79.13536,
+            10.78532
+          ],
+          [
+            79.135665,
+            10.78553
+          ],
+          [
+            79.13597,
+            10.78574
+          ],
+          [
+            79.136275,
+            10.78595
+          ],
+          [
+            79.13658,
+            10.78616
+          ],
+          [
+            79.136885,
+            10.78637
+          ],
+          [
+            79.13719,
+            10.78658
+          ],
+          [
+            79.137495,
+            10.78679
+          ],
+          [
+            79.1378,
+            10.787
+          ],
+          [
+            79.1372,
+            10.7869
+          ],
+          [
+            79.13765,
+            10.78685
+          ],
+          [
+            79.1381,
+            10.7868
+          ]
+        ]
+      },
+      "elevation": {
+        "source": "NASA SRTM 30 m via OpenTopoData",
+        "samples": [
+          {
+            "d": 0,
+            "e": 64.0
+          },
+          {
+            "d": 81,
+            "e": 64.0
+          },
+          {
+            "d": 163,
+            "e": 62.0
+          },
+          {
+            "d": 244,
+            "e": 59.0
+          },
+          {
+            "d": 325,
+            "e": 64.0
+          },
+          {
+            "d": 407,
+            "e": 61.0
+          },
+          {
+            "d": 488,
+            "e": 60.0
+          },
+          {
+            "d": 570,
+            "e": 61.0
+          },
+          {
+            "d": 651,
+            "e": 59.0
+          },
+          {
+            "d": 732,
+            "e": 58.0
+          },
+          {
+            "d": 814,
+            "e": 55.0
+          },
+          {
+            "d": 930,
+            "e": 56.0
+          },
+          {
+            "d": 979,
+            "e": 58.0
+          }
+        ]
+      },
+      "stops": [
+        {
+          "order": 1,
+          "slug": "thanjavur-living-heritage-01",
+          "name": "Brihadisvara Temple",
+          "tagline": "A thousand years of granite",
+          "lat": 10.7828,
+          "lng": 79.1317,
+          "photo": "thanjavur-temple",
+          "summary": "Rajaraja Chola completed it in 1010 CE, and it has stood through every century since.",
+          "story": "The vimana above the sanctum rises about sixty-six metres, and it was built without mortar, from granite that had to be brought from far outside the delta. The inscriptions around the base are the reason historians know so much about Chola administration: they list the dancers, musicians, accountants and oil suppliers the temple employed, by name. It is a cathedral and a civil service record in the same building.",
+          "distanceM": 0,
+          "elevationM": 64,
+          "audio": null
+        },
+        {
+          "order": 2,
+          "slug": "thanjavur-living-heritage-02",
+          "name": "Thanjavur Palace",
+          "tagline": "After the Cholas",
+          "lat": 10.787,
+          "lng": 79.1378,
+          "photo": "thanjavur-temple",
+          "summary": "The Nayak and Maratha rulers' quarter, built long after the temple and in a different world.",
+          "story": "The palace complex belongs to the Nayaks of the sixteenth century and the Marathas who followed them, and it feels nothing like the temple. Courtyards, a durbar hall with painted plaster, and a bell tower that looks out over the city. The Marathas of Thanjavur were patrons of music and Sanskrit scholarship, which is how the library next door came to hold what it does.",
+          "distanceM": 814,
+          "elevationM": 55,
+          "audio": null
+        },
+        {
+          "order": 3,
+          "slug": "thanjavur-living-heritage-03",
+          "name": "Saraswathi Mahal Library",
+          "tagline": "A library of palm leaves",
+          "lat": 10.7869,
+          "lng": 79.1372,
+          "photo": "thanjavur-bronze",
+          "summary": "One of the oldest libraries in Asia still in use, holding tens of thousands of palm-leaf manuscripts.",
+          "story": "Serfoji II, the Maratha ruler who governed Thanjavur under the East India Company's shadow, collected manuscripts the way other rulers collected territory. The library holds Sanskrit, Tamil, Marathi and Telugu works on medicine, music and astronomy, many of them on palm leaf, and scholars still read them here. It is a reminder that this city's inheritance is not only architecture.",
+          "distanceM": 880,
+          "elevationM": 55,
+          "audio": null
+        },
+        {
+          "order": 4,
+          "slug": "thanjavur-living-heritage-04",
+          "name": "Thanjavur Art Gallery",
+          "tagline": "Chola bronzes up close",
+          "lat": 10.7868,
+          "lng": 79.1381,
+          "photo": "thanjavur-bronze",
+          "summary": "A hall of Chola bronzes and stone sculpture housed in the palace complex.",
+          "story": "Chola bronze casting is the art this region is known for worldwide, and this gallery lets you stand very close to it. The figures were made to be carried in procession, which is why they are balanced the way they are, and why the best of them seem to be in motion even when standing still.",
+          "distanceM": 979,
+          "elevationM": 58,
+          "audio": null
+        }
+      ]
+    },
+    {
+      "slug": "auroville-explorer",
+      "name": "Auroville Explorer",
+      "subtitle": "An experiment in living, set in a forest that was planted by hand.",
+      "location": "Auroville, Tamil Nadu",
+      "region": "Tamil Nadu",
+      "sport": "walk",
+      "themes": [
+        "Community",
+        "Architecture",
+        "Nature"
+      ],
+      "difficulty": "easy",
+      "routeType": "loop",
+      "surface": "Red earth paths and shaded tracks",
+      "durationMin": 140,
+      "photo": "auroville-matrimandir",
+      "cardPhoto": "auroville-matrimandir",
+      "lede": "A township founded in 1968 on eroded land, now walking distance through forest its residents grew themselves.",
+      "overview": "Auroville was laid out around the Matrimandir on a plateau that had been stripped almost bare. Several million trees later the walk between its landmarks runs mostly in shade. This route takes in the Matrimandir gardens, the amphitheatre with the urn of soil from 124 nations, and the visitor centre.",
+      "languages": [
+        "en",
+        "ta",
+        "hi"
+      ],
+      "distanceM": 984,
+      "ascentM": 6,
+      "descentM": 6,
+      "stopCount": 3,
+      "geometry": {
+        "kind": "connecting-line",
+        "note": "A line interpolated between the published stop coordinates. It is not a surveyed GPS track.",
+        "coordinates": [
+          [
+            79.8107,
+            12.0085
+          ],
+          [
+            79.81095,
+            12.00815
+          ],
+          [
+            79.8112,
+            12.0078
+          ],
+          [
+            79.81107,
+            12.00745
+          ],
+          [
+            79.81094,
+            12.0071
+          ],
+          [
+            79.81081,
+            12.00675
+          ],
+          [
+            79.81068,
+            12.0064
+          ],
+          [
+            79.81055,
+            12.00605
+          ],
+          [
+            79.81042,
+            12.0057
+          ],
+          [
+            79.81029,
+            12.00535
+          ],
+          [
+            79.81016,
+            12.005
+          ],
+          [
+            79.81003,
+            12.00465
+          ],
+          [
+            79.8099,
+            12.0043
+          ],
+          [
+            79.809973,
+            12.004682
+          ],
+          [
+            79.810045,
+            12.005064
+          ],
+          [
+            79.810118,
+            12.005445
+          ],
+          [
+            79.810191,
+            12.005827
+          ],
+          [
+            79.810264,
+            12.006209
+          ],
+          [
+            79.810336,
+            12.006591
+          ],
+          [
+            79.810409,
+            12.006973
+          ],
+          [
+            79.810482,
+            12.007355
+          ],
+          [
+            79.810555,
+            12.007736
+          ],
+          [
+            79.810627,
+            12.008118
+          ],
+          [
+            79.8107,
+            12.0085
+          ]
+        ]
+      },
+      "elevation": {
+        "source": "NASA SRTM 30 m via OpenTopoData",
+        "samples": [
+          {
+            "d": 0,
+            "e": 54.0
+          },
+          {
+            "d": 95,
+            "e": 53.0
+          },
+          {
+            "d": 178,
+            "e": 57.0
+          },
+          {
+            "d": 261,
+            "e": 57.0
+          },
+          {
+            "d": 343,
+            "e": 54.0
+          },
+          {
+            "d": 426,
+            "e": 55.0
+          },
+          {
+            "d": 509,
+            "e": 57.0
+          },
+          {
+            "d": 595,
+            "e": 54.0
+          },
+          {
+            "d": 682,
+            "e": 53.0
+          },
+          {
+            "d": 768,
+            "e": 56.0
+          },
+          {
+            "d": 855,
+            "e": 55.0
+          },
+          {
+            "d": 941,
+            "e": 52.0
+          },
+          {
+            "d": 984,
+            "e": 54.0
+          }
+        ]
+      },
+      "stops": [
+        {
+          "order": 1,
+          "slug": "auroville-explorer-01",
+          "name": "Matrimandir Viewpoint",
+          "tagline": "The golden sphere",
+          "lat": 12.0085,
+          "lng": 79.8107,
+          "photo": "auroville-matrimandir",
+          "summary": "The geodesic sphere at the centre of Auroville, finished in gold discs and surrounded by twelve gardens.",
+          "story": "Construction began in 1971 and took decades. Inside is a white marble chamber with a single crystal lit by a shaft of sunlight, intended for silent concentration rather than worship. From the viewpoint you see the whole sphere and the gardens radiating out, each named for a quality its designers thought a person might cultivate.",
+          "distanceM": 0,
+          "elevationM": 54,
+          "audio": null
+        },
+        {
+          "order": 2,
+          "slug": "auroville-explorer-02",
+          "name": "The Amphitheatre and Urn",
+          "tagline": "Soil from 124 nations",
+          "lat": 12.0078,
+          "lng": 79.8112,
+          "photo": "auroville-matrimandir",
+          "summary": "Where Auroville was inaugurated in 1968, with handfuls of earth from around the world.",
+          "story": "At the founding ceremony on 28 February 1968, representatives of 124 nations and all Indian states placed soil from home into a lotus-shaped urn. Around five thousand people attended on a plateau that was then almost treeless. The urn is still here, at the centre of the amphitheatre, and the trees around it did not exist that day.",
+          "distanceM": 95,
+          "elevationM": 53,
+          "audio": null
+        },
+        {
+          "order": 3,
+          "slug": "auroville-explorer-03",
+          "name": "Visitor Centre",
+          "tagline": "How a township works",
+          "lat": 12.0043,
+          "lng": 79.8099,
+          "photo": "auroville-matrimandir",
+          "summary": "Exhibits on the township's land, economy and building experiments, plus its craft units.",
+          "story": "Auroville's interest for a visitor is less mystical than structural: a settlement of a few thousand people from dozens of countries that runs its own schools, farms, building research and reforestation. The exhibits here explain the land plan and the long argument over how to live on it, which is the honest version of the story.",
+          "distanceM": 509,
+          "elevationM": 57,
+          "audio": null
+        }
+      ]
+    }
+  ]
+}

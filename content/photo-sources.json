@@ -1,0 +1,485 @@
+{
+  "note": "Photographs found through the Openverse API. Author and licence are recorded as the API reported them. Only CC0, Public Domain Mark, CC BY and CC BY-SA are used. Regenerate with scripts/build-photos.py.",
+  "photos": {
+    "hampi-landscape": {
+      "id": "hampi-landscape",
+      "role": "hero",
+      "title": "Hampi, India, Aerial view of Virupaksha Temple, Panorama of Hampi",
+      "author": "Vyacheslav Argenberg",
+      "licence": "CC BY 4.0",
+      "licenceUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "sourcePage": "https://commons.wikimedia.org/w/index.php?curid=95961371",
+      "source": "wikimedia",
+      "widths": [
+        800,
+        1200,
+        1600
+      ],
+      "aspect": 1.5
+    },
+    "hampi-virupaksha": {
+      "id": "hampi-virupaksha",
+      "role": "feature",
+      "title": "Virupaksha Temple,Hampi",
+      "author": "Vedamurthy J",
+      "licence": "CC BY-SA 3.0",
+      "licenceUrl": "https://creativecommons.org/licenses/by-sa/3.0/",
+      "sourcePage": "https://commons.wikimedia.org/w/index.php?curid=12001400",
+      "source": "wikimedia",
+      "widths": [
+        640,
+        960,
+        1280,
+        1600
+      ],
+      "aspect": 0.75
+    },
+    "hampi-gopuram": {
+      "id": "hampi-gopuram",
+      "role": "hero",
+      "title": "Complex of Virupaksha Temple, Hampi (03)",
+      "author": "iMahesh",
+      "licence": "CC BY-SA 4.0",
+      "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "sourcePage": "https://commons.wikimedia.org/w/index.php?curid=153324461",
+      "source": "wikimedia",
+      "widths": [
+        800,
+        1200,
+        1600
+      ],
+      "aspect": 1.7778
+    },
+    "hampi-bazaar": {
+      "id": "hampi-bazaar",
+      "role": "feature",
+      "title": "Achyuta Raya\u2019s Temple,Hampi",
+      "author": "Kalyan07kumar",
+      "licence": "CC BY-SA 4.0",
+      "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "sourcePage": "https://commons.wikimedia.org/w/index.php?curid=81972070",
+      "source": "wikimedia",
+      "widths": [
+        640,
+        960,
+        1280,
+        1600
+      ],
+      "aspect": 1.5
+    },
+    "hampi-stone-chariot": {
+      "id": "hampi-stone-chariot",
+      "role": "hero",
+      "title": "Iconic Stone Chariot @ Vittala Temple, Hampi, Karnataka",
+      "author": "Ram Nagesh Thota",
+      "licence": "CC BY-SA 4.0",
+      "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "sourcePage": "https://commons.wikimedia.org/w/index.php?curid=51563982",
+      "source": "wikimedia",
+      "widths": [
+        800,
+        1200,
+        1600
+      ],
+      "aspect": 1.5
+    },
+    "hampi-chariot-wheel": {
+      "id": "hampi-chariot-wheel",
+      "role": "feature",
+      "title": "Stone Chariot of Vitthala Temple Hampi",
+      "author": "Kdas1977",
+      "licence": "CC BY-SA 4.0",
+      "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "sourcePage": "https://commons.wikimedia.org/w/index.php?curid=153359051",
+      "source": "wikimedia",
+      "widths": [
+        640,
+        960,
+        1280,
+        1600
+      ],
+      "aspect": 1.5214
+    },
+    "hampi-vittala-hall": {
+      "id": "hampi-vittala-hall",
+      "role": "feature",
+      "title": "vitthala temple, hampi",
+      "author": "nevil zaveri (thank you for 20+M views:)",
+      "licence": "CC BY 2.0",
+      "licenceUrl": "https://creativecommons.org/licenses/by/2.0/",
+      "sourcePage": "https://www.flickr.com/photos/43109416@N00/6157256087",
+      "source": "flickr",
+      "widths": [
+        640,
+        960
+      ],
+      "aspect": 1.4993
+    },
+    "hampi-krishna-temple": {
+      "id": "hampi-krishna-temple",
+      "role": "card",
+      "title": "Beauty Behind Bars | Krishna Temple, Hampi",
+      "author": "VinothChandar",
+      "licence": "CC BY 2.0",
+      "licenceUrl": "https://creativecommons.org/licenses/by/2.0/",
+      "sourcePage": "https://www.flickr.com/photos/44345361@N06/8121522639",
+      "source": "flickr",
+      "widths": [
+        320,
+        480,
+        640,
+        800
+      ],
+      "aspect": 1.4993
+    },
+    "hampi-royal-enclosure": {
+      "id": "hampi-royal-enclosure",
+      "role": "card",
+      "title": "Mahanabami Dibba - Royal Enclosure - Hampi India",
+      "author": "Wingedtree",
+      "licence": "CC BY-SA 4.0",
+      "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "sourcePage": "https://commons.wikimedia.org/w/index.php?curid=123584304",
+      "source": "wikimedia",
+      "widths": [
+        320,
+        480,
+        640,
+        800
+      ],
+      "aspect": 1.5
+    },
+    "hampi-queens-bath": {
+      "id": "hampi-queens-bath",
+      "role": "card",
+      "title": "Queens Bath Hampi",
+      "author": "Rpisharody",
+      "licence": "CC BY-SA 3.0",
+      "licenceUrl": "https://creativecommons.org/licenses/by-sa/3.0/",
+      "sourcePage": "https://commons.wikimedia.org/w/index.php?curid=21674744",
+      "source": "wikimedia",
+      "widths": [
+        320,
+        480,
+        640,
+        800
+      ],
+      "aspect": 1.7143
+    },
+    "hampi-elephant-stables": {
+      "id": "hampi-elephant-stables",
+      "role": "card",
+      "title": "Elephant's Stable @ Hampi",
+      "author": "Uttakarsha",
+      "licence": "CC BY-SA 2.0",
+      "licenceUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+      "sourcePage": "https://www.flickr.com/photos/26659938@N06/2557618633",
+      "source": "flickr",
+      "widths": [
+        320,
+        480,
+        640,
+        800
+      ],
+      "aspect": 1.3333
+    },
+    "hampi-matanga": {
+      "id": "hampi-matanga",
+      "role": "card",
+      "title": "Hampi, India, View of Hampi Bazaar from Matanga Hill",
+      "author": "Vyacheslav Argenberg",
+      "licence": "CC BY 4.0",
+      "licenceUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "sourcePage": "https://commons.wikimedia.org/w/index.php?curid=106322434",
+      "source": "wikimedia",
+      "widths": [
+        320,
+        480,
+        640,
+        800
+      ],
+      "aspect": 1.5
+    },
+    "hampi-achyutaraya": {
+      "id": "hampi-achyutaraya",
+      "role": "card",
+      "title": "Grand View Of Achyutaraya Temple, Hampi",
+      "author": "VinothChandar",
+      "licence": "CC BY 2.0",
+      "licenceUrl": "https://creativecommons.org/licenses/by/2.0/",
+      "sourcePage": "https://www.flickr.com/photos/44345361@N06/8005780040",
+      "source": "flickr",
+      "widths": [
+        320,
+        480,
+        640,
+        800
+      ],
+      "aspect": 1.4993
+    },
+    "hampi-lotus-mahal": {
+      "id": "hampi-lotus-mahal",
+      "role": "card",
+      "title": "Le Lotus Mahal (Hampi, Inde)",
+      "author": "dalbera",
+      "licence": "CC BY 2.0",
+      "licenceUrl": "https://creativecommons.org/licenses/by/2.0/",
+      "sourcePage": "https://www.flickr.com/photos/72746018@N00/14128657060",
+      "source": "flickr",
+      "widths": [
+        320,
+        480,
+        640,
+        800
+      ],
+      "aspect": 1.3333
+    },
+    "hampi-tungabhadra": {
+      "id": "hampi-tungabhadra",
+      "role": "feature",
+      "title": "Tungabhadra River and Coracle Boats",
+      "author": "Dey.sandip",
+      "licence": "CC BY-SA 3.0",
+      "licenceUrl": "https://creativecommons.org/licenses/by-sa/3.0/",
+      "sourcePage": "https://commons.wikimedia.org/w/index.php?curid=23573147",
+      "source": "wikimedia",
+      "widths": [
+        640,
+        960,
+        1280,
+        1600
+      ],
+      "aspect": 1.6681
+    },
+    "hampi-sasivekalu": {
+      "id": "hampi-sasivekalu",
+      "role": "card",
+      "title": "Happy Birthday Ganesha",
+      "author": "Raksh1tha",
+      "licence": "CC BY 2.0",
+      "licenceUrl": "https://creativecommons.org/licenses/by/2.0/",
+      "sourcePage": "https://www.flickr.com/photos/41322303@N00/1371411144",
+      "source": "flickr",
+      "widths": [
+        320,
+        480,
+        640,
+        800
+      ],
+      "aspect": 1.3351
+    },
+    "thanjavur-temple": {
+      "id": "thanjavur-temple",
+      "role": "feature",
+      "title": "Keralaanthakan ThiruVayil @ Brihadeeswarar Temple-Thanjavur",
+      "author": "Lux@Photography",
+      "licence": "CC BY 2.0",
+      "licenceUrl": "https://creativecommons.org/licenses/by/2.0/",
+      "sourcePage": "https://www.flickr.com/photos/71663438@N08/16232975694",
+      "source": "flickr",
+      "widths": [
+        640,
+        960
+      ],
+      "aspect": 1.4649
+    },
+    "thanjavur-bronze": {
+      "id": "thanjavur-bronze",
+      "role": "card",
+      "title": "india - statue of nataraja",
+      "author": "Xuan Che",
+      "licence": "CC BY 2.0",
+      "licenceUrl": "https://creativecommons.org/licenses/by/2.0/",
+      "sourcePage": "https://www.flickr.com/photos/69275268@N00/86746598",
+      "source": "flickr",
+      "widths": [
+        320,
+        480,
+        640,
+        800
+      ],
+      "aspect": 0.75
+    },
+    "varanasi-ghats": {
+      "id": "varanasi-ghats",
+      "role": "card",
+      "title": "1977-03-07 Varanasi - Ghat, Ganges",
+      "author": "Guus Gorter",
+      "licence": "CC BY-SA 4.0",
+      "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "sourcePage": "https://commons.wikimedia.org/w/index.php?curid=116122936",
+      "source": "wikimedia",
+      "widths": [
+        320,
+        480,
+        640,
+        800
+      ],
+      "aspect": 1.4645
+    },
+    "mysore-palace": {
+      "id": "mysore-palace",
+      "role": "card",
+      "title": "Mysore Palace",
+      "author": "Mahin Fayaz",
+      "licence": "CC BY 2.0",
+      "licenceUrl": "https://creativecommons.org/licenses/by/2.0/",
+      "sourcePage": "https://www.flickr.com/photos/58385162@N05/6902831561",
+      "source": "flickr",
+      "widths": [
+        320,
+        480,
+        640,
+        800
+      ],
+      "aspect": 1.3581
+    },
+    "jaipur-hawa-mahal": {
+      "id": "jaipur-hawa-mahal",
+      "role": "card",
+      "title": "Le Hawa Mahal (Jaipur)",
+      "author": "dalbera",
+      "licence": "CC BY 2.0",
+      "licenceUrl": "https://creativecommons.org/licenses/by/2.0/",
+      "sourcePage": "https://www.flickr.com/photos/72746018@N00/8486493475",
+      "source": "flickr",
+      "widths": [
+        320,
+        480,
+        640,
+        800
+      ],
+      "aspect": 1.3333
+    },
+    "auroville-matrimandir": {
+      "id": "auroville-matrimandir",
+      "role": "feature",
+      "title": "Matrimandir , Auroville, pondichery",
+      "author": "devaiah pa",
+      "licence": "CC BY-SA 2.0",
+      "licenceUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+      "sourcePage": "https://www.flickr.com/photos/47778526@N08/7987254436",
+      "source": "flickr",
+      "widths": [
+        640,
+        960
+      ],
+      "aspect": 1.5037
+    },
+    "golconda-fort": {
+      "id": "golconda-fort",
+      "role": "card",
+      "title": "Golconda Fort Hyderabad",
+      "author": ".curt.",
+      "licence": "CC BY 2.0",
+      "licenceUrl": "https://creativecommons.org/licenses/by/2.0/",
+      "sourcePage": "https://www.flickr.com/photos/81195835@N00/2755034148",
+      "source": "flickr",
+      "widths": [
+        320,
+        480,
+        640,
+        800
+      ],
+      "aspect": 1.4993
+    },
+    "gujarat-stepwell": {
+      "id": "gujarat-stepwell",
+      "role": "card",
+      "title": "second tier",
+      "author": "spackle",
+      "licence": "CC BY 2.0",
+      "licenceUrl": "https://creativecommons.org/licenses/by/2.0/",
+      "sourcePage": "https://www.flickr.com/photos/20037851@N00/3616740985",
+      "source": "flickr",
+      "widths": [
+        320,
+        480,
+        640,
+        800
+      ],
+      "aspect": 1.1813
+    },
+    "chennai-iitm": {
+      "id": "chennai-iitm",
+      "role": "card",
+      "title": "Ramp Bridge Hostels East IIT Madras Jun23 A7C 05194",
+      "author": "Timothy A. Gonsalves",
+      "licence": "CC BY-SA 4.0",
+      "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "sourcePage": "https://commons.wikimedia.org/w/index.php?curid=133560811",
+      "source": "wikimedia",
+      "widths": [
+        320,
+        480,
+        640,
+        800
+      ],
+      "aspect": 1.5
+    },
+    "chennai-marina": {
+      "id": "chennai-marina",
+      "role": "card",
+      "title": "Marina Beach, Chennai",
+      "author": "VinothChandar",
+      "licence": "CC BY 2.0",
+      "licenceUrl": "https://creativecommons.org/licenses/by/2.0/",
+      "sourcePage": "https://www.flickr.com/photos/44345361@N06/4315265333",
+      "source": "flickr",
+      "widths": [
+        320,
+        480,
+        640,
+        800
+      ],
+      "aspect": 1.4993
+    },
+    "india-reader": {
+      "id": "india-reader",
+      "role": "card",
+      "title": "A child reading a book by Pratham Books",
+      "author": "Pratham Books",
+      "licence": "CC BY 2.0",
+      "licenceUrl": "https://creativecommons.org/licenses/by/2.0/",
+      "sourcePage": "https://www.flickr.com/photos/35026043@N03/3365019198",
+      "source": "flickr",
+      "widths": [
+        320,
+        480,
+        640,
+        800
+      ],
+      "aspect": 1.411
+    },
+    "india-traveller": {
+      "id": "india-traveller",
+      "role": "feature",
+      "title": "Hampi Tourists",
+      "author": "Abe Bingham",
+      "licence": "CC BY 2.0",
+      "licenceUrl": "https://creativecommons.org/licenses/by/2.0/",
+      "sourcePage": "https://www.flickr.com/photos/79259760@N00/30835980240",
+      "source": "flickr",
+      "widths": [
+        640,
+        960
+      ],
+      "aspect": 1.0149
+    },
+    "india-storyteller": {
+      "id": "india-storyteller",
+      "role": "feature",
+      "title": "Indian Fusion Dance",
+      "author": "jay8085",
+      "licence": "CC BY 2.0",
+      "licenceUrl": "https://creativecommons.org/licenses/by/2.0/",
+      "sourcePage": "https://www.flickr.com/photos/89649959@N00/3435208408",
+      "source": "flickr",
+      "widths": [
+        640,
+        960
+      ],
+      "aspect": 1.6623
+    }
+  }
+}
