@@ -25,6 +25,12 @@
       "skillPath": "skills/taste-skill-v2-experimental/SKILL.md",
       "computedHash": "2c015feb005bbc65c053b7b7e176e53bb1457b9a5cf7a3c05232c4b4e482a369"
     },
+    "distribb": {
+      "source": "Bomx/distribb-skill",
+      "sourceType": "github",
+      "skillPath": "SKILL.md",
+      "computedHash": "5883f56fcc449df51b04a14ae794b16acb2bf16441fa36333532aa9c2c624d9b"
+    },
     "full-output-enforcement": {
       "source": "Leonxlnx/taste-skill",
       "sourceType": "github",

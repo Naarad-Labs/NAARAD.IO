@@ -22,6 +22,7 @@ e2e/playwright-report/
 .claude/skills/minimalist-ui
 .claude/skills/redesign-existing-projects
 .claude/skills/stitch-design-taste
+.claude/skills/distribb
 
 # Output from the design-taste-frontend skill's inspector
 .taste-skill/
