@@ -14,7 +14,7 @@
   width: min(100% - 48px, var(--wrap)); margin: clamp(32px, 4vw, 56px) auto 0;
 }
 .info-body h2 { margin-bottom: 12px; }
-.info-body p { font-size: 15.5px; line-height: 1.7; color: var(--ink-soft); }
+.info-body p { font-size: 16.5px; line-height: 1.7; color: var(--ink); }
 
 @media (max-width: 1023px) {
   .info-hero { grid-template-columns: 1fr; }

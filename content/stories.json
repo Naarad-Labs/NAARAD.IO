@@ -10,14 +10,18 @@
       "stopOrder": null,
       "location": "Hampi, Karnataka",
       "heroPhoto": "hampi-stone-chariot",
-      "themes": ["Architecture", "Temples", "Vijayanagara"],
+      "themes": [
+        "Architecture",
+        "Temples",
+        "Vijayanagara"
+      ],
       "published": "2026-09-18",
       "sections": [
         {
           "id": "a-city-of-wonders",
           "eyebrow": "The story",
           "heading": "A City of Wonders",
-          "photo": null,
+          "photo": "hampi-landscape",
           "body": [
             "In the heart of Hampi, among granite boulders that look stacked by hand, stands the Vittala temple complex. It is the most ambitious thing the Vijayanagara empire built, and the chariot in its courtyard is the piece everyone photographs.",
             "The complex went up in the sixteenth century, under Krishnadevaraya and the kings who followed him. By then Vijayanagara had been the dominant power in southern India for close to two hundred years, and its architects had stopped being modest. The temple's pillared halls were cut from single blocks. Its gateways were tall enough to be seen from across the river."
@@ -25,7 +29,8 @@
           "pullQuote": {
             "text": "In stone, they captured movement; in silence, they left behind a song.",
             "source": "Hampi Heritage Trail"
-          }
+          },
+          "caption": "The boulder landscape around the Vittala temple complex at Hampi."
         },
         {
           "id": "the-chariot-up-close",
@@ -42,11 +47,12 @@
           "id": "belief-and-symbolism",
           "eyebrow": "Belief and symbolism",
           "heading": "Why a Chariot at All",
-          "photo": null,
+          "photo": "hampi-gopuram",
           "body": [
             "South Indian temples put their gods on wheels. During festivals the deity leaves the sanctum and is pulled through the streets on a wooden chariot the size of a house, which is how a temple reaches people who cannot enter it. Building that chariot in stone, permanently, in the courtyard, makes a claim: this procession never stops.",
             "Garuda sits where he always sits, facing his lord. The shrine that once held his image is empty now. What remains is the vehicle, which is the part the sculptors treated as the subject."
-          ]
+          ],
+          "caption": "A temple gateway at Hampi: the processional route a chariot would take."
         },
         {
           "id": "artisans-and-ingenuity",
@@ -63,21 +69,23 @@
           "id": "through-the-centuries",
           "eyebrow": "Through the centuries",
           "heading": "After 1565",
-          "photo": null,
+          "photo": "hampi-achyutaraya",
           "body": [
             "In 1565 the Vijayanagara armies lost the battle of Talikota to a coalition of Deccan sultanates, and the city was systematically dismantled over the months that followed. The Vittala complex was damaged and abandoned. Hampi became a village among ruins, and stayed that way for three centuries.",
             "The chariot survived because it was granite and because it was not worth melting down. It has since appeared on the Indian fifty-rupee note, which is how most people in India first see it."
-          ]
+          ],
+          "caption": "The Achyutaraya temple, abandoned after 1565 and never rebuilt."
         },
         {
           "id": "today-and-tomorrow",
           "eyebrow": "Today and tomorrow",
           "heading": "Standing in Front of It",
-          "photo": null,
+          "photo": "hampi-matanga",
           "body": [
             "Hampi became a UNESCO World Heritage Site in 1986, and the Vittala complex is now the most protected part of it. You reach the chariot on foot or by electric buggy from the gate; vehicles are kept away from the temple.",
             "Go early. The granite takes colour from low light, and the courtyard is quiet enough to hear what the carvers were listening to."
-          ]
+          ],
+          "caption": "Hampi from Matanga Hill, now a UNESCO World Heritage Site."
         }
       ]
     },
@@ -90,14 +98,17 @@
       "stopOrder": 3,
       "location": "Hampi, Karnataka",
       "heroPhoto": "hampi-bazaar",
-      "themes": ["Trade", "Living Culture"],
+      "themes": [
+        "Trade",
+        "Living Culture"
+      ],
       "published": "2026-09-22",
       "sections": [
         {
           "id": "a-market-a-mile-long",
           "eyebrow": "The story",
           "heading": "A Market a Mile Long",
-          "photo": null,
+          "photo": "hampi-landscape",
           "body": [
             "The street running east from the Virupaksha temple was the commercial spine of Vijayanagara. Both sides were lined with colonnades, and behind each arch was a shop. The scale is still legible: you can walk the length of it and watch the stone frame continue long after you expect it to stop.",
             "Foreign visitors wrote about this street because it embarrassed the markets they knew at home. Domingos Paes, a Portuguese traveller who saw the city around 1520, described precious stones sold in the open. Abdur Razzaq, an envoy from Herat, counted the bazaars and gave up on comparisons."
@@ -105,17 +116,19 @@
           "pullQuote": {
             "text": "They were shops where you could buy anything the known world made, and a great deal that it did not.",
             "source": "Hampi Heritage Trail"
-          }
+          },
+          "caption": "The ground the bazaar street crosses, east of the Virupaksha temple."
         },
         {
           "id": "horses-and-power",
           "eyebrow": "Horses and power",
           "heading": "Why Horses Mattered",
-          "photo": null,
+          "photo": "hampi-elephant-stables",
           "body": [
             "The most valuable thing traded here was not gems. It was horses. The Deccan does not breed cavalry mounts well, so Vijayanagara imported Arab and Persian horses through the west coast ports at enormous expense, and its wars depended on the supply.",
             "That dependency shaped the empire's foreign policy: whoever controlled the ports controlled the cavalry, which is part of why the Portuguese arrival on the coast mattered so much so quickly."
-          ]
+          ],
+          "caption": "The elephant stables: the other half of the empire’s animal logistics."
         },
         {
           "id": "what-remains",
@@ -139,18 +152,22 @@
       "stopOrder": 5,
       "location": "Hampi, Karnataka",
       "heroPhoto": "hampi-tungabhadra",
-      "themes": ["Engineering", "History"],
+      "themes": [
+        "Engineering",
+        "History"
+      ],
       "published": "2026-09-29",
       "sections": [
         {
           "id": "a-dry-place",
           "eyebrow": "The story",
           "heading": "A Dry Place to Put a City",
-          "photo": null,
+          "photo": "hampi-queens-bath",
           "body": [
             "Hampi sits in one of the drier parts of Karnataka, on granite that holds nothing. The Tungabhadra runs past it, and everything the city managed to be was built on the work of getting that water up, across and into the places people lived.",
             "The royal centre is threaded with stone channels. Some are open, some run under courtyards, and they feed tanks that are still watertight five hundred years later."
-          ]
+          ],
+          "caption": "The Queen’s Bath, fed by the city’s water channels."
         },
         {
           "id": "the-stepped-tank",

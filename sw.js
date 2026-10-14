@@ -7,7 +7,7 @@
  * are used, with the tile cache kept small.
  */
 
-const VERSION = 'v9';
+const VERSION = 'v10';
 const SHELL = `naarad-shell-${VERSION}`;
 const CONTENT = `naarad-content-${VERSION}`;
 const MEDIA = `naarad-media-${VERSION}`;
@@ -28,6 +28,7 @@ const SHELL_ASSETS = [
   '/app/previews.js',
   '/app/audio.js',
   '/app/journey-store.js',
+  '/app/motion.js',
   '/app/studio-store.js',
   '/app/views/home.js',
   '/app/fonts/DMSans.woff2',

@@ -20,20 +20,20 @@
 
 .catalogue-filters { position: sticky; top: calc(var(--header-h) + 18px); display: grid; gap: 22px; }
 .catalogue-filters fieldset { border: 0; padding: 0; margin: 0; }
-.catalogue-filters legend { padding: 0 0 10px; font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-muted); }
+.catalogue-filters legend { padding: 0 0 10px; font-size: 13px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-muted); }
 .filter-chips { display: flex; flex-wrap: wrap; gap: 7px; }
 .filter-chips button {
   padding: 7px 14px; border-radius: 999px; border: 1px solid var(--line-strong);
   background: var(--paper-bright); font-size: 13px; font-weight: 600; color: var(--ink-soft);
 }
 .filter-chips button:hover { border-color: var(--ink); }
-.filter-chips button.is-active { background: var(--orange); border-color: var(--orange); color: #fff; }
+.filter-chips button.is-active { background: var(--orange); border-color: var(--orange-text); color: #fff; }
 .catalogue-filters select {
   width: 100%; padding: 10px 12px; border: 1px solid var(--line-strong); border-radius: 8px;
-  background: var(--paper-bright); font-size: 14px;
+  background: var(--paper-bright); font-size: 14.5px;
 }
-.catalogue-filters .filter-check { display: flex; align-items: center; gap: 9px; font-size: 13.5px; }
-.catalogue-filters .filter-check input { width: 17px; height: 17px; accent-color: var(--orange); }
+.catalogue-filters .filter-check { display: flex; align-items: center; gap: 9px; font-size: 13px; }
+.catalogue-filters .filter-check input { width: 17px; height: 17px; accent-color: var(--orange-text); }
 
 .catalogue-results .section-head { margin-bottom: 22px; grid-template-columns: 1fr; }
 .catalogue-results .route-card-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }

@@ -11,6 +11,7 @@ import * as Data from './data.js';
 import * as Audio from './audio.js';
 import * as Journey from './journey-store.js';
 import * as Drafts from './studio-store.js';
+import * as Motion from './motion.js';
 
 const shell = document.querySelector('#app-content');
 const VIEWS = ['home', 'explore', 'routes', 'stories', 'creators', 'journey', 'about'];
@@ -108,6 +109,7 @@ async function paint(name, context, meta) {
   shell.innerHTML = markup;
   setMeta(meta || (typeof view.meta === 'function' ? view.meta(context?.route || context?.story) : view.meta));
   window.scrollTo(0, 0);
+  Motion.scan(shell);
 }
 
 async function showRoute(slug, { push = true, stop = null } = {}) {
@@ -203,7 +205,7 @@ async function selectStop(order) {
     const fresh = document.createElement('div');
     fresh.innerHTML = await view.render({ route: state.route, stop: stop.order });
     const replacement = fresh.querySelector('.stop-panel');
-    if (replacement) panel.replaceWith(replacement);
+    if (replacement) { panel.replaceWith(replacement); Motion.scan(replacement); }
   }
   $$('.stop-item').forEach((item) => {
     const active = Number(item.dataset.selectStop) === stop.order;
@@ -528,6 +530,7 @@ async function navigate(push = false) {
 }
 
 try {
+  Motion.start();
   await loadMedia();
   await Data.loadRoutes();
   await navigate(false);
