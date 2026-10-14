@@ -85,6 +85,13 @@ cd e2e && npm install && npm test
 photographs and map tiles as they are used. **Bump `VERSION` in `sw.js` whenever
 the shell, a view module or a stylesheet changes**, or visitors keep the old one.
 
+## Files that must stay
+
+- `googlecc72b0f2c9685bc7.html` proves to Google Search Console that naarad.io
+  belongs to us. Google re-checks it periodically, so deleting it un-verifies
+  the site and stops Search Console data. Keep it at the root, unchanged.
+- `CNAME` points GitHub Pages at the naarad.io domain.
+
 ## Licences
 
 Playfair Display, DM Sans and Caveat are self-hosted under the SIL Open Font
