@@ -1,7 +1,7 @@
 const { chromium } = require('@playwright/test');
 (async () => {
   const b = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium-1194/chrome-linux/chrome', args: ['--no-sandbox'] });
-  for (const [path, label] of [['/', 'home'], ['/?route=hampi-heritage-trail', 'route']]) {
+  for (const [path, label] of [['/', 'home'], ['/routes/hampi-heritage-trail/', 'route']]) {
     const ctx = await b.newContext({ viewport: { width: 1440, height: 900 } });
     const p = await ctx.newPage();
     const bytes = { js: 0, css: 0, img: 0, font: 0, other: 0 };

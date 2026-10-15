@@ -137,6 +137,31 @@ export function creditText(id) {
   return info.verified ? `Photo: ${info.author} (${info.licence})` : 'Photo rights not recorded';
 }
 
+/**
+ * The path of a licensed photograph's WebP file: the widest one, or the
+ * narrowest that is at least `minWidth`. Only manifest photos have one; an
+ * inherited image with unrecorded rights is never offered to other sites.
+ */
+export function photoPath(id, minWidth = Infinity) {
+  const widths = photos[id]?.widths;
+  if (!widths?.length) return null;
+  const sorted = [...widths].sort((a, b) => a - b);
+  const width = sorted.find((candidate) => candidate >= minWidth) || sorted[sorted.length - 1];
+  return `${PHOTO_DIR}/${id}-${width}.webp`;
+}
+
+/** Attributes for <link rel="preload"> matching a hero picture's AVIF source. */
+export function preloadHint(id, sizes) {
+  const photo = photos[id];
+  if (!photo?.widths?.length) return null;
+  const widths = photo.widths;
+  return {
+    href: `${PHOTO_DIR}/${id}-${widths[widths.length - 1]}.avif`,
+    imagesrcset: srcset(id, widths, 'avif'),
+    imagesizes: sizes,
+  };
+}
+
 /** First id that the manifest actually has, so layouts never show a hole. */
 export function firstAvailable(...ids) {
   return ids.find((id) => photos[id]) || ids.find((id) => LEGACY[id]) || ids[0];

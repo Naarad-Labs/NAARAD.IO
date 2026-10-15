@@ -1,30 +1,171 @@
 /* The router and the one place interaction is wired.
  *
- * Views are ES modules loaded on demand, each with its own stylesheet, so the
- * homepage never pays for the planner's code or the map engine. The map engine
- * itself is imported only when a route page actually mounts a map.
+ * Every page has its own address (app/urls.js), and PAGES below says which
+ * view draws it. Views are ES modules loaded on demand, each with its own
+ * stylesheet, so the homepage never pays for the planner's code or the map
+ * engine. The map engine itself is imported only when a route page actually
+ * mounts a map.
+ *
+ * Pages are also pre-rendered: scripts/build-site.mjs opens every address with
+ * window.__NAARAD_PRERENDER__ set and saves what this module draws. In that
+ * mode nothing device-local, animated or interactive is started: no map, no
+ * motion, no service worker, no one's saved routes or drafts. When a visitor
+ * opens a pre-rendered page, #app-content already holds it (data-prerendered
+ * names its address), so boot keeps that markup and does only the wiring
+ * markup cannot carry: the map, the scroll watcher, motion below the fold.
  */
 
-import { loadMedia, escapeHtml } from './media.js';
-import { icon } from './icons.js';
+import { loadMedia, escapeHtml, preloadHint } from './media.js';
 import * as Data from './data.js';
 import * as Audio from './audio.js';
 import * as Journey from './journey-store.js';
 import * as Drafts from './studio-store.js';
 import * as Motion from './motion.js';
+import * as Urls from './urls.js';
+import { SITE_NAME, CARD_WIDTH, CARD_HEIGHT, cardPath } from './seo.js';
 
+const PRERENDER = Boolean(window.__NAARAD_PRERENDER__);
 const shell = document.querySelector('#app-content');
-const VIEWS = ['home', 'explore', 'routes', 'stories', 'creators', 'journey', 'about'];
-const DEFAULT_ROUTE = 'hampi-heritage-trail';
 
 const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
 
-let state = { view: 'home', route: null, stop: null, story: null };
+let state = { page: null, route: null, stop: null, story: null };
 let map = null;
 let generation = 0;
-const loadedStyles = new Set();
+// Settles once the first page is drawn. A pre-rendered page can be used
+// before then; the handlers below wait for it rather than drop the input.
+let started = null;
+// A pre-rendered page arrives with its view's stylesheet already linked.
+const loadedStyles = new Set($$('link[rel="stylesheet"]').map((link) => link.getAttribute('href')));
 const modules = {};
+
+/* ── Pages ──────────────────────────────────────────────────────── */
+
+const catalogueContext = (url) => ({ query: url.searchParams.get('q') || '' });
+
+/* A pre-rendered catalogue can be typed into before the script arrives; what
+   the visitor already typed or ticked still counts once it has. */
+async function syncCatalogue() {
+  const explore = await moduleFor('explore');
+  const input = $('#catalogue-query');
+  explore.setFilters({
+    query: input?.value || '',
+    region: $('[data-filter-region]')?.value || 'all',
+    withStories: Boolean($('[data-filter-stories]')?.checked),
+  });
+  if (input?.value && state.page?.address) history.replaceState(null, '', state.page.address({ query: input.value.trim() }));
+}
+
+/* Every page the site has. A page answers one fixed `path`, or a `prefix`
+ * under which /<prefix><slug>/ names one item. `view` is the module that
+ * draws it (moduleFor), `nav` the header link it lights, and `sources` the
+ * repository files its content is built from, which date it in the sitemap.
+ * Optional hooks:
+ *   context(url)            render context read from the address
+ *   load(slug, url, view)   the item as render context, or null if there is none
+ *   list(view)              every item, for the build: [{ path, sources }]
+ *   address(context)        the address to show for this state, when not `path`
+ *   after(context, gen)     wiring markup cannot carry: a map, a scroll watcher
+ * The blog registers here as two entries, /blog/ and the /blog/ prefix, with a
+ * views/blog.js and a line in moduleFor. Nothing else has to change: links,
+ * the head, pre-rendering and the sitemap all follow from this list.
+ */
+const PAGES = [
+  {
+    name: 'home', path: '/', view: 'home', nav: 'home',
+    sources: ['app/views/home.js', 'content/routes.json', 'routes/geo-tracks.json'],
+  },
+  {
+    name: 'routes', path: '/routes/', view: 'explore', nav: 'routes',
+    sources: ['app/views/explore.js', ...Data.catalogueFiles()],
+    context: catalogueContext,
+    address: ({ query }) => Urls.cataloguePath(query, '/routes/'),
+    after: () => syncCatalogue(),
+  },
+  {
+    // The same catalogue under its other name; its canonical is /routes/.
+    name: 'explore', path: '/explore/', view: 'explore', nav: 'explore',
+    sources: ['app/views/explore.js', ...Data.catalogueFiles()],
+    context: catalogueContext,
+    address: ({ query }) => Urls.cataloguePath(query, '/explore/'),
+    after: () => syncCatalogue(),
+  },
+  {
+    name: 'route', prefix: '/routes/', view: 'route', nav: 'routes', body: 'route',
+    sources: ['app/views/route.js'],
+    async load(slug, url) {
+      const route = await Data.getRoute(slug);
+      if (!route) return null;
+      const asked = Number(url.searchParams.get('stop')) || null;
+      return { route, stop: Data.getStop(route, asked)?.order || route.stops[0]?.order || null };
+    },
+    async list() {
+      const routes = await Data.loadRoutes();
+      return routes.map((route) => ({ path: Urls.routePath(route.slug), sources: [Data.sourceFile(route)] }));
+    },
+    address: ({ route, stop }) => Urls.routePath(route.slug, stop !== route.stops[0]?.order ? stop : null),
+    after: ({ route }, current) => { if (route.hasGeometry || route.startLat != null) mountMap(route, current); },
+  },
+  {
+    name: 'stories', path: '/stories/', view: 'story', nav: 'stories',
+    sources: ['app/views/story.js', 'content/stories.json'],
+    context: () => ({ indexOnly: true }),
+  },
+  {
+    name: 'story', prefix: '/stories/', view: 'story', nav: 'stories', body: 'story',
+    sources: ['app/views/story.js', 'content/stories.json'],
+    async load(slug, url, view) {
+      const story = await view.getStory(slug);
+      return story ? { story } : null;
+    },
+    async list(view) {
+      return (await view.loadStories()).map((story) => ({ path: Urls.storyPath(story.slug) }));
+    },
+    after: () => watchStoryScroll(),
+  },
+  { name: 'creators', path: '/creators/', view: 'studio', nav: 'creators', sources: ['app/views/studio.js'] },
+  { name: 'journey', path: '/journey/', view: 'journey', nav: 'journey', sources: ['app/views/journey.js'] },
+  {
+    name: 'about', path: '/about/', view: 'info', nav: 'about',
+    sources: ['app/views/info.js'],
+    context: () => ({ view: 'about' }),
+  },
+];
+
+/* What an address no page answers shows. 404.html is this page, pre-rendered. */
+const NOT_FOUND = { name: 'not-found', view: 'info', nav: null, context: () => ({ view: 'not-found' }) };
+
+/** The page an address belongs to, and the item slug when it names one. */
+function resolve(url) {
+  const path = Urls.normalPath(url.pathname);
+  const fixed = PAGES.find((page) => page.path === path);
+  if (fixed) return { page: fixed, slug: null };
+  for (const page of PAGES) {
+    if (!page.prefix || !path.startsWith(page.prefix)) continue;
+    const match = path.slice(page.prefix.length).match(/^([^/]+)\/$/);
+    if (!match) continue;
+    try { return { page, slug: decodeURIComponent(match[1]) }; } catch { return null; }
+  }
+  return null;
+}
+
+/**
+ * Every public address, for scripts/build-site.mjs: [{ path, sources }].
+ * The build renders each, then leaves out of the sitemap any page whose head
+ * says noindex or names another page as canonical.
+ */
+export async function publicPages() {
+  const pages = [];
+  for (const page of PAGES) {
+    if (page.path) pages.push({ path: page.path, sources: page.sources });
+    if (page.list) {
+      const items = await page.list(await moduleFor(page.view));
+      items.forEach((item) => pages.push({ path: item.path, sources: [...page.sources, ...(item.sources || [])] }));
+    }
+  }
+  return pages;
+}
 
 /* ── Chrome ─────────────────────────────────────────────────────── */
 
@@ -41,18 +182,83 @@ function loadStylesheet(href) {
   });
 }
 
-function setMeta({ title, description }) {
-  if (title) document.title = title;
-  if (description) {
-    const tag = $('meta[name="description"]');
-    if (tag) tag.content = description;
+/** The page's own head tags, from its view's meta (app/seo.js has the shape). */
+function headTags(meta) {
+  const tags = [];
+  const add = (tag, attrs, text = null) => tags.push({ tag, attrs, text });
+  const url = meta.path ? Urls.absoluteUrl(meta.path) : null;
+  const image = meta.card ? Urls.absoluteUrl(cardPath(meta.card.name)) : null;
+
+  add('meta', { name: 'description', content: meta.description });
+  if (meta.robots) add('meta', { name: 'robots', content: meta.robots });
+  if (url) {
+    add('link', { rel: 'canonical', href: url });
+    add('meta', { property: 'og:type', content: meta.type || 'website' });
+    add('meta', { property: 'og:site_name', content: SITE_NAME });
+    add('meta', { property: 'og:locale', content: 'en_IN' });
+    add('meta', { property: 'og:url', content: url });
+    add('meta', { property: 'og:title', content: meta.title });
+    add('meta', { property: 'og:description', content: meta.description });
+    if (image) {
+      add('meta', { property: 'og:image', content: image });
+      add('meta', { property: 'og:image:type', content: 'image/jpeg' });
+      add('meta', { property: 'og:image:width', content: String(CARD_WIDTH) });
+      add('meta', { property: 'og:image:height', content: String(CARD_HEIGHT) });
+      add('meta', { property: 'og:image:alt', content: meta.card.alt });
+    }
+    if (meta.published) add('meta', { property: 'article:published_time', content: meta.published });
+    add('meta', { name: 'twitter:card', content: image ? 'summary_large_image' : 'summary' });
+    add('meta', { name: 'twitter:title', content: meta.title });
+    add('meta', { name: 'twitter:description', content: meta.description });
+    if (image) {
+      add('meta', { name: 'twitter:image', content: image });
+      add('meta', { name: 'twitter:image:alt', content: meta.card.alt });
+    }
   }
+  const hint = meta.preload ? preloadHint(meta.preload.photo, meta.preload.sizes) : null;
+  if (hint) add('link', { rel: 'preload', as: 'image', type: 'image/avif', href: hint.href, imagesrcset: hint.imagesrcset, imagesizes: hint.imagesizes, fetchpriority: 'high' });
+  if (meta.schema?.length) {
+    // '<' is escaped so no string in the data can close the script element.
+    const json = JSON.stringify({ '@context': 'https://schema.org', '@graph': meta.schema }).replace(/</g, '\\u003c');
+    add('script', { type: 'application/ld+json' }, json);
+  }
+  return tags;
 }
 
+/**
+ * Keep the head in step with the page. Every page-owned tag carries
+ * data-page and is rewritten as one block right after <title>, so a
+ * pre-rendered head and one written during navigation come out the same and
+ * nothing is left over from the page before.
+ */
+function setMeta(meta) {
+  if (!meta) return;
+  if (meta.title) document.title = meta.title;
+  const fresh = headTags(meta).map(({ tag, attrs, text }) => {
+    const node = document.createElement(tag);
+    Object.entries(attrs).forEach(([name, value]) => { if (value != null) node.setAttribute(name, value); });
+    node.setAttribute('data-page', '');
+    if (text != null) node.textContent = text;
+    return node;
+  });
+  const current = $$('head [data-page]');
+  if (current.length === fresh.length && current.every((node, index) => node.isEqualNode(fresh[index]))) return;
+  current.forEach((node) => {
+    const gap = node.previousSibling;
+    if (gap?.nodeType === Node.TEXT_NODE && !gap.textContent.trim()) gap.remove();
+    node.remove();
+  });
+  $('head title').after(...fresh.flatMap((node) => ['\n  ', node]));
+}
+
+/* Only the chrome marks the current section. A link inside a page, such as a
+   story's breadcrumb back to /stories/, is not the page you are on, and the
+   view's markup stays exactly what it drew. */
 function setNav(view) {
-  $$('[data-view]').forEach((link) => {
+  $$('.site-header [data-view], .site-footer [data-view]').forEach((link) => {
     const active = link.dataset.view === view;
     link.classList.toggle('is-current', active);
+    if (!link.classList.length) link.removeAttribute('class');
     if (active) link.setAttribute('aria-current', 'page');
     else link.removeAttribute('aria-current');
   });
@@ -102,70 +308,77 @@ function showError(message) {
 
 /* ── Rendering ──────────────────────────────────────────────────── */
 
-async function paint(name, context, meta) {
-  const view = await moduleFor(name);
-  await loadStylesheet(view.stylesheet || view.meta?.stylesheet);
-  const markup = context?.indexOnly ? await view.renderIndex() : await view.render(context);
-  shell.innerHTML = markup;
-  setMeta(meta || (typeof view.meta === 'function' ? view.meta(context?.route || context?.story) : view.meta));
-  window.scrollTo(0, 0);
-  Motion.scan(shell);
+/** Whether #app-content already shows exactly this markup. */
+function drawn(markup) {
+  const probe = shell.cloneNode(false);
+  probe.innerHTML = markup;
+  return probe.innerHTML === shell.innerHTML;
 }
 
-async function showRoute(slug, { push = true, stop = null } = {}) {
+/**
+ * Draw a view and its head. With `keep`, markup that is already on screen
+ * (a pre-rendered page) is left untouched when the view would draw the same
+ * thing, so booting on it neither flashes nor shifts; when it would draw
+ * something else, such as this visitor's own saved routes, it is replaced.
+ */
+async function paint(view, context = {}, { keep = false, scroll = true } = {}) {
+  await loadStylesheet(view.stylesheet || view.meta?.stylesheet);
+  const markup = context.indexOnly ? await view.renderIndex() : await view.render(context);
+  const describe = context.indexOnly ? view.indexMeta : view.meta;
+  const meta = await (typeof describe === 'function' ? describe(context) : describe);
+  if (!(keep && drawn(markup))) {
+    shell.innerHTML = markup;
+    delete shell.dataset.prerendered;
+    if (scroll) window.scrollTo(0, 0);
+  }
+  setMeta(meta);
+  Motion.scan(shell);
+  return meta;
+}
+
+/**
+ * Show the page at `url`. `push` adds a history entry; otherwise the address
+ * is only tidied in place (a dropped ?stop=1, an added trailing slash).
+ */
+async function show(url, { push = true, boot = false } = {}) {
   const current = ++generation;
   destroyMap();
-  const route = await Data.getRoute(slug) || await Data.getRoute(DEFAULT_ROUTE);
-  if (!route || current !== generation) return;
+  const match = resolve(url);
+  let page = match?.page || NOT_FOUND;
+  let view = await moduleFor(page.view);
+  let context = page.context?.(url) || {};
+  if (page.load) {
+    const item = await page.load(match.slug, url, view);
+    if (item) context = { ...context, ...item };
+    else {
+      page = NOT_FOUND;
+      view = await moduleFor(page.view);
+      context = page.context(url);
+    }
+  }
+  if (current !== generation) return;
 
-  state = { view: 'routes', route, stop: stop || route.stops[0]?.order || null, story: null };
-  document.body.dataset.view = 'route';
-  shell.className = 'view-route';
-  const view = await moduleFor('route');
-  await paint('route', { route, stop: state.stop }, view.meta(route));
-  setNav('routes');
-  if (push) history.pushState({ route: slug, stop: state.stop }, '', routeHref(route, state.stop));
+  const key = page === NOT_FOUND ? '404' : Urls.normalPath(url.pathname);
+  state = { page, route: context.route || null, stop: context.stop || null, story: context.story || null };
+  document.body.dataset.view = page.body || page.name;
+  shell.className = `view-${page.body || page.name}`;
+  const meta = await paint(view, context, { keep: shell.dataset.prerendered === key, scroll: !boot });
+  if (current !== generation) return;
+  setNav(page.nav);
 
-  if (route.hasGeometry || route.startLat != null) mountMap(route, current);
-}
+  const address = page === NOT_FOUND
+    ? `${url.pathname}${url.search}`
+    : `${page.address?.(context) || page.path || key}`;
+  if (push) history.pushState(null, '', address + url.hash);
+  else if (address + url.hash !== location.pathname + location.search + location.hash) history.replaceState(null, '', address + url.hash);
+  if (url.hash && !boot) document.getElementById(decodeURIComponent(url.hash.slice(1)))?.scrollIntoView();
 
-function routeHref(route, stop) {
-  return `/?route=${encodeURIComponent(route.slug)}${stop ? `&stop=${stop}` : ''}`;
-}
-
-async function showStory(slug, push = true) {
-  ++generation;
-  destroyMap();
-  const view = await moduleFor('story');
-  const story = await view.getStory(slug);
-  if (!story) { showView('stories'); return; }
-  state = { view: 'stories', route: null, stop: null, story };
-  document.body.dataset.view = 'story';
-  shell.className = 'view-story';
-  await paint('story', { story }, view.meta(story));
-  setNav('stories');
-  if (push) history.pushState({ story: slug }, '', `/?story=${encodeURIComponent(slug)}`);
-  watchStoryScroll();
-}
-
-async function showView(view, push = true) {
-  ++generation;
-  destroyMap();
-  state = { view, route: null, stop: null, story: null };
-  document.body.dataset.view = view;
-  shell.className = `view-${view}`;
-
-  if (view === 'home') await paint('home');
-  else if (view === 'explore' || view === 'routes') await paint('explore');
-  else if (view === 'stories') {
-    const story = await moduleFor('story');
-    await paint('story', { indexOnly: true }, story.indexMeta);
-  } else if (view === 'creators') await paint('studio');
-  else if (view === 'journey') await paint('journey');
-  else await paint('info', { view });
-
-  setNav(view);
-  if (push) history.pushState({ view }, '', view === 'home' ? '/' : `/?view=${encodeURIComponent(view)}`);
+  if (PRERENDER) {
+    shell.dataset.prerendered = key;
+    window.__NAARAD_META__ = meta;
+    return;
+  }
+  page.after?.(context, current);
 }
 
 /* ── Map ────────────────────────────────────────────────────────── */
@@ -213,7 +426,7 @@ async function selectStop(order) {
     item.setAttribute('aria-current', String(active));
   });
   map?.selectStop?.(stop.order);
-  history.replaceState({ route: state.route.slug, stop: stop.order }, '', routeHref(state.route, stop.order));
+  history.replaceState(null, '', state.page.address({ route: state.route, stop: stop.order }));
 }
 
 /* ── Listening ──────────────────────────────────────────────────── */
@@ -295,6 +508,10 @@ function toggleSave(button) {
   notify(saved ? `${state.route.name} saved to My Journey.` : 'Removed from My Journey.');
 }
 
+async function repaintJourney() {
+  await paint(await moduleFor('journey'));
+}
+
 /* ── Studio ─────────────────────────────────────────────────────── */
 
 async function refreshStudio() {
@@ -331,15 +548,27 @@ async function handleStudio(target) {
 
 /* ── Events ─────────────────────────────────────────────────────── */
 
+/** A plain click on a link to one of the site's pages, which is drawn in place. */
+function pageLink(event) {
+  if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return null;
+  const link = event.target.closest('a[href]');
+  if (!link || link.target || link.hasAttribute('download')) return null;
+  const url = new URL(link.href, location.href);
+  if (url.origin !== location.origin) return null;
+  // A jump within this page (the story contents, the skip link) is the browser's.
+  if (url.hash && url.pathname === location.pathname && url.search === location.search) return null;
+  return resolve(url) ? url : null;
+}
+
 document.addEventListener('click', async (event) => {
-  const link = event.target.closest('a[data-route], a[data-view], a[data-story]');
-  if (link && event.button === 0 && !event.metaKey && !event.ctrlKey && !event.shiftKey && !event.altKey) {
+  const url = pageLink(event);
+  if (url) {
     event.preventDefault();
-    if (link.dataset.route) await showRoute(link.dataset.route, { stop: Number(link.dataset.stop) || null });
-    else if (link.dataset.story) await showStory(link.dataset.story);
-    else await showView(link.dataset.view);
+    await started;
+    await show(url);
     return;
   }
+  await started;
 
   if (event.target.closest('.menu-toggle')) {
     const header = $('.site-header');
@@ -406,12 +635,12 @@ document.addEventListener('click', async (event) => {
     const slug = unsave.dataset.journeyUnsave;
     const route = await Data.getRoute(slug);
     if (route) Journey.toggleSaved(route);
-    await paint('journey');
+    await repaintJourney();
     return;
   }
 
   const deleteNote = event.target.closest('[data-journal-delete]');
-  if (deleteNote) { Journey.removeJournalEntry(deleteNote.dataset.journalDelete); await paint('journey'); return; }
+  if (deleteNote) { Journey.removeJournalEntry(deleteNote.dataset.journalDelete); await repaintJourney(); return; }
 
   const filterSport = event.target.closest('[data-filter-sport]');
   if (filterSport) {
@@ -445,10 +674,13 @@ document.addEventListener('click', async (event) => {
 });
 
 document.addEventListener('input', async (event) => {
+  await started;
   const target = event.target;
   if (target.id === 'catalogue-query') {
     const explore = await moduleFor('explore');
     explore.setQuery(target.value);
+    // The search is part of the address, so a filtered catalogue can be shared.
+    if (state.page?.address) history.replaceState(null, '', state.page.address({ query: target.value.trim() }));
   }
   if (target.dataset.filterRegion !== undefined) {
     const explore = await moduleFor('explore');
@@ -464,6 +696,7 @@ document.addEventListener('input', async (event) => {
 });
 
 document.addEventListener('change', async (event) => {
+  await started;
   const target = event.target;
   if (target.dataset.studio === 'route') {
     const route = await Data.getRoute(target.value);
@@ -487,17 +720,17 @@ document.addEventListener('change', async (event) => {
 
 document.addEventListener('submit', async (event) => {
   if (event.target.matches('.header-search')) {
+    // Without script the form sends ?q= to /routes/; with it, the same address.
     event.preventDefault();
-    const value = $('#route-search')?.value || '';
-    await showView('explore');
-    const input = $('#catalogue-query');
-    const explore = await moduleFor('explore');
-    if (input) { input.value = value; input.focus(); }
-    explore.setQuery(value);
+    await started;
+    const value = ($('#route-search')?.value || '').trim();
+    await show(new URL(Urls.cataloguePath(value), location.origin));
+    $('#catalogue-query')?.focus();
     return;
   }
   if (event.target.matches('[data-journal-form]')) {
     event.preventDefault();
+    await started;
     const form = new FormData(event.target);
     const title = String(form.get('title') || '').trim();
     if (!title) return;
@@ -506,7 +739,7 @@ document.addEventListener('submit', async (event) => {
       place: String(form.get('place') || '').trim(),
       body: String(form.get('body') || '').trim(),
     });
-    await paint('journey');
+    await repaintJourney();
     const panel = $('[data-journey-panel="journal"]');
     $$('[data-journey-panel]').forEach((node) => { node.hidden = node !== panel; });
     $$('[data-journey-tab]').forEach((button) => button.setAttribute('aria-selected', String(button.dataset.journeyTab === 'journal')));
@@ -514,30 +747,27 @@ document.addEventListener('submit', async (event) => {
   }
 });
 
-window.addEventListener('popstate', () => navigate(false));
+window.addEventListener('popstate', () => show(new URL(location.href), { push: false }));
 
 /* ── Boot ───────────────────────────────────────────────────────── */
 
-async function navigate(push = false) {
-  const params = new URLSearchParams(location.search);
-  const route = params.get('route');
-  const story = params.get('story');
-  const view = params.get('view');
-  if (route) return showRoute(route, { push, stop: Number(params.get('stop')) || null });
-  if (story) return showStory(story, push);
-  if (view && VIEWS.includes(view)) return showView(view, push);
-  return showView('home', push);
-}
-
-try {
-  Motion.start();
+async function boot() {
+  // An address from the single-document site becomes the page that replaced it.
+  const old = Urls.legacyTarget(new URL(location.href));
+  if (old) history.replaceState(null, '', old);
+  // Whatever was pre-rendered is on screen now, so motion must not replay it.
+  const settle = Boolean(shell.dataset.prerendered);
   await loadMedia();
   await Data.loadRoutes();
-  await navigate(false);
-} catch (error) {
+  await show(new URL(location.href), { push: false, boot: true });
+  if (!PRERENDER) Motion.start({ settle });
+}
+
+started = boot().catch((error) => {
   console.error('Naarad could not start', error);
   showError('Routes could not be loaded.');
-}
+});
+await started;
 
 Audio.subscribe((player) => {
   $$('[data-action="listen"]').forEach((button) => {
@@ -546,4 +776,4 @@ Audio.subscribe((player) => {
   });
 });
 
-export { showRoute, showView, showStory, icon };
+export { show };

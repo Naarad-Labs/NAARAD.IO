@@ -5,11 +5,15 @@
    (route.css) turns the same state into a map with a bottom sheet. Both read
    one route object and one selected stop; there is only ever one map. */
 
-import { picture, creditText, escapeHtml } from '../media.js';
+import { picture, creditText, escapeHtml, photoPath } from '../media.js';
 import { icon } from '../icons.js';
 import * as Data from '../data.js';
 import { routePreview, elevationProfile } from '../previews.js';
 import * as Journey from '../journey-store.js';
+import { routePath, sectionPath, absoluteUrl } from '../urls.js';
+import * as Seo from '../seo.js';
+
+const HERO_SIZES = '(max-width: 1023px) 100vw, 56vw';
 
 const TABS = [
   { id: 'overview', label: 'Overview', icon: 'file' },
@@ -47,7 +51,7 @@ function hero(route) {
   return `<header class="route-hero">
     <div class="route-hero-copy">
       <nav class="breadcrumb" aria-label="Breadcrumb">
-        <a href="/?view=routes" data-view="routes">Routes</a>${icon('chevron')}
+        <a href="${sectionPath('routes')}" data-view="routes">Routes</a>${icon('chevron')}
         <span>${escapeHtml(route.region || 'India')}</span>${icon('chevron')}
         <b aria-current="page">${escapeHtml(route.name)}</b>
       </nav>
@@ -66,7 +70,7 @@ function hero(route) {
     <div class="route-hero-media">
       ${route.media?.photo
     ? picture(route.media.photo, {
-      sizes: '(max-width: 1023px) 100vw, 56vw',
+      sizes: HERO_SIZES,
       alt: `${route.name}, ${route.location || ''}`,
       priority: true, credit: true, className: 'route-hero-photo torn-left',
     })
@@ -246,7 +250,7 @@ async function relatedSection(route) {
   return `<section class="route-related">
     <div class="section-head">
       <div><p class="eyebrow eyebrow-mark">Compare routes</p><h2 class="section-title">Nearby, and next.</h2></div>
-      <div class="section-head-aside"><a class="button button-sm" href="/?view=routes" data-view="routes">View All Routes ${icon('arrow')}</a></div>
+      <div class="section-head-aside"><a class="button button-sm" href="${sectionPath('routes')}" data-view="routes">View All Routes ${icon('arrow')}</a></div>
     </div>
     <div class="route-card-grid is-three">${related.map((candidate) => routeCard(candidate)).join('')}</div>
   </section>`;
@@ -274,9 +278,91 @@ export async function render(context) {
 
 export const stylesheet = '/app/route.css';
 
-export function meta(route) {
+/** One line about the route that is true of it, for search results and cards. */
+function summary(route) {
+  if (route.lede) return route.lede;
+  const place = route.location || route.region || 'India';
+  const distance = Data.formatDistance(route.distanceM);
+  const length = distance ? `, ${distance} long` : '';
+  if (route.source === 'track') {
+    return `A route recorded on the ground in ${place}${length}. Its line is on the map; its stops and stories have not been published yet.`;
+  }
+  return `A route in ${place} in the Naarad catalogue${length}. Its stops and stories have not been published yet.`;
+}
+
+const imageUrl = (id) => {
+  const path = id ? photoPath(id) : null;
+  return path ? absoluteUrl(path) : null;
+};
+
+/**
+ * The route as a schema.org TouristTrip, its stops as an ordered itinerary of
+ * TouristAttractions with their coordinates. schema.org gives a Trip no
+ * distance or duration of its own: the distance belongs to the act of
+ * travelling it, so it sits on a TravelAction, and the walking time, which
+ * has no property to go in, stays on the page.
+ */
+function trip(route, url) {
+  const first = route.stops[0]?.order;
+  const stops = route.stops.map((stop) => Seo.compact({
+    '@type': 'TouristAttraction',
+    '@id': `${url}#stop-${stop.order}`,
+    name: stop.name,
+    description: stop.summary,
+    url: absoluteUrl(routePath(route.slug, stop.order === first ? null : stop.order)),
+    image: imageUrl(stop.photo),
+    geo: { '@type': 'GeoCoordinates', latitude: stop.lat, longitude: stop.lng },
+  }));
+  const distance = Data.formatDistance(route.distanceM);
+  return Seo.compact({
+    '@type': 'TouristTrip',
+    '@id': `${url}#trip`,
+    name: route.name,
+    description: summary(route),
+    url,
+    image: imageUrl(route.media?.photo),
+    provider: { '@id': Seo.ORG_ID },
+    tripOrigin: stops.length ? { '@id': stops[0]['@id'] } : null,
+    itinerary: stops.length ? {
+      '@type': 'ItemList',
+      numberOfItems: stops.length,
+      itemListOrder: 'https://schema.org/ItemListOrderAscending',
+      itemListElement: stops.map((stop, index) => ({ '@type': 'ListItem', position: index + 1, item: stop })),
+    } : null,
+    potentialAction: distance ? { '@type': 'TravelAction', distance } : null,
+  });
+}
+
+export function meta({ route }) {
+  const path = routePath(route.slug);
+  const place = route.location || route.region || 'India';
+  const photo = route.media?.photo || null;
+  const facts = [
+    Data.formatDistance(route.distanceM),
+    route.stopCount ? `${route.stopCount} stops` : null,
+    route.source === 'track' ? 'Recorded track' : null,
+  ].filter(Boolean);
+  let backdrop = '';
+  if (photo) backdrop = ', set on a photograph from the route';
+  else if (route.hasGeometry) backdrop = ', with the route line drawn on a plain map';
   return {
     title: `${route.name} · Naarad`,
-    description: route.lede || `A heritage walking route in ${route.location || 'India'} on Naarad.`,
+    description: summary(route),
+    path,
+    card: {
+      name: `route-${route.slug}`,
+      eyebrow: place,
+      title: route.name,
+      facts,
+      photo,
+      route: route.hasGeometry ? route.slug : null,
+      alt: `${route.name}, ${place}: the Naarad title card${backdrop}.`,
+    },
+    preload: photo ? { photo, sizes: HERO_SIZES } : null,
+    schema: [
+      Seo.breadcrumbs([['Routes', sectionPath('routes')], [route.name, path]]),
+      trip(route, absoluteUrl(path)),
+      Seo.organization(),
+    ],
   };
 }

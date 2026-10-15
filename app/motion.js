@@ -10,6 +10,11 @@
  * html[data-motion='on'], which is only set when the observer is ready and the
  * reader has not asked for reduced motion. With no script, or with reduced
  * motion, every element is simply visible.
+ *
+ * A pre-rendered page is already on screen when this runs, so start() is told
+ * to settle: what the reader can already see stays exactly as it is, and only
+ * what is still below the fold waits to come in. Pre-rendering itself never
+ * starts motion (main.js), so no hidden state is ever written into a page.
  */
 
 const REDUCED = matchMedia('(prefers-reduced-motion: reduce)');
@@ -41,18 +46,27 @@ function reveal(element) {
   });
 }
 
-/** Watch everything in `root` that is allowed to move. */
-export function scan(root = document) {
+const onScreen = (element) => {
+  const box = element.getBoundingClientRect();
+  return box.bottom > 0 && box.top < innerHeight && box.width > 0;
+};
+
+/**
+ * Watch everything in `root` that is allowed to move. With `settle`, anything
+ * the reader can already see is left alone instead of hidden and replayed.
+ */
+export function scan(root = document, { settle = false } = {}) {
   if (!observer) return;
   root.querySelectorAll(SECTIONS).forEach((element) => {
     if (seen.has(element)) return;
     seen.add(element);
+    if (settle && onScreen(element)) return;
     element.dataset.reveal = 'out';
     observer.observe(element);
   });
 }
 
-export function start() {
+export function start({ settle = false } = {}) {
   if (REDUCED.matches || !('IntersectionObserver' in window)) return;
   document.documentElement.dataset.motion = 'on';
   observer = new IntersectionObserver((entries) => {
@@ -62,7 +76,7 @@ export function start() {
       observer.unobserve(entry.target);
     }
   }, { rootMargin: '0px 0px -8% 0px', threshold: 0.08 });
-  scan(document);
+  scan(document, { settle });
 
   // If someone turns reduced motion on mid-visit, show everything and stop.
   REDUCED.addEventListener?.('change', (event) => {

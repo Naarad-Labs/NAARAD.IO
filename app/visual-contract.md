@@ -9,11 +9,27 @@ change them in both places at once.
 `#catalogue-count`, `#catalogue-query`, `#route-search`, and the `data-` hooks
 `data-view`, `data-route`, `data-story`, `data-stop`, `data-select-stop`,
 `data-action`, `data-tab`, `data-stop-tab`, `data-journey-tab`,
-`data-journey-panel`, `data-studio*`, `data-map`, `data-filter-*`.
+`data-journey-panel`, `data-studio*`, `data-map`, `data-filter-*`,
+`data-prerendered` (on `#app-content`: the address a pre-rendered page was
+built for, or `404`) and `data-page` (on every head tag that belongs to the page
+and is rewritten on navigation).
 
 `main.js` owns routing and every event; a view module returns markup and nothing
-else. A view exports `render()`, a `stylesheet` path, and `meta` (an object, or a
-function of the thing being shown).
+else. A view exports `render(context)`, a `stylesheet` path, and `meta` (an
+object, or a function, possibly async, of the same context) whose shape is
+documented in `app/seo.js`. The story index uses `renderIndex()` and
+`indexMeta()`.
+
+Links are plain `<a href>` to clean addresses built with `app/urls.js`; any
+same-site link to a registered page is drawn in place by `main.js`, so
+`data-view`, `data-route` and `data-story` on a link are descriptive, not
+required. Only the header and footer links get `.is-current` and
+`aria-current`.
+
+A view's markup must be the same every time for the same data: no random ids,
+no clocks, nothing from the device unless the page is device-local (journey,
+studio). Booting keeps pre-rendered markup only when a fresh render is
+identical to it.
 
 ## Layout vocabulary
 
@@ -32,6 +48,8 @@ function of the thing being shown).
   the route's real facts. Used on home, explore, related and journey.
 - `.listen-bar` — the player, outside the view container so it survives
   navigation.
+- `.info-page` / `.info-hero` — About and the not-found page; `.is-plain` is the
+  hero without a photograph, `.info-actions` its row of buttons.
 
 ## Primitives
 

@@ -2,22 +2,28 @@
  *
  * Static files are served cache-first and versioned by CACHE: bump VERSION
  * whenever the shell, a view module or a stylesheet changes, or visitors keep
- * the old one. Content JSON is served network-first so new routes and stories
- * appear without a new worker. Photographs and map tiles are cached as they
- * are used, with the tile cache kept small.
+ * the old one. Pages (the pre-rendered HTML at every clean address) are
+ * network-first, so a rebuilt page is seen at once; offline, a page visited
+ * before comes from its cached copy, and any other page from the shell, which
+ * draws it from cached content. Content JSON is served network-first so new
+ * routes and stories appear without a new worker. Photographs and map tiles
+ * are cached as they are used, with the tile cache kept small.
  */
 
-const VERSION = 'v10';
+const VERSION = 'v11';
 const SHELL = `naarad-shell-${VERSION}`;
+const PAGES = `naarad-pages-${VERSION}`;
 const CONTENT = `naarad-content-${VERSION}`;
 const MEDIA = `naarad-media-${VERSION}`;
 const TILES = `naarad-tiles-${VERSION}`;
 const TILE_LIMIT = 220;
+const PAGE_LIMIT = 60;
+const OFFLINE_SHELL = '/app/shell.html';
 
-/* The shell: everything the homepage needs to render offline. */
+/* The shell: the homepage, the page template, and the code to draw any page. */
 const SHELL_ASSETS = [
   '/',
-  '/index.html',
+  OFFLINE_SHELL,
   '/manifest.json',
   '/app/base.css',
   '/app/home.css',
@@ -30,6 +36,8 @@ const SHELL_ASSETS = [
   '/app/journey-store.js',
   '/app/motion.js',
   '/app/studio-store.js',
+  '/app/urls.js',
+  '/app/seo.js',
   '/app/views/home.js',
   '/app/fonts/DMSans.woff2',
   '/app/fonts/PlayfairDisplay.woff2',
@@ -53,7 +61,7 @@ self.addEventListener('install', (event) => {
 
 self.addEventListener('activate', (event) => {
   event.waitUntil((async () => {
-    const keep = new Set([SHELL, CONTENT, MEDIA, TILES]);
+    const keep = new Set([SHELL, PAGES, CONTENT, MEDIA, TILES]);
     const names = await caches.keys();
     await Promise.all(names.filter((name) => !keep.has(name)).map((name) => caches.delete(name)));
     await self.clients.claim();
@@ -74,6 +82,27 @@ async function cacheFirst(request, cacheName) {
   const response = await fetch(request);
   if (response.ok || response.type === 'opaque') cache.put(request, response.clone());
   return response;
+}
+
+/* A page is cached under its path alone: ?stop= and ?q= are read by the
+   script, so /routes/x/?stop=3 is the same document as /routes/x/. */
+const pageKey = (url) => `${url.origin}${url.pathname}`;
+
+async function page(request, url) {
+  const cache = await caches.open(PAGES);
+  try {
+    const response = await fetch(request);
+    if (response.ok && !response.redirected) {
+      await cache.put(pageKey(url), response.clone());
+      await trim(PAGES, PAGE_LIMIT);
+    }
+    return response;
+  } catch (error) {
+    return (await cache.match(pageKey(url)))
+      || (await caches.match(pageKey(url)))
+      || (await caches.match(OFFLINE_SHELL))
+      || Response.error();
+  }
 }
 
 async function networkFirst(request, cacheName) {
@@ -104,19 +133,9 @@ self.addEventListener('fetch', (event) => {
 
   if (url.origin !== location.origin) return;
 
+  // Pages first: /routes/<slug>/ is a page, though /routes/ also holds track data.
+  if (request.mode === 'navigate') { event.respondWith(page(request, url)); return; }
   if (isContent(url)) { event.respondWith(networkFirst(request, CONTENT)); return; }
   if (isMedia(url)) { event.respondWith(cacheFirst(request, MEDIA)); return; }
   if (isAppCode(url)) { event.respondWith(cacheFirst(request, SHELL)); return; }
-
-  // Navigations: every route resolves to the one shell document.
-  if (request.mode === 'navigate') {
-    event.respondWith((async () => {
-      try {
-        return await fetch(request);
-      } catch (error) {
-        const cache = await caches.open(SHELL);
-        return (await cache.match('/index.html')) || (await cache.match('/')) || Response.error();
-      }
-    })());
-  }
 });

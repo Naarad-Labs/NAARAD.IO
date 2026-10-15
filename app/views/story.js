@@ -2,10 +2,14 @@
    The left rail tracks the reader's position; the right rail keeps the route
    the story belongs to within reach. */
 
-import { picture, creditText, escapeHtml } from '../media.js';
+import { picture, creditText, escapeHtml, photoPath } from '../media.js';
 import { icon } from '../icons.js';
 import * as Data from '../data.js';
 import { routePreview } from '../previews.js';
+import { routePath, storyPath, sectionPath, absoluteUrl } from '../urls.js';
+import * as Seo from '../seo.js';
+
+const HERO_SIZES = '(max-width: 1023px) 100vw, 58vw';
 
 let stories = null;
 
@@ -74,11 +78,11 @@ function routeAside(story, route) {
     </div>
     ${route.stops?.length ? `<ol class="story-route-pips" aria-label="Stops on this route">
       ${route.stops.map((stop) => `<li class="${story.stopOrder === stop.order ? 'is-current' : ''}">
-        <a href="/?route=${encodeURIComponent(route.slug)}&stop=${stop.order}" data-route="${escapeHtml(route.slug)}" data-stop="${stop.order}" title="${escapeHtml(stop.name)}">${stop.order}</a>
+        <a href="${routePath(route.slug, stop.order === route.stops[0].order ? null : stop.order)}" data-route="${escapeHtml(route.slug)}" data-stop="${stop.order}" title="${escapeHtml(stop.name)}">${stop.order}</a>
       </li>`).join('')}
     </ol>` : ''}
     ${preview ? `<div class="story-route-map">${preview}</div>` : ''}
-    <a class="button button-sm story-route-cta" href="/?route=${encodeURIComponent(route.slug)}" data-route="${escapeHtml(route.slug)}">View Full Route ${icon('arrow')}</a>
+    <a class="button button-sm story-route-cta" href="${routePath(route.slug)}" data-route="${escapeHtml(route.slug)}">View Full Route ${icon('arrow')}</a>
   </div>`;
 }
 
@@ -88,11 +92,11 @@ async function relatedAside(story, all) {
   return `<div class="story-related">
     <div class="story-related-head">
       <h2 class="eyebrow eyebrow-mark">Related stories</h2>
-      <a class="icon-button" href="/?view=stories" data-view="stories" aria-label="All stories">${icon('arrow')}</a>
+      <a class="icon-button" href="${sectionPath('stories')}" data-view="stories" aria-label="All stories">${icon('arrow')}</a>
     </div>
     <ul>
       ${related.map((candidate) => `<li>
-        <a href="/?story=${encodeURIComponent(candidate.slug)}" data-story="${escapeHtml(candidate.slug)}">
+        <a href="${storyPath(candidate.slug)}" data-story="${escapeHtml(candidate.slug)}">
           ${picture(candidate.heroPhoto, { sizes: '96px', alt: '', ratio: '4 / 3' })}
           <span>
             <b>${escapeHtml(candidate.title)}</b>
@@ -117,7 +121,7 @@ export async function render(context) {
     <header class="story-hero">
       <div class="story-hero-copy">
         <nav class="breadcrumb" aria-label="Breadcrumb">
-          <a href="/?view=stories" data-view="stories">Stories</a>${icon('chevron')}
+          <a href="${sectionPath('stories')}" data-view="stories">Stories</a>${icon('chevron')}
           <b aria-current="page">${escapeHtml(route?.name || story.location)}</b>
         </nav>
         <h1>${title}</h1>
@@ -134,7 +138,7 @@ export async function render(context) {
       </div>
       <div class="story-hero-media">
         ${picture(story.heroPhoto, {
-    sizes: '(max-width: 1023px) 100vw, 58vw',
+    sizes: HERO_SIZES,
     alt: story.title, priority: true, credit: true, className: 'story-hero-photo',
   })}
       </div>
@@ -152,7 +156,7 @@ export async function render(context) {
           <li><button type="button" data-action="listen-story">${icon('headphones')} Listen to this story</button></li>
           <li><button type="button" data-action="share">${icon('share')} Share</button></li>
           <li><button type="button" data-action="journal" data-route="${escapeHtml(route?.slug || '')}">${icon('edit')} Add to journal</button></li>
-          ${route ? `<li><a href="/?route=${encodeURIComponent(route.slug)}" data-route="${escapeHtml(route.slug)}">${icon('map')} View on route</a></li>` : ''}
+          ${route ? `<li><a href="${routePath(route.slug)}" data-route="${escapeHtml(route.slug)}">${icon('map')} View on route</a></li>` : ''}
         </ul>
       </aside>
 
@@ -173,10 +177,58 @@ export async function render(context) {
 
 export const stylesheet = '/app/story.css';
 
-export function meta(story) {
+const imageUrl = (id) => {
+  const path = id ? photoPath(id) : null;
+  return path ? absoluteUrl(path) : null;
+};
+
+/** A date only when the content records one; nothing is filled in. */
+const publishedDate = (story) => (/^\d{4}-\d{2}-\d{2}$/.test(story.published || '') ? story.published : null);
+
+export async function meta({ story }) {
+  const path = storyPath(story.slug);
+  const url = absoluteUrl(path);
+  const route = story.route ? await Data.getRoute(story.route) : null;
+  const stop = route ? Data.getStop(route, story.stopOrder) : null;
+  const routeUrl = route ? absoluteUrl(routePath(route.slug)) : null;
+  const card = {
+    name: `story-${story.slug}`,
+    eyebrow: story.location,
+    title: story.title,
+    facts: [`${readingMinutes(story)} min read`, 'Naarad editorial'],
+    photo: story.heroPhoto,
+    route: null,
+    alt: `${story.title}: the Naarad title card, set on the story's lead photograph.`,
+  };
+  const article = Seo.compact({
+    '@type': 'Article',
+    '@id': `${url}#article`,
+    headline: story.title,
+    description: story.standfirst,
+    url,
+    mainEntityOfPage: url,
+    inLanguage: Seo.LANGUAGE,
+    image: [imageUrl(story.heroPhoto), absoluteUrl(Seo.cardPath(card.name))].filter(Boolean),
+    author: { '@type': 'Organization', name: 'Naarad editorial', url: absoluteUrl(sectionPath('about')) },
+    publisher: { '@id': Seo.ORG_ID },
+    datePublished: publishedDate(story),
+    about: route ? { '@type': 'TouristTrip', '@id': `${routeUrl}#trip`, name: route.name, url: routeUrl } : null,
+    mentions: stop ? [{
+      '@type': 'TouristAttraction',
+      '@id': `${routeUrl}#stop-${stop.order}`,
+      name: stop.name,
+      url: absoluteUrl(routePath(route.slug, stop.order === route.stops[0].order ? null : stop.order)),
+    }] : null,
+  });
   return {
     title: `${story.title} · Naarad`,
     description: story.standfirst,
+    path,
+    type: 'article',
+    published: publishedDate(story),
+    card,
+    preload: story.heroPhoto ? { photo: story.heroPhoto, sizes: HERO_SIZES } : null,
+    schema: [Seo.breadcrumbs([['Stories', sectionPath('stories')], [story.title, path]]), article, Seo.organization()],
   };
 }
 
@@ -195,7 +247,7 @@ export async function renderIndex() {
       <h1 class="display">Listen closer.</h1>
       <p class="lede">Long-form writing about the places on Naarad's routes: what happened there, who built it, and what is left to see.</p>
     </header>
-    <a class="story-lead" href="/?story=${encodeURIComponent(lead.slug)}" data-story="${escapeHtml(lead.slug)}">
+    <a class="story-lead" href="${storyPath(lead.slug)}" data-story="${escapeHtml(lead.slug)}">
       ${picture(lead.heroPhoto, { sizes: '(max-width: 1023px) 100vw, 60vw', alt: lead.title, ratio: '16 / 9' })}
       <div>
         <p class="eyebrow eyebrow-mark">${escapeHtml(lead.location)}</p>
@@ -205,7 +257,7 @@ export async function renderIndex() {
       </div>
     </a>
     <div class="story-grid">
-      ${rest.map((story) => `<a class="story-card" href="/?story=${encodeURIComponent(story.slug)}" data-story="${escapeHtml(story.slug)}">
+      ${rest.map((story) => `<a class="story-card" href="${storyPath(story.slug)}" data-story="${escapeHtml(story.slug)}">
         ${picture(story.heroPhoto, { sizes: '(max-width: 1023px) 100vw, 420px', alt: story.title, ratio: '3 / 2' })}
         <span class="story-card-copy">
           <span class="eyebrow eyebrow-mark">${escapeHtml(story.location)}</span>
@@ -218,7 +270,22 @@ export async function renderIndex() {
   </div>`;
 }
 
-export const indexMeta = {
-  title: 'Stories · Naarad',
-  description: 'Long-form heritage stories from the places on Naarad’s walking routes.',
-};
+export async function indexMeta() {
+  const all = await loadStories();
+  const lead = all[0];
+  return {
+    title: 'Stories · Naarad',
+    description: 'Long-form heritage stories from the places on Naarad’s walking routes.',
+    path: sectionPath('stories'),
+    card: {
+      name: 'stories',
+      eyebrow: 'Stories · Field notes',
+      title: 'Listen closer.',
+      facts: [`${all.length} ${all.length === 1 ? 'story' : 'stories'} from Naarad editorial`],
+      photo: lead?.heroPhoto || null,
+      route: null,
+      alt: `Listen closer: Naarad's stories${lead ? `, set on the lead photograph of ${lead.title}` : ''}.`,
+    },
+    schema: [Seo.breadcrumbs([['Stories', sectionPath('stories')]])],
+  };
+}

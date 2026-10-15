@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="robots" content="noindex">
+  <title>Naarad share card</title>
+  <!-- The template scripts/build-site.mjs draws every share card from: a
+       1200 x 630 page photographed into Images/og/. It uses the site's own
+       fonts, tokens and torn edge from base.css. Not a page of the site. -->
+  <link rel="stylesheet" href="/app/base.css">
+  <style>
+    html, body { margin: 0; width: 1200px; height: 630px; overflow: hidden; background: var(--paper); }
+    .card { position: relative; width: 1200px; height: 630px; overflow: hidden; background: var(--paper); color: var(--ink); }
+
+    .card-media { position: absolute; top: 0; right: 0; bottom: 0; width: 640px; background: var(--paper-deep); }
+    .card-media img, .card-media svg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+    .card-media .rp-line-case { fill: none; stroke: rgba(255, 255, 255, .95); stroke-width: 9; stroke-linecap: round; stroke-linejoin: round; }
+    .card-media .rp-line { fill: none; stroke: #2f6cb5; stroke-width: 4.5; stroke-linecap: round; stroke-linejoin: round; }
+    .card-media .rp-pin { fill: var(--orange); stroke: #fff; stroke-width: 2.6; }
+    .card-media .rp-num { fill: #fff; font: 700 13px var(--sans); text-anchor: middle; }
+    .card-media .card-mark { inset: auto; left: 50%; top: 50%; width: 248px; height: 248px; object-fit: contain; transform: translate(-40%, -50%);
+      border: 1px solid var(--line-strong); border-radius: 22px; box-shadow: var(--shadow-md); }
+
+    .card-copy { position: absolute; left: 64px; top: 52px; bottom: 50px; width: 520px; display: flex; flex-direction: column; }
+    .card-brand { display: flex; align-items: center; gap: 14px; }
+    .card-brand img { width: 58px; height: 58px; object-fit: contain; }
+    .card-brand b { display: block; font: 800 31px/1 var(--serif); letter-spacing: .055em; color: var(--ink); }
+    .card-brand small { display: block; margin-top: 6px; font: 700 11.5px/1 var(--sans); letter-spacing: .14em; text-transform: uppercase; color: var(--orange-text); }
+
+    .card-main { margin-top: auto; margin-bottom: auto; }
+    .card-eyebrow { display: flex; align-items: center; gap: 11px; margin: 0 0 18px; font: 700 17px/1.2 var(--sans); letter-spacing: .12em; text-transform: uppercase; color: var(--orange-text); }
+    .card-eyebrow::before { content: ''; flex: none; width: 11px; height: 11px; background: var(--orange); }
+    .card-title { margin: 0; font-family: var(--serif); font-weight: 700; line-height: 1.04; letter-spacing: -.01em; color: var(--ink); max-height: 300px; overflow: hidden; }
+    .card-facts { margin: 22px 0 0; font: 600 22px/1.3 var(--sans); color: var(--ink-soft); }
+
+    .card-site { margin: 0; font: 700 18px/1 var(--sans); letter-spacing: .04em; color: var(--ink); }
+    .card-credit { position: absolute; right: 16px; bottom: 14px; max-width: 590px; padding: 6px 11px; border-radius: 6px;
+      background: rgba(12, 28, 51, .66); color: #fff; font: 500 13px/1.35 var(--sans); }
+  </style>
+</head>
+<body>
+  <div id="card" class="card"></div>
+  <script type="module">
+    import { routePreview } from '/app/previews.js';
+    import { loadRoutes, getRoute } from '/app/data.js';
+
+    const escape = (value) => String(value ?? '').replace(/[&<>"']/g, (char) => (
+      { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]
+    ));
+
+    /* Draw one card and resolve when its fonts and photograph are ready.
+       spec: { eyebrow, title, facts, photoSrc, credit, route } */
+    window.drawCard = async (spec) => {
+      const card = document.querySelector('#card');
+      let media = '';
+      if (spec.photoSrc) {
+        media = `<div class="card-media torn-left"><img src="${escape(spec.photoSrc)}" alt=""></div>`;
+      } else if (spec.route) {
+        await loadRoutes();
+        const route = await getRoute(spec.route);
+        const line = route ? routePreview(route, { width: 640, height: 630, numbered: Boolean(route.stops?.length) }) : '';
+        media = line ? `<div class="card-media torn-left">${line}</div>` : '';
+      }
+      if (!media) media = '<div class="card-media torn-left"><img class="card-mark" src="/Images/cropped_logo.png" alt=""></div>';
+
+      card.className = 'card';
+      card.innerHTML = `${media}
+        <div class="card-copy">
+          <div class="card-brand"><img src="/Images/cropped_logo.png" alt=""><span><b>NAARAD</b><small>Explore. Listen. Connect.</small></span></div>
+          <div class="card-main">
+            ${spec.eyebrow ? `<p class="card-eyebrow">${escape(spec.eyebrow)}</p>` : ''}
+            <h1 class="card-title">${escape(spec.title)}</h1>
+            ${spec.facts?.length ? `<p class="card-facts">${spec.facts.map(escape).join(' · ')}</p>` : ''}
+          </div>
+          <p class="card-site">naarad.io</p>
+        </div>
+        ${spec.credit ? `<p class="card-credit">${escape(spec.credit)}</p>` : ''}`;
+
+      await Promise.all([
+        document.fonts.load('700 72px "Playfair Display"'),
+        document.fonts.load('800 31px "Playfair Display"'),
+        document.fonts.load('700 18px "DM Sans"'),
+        document.fonts.load('600 22px "DM Sans"'),
+        document.fonts.load('500 13px "DM Sans"'),
+      ]);
+      await Promise.all([...card.querySelectorAll('img')].map((img) => img.decode().catch(() => {})));
+
+      // The title is set as large as fits in four lines.
+      const title = card.querySelector('.card-title');
+      for (let size = 72; size >= 40; size -= 2) {
+        title.style.fontSize = `${size}px`;
+        if (title.scrollHeight <= 300) break;
+      }
+      await document.fonts.ready;
+      return true;
+    };
+    window.cardReady = true;
+  </script>
+</body>
+</html>

@@ -9,6 +9,10 @@
 
 const KEY = 'naarad.journey.v1';
 
+/* A pre-rendered page is the same for everyone, so the build never reads or
+   writes anyone's journey (main.js explains the mode). */
+const PRERENDER = Boolean(globalThis.__NAARAD_PRERENDER__);
+
 const EMPTY = {
   saved: [],       // [{ slug, name, location, photo, savedAt }]
   walks: [],       // [{ slug, name, location, photo, distanceM, stops, completedAt }]
@@ -23,7 +27,7 @@ const listeners = new Set();
 function read() {
   if (state) return state;
   try {
-    const raw = localStorage.getItem(KEY);
+    const raw = PRERENDER ? null : localStorage.getItem(KEY);
     state = raw ? { ...EMPTY, ...JSON.parse(raw) } : { ...EMPTY };
   } catch {
     state = { ...EMPTY };
@@ -32,7 +36,7 @@ function read() {
 }
 
 function write() {
-  try { localStorage.setItem(KEY, JSON.stringify(state)); } catch { /* private mode */ }
+  try { if (!PRERENDER) localStorage.setItem(KEY, JSON.stringify(state)); } catch { /* private mode */ }
   listeners.forEach((listener) => { try { listener(state); } catch { /* view gone */ } });
 }
 
