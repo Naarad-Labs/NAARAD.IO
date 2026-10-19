@@ -1,0 +1,314 @@
+{
+  "route": "hampi-heritage-trail",
+  "checked": "2026-10-15",
+  "gettingThere": {
+    "from": [
+      {
+        "city": "Bengaluru",
+        "road": {
+          "km": 340,
+          "hours": "6 to 7",
+          "source": "https://karnatakatourism.org/en/destinations/hampi/"
+        },
+        "rail": {
+          "summary": "The daily Hampi Express (16591/16592) runs overnight between Mysuru and Hubballi, calling at KSR Bengaluru (Bangalore City) and Hosapete Junction. Check current timings on Indian Railways enquiry.",
+          "source": "https://en.wikipedia.org/wiki/Hampi_Express"
+        },
+        "bus": {
+          "summary": "The KSRTC reservation portal lists 19 Karnataka state transport buses a day from Bengaluru to Hosapete (checked for 23 and 24 October 2026). Three leave in the daytime (5:45 am, 9:30 am and 3:35 pm) and one at 5:45 pm. The other 15 leave between 7:45 pm and 11:45 pm and are mostly overnight sleepers or Karnataka Sarige buses. Most timetabled journeys take about 6 to 8 hours, and the full range is about 5.75 to 10.25 hours. One overnight Pallakki sleeper, leaving at 10:59 pm, runs on to Hampi itself, with a timetabled arrival of 6:29 am.",
+          "source": "https://ksrtcapi.iamgds.com/api/resource/searchRoutesV4?fromCityID=368&toCityID=576&fromCityName=Bengaluru&toCityName=Hosapete&journeyDate=2026-10-23&mode=oneway",
+          "sources": [
+            "https://ksrtcapi.iamgds.com/api/resource/searchRoutesV4?fromCityID=368&toCityID=576&fromCityName=Bengaluru&toCityName=Hosapete&journeyDate=2026-10-23&mode=oneway",
+            "https://ksrtcapi.iamgds.com/api/resource/searchRoutesV4?fromCityID=368&toCityID=539&fromCityName=Bengaluru&toCityName=Hampi&journeyDate=2026-10-23&mode=oneway"
+          ]
+        }
+      },
+      {
+        "city": "Hyderabad",
+        "road": {
+          "km": 370,
+          "hours": "about 5 (OSRM computed drive time, no stops or traffic)",
+          "source": "https://router.project-osrm.org/route/v1/driving/78.4867,17.3850;76.4601,15.3350?overview=false"
+        },
+        "rail": null,
+        "bus": {
+          "summary": "The KSRTC reservation portal lists 4 Karnataka state transport buses a day from Hyderabad to Hosapete (checked for 23 and 24 October 2026), leaving at 1:30 pm, 8:15 pm, 9:29 pm and 10:15 pm. The timetabled journey is about 8 to 10.5 hours.",
+          "source": "https://ksrtcapi.iamgds.com/api/resource/searchRoutesV4?fromCityID=111&toCityID=576&fromCityName=Hyderabad&toCityName=Hosapete&journeyDate=2026-10-23&mode=oneway"
+        }
+      },
+      {
+        "city": "Chennai",
+        "road": {
+          "km": 564,
+          "hours": "about 7 (OSRM computed drive time, no stops or traffic)",
+          "source": "https://router.project-osrm.org/route/v1/driving/80.2707,13.0827;76.4601,15.3350?overview=false"
+        },
+        "rail": null,
+        "bus": null
+      }
+    ],
+    "nearestStation": {
+      "name": "Hosapete Junction (HPT)",
+      "distanceKm": 13,
+      "source": "https://karnatakatourism.org/en/destinations/hampi/",
+      "sources": [
+        "https://karnatakatourism.org/en/destinations/hampi/",
+        "https://karnatakatourism.org/en/events/hampi-utsav/"
+      ]
+    },
+    "nearestAirport": {
+      "name": "Jindal Vijayanagar Airport, Vidyanagar (VDY)",
+      "distanceKm": 40,
+      "source": "https://karnatakatourism.org/en/destinations/hampi/",
+      "sources": [
+        "https://karnatakatourism.org/en/destinations/hampi/",
+        "https://karnatakatourism.org/en/attractions/lotus-mahal/",
+        "https://karnatakatourism.org/en/events/hampi-utsav/"
+      ]
+    },
+    "timetables": [
+      {
+        "label": "Indian Railways: trains between stations",
+        "url": "https://indianrail.gov.in/enquiry/TBIS/TrainBetweenImportantStations.html"
+      },
+      {
+        "label": "KSRTC bus reservations (Karnataka state transport)",
+        "url": "https://ksrtc.in/"
+      },
+      {
+        "label": "ASI e-ticket booking for ticketed monuments",
+        "url": "https://asi.paygov.org.in/asi-webapp/#/ticketbooking"
+      }
+    ],
+    "localTransport": {
+      "summary": "Local taxis, buses and rental bikes run from Hosapete to Hampi, about 12 to 13 km away, and local auto rickshaws also make the trip from Hosapete bus station. Within Hampi you can use cycle rickshaws, scooters, cabs or rented bicycles, and electric carts are available at select attractions.",
+      "source": "https://karnatakatourism.org/en/destinations/hampi/",
+      "sources": [
+        "https://karnatakatourism.org/en/destinations/hampi/",
+        "https://karnatakatourism.org/en/experiences/hampi-aihole-pattadakal-badami",
+        "https://karnatakatourism.org/en/attractions/virupaksha-temple/"
+      ]
+    }
+  },
+  "stops": {
+    "1": {
+      "name": "Virupaksha Temple",
+      "hours": null,
+      "closed": null,
+      "fees": [],
+      "free": null,
+      "dress": "No dress code specific to this temple was found. Karnataka Tourism's general etiquette for temples in Karnataka: men should avoid shorts and sleeveless shirts, and women should wear modest clothing that covers the shoulders and knees. Remove your shoes at the designated stands. Photography of the inner sanctum (garbhagriha) is strictly prohibited.",
+      "shadeWater": null,
+      "notes": "The district administration says this is the only temple in Hampi still used for worship. Karnataka Tourism says festivals here, especially Maha Shivaratri, draw large numbers of devotees and visitors, and the Shivaratri celebration includes a wedding ceremony for Virupaksha and Pampa. The Virupaksha temple car festival falls in January to February.",
+      "sources": [
+        "https://vijayanagara.nic.in/en/tourist-place/virupaksha-temple/",
+        "https://karnatakatourism.org/en/destinations/hampi/",
+        "https://karnatakatourism.org/en/blogs/maha-shivaratri-2026",
+        "https://karnatakatourism.org/en/destinations/vijayanagara/"
+      ]
+    },
+    "2": {
+      "name": "Sasivekalu Ganesha",
+      "hours": "Sunrise to sunset (ASI's opening hours for the Hampi World Heritage Site as a whole; ASI gives no separate timing for this monument)",
+      "closed": null,
+      "fees": [],
+      "free": null,
+      "dress": null,
+      "shadeWater": null,
+      "notes": "This 2.4 m monolithic Ganesha sits in an open pillared pavilion on the slopes of Hemakuta Hill. Hemakuta Hill nearby is a popular sunrise and sunset viewpoint.",
+      "sources": [
+        "https://asi.nic.in/pages/WorldHeritageHampi",
+        "https://asi.nic.in/pages/m_category/isTicketed/monument/HQ?p=11",
+        "https://karnatakatourism.org/en/destinations/hampi/"
+      ]
+    },
+    "3": {
+      "name": "Hampi Bazaar",
+      "hours": null,
+      "closed": null,
+      "fees": [],
+      "free": null,
+      "dress": null,
+      "shadeWater": "The bazaar and Royal Enclosure zone has flat ground and shaded walkways. Hampi is a strict plastic-free zone, so bring a reusable water bottle.",
+      "notes": "Karnataka Tourism describes the historic bazaar as a long row of stone pavilions and says the old market is no longer active. Interpretive signs are posted, and cycle rickshaws and motorbikes can be rented locally.",
+      "sources": [
+        "https://karnatakatourism.org/en/attractions/hampi-bazaar-royal-enclosure/",
+        "https://karnatakatourism.org/en/events/hampi-utsav/",
+        "https://karnatakatourism.org/en/destinations/hampi/"
+      ]
+    },
+    "4": {
+      "name": "Krishna Temple",
+      "hours": "Sunrise to sunset (ASI's opening hours for the Hampi World Heritage Site as a whole; ASI gives no separate timing for this monument)",
+      "closed": null,
+      "fees": [],
+      "free": null,
+      "dress": null,
+      "shadeWater": null,
+      "notes": null,
+      "sources": [
+        "https://asi.nic.in/pages/WorldHeritageHampi",
+        "https://asi.nic.in/pages/m_category/isTicketed/monument/HQ?p=11"
+      ]
+    },
+    "5": {
+      "name": "Royal Enclosure",
+      "hours": "Sunrise to sunset (ASI's opening hours for the Hampi World Heritage Site as a whole; ASI gives no separate timing for this monument)",
+      "closed": null,
+      "fees": [],
+      "free": null,
+      "dress": null,
+      "shadeWater": "Flat ground with shaded walkways and interpretive signs.",
+      "notes": "The enclosure includes the Mahanavami Dibba platform and the stepped tank. Karnataka Tourism recommends sunrise or sunset for the most atmospheric visit.",
+      "sources": [
+        "https://asi.nic.in/pages/WorldHeritageHampi",
+        "https://karnatakatourism.org/en/attractions/hampi-bazaar-royal-enclosure/",
+        "https://vijayanagara.nic.in/en/tourist-place/mahanavami-dibba-hampi/"
+      ]
+    },
+    "6": {
+      "name": "Queen's Bath",
+      "hours": "Sunrise to sunset (ASI's opening hours for the Hampi World Heritage Site as a whole; ASI gives no separate timing for this monument)",
+      "closed": null,
+      "fees": [],
+      "free": null,
+      "dress": null,
+      "shadeWater": null,
+      "notes": "It stands near the Royal Enclosure. The outside is plain, and the pool with its balconies and corridors is inside.",
+      "sources": [
+        "https://asi.nic.in/pages/WorldHeritageHampi",
+        "https://karnatakatourism.org/en/destinations/hampi/"
+      ]
+    },
+    "7": {
+      "name": "Elephant Stables",
+      "hours": null,
+      "closed": null,
+      "fees": [],
+      "free": null,
+      "dress": null,
+      "shadeWater": null,
+      "notes": "The stables are a short distance from the Lotus Mahal in the Zenana Enclosure, which Karnataka Tourism lists as open 8 am to 6 pm. ASI's entry fee for Hampi is Rs 40 for SAARC and BIMSTEC visitors and Rs 600 for other foreign visitors, and children under 15 enter free. Karnataka Tourism gives about Rs 40 for Indian visitors at the Vijaya Vittala temple, subject to change. No official page checked says whether the Elephant Stables are inside a ticketed area, so check on site.",
+      "sources": [
+        "https://karnatakatourism.org/en/attractions/lotus-mahal/",
+        "https://karnatakatourism.org/en/attractions/hampi-bazaar-royal-enclosure/",
+        "https://asi.nic.in/pages/WorldHeritageHampi",
+        "https://karnatakatourism.org/en/destinations/hampi/"
+      ]
+    },
+    "8": {
+      "name": "Matanga Hill Viewpoint",
+      "hours": null,
+      "closed": null,
+      "fees": [],
+      "free": null,
+      "dress": null,
+      "shadeWater": null,
+      "notes": "This is the highest point in Hampi. The climb follows rocky paths and old steps, with routes up three sides of the hill. It is popular at sunrise, and the Matanga Veerabhadra temple is on the hill.",
+      "sources": [
+        "https://karnatakatourism.org/en/destinations/hampi/",
+        "https://vijayanagara.nic.in/en/tourist-place/matanga-parvata-hampi/"
+      ]
+    }
+  },
+  "climate": {
+    "station": "Bellary (Ballari), IMD station 43205",
+    "period": "1981-2010",
+    "source": "https://imdpune.gov.in/library/public/1981-2010%20CLIM%20NORMALS%20%28STATWISE%29.pdf",
+    "months": [
+      {
+        "m": 1,
+        "maxC": 31.4,
+        "minC": 15.6,
+        "rainMm": 2.9
+      },
+      {
+        "m": 2,
+        "maxC": 34.4,
+        "minC": 18.1,
+        "rainMm": 2.3
+      },
+      {
+        "m": 3,
+        "maxC": 38.1,
+        "minC": 21.1,
+        "rainMm": 6
+      },
+      {
+        "m": 4,
+        "maxC": 40.4,
+        "minC": 23.9,
+        "rainMm": 17.2
+      },
+      {
+        "m": 5,
+        "maxC": 39.6,
+        "minC": 24.4,
+        "rainMm": 54.3
+      },
+      {
+        "m": 6,
+        "maxC": 35.3,
+        "minC": 23.3,
+        "rainMm": 59.2
+      },
+      {
+        "m": 7,
+        "maxC": 32.7,
+        "minC": 23,
+        "rainMm": 42.6
+      },
+      {
+        "m": 8,
+        "maxC": 31.9,
+        "minC": 22.7,
+        "rainMm": 70
+      },
+      {
+        "m": 9,
+        "maxC": 32.3,
+        "minC": 21.9,
+        "rainMm": 111
+      },
+      {
+        "m": 10,
+        "maxC": 31.8,
+        "minC": 20.9,
+        "rainMm": 89
+      },
+      {
+        "m": 11,
+        "maxC": 30.8,
+        "minC": 18.3,
+        "rainMm": 39.5
+      },
+      {
+        "m": 12,
+        "maxC": 30.2,
+        "minC": 15.6,
+        "rainMm": 5.5
+      }
+    ]
+  },
+  "unsourced": [
+    "Virupaksha Temple 'stays open all night during Maha Shivaratri, with special abhishekas every three hours' (removed): the cited Karnataka Tourism Maha Shivaratri 2026 guide says this of the Nanjundeshwara Temple at Nanjangud, not of Virupaksha",
+    "Virupaksha Temple dress code as a temple rule (reworded): the only source is Karnataka Tourism's general etiquette for temples across Karnataka, which splits the clothing advice by men and women; no notice from this temple was found",
+    "Stone Chariot page as a Virupaksha source (removed): it describes the Vittala temple complex and says nothing about Virupaksha",
+    "Maha Shivaratri 2026 guide as the source for Hosapete station at 13 km (replaced): that page does not mention Hosapete or any distance; the 13 km figure and the HPT code come from the Karnataka Tourism Hampi and Hampi Utsava pages",
+    "Bengaluru bus summary 'day buses at 5:45 am, 9:30 am and 3:35 pm, the rest 7:45 pm to 11:45 pm' and 'about 6 to 8 hours' (corrected): the same KSRTC data also has a 5:45 pm departure, and timetabled journeys run from about 5.75 to 10.25 hours",
+    "'Daily' in the stop hours (removed): asi.nic.in/pages/WorldHeritageHampi says only 'Open from sunrise to sunset'; the ticketed-monument record that adds '(Daily)' carries a Bijapur monument's description, so it is not relied on alone",
+    "Virupaksha Temple opening hours, entry and camera fees: only travel sites, which disagree; the HR&CE (itms.kar.nic.in) temple pages did not give them",
+    "Which Hampi monuments fall inside an ASI-ticketed area (the Elephant Stables in particular): ASI pages list Hampi as ticketed but not per monument, and the ASI e-ticket portal API was blocked by its firewall",
+    "An official statement that Sasivekalu Ganesha, Hampi Bazaar, Krishna Temple, the Royal Enclosure, Queen's Bath and Matanga Hill are free to enter (Karnataka Tourism says only that most temples in Hampi are free)",
+    "Official Indian Railways timetable or train list for Bengaluru, Hyderabad or Chennai to Hosapete: the enquiry pages need a captcha, and enquiry.indianrail.gov.in, swr.indianrailways.gov.in and indianrailways.gov.in were unreachable",
+    "Hampi Express timings: Wikipedia's schedule is uncited and differs from third-party schedule sites",
+    "Rail options from Hyderabad and Chennai",
+    "Any bus from Chennai to Hosapete or Hampi (none on the KSRTC portal or the TNSTC/SETC destination list)",
+    "Bus fares (left out because they change; Rs 476 to Rs 1,328 Bengaluru to Hosapete on 23 October 2026)",
+    "Matanga Hill access hours and safety rules",
+    "Shade and water details at Virupaksha, Sasivekalu, Krishna Temple, Queen's Bath, Elephant Stables and Matanga Hill",
+    "Current flight schedules at Jindal Vijayanagar Airport (the district site mentions daily UDAAN flights to Bengaluru and Hyderabad, but this was not checked against airline schedules)",
+    "Road journey times with real traffic for Hyderabad and Chennai (OSRM gives free-flow only; for Bengaluru OSRM gives 4.2 hours against Karnataka Tourism's 6 to 7)",
+    "IMD 1991-2020 normals for Bellary, and any IMD normals table for Hosapete (none in the 1981-2010 volume); Ballari is about 65 km from Hampi, so Hampi itself may differ"
+  ]
+}

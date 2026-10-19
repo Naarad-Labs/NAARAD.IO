@@ -1,0 +1,261 @@
+{
+  "route": "auroville-explorer",
+  "checked": "2026-10-15",
+  "gettingThere": {
+    "from": [
+      {
+        "city": "Chennai",
+        "road": {
+          "km": 150,
+          "hours": "about 3 by taxi",
+          "source": "https://www.auroville.org/page/where-is-auroville"
+        },
+        "rail": {
+          "summary": "Two daily direct trains run from Chennai Egmore to Puducherry, each taking about 4 hours: the 66051 MEMU leaves at 6:35 am and the 16115 Express at 6:10 pm. Several long-distance trains that do not run daily also call at Chennai Egmore on the way to Puducherry. From Puducherry station, continue to Auroville by auto or taxi. Check current timings on Indian Railways enquiry.",
+          "source": "https://erail.in/rail/getTrains.aspx?Station_From=MS&Station_To=PDY&DataSource=0&Language=0&Cache=true"
+        },
+        "bus": {
+          "summary": "Auroville's transport service says to take a Pondicherry bus that runs along the East Coast Road (ECR), either from Koyambedu or from Guindy (reached by local train or bus from Chennai Central or Egmore), and ask to be dropped at Auroville Junction on the ECR. From the junction take an auto, or arrange an ITS pickup in advance.",
+          "source": "https://www.auroville.org/page/integrated-transport-service",
+          "sources": [
+            "https://www.auroville.org/page/integrated-transport-service",
+            "https://www.auroville.org/page/where-is-auroville",
+            "https://www.dtnext.in/news/chennai/all-south-bound-bus-operations-to-shift-to-kilambakkam-from-today-764349"
+          ]
+        }
+      },
+      {
+        "city": "Bengaluru",
+        "road": {
+          "km": 333,
+          "hours": "about 4.5 (OSRM computed drive time, no stops or traffic)",
+          "source": "https://router.project-osrm.org/route/v1/driving/77.5695618,12.9781473;79.8008369,12.0038283?overview=false"
+        },
+        "rail": {
+          "summary": "There is no daily direct train. The weekly 16573 Puducherry Express leaves Yesvantpur at 8:45 pm and reaches Puducherry at 7:15 am. The 11005 Puducherry Express stops at SMVT Bengaluru at 9:20 pm on a few days a week and also reaches Puducherry at 7:15 am. Check running days on Indian Railways enquiry.",
+          "source": "https://erail.in/rail/getTrains.aspx?Station_From=SBC&Station_To=PDY&DataSource=0&Language=0&Cache=true"
+        },
+        "bus": {
+          "summary": "The KSRTC reservation portal lists 4 Karnataka state transport buses a day from Bengaluru to Pondicherry (checked for 23 and 24 October 2026), all running via Tiruvannamalai. One daytime Airavat Club Class bus leaves at 9:31 am and arrives at 4:46 pm. Three overnight buses leave at 9:30 pm (Pallakki non-AC sleeper), 10:01 pm (AC sleeper) and 10:35 pm (Airavat Club Class), with timetabled arrivals between 5:30 and 5:50 am. The timetabled journey is about 7.25 to 8 hours. From Puducherry, continue to Auroville by auto or taxi.",
+          "source": "https://ksrtcapi.iamgds.com/api/resource/searchRoutesV4?fromCityID=368&toCityID=3041&fromCityName=Bengaluru&toCityName=Pondicherry&journeyDate=2026-10-23&mode=oneway",
+          "sources": [
+            "https://ksrtcapi.iamgds.com/api/resource/searchRoutesV4?fromCityID=368&toCityID=3041&fromCityName=Bengaluru&toCityName=Pondicherry&journeyDate=2026-10-23&mode=oneway",
+            "https://ksrtcapi.iamgds.com/api/resource/searchRoutesV4?fromCityID=368&toCityID=3041&fromCityName=Bengaluru&toCityName=Pondicherry&journeyDate=2026-10-24&mode=oneway",
+            "https://ksrtc.in/api/resource/getCityList",
+            "https://ksrtc.in/api/resource/getStaticCityList"
+          ]
+        }
+      },
+      {
+        "city": "Puducherry",
+        "road": {
+          "km": 13,
+          "hours": "about 0.35 (21 minutes; OSRM computed drive time from Puducherry Bus Stand, no stops or traffic)",
+          "source": "https://router.project-osrm.org/route/v1/driving/79.8164659,11.9318795;79.8008369,12.0038283?overview=false"
+        },
+        "rail": null,
+        "bus": {
+          "summary": "Auroville's transport page says a government bus from Puducherry New Bus Stand reaches Auroville after 1 pm, seven days a week, and leaves straight back for Puducherry, but that its timings are still to be confirmed. Another Auroville page lists different times, so check locally. Autos run from the bus stand and the railway station, and Auroville taxis (ITS, Sunrise Taxi) can be booked.",
+          "source": "https://www.auroville.org/page/transportation",
+          "sources": [
+            "https://www.auroville.org/page/transportation",
+            "https://www.auroville.org/page/where-is-auroville",
+            "https://www.auroville.org/page/integrated-transport-service"
+          ]
+        }
+      }
+    ],
+    "nearestStation": {
+      "name": "Puducherry (PDY)",
+      "distanceKm": 15,
+      "source": "https://www.auroville.org/page/integrated-transport-service",
+      "sources": [
+        "https://www.auroville.org/page/integrated-transport-service",
+        "https://erail.in/rail/getTrains.aspx?Station_From=MS&Station_To=PDY&DataSource=0&Language=0&Cache=true"
+      ]
+    },
+    "nearestAirport": {
+      "name": "Puducherry Airport",
+      "distanceKm": 12,
+      "source": "https://www.auroville.org/page/where-is-auroville"
+    },
+    "timetables": [
+      {
+        "label": "Indian Railways train enquiry",
+        "url": "https://www.indianrail.gov.in/enquiry/TBIS/TrainBetweenImportantStations.html"
+      },
+      {
+        "label": "KSRTC online bus booking",
+        "url": "https://ksrtc.in/"
+      },
+      {
+        "label": "TNSTC online bus reservation",
+        "url": "https://www.tnstc.in/OTRSOnline/"
+      },
+      {
+        "label": "Auroville Integrated Transport Service (shared taxis and pickups)",
+        "url": "https://its.auroville.org/"
+      },
+      {
+        "label": "Matrimandir Inner Chamber booking",
+        "url": "https://mmaccess.auroville.org.in/visitors/new"
+      }
+    ],
+    "localTransport": {
+      "summary": "Auroville asks visitors to avoid bringing cars and vans, to keep the central city area as free as possible of heavy vehicles. You can hire bicycles at the Visitors Centre kiosk, 9 am to 5:30 pm, seven days a week (about 130 cycles; availability 0413-262-3034). Auroville's Integrated Transport Service (ITS) rents electric scooters and offers local pickups and drops, and Kinisi rents electric cycles that can be booked online.",
+      "source": "https://www.auroville.org/page/transportation",
+      "sources": [
+        "https://www.auroville.org/page/transportation",
+        "https://www.auroville.org/page/integrated-transport-service"
+      ]
+    }
+  },
+  "stops": {
+    "1": {
+      "name": "Matrimandir Viewpoint",
+      "hours": "Visits 9 am to 5:30 pm daily, starting from the Visitors Centre (the Information Desk that issues the passes is open 9 am to 5 pm)",
+      "closed": null,
+      "fees": [],
+      "free": true,
+      "dress": "No dress rule is stated for the Viewing Point. Auroville asks visitors to dress modestly: long trousers or long shorts, and tops with sleeves.",
+      "shadeWater": "The walk from the Visitors Centre is partially shaded and takes about 10 minutes. The Visitors Centre provides free drinking water.",
+      "notes": "Collect the free pass yourself at the Visitors Centre after watching a short introductory video on the Matrimandir. Passes should not be left to agents, guides, tour operators or drivers. One notice on matrimandir.org gives the Viewing Point as open 9 am to 5 pm, so collect your pass before 5 pm. Private and hired vehicles must stay at the Visitors Centre parking, because vehicle access to the Matrimandir is restricted. A free electric shuttle runs to the Viewing Point for people who find walking difficult, and a free bus runs back. The Matrimandir is a drone-free zone. You can sit at the Viewing Point and take photos, but the Matrimandir itself is a no-photography area. Going inside the Inner Chamber is separate and must be booked online (the booking page is open 7 am to 12 noon IST, not on Tuesdays). There are no same-day bookings. The booking page advises requesting at least a week ahead, while matrimandir.org says 3 to 5 days. The Inner Chamber is closed to visitors on Sundays and Tuesdays. Visits are in the morning only: the booking page says be ready to reach the Visitors Centre by 8 am, at the reporting time in your confirmation email (matrimandir.org gives 8:15 am), and late entry is not allowed. Children must be 10 or older. Rain cancels that day's visits, with an email sent early that morning.",
+      "sources": [
+        "https://www.auroville.org/page/visiting-the-matrimandir",
+        "https://matrimandir.org/how-to-visit/",
+        "https://mmaccess.auroville.org.in/visitors/new",
+        "https://www.auroville.org/page/first-steps-into-auroville",
+        "https://www.auroville.org/page/visitors-centre",
+        "https://www.auroville.org/page/security-and-safety"
+      ]
+    },
+    "2": {
+      "name": "The Amphitheatre and Urn",
+      "hours": null,
+      "closed": null,
+      "fees": [],
+      "free": null,
+      "dress": null,
+      "shadeWater": null,
+      "notes": "The Amphitheatre lies south-west of the Matrimandir in the Park of Unity, next to the central Banyan tree. Its marble-clad urn holds the Auroville Charter, handwritten by the Mother, and soil from 124 nations and 23 Indian states. A dawn bonfire and silent gathering is held here on 28 February (Auroville's birthday) and a meditation on 15 August. Official pages describe the Viewing Point as the way day visitors see the Matrimandir area; for example, the Banyan tree page says visitors can view the tree from the Viewing Point. No official page found says that day visitors may walk into the Amphitheatre.",
+      "sources": [
+        "https://www.auroville.org/page/the-amphitheatre",
+        "https://matrimandir.org/the-park-of-unity/",
+        "https://www.auroville.org/page/the-banyan-tree",
+        "https://www.auroville.org/page/matrimandir-and-peace-area"
+      ]
+    },
+    "3": {
+      "name": "Visitor Centre",
+      "hours": "Information desk 9 am to 5 pm daily; boutiques 9:30 am to 6 pm",
+      "closed": null,
+      "fees": [],
+      "free": true,
+      "dress": "Auroville asks visitors to dress modestly: long trousers or long shorts, and tops with sleeves.",
+      "shadeWater": "Free Aquadyn drinking water at the Right Path Café and at the main parking lot",
+      "notes": "There is no entrance fee, and access to Auroville and the Matrimandir is free for everyone. The information desk issues the free Viewing Point passes, shows introduction videos in English or Tamil, and displays the original rosewood model of the Matrimandir. Right Path Café is open 8 am to 9 pm (until 5 pm on Mondays). Dreamers' Café is open 8 am to 8:30 pm in the high season (until 6 pm on Mondays). Seagull Bookshop is open 9:30 am to 5:30 pm, and bicycles can be hired at the kiosk. The Guest Accommodation Service is open 9:30 am to 12:30 pm and 2 to 4 pm, and is closed on Sundays. Most places in Auroville outside the Visitors Centre do not accept cash and work through the Aurocard. Alcohol and drugs are forbidden in Auroville. Night falls around 6:30 to 7 pm. Contact: 0413 291 1759, bonjour@auroville.org.in.",
+      "sources": [
+        "https://www.auroville.org/page/visitors-centre",
+        "https://www.auroville.org/page/first-steps-into-auroville",
+        "https://www.auroville.org/page/security-and-safety",
+        "https://www.auroville.org/page/transportation"
+      ]
+    }
+  },
+  "climate": {
+    "station": "Puducherry (IMD index 43331)",
+    "period": "1991-2020",
+    "source": "https://imdpune.gov.in/library/public/Climatological%20Tables%201991-2020.pdf",
+    "months": [
+      {
+        "m": 1,
+        "maxC": 30.1,
+        "minC": 20.6,
+        "rainMm": 17.7
+      },
+      {
+        "m": 2,
+        "maxC": 31.2,
+        "minC": 21.4,
+        "rainMm": 16.9
+      },
+      {
+        "m": 3,
+        "maxC": 32.7,
+        "minC": 23.6,
+        "rainMm": 18.5
+      },
+      {
+        "m": 4,
+        "maxC": 34.4,
+        "minC": 26.2,
+        "rainMm": 21
+      },
+      {
+        "m": 5,
+        "maxC": 36.9,
+        "minC": 27.1,
+        "rainMm": 66.9
+      },
+      {
+        "m": 6,
+        "maxC": 37.1,
+        "minC": 26.9,
+        "rainMm": 58.5
+      },
+      {
+        "m": 7,
+        "maxC": 36.1,
+        "minC": 26.2,
+        "rainMm": 74.5
+      },
+      {
+        "m": 8,
+        "maxC": 35.2,
+        "minC": 25.6,
+        "rainMm": 134.9
+      },
+      {
+        "m": 9,
+        "maxC": 34.4,
+        "minC": 25.2,
+        "rainMm": 134
+      },
+      {
+        "m": 10,
+        "maxC": 32.6,
+        "minC": 24.4,
+        "rainMm": 259.9
+      },
+      {
+        "m": 11,
+        "maxC": 30.5,
+        "minC": 22.8,
+        "rainMm": 347.1
+      },
+      {
+        "m": 12,
+        "maxC": 29.6,
+        "minC": 21.4,
+        "rainMm": 248.1
+      }
+    ]
+  },
+  "unsourced": [
+    "Government bus times from the Pondicherry bus stand to the Auroville Visitors Centre (7:30 am, 1:30 pm and 4:30 pm, returning 8:15 am, 2:15 pm and 5:15 pm) (removed): listed on auroville.org's where-is-auroville page but contradicted by auroville.org's transportation page, which says one government bus arrives after 1 pm and that its timings are still to be confirmed",
+    "Puducherry-to-Auroville road time 'about 0.5' hours (corrected): the cited OSRM route gives 21 minutes with no traffic, so the half-hour figure was not computable from the source",
+    "A single fixed reporting time for the Matrimandir Inner Chamber (reworded): the booking page says be ready to arrive by 8:00 am at the time in the confirmation email, matrimandir.org says 8:15 am; the advance-booking advice also differs (at least a week on the booking page, 3 to 5 days on matrimandir.org)",
+    "Viewing Point closing time: the visiting guidelines on auroville.org and matrimandir.org say 9 am to 5:30 pm, but a notice on matrimandir.org and the first-steps page say 9 am to 5 pm, and the Information Desk that issues passes closes at 5 pm",
+    "Whether day visitors may walk into the Amphitheatre and Urn, and its hours: official pages only describe the Viewing Point as day-visitor access",
+    "Any dress or footwear rule specific to the Matrimandir Inner Chamber or the Viewing Point; only Auroville's general modest-dress guidance was found",
+    "Shade and water at the Amphitheatre",
+    "Tamil Nadu Tourism and Puducherry Tourism pages for Auroville (tamilnadutourism.tn.gov.in, pondytourism.in and tourism.py.gov.in all reset the connection)",
+    "An official Indian Railways train list: NTES and enquiry.indianrail.gov.in were unreachable and the indianrail.gov.in train-between-stations tool needs a captcha, so train details come from the erail.in aggregator",
+    "Bengaluru-to-Puducherry bus timings from TNSTC, SETC or PRTC (SETC and PRTC sites were unreachable), and bus fares (KSRTC portal fares vary by date and service, so they are left out)",
+    "Chennai-to-Pondicherry ECR bus frequency and fares, and confirmation that ECR buses still leave from Koyambedu in 2026 (the latest report found, DT Next of January 2024, says they do)",
+    "The current Puducherry Airport flight schedule (the AAI airport pages load their content by script and returned no details); Auroville's claim of daily flights from Hyderabad and Bangalore was not confirmed and is left out",
+    "Road travel times with traffic for Bengaluru and Puducherry (OSRM gives no-traffic times)",
+    "The walking distance in km from the Visitors Centre to the Viewing Point (only walking times are published, and they differ: about 10 minutes, about 15 minutes, or about 30 minutes via the International Zone)",
+    "Any fixed weekly closed day for the Viewing Point or Visitors Centre (none is stated; the pages say daily)"
+  ]
+}
