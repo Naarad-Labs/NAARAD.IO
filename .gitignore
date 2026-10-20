@@ -23,6 +23,7 @@ e2e/playwright-report/
 .claude/skills/redesign-existing-projects
 .claude/skills/stitch-design-taste
 .claude/skills/distribb
+.claude/skills/cost-estimate
 
 # Output from the design-taste-frontend skill's inspector
 .taste-skill/

@@ -7,6 +7,12 @@
       "skillPath": "skills/brandkit/SKILL.md",
       "computedHash": "4bf33908992cde092395205122fad7a59e117190292bc8847cdba324b6f1c5b2"
     },
+    "cost-estimate": {
+      "source": "jbarbier/claude-code-cost-estimate",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/cost-estimate/SKILL.md",
+      "computedHash": "a71679b56b1f07009fa5811154564ceae7e86a3388615ea133e4f519581e1d35"
+    },
     "design-taste-frontend": {
       "source": "Leonxlnx/taste-skill",
       "sourceType": "github",
