@@ -8,9 +8,9 @@
     "never": "Only the founder"
   },
   "daily_cap": {
-    "tokens": null,
+    "tokens": "unbounded",
     "cloud_inr": null,
-    "_note": "Hard rule 3: a daily token and cloud cost cap halts all agents when hit. The founder sets the numbers; they are null until then and validate says so."
+    "_note": "Hard rule 3: a daily token and cloud cost cap halts all agents when hit. Tokens: the founder chose \"unbounded\" on 2026-10-26 (decision D-0002). Cloud spend is still null until the founder sets it."
   },
   "roles": {
     "tech-lead": {

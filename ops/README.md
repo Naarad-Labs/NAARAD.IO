@@ -1,6 +1,6 @@
 # ops: the Startup Operating System in this repository
 
-Phase 1 of the Startup Operating System plan (kept outside this public repository): the stores and rules that
+Phases 1 and 2 of the Startup Operating System plan (kept outside this public repository): the stores and rules that
 let the loops run without anyone's opinion standing in for evidence. Nothing in
 this folder changes the website.
 
@@ -16,12 +16,14 @@ founder.**
 | `guardrails.json` | Autonomy tiers, the 16 agent roles (all at Tier 1), and which action needs which tier. The daily cost cap is `null` until the founder sets it. |
 | `lib.mjs` | The rules as code: validation, gate G1, "may this role do this". |
 | `stranger-test.md` | The weekend stranger test: protocol and observation log. Not run yet. |
+| `interviews/` | Customer-discovery guides for tourism boards, temple trusts and CSR teams. Linted: no leading questions. No interview has been held yet. |
+| `redteam/` | Reports from `scripts/redteam.mjs`, the fresh-context reviewer. Empty until an opportunity has evidence. |
 | `test/` | Tests for the rules and for the offline event queue. |
 
-Elsewhere: `scripts/ops.mjs` (command line), `app/events.js` and
+Elsewhere: `scripts/ops.mjs` (command line), `scripts/redteam.mjs` (red-team runner), `app/events.js` and
 `docs/event-schema.md` (offline-safe event queue, not wired into any page),
-`.claude/skills/{evidence-ledger,agent-guardrails,event-schema}` (how an agent
-uses all of this), `.github/workflows/ci.yml` (the checks every change passes).
+`.claude/skills/{evidence-ledger,agent-guardrails,event-schema,redteam,feature-intake,mom-test-script,switch-interview}`
+(how an agent uses all of this), `.github/workflows/ci.yml` (the checks every change passes).
 
 ## Commands
 
@@ -30,6 +32,9 @@ node scripts/ops.mjs validate           # every store is well formed
 node scripts/ops.mjs gate G1 O-001      # may this opportunity enter the backlog
 node scripts/ops.mjs can qa open_pr     # may this role do this alone
 node scripts/ops.mjs scan               # no key committed in any tracked file
+node scripts/ops.mjs intake             # score the backlog; top three, and what is blocked
+node scripts/ops.mjs lint-guide ops/interviews/*.md   # guides ask about the past, not a product
+node scripts/redteam.mjs O-001 --dry-run   # what the red-team reviewer would be sent
 node --test "ops/test/*.test.mjs"       # the rules' own tests
 ```
 

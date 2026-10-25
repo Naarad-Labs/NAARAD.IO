@@ -4,7 +4,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import {
   loadStores, validateAll, validateLedger, validateOpportunities, validateDecisions,
-  validateGuardrails, gateG1, canAct, findSecrets, findPersonalData,
+  validateGuardrails, gateG1, canAct, findSecrets, findPersonalData, intake, lintGuide,
 } from '../lib.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
@@ -27,6 +27,7 @@ const entry = (over = {}) => ({
 const opportunity = (over = {}) => ({
   id: 'O-001', title: 'Audio guide for trust-run sites', metric: { name: 'paid pilots signed' },
   status: 'candidate', evidence: ['E-0001', 'E-0002', 'E-0003'],
+  estimates: { reach: 40, expected_move: 0.25, effort: 5, basis: ['E-0001'] },
   compliance: { status: 'passed', checked_on: '2026-10-25' },
   redteam: { reviewed_on: '2026-10-25', points: [{ point: 'They may do this free', answered_by: ['E-0001'] }] },
   ...over,
@@ -171,4 +172,76 @@ test('scanner: finds keys, ignores ordinary text', () => {
   assert.deepEqual(findSecrets(FAKE.aws), ['AWS access key id']);
   assert.deepEqual(findSecrets('the sky is blue and sk-short is not a key'), []);
   assert.deepEqual(findPersonalData('route is 12.5 km, 2026-10-26'), []);
+});
+
+test('intake: score is evidence tier x reach x expected move / effort, using the weakest of the top three origins', () => {
+  /* tiers T2, T2, T3 -> the weakest leg is T2 = 2; 2 x 40 x 0.25 / 5 = 4 */
+  const { scored, blocked } = intake([opportunity()], ledger3);
+  assert.deepEqual(blocked, []);
+  assert.equal(scored[0].score, 4);
+  assert.equal(scored[0].tier, 'T2');
+});
+
+test('intake: a better quote does not rescue a thin leg', () => {
+  const strongOne = [entry({ tier: 'T4' }), entry({ id: 'E-0002', origin: 'Board B', source: 'INT-002' }), entry({ id: 'E-0003', origin: 'CSR C', source: 'INT-003' })];
+  assert.equal(intake([opportunity()], strongOne).scored[0].score, 4);
+});
+
+test('intake: nothing below T2, or without a metric, or with fewer than three origins, is scored', () => {
+  const weak = ledger3.map((item) => ({ ...item, tier: 'T1' }));
+  assert.match(intake([opportunity()], weak).blocked[0].reasons.join(' '), /below T2/);
+  assert.match(intake([opportunity({ metric: {} })], ledger3).blocked[0].reasons.join(' '), /metric/);
+  assert.match(intake([opportunity({ evidence: ['E-0001', 'E-0002'] })], ledger3).blocked[0].reasons.join(' '), /fewer than 3/);
+});
+
+test('intake: estimates must be positive numbers resting on ledger entries', () => {
+  assert.match(intake([opportunity({ estimates: undefined })], ledger3).blocked[0].reasons.join(' '), /estimates are missing/);
+  assert.match(intake([opportunity({ estimates: { reach: 0, expected_move: 0.1, effort: 1, basis: ['E-0001'] } })], ledger3).blocked[0].reasons.join(' '), /reach/);
+  assert.match(intake([opportunity({ estimates: { reach: 1, expected_move: 0.1, effort: 1, basis: ['E-9999'] } })], ledger3).blocked[0].reasons.join(' '), /E-9999/);
+});
+
+test('intake: highest score first, top three marked', () => {
+  const many = [1, 2, 3, 4].map((n) => opportunity({ id: `O-00${n}`, estimates: { reach: 10 * n, expected_move: 0.2, effort: 4, basis: ['E-0001'] } }));
+  const { scored, top } = intake(many, ledger3);
+  assert.deepEqual(scored.map((item) => item.id), ['O-004', 'O-003', 'O-002', 'O-001']);
+  assert.equal(top.length, 3);
+});
+
+test('opportunities: a backlog item without sourced estimates is rejected', () => {
+  const errors = validateOpportunities([opportunity({ status: 'backlog', estimates: undefined })], ledger3);
+  assert.ok(errors.some((error) => /estimates are missing/.test(error)));
+});
+
+const goodGuide = `# Guide
+## Questions
+${[1, 2, 3, 4, 5, 6, 7, 8].map((n) => `${n}. Tell me about the last time you handled thing ${n}?`).join('\n')}
+## Commitments to ask for
+- Ask for 30 minutes next week, an introduction to the person who decides, or a paid pilot.
+`;
+
+test('guide lint: a past-tense guide with a commitments section passes', () => {
+  assert.deepEqual(lintGuide(goodGuide), []);
+});
+
+test('guide lint: hypotheticals, opinions, prices, pitches and promises are rejected', () => {
+  for (const bad of [
+    'Would you use an audio guide?', 'Do you think visitors want this?', 'How much would you pay for it?',
+    'If we built an app, what would it need?', 'Will you sign a pilot?', 'Do you like the idea?',
+    'What if guides were free?', 'How does Naarad fit your work?', 'Where do you see this in the future?',
+  ]) {
+    assert.ok(lintGuide(`${goodGuide}\n- ${bad}`).length > 0, bad);
+  }
+});
+
+test('guide lint: too few questions, no commitments section, or contact details are rejected', () => {
+  assert.ok(lintGuide('# Guide\n1. Tell me about the last visit?\n').some((error) => /at least 8/.test(error)));
+  assert.ok(lintGuide(goodGuide.replace('Commitments to ask for', 'Wrap up')).some((error) => /Commitments/.test(error)));
+  assert.ok(lintGuide(`${goodGuide}\nCall 9876543210`).some((error) => /phone number/.test(error)));
+});
+
+test('guide lint: a "Do not" section may quote the bad questions it forbids', () => {
+  const guide = `${goodGuide}\n## Do not ask\n- "Would you use this?"\n- "How much would you pay?"\n`;
+  assert.deepEqual(lintGuide(guide), []);
+  /* but the quoting ends at the next heading */
+  assert.ok(lintGuide(`${guide}\n## More questions\n- Would you use this?\n`).length > 0);
 });
