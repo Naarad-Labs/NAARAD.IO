@@ -10,6 +10,14 @@ import {
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
 const TODAY = '2026-10-26';
 
+/* Fake keys, joined at run time so this file never contains one whole: the
+   secret scan reads every tracked file, tests included. */
+const FAKE = {
+  razorpay: ['rzp_', 'live_abcdef1234567890'].join(''),
+  privateKey: ['-----BEGIN ', 'RSA PRIVATE KEY-----'].join(''),
+  aws: ['AKIA', 'ABCDEFGHIJKLMNOP'].join(''),
+};
+
 const entry = (over = {}) => ({
   id: 'E-0001', claim: 'The trust pays for guides by hand each season',
   source: 'INT-001', quote: 'We pay the guides cash every season', date: '2026-10-20',
@@ -155,12 +163,12 @@ test('canAct: an unknown role or an unclassified action is a no, not a guess', (
 test('ledger: a name-free quote passes, contact details and keys are rejected', () => {
   assert.ok(validateLedger([entry({ quote: 'Call me on 9876543210' })], { today: TODAY }).some((error) => /phone number/.test(error)));
   assert.ok(validateLedger([entry({ quote: 'write to guide@example.org' })], { today: TODAY }).some((error) => /email address/.test(error)));
-  assert.ok(validateLedger([entry({ claim: 'key is rzp_live_abcdef1234567890' })], { today: TODAY }).some((error) => /Razorpay/.test(error)));
+  assert.ok(validateLedger([entry({ claim: `key is ${FAKE.razorpay}` })], { today: TODAY }).some((error) => /Razorpay/.test(error)));
 });
 
 test('scanner: finds keys, ignores ordinary text', () => {
-  assert.deepEqual(findSecrets('-----BEGIN RSA PRIVATE KEY-----'), ['private key']);
-  assert.deepEqual(findSecrets('AKIAABCDEFGHIJKLMNOP'), ['AWS access key id']);
+  assert.deepEqual(findSecrets(FAKE.privateKey), ['private key']);
+  assert.deepEqual(findSecrets(FAKE.aws), ['AWS access key id']);
   assert.deepEqual(findSecrets('the sky is blue and sk-short is not a key'), []);
   assert.deepEqual(findPersonalData('route is 12.5 km, 2026-10-26'), []);
 });
