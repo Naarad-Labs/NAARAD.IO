@@ -1,0 +1,4 @@
+# Decision log: every gate result, who approved it, why. One JSON object per line.
+# Required: id (D-0001), date, gate (adopt|G1|G2|G3|G4|learn), subject, result (pass|fail|proposed),
+#   author, reason. Optional: approved_by (never the author), evidence (E- ids).
+{"id": "D-0001", "date": "2026-10-26", "gate": "adopt", "subject": "Adopt the Startup Operating System, Phase 1 only: ledger, decision log, guardrails, event queue, CI gate", "result": "proposed", "author": "claude", "approved_by": null, "reason": "Phase 1 builds no user-facing feature. Phases 3 and 4 stay off until phase 2 produces a T3 commitment from a site, board or sponsor. Awaiting the founder's approval; this entry becomes pass when approved_by is filled in by the founder."}

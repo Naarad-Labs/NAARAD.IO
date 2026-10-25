@@ -1,0 +1,6 @@
+# Evidence ledger: one JSON object per line, one entry per claim.
+# Required: id (E-0001), claim, source (URL or INT-001), quote (verbatim), date (YYYY-MM-DD),
+#   collector, origin (the independent party it came from), tier (T0 opinion, T1 stated intent,
+#   T2 past behaviour, T3 time or reputation commitment, T4 money or signed pilot).
+# Optional: simulated (true means T0), opportunities (list of O- ids).
+# A claim or number without a source is deleted. Check with: node scripts/ops.mjs validate
