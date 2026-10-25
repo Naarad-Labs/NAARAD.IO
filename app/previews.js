@@ -19,6 +19,12 @@ function project([lng, lat]) {
   return [x, y];
 }
 
+/* Each preview's grid pattern needs an id unique in the document. A counter
+   rather than a random value, so the same page always renders the same
+   markup: the build's output is byte-stable, and a pre-rendered page can be
+   recognised as already drawn. */
+let previewCount = 0;
+
 function fit(points, width, height, pad) {
   const xs = points.map((point) => point[0]);
   const ys = points.map((point) => point[1]);
@@ -55,7 +61,7 @@ export function routePreview(route, options = {}) {
     </g>`;
   }).join('') : '';
 
-  const id = `rp${Math.random().toString(36).slice(2, 8)}`;
+  const id = `rp${++previewCount}`;
   return `<svg class="route-preview ${escapeHtml(className)}" viewBox="0 0 ${width} ${height}" role="img"
     aria-label="Map preview of ${escapeHtml(route.name)}${numbered && route.stops?.length ? ` with ${route.stops.length} numbered stops` : ''}" preserveAspectRatio="xMidYMid slice">
     <defs>

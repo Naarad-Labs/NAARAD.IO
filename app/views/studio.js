@@ -15,6 +15,8 @@ import { icon } from '../icons.js';
 import * as Data from '../data.js';
 import { routePreview } from '../previews.js';
 import * as Drafts from '../studio-store.js';
+import { routePath, sectionPath } from '../urls.js';
+import * as Seo from '../seo.js';
 
 const STEPS = [
   { id: 'upload', label: 'Upload' },
@@ -73,7 +75,7 @@ function picker(routes, draft) {
     : '<option>No published stops</option>'}
         </select>
       </label>
-      ${route ? `<a class="button button-sm" href="/?route=${encodeURIComponent(route.slug)}" data-route="${escapeHtml(route.slug)}">View route details ${icon('arrow')}</a>` : ''}
+      ${route ? `<a class="button button-sm" href="${routePath(route.slug)}" data-route="${escapeHtml(route.slug)}">View route details ${icon('arrow')}</a>` : ''}
     </div>
 
     <div class="studio-picker-body">
@@ -233,7 +235,13 @@ export async function render() {
 }
 
 export const stylesheet = '/app/studio.css';
-export const meta = {
-  title: 'Creator Studio · Naarad',
-  description: 'Prepare audio stories for Naarad routes: choose a stop, add narration, write a transcript and set the languages.',
-};
+
+export function meta() {
+  return {
+    title: 'Creator Studio · Naarad',
+    description: 'Prepare audio stories for Naarad routes: choose a stop, add narration, write a transcript and set the languages.',
+    path: sectionPath('creators'),
+    card: Seo.HOME_CARD,
+    schema: [Seo.breadcrumbs([['Creators', sectionPath('creators')]])],
+  };
+}

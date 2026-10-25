@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f8f3e9">
+  <title>Naarad</title>
+  <meta name="description" content="Heritage walking routes across India with real route data and a written story for each stop, which your phone can read aloud as you walk." data-page="">
+  <meta name="robots" content="noindex" data-page="">
+  <link rel="icon" type="image/png" href="/Images/cropped_logo.png">
+  <link rel="apple-touch-icon" href="/Images/naarad-icon-192.png">
+  <link rel="manifest" href="/manifest.json">
+  <script>
+    /* Old paths (/route/x, /story/x, /about) have no file, so GitHub Pages
+       answers them with 404.html: send the reader to the page that replaced
+       them. Old queries (/?route=x) are rewritten by app/main.js. */
+    (function () {
+      var path = location.pathname, to = null;
+      var old = path.match(/^\/(route|story)\/([^/]+)\/?$/);
+      if (old) to = (old[1] === 'route' ? '/routes/' : '/stories/') + old[2] + '/';
+      else if (/^\/(explore|routes|stories|creators|journey|about)$/.test(path)) to = path + '/';
+      else if (/^\/(routes|stories)\/[^/.]+$/.test(path)) to = path + '/';
+      if (to) location.replace(to + location.search + location.hash);
+    })();
+  </script>
+
+  <link rel="stylesheet" href="/app/base.css">
+  <link rel="stylesheet" href="/app/home.css">
+  <link rel="preload" as="font" type="font/woff2" href="/app/fonts/PlayfairDisplay.woff2" crossorigin>
+  <link rel="preload" as="font" type="font/woff2" href="/app/fonts/DMSans.woff2" crossorigin>
+</head>
+<body>
+  <a class="skip-link" href="#app-content">Skip to content</a>
+  <div id="app" class="site-shell">
+    <header class="site-header">
+      <a id="nav-home" class="brand" href="/" data-view="home" aria-label="Naarad home">
+        <img src="/Images/cropped_logo.png" alt="" width="52" height="52">
+        <span class="brand-copy">
+          <span class="brand-name">NAARAD</span>
+          <span class="brand-motto">Explore. Listen. Connect.</span>
+        </span>
+      </a>
+      <nav class="primary-nav" aria-label="Main navigation">
+        <a id="nav-explore" href="/explore/" data-view="explore">Explore</a>
+        <a id="nav-routes" href="/routes/" data-view="routes">Routes</a>
+        <a id="nav-stories" href="/stories/" data-view="stories">Stories</a>
+        <a id="nav-creators" href="/creators/" data-view="creators">Creators</a>
+        <a id="nav-journey" href="/journey/" data-view="journey">My Journey</a>
+        <a id="nav-about" href="/about/" data-view="about">About</a>
+      </nav>
+      <form class="header-search" role="search" action="/routes/">
+        <label class="sr-only" for="route-search">Search places, routes and stories</label>
+        <input id="route-search" type="search" name="q" placeholder="Search places, routes, stories…" autocomplete="off">
+        <button type="submit" aria-label="Search">
+          <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.6"/><path d="m15.8 15.8 4.4 4.4"/></svg>
+        </button>
+      </form>
+      <a class="button button-primary header-cta" href="/explore/" data-view="explore">
+        Start Exploring
+        <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 12h15"/><path d="m13.6 6 5.9 6-5.9 6"/></svg>
+      </a>
+      <button class="menu-toggle" type="button" aria-label="Open navigation" aria-expanded="false"><span></span><span></span><span></span></button>
+    </header>
+
+    <main id="app-content"></main>
+
+    <footer class="site-footer">
+      <a class="footer-brand" href="/" data-view="home" aria-label="Naarad home">
+        <img src="/Images/cropped_logo.png" alt="" width="40" height="40">
+        <span><b>NAARAD</b><small>EXPLORE. LISTEN. CONNECT.</small></span>
+      </a>
+      <nav aria-label="Footer navigation">
+        <a href="/explore/" data-view="explore">Explore</a>
+        <a href="/routes/" data-view="routes">Routes</a>
+        <a href="/stories/" data-view="stories">Stories</a>
+        <a href="/creators/" data-view="creators">Creators</a>
+        <a href="/journey/" data-view="journey">My Journey</a>
+        <a href="/about/" data-view="about">About</a>
+      </nav>
+      <p class="footer-script script">Real places. Deeper stories.</p>
+    </footer>
+  </div>
+
+  <script type="module" src="/app/main.js"></script>
+  <script>
+    if ('serviceWorker' in navigator && !window.__NAARAD_PRERENDER__) {
+      addEventListener('load', () => navigator.serviceWorker.register('/sw.js').catch(() => {}));
+    }
+  </script>
+</body>
+</html>

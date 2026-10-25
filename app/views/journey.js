@@ -7,11 +7,13 @@
  * of a travel journal, and the one that still works offline.
  */
 
-import { picture, escapeHtml } from '../media.js';
+import { picture, escapeHtml, getPhoto } from '../media.js';
 import { icon } from '../icons.js';
 import * as Data from '../data.js';
 import * as Journey from '../journey-store.js';
 import { routePreview } from '../previews.js';
+import { routePath, sectionPath } from '../urls.js';
+import * as Seo from '../seo.js';
 
 const TABS = [
   { id: 'journey', label: 'My Journey', icon: 'compass' },
@@ -72,7 +74,7 @@ function savedCard(entry, route) {
         ${entry.stops ? `<span>${icon('pin')}${entry.stops} stops</span>` : ''}
       </span>
       <div class="journey-card-actions">
-        <a class="text-link" href="/?route=${encodeURIComponent(entry.slug)}" data-route="${escapeHtml(entry.slug)}">View route ${icon('arrow')}</a>
+        <a class="text-link" href="${routePath(entry.slug)}" data-route="${escapeHtml(entry.slug)}">View route ${icon('arrow')}</a>
         <button type="button" class="icon-button" data-journey-unsave="${escapeHtml(entry.slug)}" aria-label="Remove ${escapeHtml(entry.name)} from saved">${icon('trash')}</button>
       </div>
     </div>
@@ -92,7 +94,7 @@ function walkCard(entry) {
         ${entry.distanceM ? `<span>${icon('walk')}${escapeHtml(Data.formatDistance(entry.distanceM))}</span>` : ''}
         ${entry.stops ? `<span>${icon('pin')}${entry.stops} stops</span>` : ''}
       </span>
-      <a class="text-link" href="/?route=${encodeURIComponent(entry.slug)}" data-route="${escapeHtml(entry.slug)}">Revisit ${icon('arrow')}</a>
+      <a class="text-link" href="${routePath(entry.slug)}" data-route="${escapeHtml(entry.slug)}">Revisit ${icon('arrow')}</a>
     </div>
   </article>`;
 }
@@ -117,7 +119,11 @@ export async function render() {
         <p class="lede">Your walks, stories and notes in one place. Everything here is kept on this device — there are no accounts yet, so nothing leaves your browser.</p>
       </div>
       <div class="journey-hero-media">
-        ${picture('india-traveller', { sizes: '(max-width: 1023px) 100vw, 50vw', alt: '', priority: true, credit: true, className: 'torn-left' })}
+        ${picture('india-traveller', {
+    sizes: '(max-width: 1023px) 100vw, 50vw', alt: '', priority: true, credit: true, className: 'torn-left',
+    // Reserves the photograph's height on a phone, where it sits in the flow.
+    ratio: getPhoto('india-traveller')?.aspect ? `${getPhoto('india-traveller').aspect} / 1` : '',
+  })}
         <p class="note-plain note-over-photo journey-hero-note">Same places.<br>New stories.<br>A richer you.</p>
       </div>
     </header>
@@ -144,7 +150,7 @@ export async function render() {
       <div class="journey-section">
         <div class="section-head">
           <div><p class="eyebrow eyebrow-mark">Saved routes</p><h2 class="section-title">Places to explore next.</h2></div>
-          <div class="section-head-aside"><a class="button button-sm" href="/?view=routes" data-view="routes">Browse routes ${icon('arrow')}</a></div>
+          <div class="section-head-aside"><a class="button button-sm" href="${sectionPath('routes')}" data-view="routes">Browse routes ${icon('arrow')}</a></div>
         </div>
         ${store.saved.length
     ? `<div class="journey-grid">${store.saved.slice(0, 3).map((entry) => savedCard(entry, bySlug.get(entry.slug))).join('')}</div>`
@@ -200,7 +206,16 @@ export async function render() {
 }
 
 export const stylesheet = '/app/journey.css';
-export const meta = {
-  title: 'My Journey · Naarad',
-  description: 'Your saved routes, completed walks, journal notes and listening history, kept on your device.',
-};
+
+/* Everything here is this visitor's own, kept on their device, so the page
+   stays out of search: what a crawler would index is an empty journal. */
+export function meta() {
+  return {
+    title: 'My Journey · Naarad',
+    description: 'Your saved routes, completed walks, journal notes and listening history, kept on your device.',
+    path: sectionPath('journey'),
+    robots: 'noindex',
+    card: Seo.HOME_CARD,
+    schema: [Seo.breadcrumbs([['My Journey', sectionPath('journey')]])],
+  };
+}

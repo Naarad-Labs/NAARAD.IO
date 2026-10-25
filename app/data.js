@@ -20,6 +20,9 @@ const THEME_LABELS = {
   culture: 'Living Culture', food: 'Food', art: 'Art & Music', community: 'Community',
 };
 
+/* Which file a route is read from, for the build's sitemap dates. */
+const SOURCE_FILES = { editorial: ROUTES_URL, catalogue: SEED_URL, track: TRACKS_URL };
+
 let cache = null;
 
 const titleCase = (value) => String(value || '').replace(/(^|[\s-])(\w)/g, (_, lead, char) => lead + char.toUpperCase());
@@ -234,6 +237,14 @@ export async function featuredRoutes(count = 4) {
     .sort((a, b) => (a.distanceM ?? Infinity) - (b.distanceM ?? Infinity));
   return [...editorial, ...mapped].slice(0, count);
 }
+
+/** The file a route's data comes from, as a repository path. */
+export function sourceFile(route) {
+  return SOURCE_FILES[route?.source]?.replace(/^\//, '') || null;
+}
+
+/** Every content file the catalogue is built from, as repository paths. */
+export const catalogueFiles = () => Object.values(SOURCE_FILES).map((url) => url.replace(/^\//, ''));
 
 export function getStop(route, order) {
   return route?.stops?.find((stop) => stop.order === Number(order)) || null;

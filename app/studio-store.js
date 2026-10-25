@@ -7,6 +7,9 @@
 
 const KEY = 'naarad.studio.v1';
 
+/* Pre-rendering (main.js) draws the studio as a first visit sees it. */
+const PRERENDER = Boolean(globalThis.__NAARAD_PRERENDER__);
+
 const blank = (route) => ({
   id: `d${Date.now().toString(36)}`,
   routeSlug: route?.slug || null,
@@ -28,7 +31,7 @@ let state = null;
 function read() {
   if (state) return state;
   try {
-    const raw = localStorage.getItem(KEY);
+    const raw = PRERENDER ? null : localStorage.getItem(KEY);
     state = raw ? JSON.parse(raw) : { drafts: [], currentId: null };
   } catch {
     state = { drafts: [], currentId: null };
@@ -38,7 +41,7 @@ function read() {
 }
 
 function write() {
-  try { localStorage.setItem(KEY, JSON.stringify(state)); } catch { /* private mode */ }
+  try { if (!PRERENDER) localStorage.setItem(KEY, JSON.stringify(state)); } catch { /* private mode */ }
 }
 
 export function list() { return read().drafts.slice(); }

@@ -1,7 +1,7 @@
 {
   "name": "Naarad · Walk a place. Hear its story.",
   "short_name": "Naarad",
-  "description": "Heritage walking routes across India with place stories, real route data and audio guides.",
+  "description": "Heritage walking routes across India with real route data and a written story for each stop, which your phone can read aloud as you walk.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
@@ -16,8 +16,8 @@
     { "src": "/Images/naarad-icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
   ],
   "shortcuts": [
-    { "name": "Explore routes", "url": "/?view=routes" },
-    { "name": "Stories", "url": "/?view=stories" },
-    { "name": "My Journey", "url": "/?view=journey" }
+    { "name": "Explore routes", "url": "/routes/" },
+    { "name": "Stories", "url": "/stories/" },
+    { "name": "My Journey", "url": "/journey/" }
   ]
 }

@@ -8,12 +8,16 @@ import { picture, escapeHtml } from '../media.js';
 import { icon } from '../icons.js';
 import * as Data from '../data.js';
 import { routePreview, terrainSparkline } from '../previews.js';
+import { routePath, sectionPath } from '../urls.js';
+import * as Seo from '../seo.js';
+
+const HERO_SIZES = '(max-width: 1023px) 100vw, 62vw';
 
 const QUICK_LINKS = [
-  { icon: 'temple', title: 'Explore', sub: 'Places', href: '/?view=explore', view: 'explore' },
-  { icon: 'headphones', title: 'Listen', sub: 'Stories', href: '/?view=stories', view: 'stories' },
-  { icon: 'footprints', title: 'Walk', sub: 'Routes', href: '/?view=routes', view: 'routes' },
-  { icon: 'users', title: 'Connect', sub: 'People', href: '/?view=creators', view: 'creators' },
+  { icon: 'temple', title: 'Explore', sub: 'Places', view: 'explore' },
+  { icon: 'headphones', title: 'Listen', sub: 'Stories', view: 'stories' },
+  { icon: 'footprints', title: 'Walk', sub: 'Routes', view: 'routes' },
+  { icon: 'users', title: 'Connect', sub: 'People', view: 'creators' },
 ];
 
 const LANGUAGES = [
@@ -25,7 +29,7 @@ const LANGUAGES = [
 const EXPERIENCE = [
   { icon: 'book', title: 'Immersive storytelling', copy: 'Places, people, history and culture.' },
   { icon: 'map', title: 'Interactive routes', copy: 'Walk at your own pace.' },
-  { icon: 'headphones', title: 'Audio guides', copy: 'Local voices, in your language.' },
+  { icon: 'headphones', title: 'Read aloud', copy: 'Your phone reads each story as you walk.' },
   { icon: 'leaf', title: 'Deeper connections', copy: 'Understand. Appreciate. Preserve.' },
 ];
 
@@ -39,7 +43,7 @@ export function routeCard(route, options = {}) {
   const spark = terrainSparkline(route);
   const photo = route.media?.card || route.media?.photo;
 
-  return `<a class="route-card ${compact ? 'is-compact' : ''}" href="/?route=${encodeURIComponent(route.slug)}" data-route="${escapeHtml(route.slug)}">
+  return `<a class="route-card ${compact ? 'is-compact' : ''}" href="${routePath(route.slug)}" data-route="${escapeHtml(route.slug)}">
     <span class="route-card-media">
       ${photo ? picture(photo, { sizes: '(max-width: 760px) 100vw, 300px', alt: `${route.name}, ${route.location || ''}`, ratio: '4 / 5', className: 'route-card-photo' })
         : '<span class="route-card-photo photo photo-missing"></span>'}
@@ -69,10 +73,10 @@ function hero(featured) {
     <div class="home-hero-copy">
       <p class="eyebrow">A living heritage, a shared human story</p>
       <h1 id="home-title" class="display">Walk a place.<br><span class="accent">Hear its story.</span></h1>
-      <p class="lede">Heritage walks across India, told at the places where the stories happened: real routes, local history and audio you can take with you.</p>
-      <a class="button button-primary home-hero-cta" href="/?view=explore" data-view="explore">Start Exploring ${icon('arrow')}</a>
+      <p class="lede">Heritage walks across India, told at the places where the stories happened: real routes, local history, and stories your phone can read aloud as you walk.</p>
+      <a class="button button-primary home-hero-cta" href="${sectionPath('explore')}" data-view="explore">Start Exploring ${icon('arrow')}</a>
       <ul class="quick-links">
-        ${QUICK_LINKS.map((link) => `<li><a href="${link.href}" data-view="${link.view}">
+        ${QUICK_LINKS.map((link) => `<li><a href="${sectionPath(link.view)}" data-view="${link.view}">
           ${icon(link.icon, { className: 'ico-orange' })}
           <span><b>${link.title}</b><small>${link.sub}</small></span>
         </a></li>`).join('')}
@@ -80,7 +84,7 @@ function hero(featured) {
     </div>
     <div class="home-hero-media">
       ${picture('hampi-landscape', {
-    sizes: '(max-width: 1023px) 100vw, 62vw',
+    sizes: HERO_SIZES,
     alt: 'The boulder landscape of Hampi, Karnataka, with temple towers among the rocks',
     priority: true,
     credit: true,
@@ -103,7 +107,7 @@ function featuredSection(routes) {
       </div>
       <div class="section-head-aside">
         <p>Curated walking routes with place stories, local context and real route data — at your own pace.</p>
-        <a class="button button-sm" href="/?view=routes" data-view="routes">View All Routes ${icon('arrow')}</a>
+        <a class="button button-sm" href="${sectionPath('routes')}" data-view="routes">View All Routes ${icon('arrow')}</a>
       </div>
     </div>
     <div class="route-card-grid">${routes.map((route) => routeCard(route)).join('')}</div>
@@ -116,14 +120,14 @@ function voicesSection() {
       <p class="eyebrow eyebrow-mark">Voices of Naarad</p>
       <h2 id="voices-title" class="section-title">Real people.<br>Richer stories.</h2>
       <p>Naarad is built to carry the voices of the people who know a place best: historians, guides, artists and residents, telling it in their own language.</p>
-      <a class="button button-ghost" href="/?view=creators" data-view="creators">Meet Our Creators ${icon('arrow')}</a>
+      <a class="button button-ghost" href="${sectionPath('creators')}" data-view="creators">Meet Our Creators ${icon('arrow')}</a>
     </div>
     <div class="voices-panel">
       <div class="voices-open">
         <p class="eyebrow">Creator programme</p>
         <h3>Recording opens city by city.</h3>
         <p class="voices-note">No creator narration has been published yet. The first recordings will appear here as creators in each city finish them, credited by name.</p>
-        <a class="text-link" href="/?view=creators" data-view="creators">Apply to narrate your city ${icon('arrow')}</a>
+        <a class="text-link" href="${sectionPath('creators')}" data-view="creators">Apply to narrate your city ${icon('arrow')}</a>
       </div>
       <ul class="voices-roles">
         <li>${icon('mic')}<span><b>Historians &amp; guides</b><small>Context that holds up</small></span></li>
@@ -134,7 +138,7 @@ function voicesSection() {
     <div class="voices-languages">
       <p class="eyebrow eyebrow-mark">Multilingual audio</p>
       <h2>India's stories,<br>in your language.</h2>
-      <p>Stories are written and voiced to be heard in the languages people actually use, not only in English.</p>
+      <p>Naarad is built for stories in the languages people actually use, not only in English. Every story published so far is in English.</p>
       <ul class="language-list">
         ${LANGUAGES.map((language) => `<li lang="${language.code}">${language.label}</li>`).join('')}
         <li class="is-more">+ more</li>
@@ -151,7 +155,7 @@ function experienceSection(routes) {
       <p class="eyebrow eyebrow-mark">The Naarad experience</p>
       <h2 id="experience-title" class="section-title">Like a magazine.<br>Made for real places.</h2>
       <p>Stories, photography and interactive routes in one piece, so reading about a place and walking it are the same experience.</p>
-      <a class="button button-sm" href="/?route=hampi-heritage-trail" data-route="hampi-heritage-trail">Take a Look Inside ${icon('arrow')}</a>
+      <a class="button button-sm" href="${routePath('hampi-heritage-trail')}" data-route="hampi-heritage-trail">Take a Look Inside ${icon('arrow')}</a>
     </div>
     <div class="experience-strip" role="list">
       ${strip.map((route, index) => `<article class="magazine-page" role="listitem" style="--index:${index}">
@@ -180,8 +184,15 @@ export async function render() {
   </div>`;
 }
 
-export const meta = {
-  title: 'Naarad · Walk a place. Hear its story.',
-  description: 'Heritage walking routes across India with place stories, real route data and audio guides. Explore, listen, connect.',
-  stylesheet: '/app/home.css',
-};
+export const stylesheet = '/app/home.css';
+
+export function meta() {
+  return {
+    title: 'Naarad · Walk a place. Hear its story.',
+    description: Seo.SITE_DESCRIPTION,
+    path: '/',
+    card: Seo.HOME_CARD,
+    preload: { photo: Seo.HOME_CARD.photo, sizes: HERO_SIZES },
+    schema: [Seo.website(), Seo.organization()],
+  };
+}

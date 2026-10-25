@@ -1,0 +1,425 @@
+{
+  "note": "Share cards drawn by scripts/build-site.mjs from scripts/og-card.html. Each photograph is used under the licence recorded in content/photo-sources.json, which allows adaptation; the credit is printed on the card and repeated here.",
+  "cards": [
+    {
+      "file": "home.jpg",
+      "pages": [
+        "/",
+        "/creators/",
+        "/journey/",
+        "/about/"
+      ],
+      "alt": "Naarad: Walk a place. Hear its story. Set on a photograph of the boulder landscape of Hampi, Karnataka.",
+      "width": 1200,
+      "height": 630,
+      "quality": 82,
+      "photo": {
+        "id": "hampi-landscape",
+        "title": "Hampi, India, Aerial view of Virupaksha Temple, Panorama of Hampi",
+        "author": "Vyacheslav Argenberg",
+        "licence": "CC BY 4.0",
+        "licenceUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "sourcePage": "https://commons.wikimedia.org/w/index.php?curid=95961371",
+        "changes": "Cropped to 1200 x 630, with the page title, the Naarad wordmark and this credit set over it."
+      },
+      "licence": "CC BY 4.0"
+    },
+    {
+      "file": "route-airport-hidden-lake-trail.jpg",
+      "pages": [
+        "/routes/airport-hidden-lake-trail/"
+      ],
+      "alt": "Airport Hidden Lake Trail, Chennai, Tamil Nadu: the Naarad title card, with the route line drawn on a plain map.",
+      "width": 1200,
+      "height": 630,
+      "quality": 82,
+      "photo": null,
+      "licence": "Naarad: text, logo and route line only"
+    },
+    {
+      "file": "route-auroville-explorer.jpg",
+      "pages": [
+        "/routes/auroville-explorer/"
+      ],
+      "alt": "Auroville Explorer, Auroville, Tamil Nadu: the Naarad title card, set on a photograph from the route.",
+      "width": 1200,
+      "height": 630,
+      "quality": 82,
+      "photo": {
+        "id": "auroville-matrimandir",
+        "title": "Matrimandir , Auroville, pondichery",
+        "author": "devaiah pa",
+        "licence": "CC BY-SA 2.0",
+        "licenceUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+        "sourcePage": "https://www.flickr.com/photos/47778526@N08/7987254436",
+        "changes": "Cropped to 1200 x 630, with the page title, the Naarad wordmark and this credit set over it."
+      },
+      "licence": "CC BY-SA 2.0"
+    },
+    {
+      "file": "route-coorg-plantation-hike.jpg",
+      "pages": [
+        "/routes/coorg-plantation-hike/"
+      ],
+      "alt": "Coorg Plantation Hike, Coorg, Karnataka: the Naarad title card.",
+      "width": 1200,
+      "height": 630,
+      "quality": 82,
+      "photo": null,
+      "licence": "Naarad: text, logo and route line only"
+    },
+    {
+      "file": "route-east-coast-beach-route.jpg",
+      "pages": [
+        "/routes/east-coast-beach-route/"
+      ],
+      "alt": "East Coast Beach Route, Chennai, Tamil Nadu: the Naarad title card, set on a photograph from the route.",
+      "width": 1200,
+      "height": 630,
+      "quality": 82,
+      "photo": {
+        "id": "chennai-marina",
+        "title": "Marina Beach, Chennai",
+        "author": "VinothChandar",
+        "licence": "CC BY 2.0",
+        "licenceUrl": "https://creativecommons.org/licenses/by/2.0/",
+        "sourcePage": "https://www.flickr.com/photos/44345361@N06/4315265333",
+        "changes": "Cropped to 1200 x 630, with the page title, the Naarad wordmark and this credit set over it."
+      },
+      "licence": "CC BY 2.0"
+    },
+    {
+      "file": "route-hampi-heritage-trail.jpg",
+      "pages": [
+        "/routes/hampi-heritage-trail/"
+      ],
+      "alt": "Hampi Heritage Trail, Hampi, Karnataka: the Naarad title card, set on a photograph from the route.",
+      "width": 1200,
+      "height": 630,
+      "quality": 82,
+      "photo": {
+        "id": "hampi-gopuram",
+        "title": "Complex of Virupaksha Temple, Hampi (03)",
+        "author": "iMahesh",
+        "licence": "CC BY-SA 4.0",
+        "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+        "sourcePage": "https://commons.wikimedia.org/w/index.php?curid=153324461",
+        "changes": "Cropped to 1200 x 630, with the page title, the Naarad wordmark and this credit set over it."
+      },
+      "licence": "CC BY-SA 4.0"
+    },
+    {
+      "file": "route-iit-madras-wildlife-walk.jpg",
+      "pages": [
+        "/routes/iit-madras-wildlife-walk/"
+      ],
+      "alt": "IIT Madras Wildlife Walk, Chennai, Tamil Nadu: the Naarad title card, set on a photograph from the route.",
+      "width": 1200,
+      "height": 630,
+      "quality": 82,
+      "photo": {
+        "id": "chennai-iitm",
+        "title": "Ramp Bridge Hostels East IIT Madras Jun23 A7C 05194",
+        "author": "Timothy A. Gonsalves",
+        "licence": "CC BY-SA 4.0",
+        "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+        "sourcePage": "https://commons.wikimedia.org/w/index.php?curid=133560811",
+        "changes": "Cropped to 1200 x 630, with the page title, the Naarad wordmark and this credit set over it."
+      },
+      "licence": "CC BY-SA 4.0"
+    },
+    {
+      "file": "route-jaipur-pink-city-cycling.jpg",
+      "pages": [
+        "/routes/jaipur-pink-city-cycling/"
+      ],
+      "alt": "Jaipur Pink City Cycling, Jaipur, Rajasthan: the Naarad title card.",
+      "width": 1200,
+      "height": 630,
+      "quality": 82,
+      "photo": null,
+      "licence": "Naarad: text, logo and route line only"
+    },
+    {
+      "file": "route-khajuraho-temple-corridor.jpg",
+      "pages": [
+        "/routes/khajuraho-temple-corridor/"
+      ],
+      "alt": "Khajuraho Temple Corridor, Khajuraho, Madhya Pradesh: the Naarad title card.",
+      "width": 1200,
+      "height": 630,
+      "quality": 82,
+      "photo": null,
+      "licence": "Naarad: text, logo and route line only"
+    },
+    {
+      "file": "route-konark-sun-temple-circuit.jpg",
+      "pages": [
+        "/routes/konark-sun-temple-circuit/"
+      ],
+      "alt": "Konark Sun Temple Circuit, Konark, Odisha: the Naarad title card.",
+      "width": 1200,
+      "height": 630,
+      "quality": 82,
+      "photo": null,
+      "licence": "Naarad: text, logo and route line only"
+    },
+    {
+      "file": "route-mahabalipuram-shore-temple.jpg",
+      "pages": [
+        "/routes/mahabalipuram-shore-temple/"
+      ],
+      "alt": "Mahabalipuram Shore Temple, Mahabalipuram, Tamil Nadu: the Naarad title card.",
+      "width": 1200,
+      "height": 630,
+      "quality": 82,
+      "photo": null,
+      "licence": "Naarad: text, logo and route line only"
+    },
+    {
+      "file": "route-marina-beach-trail.jpg",
+      "pages": [
+        "/routes/marina-beach-trail/"
+      ],
+      "alt": "Marina Beach Trail, Chennai, Tamil Nadu: the Naarad title card, set on a photograph from the route.",
+      "width": 1200,
+      "height": 630,
+      "quality": 82,
+      "photo": {
+        "id": "chennai-marina",
+        "title": "Marina Beach, Chennai",
+        "author": "VinothChandar",
+        "licence": "CC BY 2.0",
+        "licenceUrl": "https://creativecommons.org/licenses/by/2.0/",
+        "sourcePage": "https://www.flickr.com/photos/44345361@N06/4315265333",
+        "changes": "Cropped to 1200 x 630, with the page title, the Naarad wordmark and this credit set over it."
+      },
+      "licence": "CC BY 2.0"
+    },
+    {
+      "file": "route-marina-lighthouse-trail.jpg",
+      "pages": [
+        "/routes/marina-lighthouse-trail/"
+      ],
+      "alt": "Marina Lighthouse Trail, Chennai, Tamil Nadu: the Naarad title card, set on a photograph from the route.",
+      "width": 1200,
+      "height": 630,
+      "quality": 82,
+      "photo": {
+        "id": "chennai-marina",
+        "title": "Marina Beach, Chennai",
+        "author": "VinothChandar",
+        "licence": "CC BY 2.0",
+        "licenceUrl": "https://creativecommons.org/licenses/by/2.0/",
+        "sourcePage": "https://www.flickr.com/photos/44345361@N06/4315265333",
+        "changes": "Cropped to 1200 x 630, with the page title, the Naarad wordmark and this credit set over it."
+      },
+      "licence": "CC BY 2.0"
+    },
+    {
+      "file": "route-mysore-palace-heritage-walk.jpg",
+      "pages": [
+        "/routes/mysore-palace-heritage-walk/"
+      ],
+      "alt": "Mysore Palace Heritage Walk, Mysore, Karnataka: the Naarad title card.",
+      "width": 1200,
+      "height": 630,
+      "quality": 82,
+      "photo": null,
+      "licence": "Naarad: text, logo and route line only"
+    },
+    {
+      "file": "route-pondicherry-french-quarter.jpg",
+      "pages": [
+        "/routes/pondicherry-french-quarter/"
+      ],
+      "alt": "Pondicherry French Quarter, Puducherry, Tamil Nadu: the Naarad title card.",
+      "width": 1200,
+      "height": 630,
+      "quality": 82,
+      "photo": null,
+      "licence": "Naarad: text, logo and route line only"
+    },
+    {
+      "file": "route-thanjavur-living-heritage.jpg",
+      "pages": [
+        "/routes/thanjavur-living-heritage/"
+      ],
+      "alt": "Thanjavur Living Heritage, Thanjavur, Tamil Nadu: the Naarad title card, set on a photograph from the route.",
+      "width": 1200,
+      "height": 630,
+      "quality": 82,
+      "photo": {
+        "id": "thanjavur-temple",
+        "title": "Keralaanthakan ThiruVayil @ Brihadeeswarar Temple-Thanjavur",
+        "author": "Lux@Photography",
+        "licence": "CC BY 2.0",
+        "licenceUrl": "https://creativecommons.org/licenses/by/2.0/",
+        "sourcePage": "https://www.flickr.com/photos/71663438@N08/16232975694",
+        "changes": "Cropped to 1200 x 630, with the page title, the Naarad wordmark and this credit set over it."
+      },
+      "licence": "CC BY 2.0"
+    },
+    {
+      "file": "route-thiruvanmayur-heritage-trail.jpg",
+      "pages": [
+        "/routes/thiruvanmayur-heritage-trail/"
+      ],
+      "alt": "Thiruvanmayur Heritage Trail, Chennai, Tamil Nadu: the Naarad title card, with the route line drawn on a plain map.",
+      "width": 1200,
+      "height": 630,
+      "quality": 82,
+      "photo": null,
+      "licence": "Naarad: text, logo and route line only"
+    },
+    {
+      "file": "route-udaipur-lake-palace-circuit.jpg",
+      "pages": [
+        "/routes/udaipur-lake-palace-circuit/"
+      ],
+      "alt": "Udaipur Lake Palace Circuit, Udaipur, Rajasthan: the Naarad title card.",
+      "width": 1200,
+      "height": 630,
+      "quality": 82,
+      "photo": null,
+      "licence": "Naarad: text, logo and route line only"
+    },
+    {
+      "file": "route-varanasi-ghats-dawn-walk.jpg",
+      "pages": [
+        "/routes/varanasi-ghats-dawn-walk/"
+      ],
+      "alt": "Varanasi Ghats Dawn Walk, Varanasi, Uttar Pradesh: the Naarad title card.",
+      "width": 1200,
+      "height": 630,
+      "quality": 82,
+      "photo": null,
+      "licence": "Naarad: text, logo and route line only"
+    },
+    {
+      "file": "route-velachcheri-to-mylapore.jpg",
+      "pages": [
+        "/routes/velachcheri-to-mylapore/"
+      ],
+      "alt": "Velachcheri to Mylapore, Chennai, Tamil Nadu: the Naarad title card, with the route line drawn on a plain map.",
+      "width": 1200,
+      "height": 630,
+      "quality": 82,
+      "photo": null,
+      "licence": "Naarad: text, logo and route line only"
+    },
+    {
+      "file": "route-velacherry-neighbourhood.jpg",
+      "pages": [
+        "/routes/velacherry-neighbourhood/"
+      ],
+      "alt": "Velacherry Neighbourhood, Chennai, Tamil Nadu: the Naarad title card, with the route line drawn on a plain map.",
+      "width": 1200,
+      "height": 630,
+      "quality": 82,
+      "photo": null,
+      "licence": "Naarad: text, logo and route line only"
+    },
+    {
+      "file": "routes.jpg",
+      "pages": [
+        "/routes/",
+        "/explore/"
+      ],
+      "alt": "Go where stories live: the Naarad route catalogue, set on a photograph from the Hampi Heritage Trail.",
+      "width": 1200,
+      "height": 630,
+      "quality": 82,
+      "photo": {
+        "id": "hampi-virupaksha",
+        "title": "Virupaksha Temple,Hampi",
+        "author": "Vedamurthy J",
+        "licence": "CC BY-SA 3.0",
+        "licenceUrl": "https://creativecommons.org/licenses/by-sa/3.0/",
+        "sourcePage": "https://commons.wikimedia.org/w/index.php?curid=12001400",
+        "changes": "Cropped to 1200 x 630, with the page title, the Naarad wordmark and this credit set over it."
+      },
+      "licence": "CC BY-SA 3.0"
+    },
+    {
+      "file": "stories.jpg",
+      "pages": [
+        "/stories/"
+      ],
+      "alt": "Listen closer: Naarad's stories, set on the lead photograph of The Stone Chariot of Hampi.",
+      "width": 1200,
+      "height": 630,
+      "quality": 82,
+      "photo": {
+        "id": "hampi-stone-chariot",
+        "title": "Iconic Stone Chariot @ Vittala Temple, Hampi, Karnataka",
+        "author": "Ram Nagesh Thota",
+        "licence": "CC BY-SA 4.0",
+        "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+        "sourcePage": "https://commons.wikimedia.org/w/index.php?curid=51563982",
+        "changes": "Cropped to 1200 x 630, with the page title, the Naarad wordmark and this credit set over it."
+      },
+      "licence": "CC BY-SA 4.0"
+    },
+    {
+      "file": "story-bazaar-that-sold-the-world.jpg",
+      "pages": [
+        "/stories/bazaar-that-sold-the-world/"
+      ],
+      "alt": "The Bazaar That Sold the World: the Naarad title card, set on the story's lead photograph.",
+      "width": 1200,
+      "height": 630,
+      "quality": 82,
+      "photo": {
+        "id": "hampi-bazaar",
+        "title": "Achyuta Raya’s Temple,Hampi",
+        "author": "Kalyan07kumar",
+        "licence": "CC BY-SA 4.0",
+        "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+        "sourcePage": "https://commons.wikimedia.org/w/index.php?curid=81972070",
+        "changes": "Cropped to 1200 x 630, with the page title, the Naarad wordmark and this credit set over it."
+      },
+      "licence": "CC BY-SA 4.0"
+    },
+    {
+      "file": "story-stone-chariot-of-hampi.jpg",
+      "pages": [
+        "/stories/stone-chariot-of-hampi/"
+      ],
+      "alt": "The Stone Chariot of Hampi: the Naarad title card, set on the story's lead photograph.",
+      "width": 1200,
+      "height": 630,
+      "quality": 82,
+      "photo": {
+        "id": "hampi-stone-chariot",
+        "title": "Iconic Stone Chariot @ Vittala Temple, Hampi, Karnataka",
+        "author": "Ram Nagesh Thota",
+        "licence": "CC BY-SA 4.0",
+        "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+        "sourcePage": "https://commons.wikimedia.org/w/index.php?curid=51563982",
+        "changes": "Cropped to 1200 x 630, with the page title, the Naarad wordmark and this credit set over it."
+      },
+      "licence": "CC BY-SA 4.0"
+    },
+    {
+      "file": "story-water-that-built-a-capital.jpg",
+      "pages": [
+        "/stories/water-that-built-a-capital/"
+      ],
+      "alt": "The Water That Built a Capital: the Naarad title card, set on the story's lead photograph.",
+      "width": 1200,
+      "height": 630,
+      "quality": 82,
+      "photo": {
+        "id": "hampi-tungabhadra",
+        "title": "Tungabhadra River and Coracle Boats",
+        "author": "Dey.sandip",
+        "licence": "CC BY-SA 3.0",
+        "licenceUrl": "https://creativecommons.org/licenses/by-sa/3.0/",
+        "sourcePage": "https://commons.wikimedia.org/w/index.php?curid=23573147",
+        "changes": "Cropped to 1200 x 630, with the page title, the Naarad wordmark and this credit set over it."
+      },
+      "licence": "CC BY-SA 3.0"
+    }
+  ]
+}
