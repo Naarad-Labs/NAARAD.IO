@@ -1,0 +1,60 @@
+# Checks every change must pass before it merges.
+#
+#   ops    the evidence ledger, decision log and guardrails are well formed, no
+#          key is committed, and the rules' own tests pass
+#   site   the committed pages are exactly what the build writes, and the
+#          browser checks in e2e/ pass
+#
+# The share cards (Images/og) are drawn by the runner's own Chromium and fonts,
+# so their bytes differ between machines. They are rebuilt but not compared.
+
+name: ci
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  ops:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node scripts/ops.mjs validate
+      - run: node scripts/ops.mjs scan
+      - run: node --test "ops/test/*.test.mjs"
+
+  site:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0          # the sitemap is dated by git history
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: e2e/package-lock.json
+      - run: npm ci
+        working-directory: e2e
+      - run: npx playwright install --with-deps chromium
+        working-directory: e2e
+      - name: Build the pages
+        run: node scripts/build-site.mjs
+      - name: Committed pages match the build
+        run: |
+          changed="$(git status --porcelain -- . ':(exclude)Images/og')"
+          if [ -n "$changed" ]; then
+            echo "Run 'node scripts/build-site.mjs' and commit what it writes:"
+            echo "$changed"
+            exit 1
+          fi
+      - name: Browser checks
+        run: npm test
+        working-directory: e2e

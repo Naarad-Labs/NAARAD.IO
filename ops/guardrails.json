@@ -1,0 +1,142 @@
+{
+  "_about": "Autonomy tiers, per-role scope and the action table. Read by ops/lib.mjs and scripts/ops.mjs. Every role starts at Tier 1; promote only after 4 clean weeks, and log it in ops/decisions.",
+  "tiers": {
+    "0": "Read: code, logs, metrics, ledger; draft reports",
+    "1": "Propose: branches, PRs, specs, tests, CI",
+    "2": "Ship reversible: merge and release behind a flag up to 25%; roll back on SLO breach",
+    "3": "Ask first: nothing until the founder approves, with a logged decision",
+    "never": "Only the founder"
+  },
+  "daily_cap": {
+    "tokens": null,
+    "cloud_inr": null,
+    "_note": "Hard rule 3: a daily token and cloud cost cap halts all agents when hit. The founder sets the numbers; they are null until then and validate says so."
+  },
+  "roles": {
+    "tech-lead": {
+      "owns": "Architecture, decision records, routing",
+      "tier": 1,
+      "clean_weeks": 0,
+      "credential": null
+    },
+    "frontend-pwa": {
+      "owns": "Web app, offline cache, low-end Android, Indic fonts",
+      "tier": 1,
+      "clean_weeks": 0,
+      "credential": null
+    },
+    "backend-api": {
+      "owns": "APIs, auth, rate limits, jobs",
+      "tier": 1,
+      "clean_weeks": 0,
+      "credential": null
+    },
+    "database": {
+      "owns": "Schema, migrations, indexes, backups",
+      "tier": 1,
+      "clean_weeks": 0,
+      "credential": null
+    },
+    "offline-sync": {
+      "owns": "Client event queue, dedupe, conflicts",
+      "tier": 1,
+      "clean_weeks": 0,
+      "credential": null
+    },
+    "security": {
+      "owns": "Threat model, secrets, dependencies",
+      "tier": 1,
+      "clean_weeks": 0,
+      "credential": null
+    },
+    "privacy-compliance": {
+      "owns": "DPDP consent and deletion, minors, ASI permissions, GST/TDS",
+      "tier": 1,
+      "clean_weeks": 0,
+      "credential": null
+    },
+    "qa": {
+      "owns": "Test plan, regression suite",
+      "tier": 1,
+      "clean_weeks": 0,
+      "credential": null
+    },
+    "sre-release": {
+      "owns": "CI/CD, flags, rollout, rollback, SLOs",
+      "tier": 1,
+      "clean_weeks": 0,
+      "credential": null
+    },
+    "data-analytics": {
+      "owns": "Event schema, funnel, dashboards",
+      "tier": 1,
+      "clean_weeks": 0,
+      "credential": null
+    },
+    "payments": {
+      "owns": "Razorpay, reconciliation, refunds, payouts",
+      "tier": 1,
+      "clean_weeks": 0,
+      "credential": null
+    },
+    "content-ai-quality": {
+      "owns": "Narration accuracy, translation, moderation, cultural sensitivity",
+      "tier": 1,
+      "clean_weeks": 0,
+      "credential": null
+    },
+    "design-accessibility": {
+      "owns": "UX, WCAG, copy per language",
+      "tier": 1,
+      "clean_weeks": 0,
+      "credential": null
+    },
+    "finops": {
+      "owns": "Cloud and LLM spend",
+      "tier": 1,
+      "clean_weeks": 0,
+      "credential": null
+    },
+    "docs-devex": {
+      "owns": "Runbooks, README, decision records",
+      "tier": 1,
+      "clean_weeks": 0,
+      "credential": null
+    },
+    "incident-lead": {
+      "owns": "On-call, postmortems",
+      "tier": 1,
+      "clean_weeks": 0,
+      "credential": null
+    }
+  },
+  "actions": {
+    "read_code": 0,
+    "read_logs": 0,
+    "read_metrics": 0,
+    "read_ledger": 0,
+    "draft_report": 0,
+    "open_branch": 1,
+    "open_pr": 1,
+    "write_spec": 1,
+    "write_tests": 1,
+    "run_ci": 1,
+    "merge_behind_flag": 2,
+    "release_behind_flag_up_to_25_percent": 2,
+    "rollback_on_slo_breach": 2,
+    "payments_change": "ask",
+    "auth_change": "ask",
+    "destructive_migration": "ask",
+    "data_deletion": "ask",
+    "privacy_change": "ask",
+    "pricing_change": "ask",
+    "monument_onsite_change": "ask",
+    "spend_above_budget": "ask",
+    "wire_analytics_into_pages": "ask",
+    "prod_db_write_outside_migration": "never",
+    "payment_dashboard_access": "never",
+    "send_email_as_founder": "never",
+    "post_as_founder": "never",
+    "delete_backups": "never"
+  }
+}
