@@ -9,8 +9,8 @@
   },
   "daily_cap": {
     "tokens": "unbounded",
-    "cloud_inr": null,
-    "_note": "Hard rule 3: a daily token and cloud cost cap halts all agents when hit. Tokens: the founder chose \"unbounded\" on 2026-10-26 (decision D-0002). Cloud spend is still null until the founder sets it."
+    "cloud_inr": 1000,
+    "_note": "Hard rule 3: a cap halts all agents when hit. Tokens: unbounded (D-0002). Cloud spend: no more than Rs 1,000 in total, set by the founder on 2026-10-26 (D-0003). The founder did not say per day or per month; it is read as a monthly budget until they say otherwise."
   },
   "roles": {
     "tech-lead": {

@@ -40,9 +40,13 @@ test('the committed stores validate', () => {
   assert.deepEqual(errors, []);
 });
 
-test('an unset daily cap is a warning, never silence', () => {
-  const { warnings } = validateAll(loadStores(ROOT), { today: TODAY });
-  assert.ok(warnings.some((warning) => /daily cost cap/.test(warning)));
+test('an unset cap is a warning, never silence; a chosen one is not', () => {
+  const stores = loadStores(ROOT);
+  assert.deepEqual(validateAll(stores, { today: TODAY }).warnings, []);
+  stores.guardrails.daily_cap.cloud_inr = null;
+  assert.ok(validateAll(stores, { today: TODAY }).warnings.some((warning) => /cloud_inr/.test(warning)));
+  stores.guardrails.daily_cap.tokens = 'unbounded';
+  assert.ok(!validateAll(stores, { today: TODAY }).warnings.some((warning) => /tokens/.test(warning)));
 });
 
 test('ledger: a good entry passes', () => {
