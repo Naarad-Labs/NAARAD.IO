@@ -142,6 +142,7 @@ export function validateOpportunities(opportunities, ledger) {
     if (opportunity.status === 'backlog') {
       const gate = gateG1(opportunity, ledger);
       if (!gate.pass) fail(`is in the backlog but fails G1: ${gate.reasons.join('; ')}`);
+      validateEstimates(opportunity.estimates, ids).forEach(fail);
     }
   });
   return errors;
@@ -176,6 +177,100 @@ export function gateG1(opportunity, ledger) {
   }
 
   return { pass: reasons.length === 0, reasons, origins: [...origins] };
+}
+
+/* ---- feature intake: scoring the backlog ---- */
+
+/* Estimates a score is built from. Each is a guess, so each says where it came
+   from: a ledger entry, not a feeling. `reach` is people or organisations who
+   have the problem, `expected_move` is the fraction by which the named metric
+   should move, `effort` is person-weeks. */
+export function validateEstimates(estimates, ledgerIds) {
+  const errors = [];
+  if (!estimates) return ['estimates are missing (reach, expected_move, effort and the evidence they rest on)'];
+  ['reach', 'expected_move', 'effort'].forEach((key) => {
+    if (!(typeof estimates[key] === 'number' && estimates[key] > 0)) errors.push(`estimates.${key} must be a number above 0`);
+  });
+  const basis = estimates.basis || [];
+  if (!Array.isArray(basis) || !basis.length) errors.push('estimates.basis must list the ledger entries the numbers rest on');
+  else basis.forEach((id) => { if (!ledgerIds.has(id)) errors.push(`estimates.basis ${id} is not in the ledger`); });
+  return errors;
+}
+
+/* The evidence factor is deliberately cautious: take the best tier from each
+   independent origin, keep the three strongest, and use the weakest of those.
+   An opportunity rests on its thinnest leg, not its best quote. */
+export function evidenceFactor(opportunity, ledger) {
+  const byId = new Map(ledger.map((entry) => [entry.id, entry]));
+  const best = new Map();
+  (opportunity.evidence || []).map((id) => byId.get(id)).filter(Boolean).forEach((entry) => {
+    const key = entry.origin.trim().toLowerCase();
+    if (!best.has(key) || tierRank(entry.tier) > best.get(key)) best.set(key, tierRank(entry.tier));
+  });
+  const top = [...best.values()].sort((a, b) => b - a).slice(0, G1_MIN_ORIGINS);
+  return { factor: top.length === G1_MIN_ORIGINS ? Math.min(...top) : 0, strongest: top.length ? Math.max(...top) : -1 };
+}
+
+/* score = evidence tier x reach x expected metric move / effort. The weights
+   are a heuristic, not a measurement: recalibrate them each quarter against
+   what actually moved. Nothing below T2, and nothing without a metric, is
+   scored at all: it is blocked, with the reason. */
+export function intake(opportunities, ledger) {
+  const scored = [];
+  const blocked = [];
+  opportunities.forEach((opportunity) => {
+    const reasons = [];
+    const { factor, strongest } = evidenceFactor(opportunity, ledger);
+    if (!opportunity.metric || !isText(opportunity.metric.name)) reasons.push('no outcome metric named');
+    if (strongest < tierRank(G1_MIN_TIER)) reasons.push(`best evidence is below ${G1_MIN_TIER}`);
+    else if (factor < tierRank(G1_MIN_TIER)) reasons.push(`fewer than ${G1_MIN_ORIGINS} independent origins at ${G1_MIN_TIER}+`);
+    const estimateErrors = validateEstimates(opportunity.estimates, new Set(ledger.map((entry) => entry.id)));
+    reasons.push(...estimateErrors);
+    if (reasons.length) { blocked.push({ id: opportunity.id, title: opportunity.title, reasons }); return; }
+    const { reach, expected_move: move, effort } = opportunity.estimates;
+    scored.push({ id: opportunity.id, title: opportunity.title, tier: TIERS[factor], score: (factor * reach * move) / effort });
+  });
+  scored.sort((a, b) => b.score - a.score || a.id.localeCompare(b.id));
+  return { scored, top: scored.slice(0, 3), blocked };
+}
+
+/* ---- interview guides ---- */
+
+/* The Mom Test: ask about their past and their present, never about a product
+   that does not exist. A question that invites a hypothetical or a compliment
+   produces opinion (T0), which is the one thing the ledger cannot use. */
+const LEADING = [
+  [/\bwould you\b/i, 'asks what they would do'],
+  [/\bwould (it|this|that|they|your|the)\b/i, 'asks about a hypothetical'],
+  [/\bwill you\b/i, 'asks for a promise'],
+  [/\bdo you think\b/i, 'asks for an opinion'],
+  [/\bdo you (like|love|want|need)\b/i, 'asks for a feeling or a wish'],
+  [/\bhow much would\b/i, 'asks for a price they would pay'],
+  [/\bif we\b/i, 'describes a product that does not exist'],
+  [/\bwhat if\b/i, 'describes a hypothetical'],
+  [/\bin the future\b/i, 'asks about the future'],
+  [/\b(naarad|our (app|product|platform|website|service|solution))\b/i, 'pitches instead of listening'],
+];
+
+export function lintGuide(text) {
+  const errors = [];
+  /* A section headed "Do not" or "Avoid" quotes the bad questions on purpose. */
+  let quoting = false;
+  const questions = text.split('\n')
+    .map((line, index) => {
+      const heading = line.match(/^#{1,6}\s*(.*)$/);
+      if (heading) quoting = /^(do not|don'?t|avoid)\b/i.test(heading[1].trim());
+      return { line: line.trim(), number: index + 1, quoting };
+    })
+    .filter(({ line, quoting: skip }) => !skip && /^(?:[-*]|\d+[.)])\s/.test(line) && line.includes('?'));
+  questions.forEach(({ line, number }) => {
+    LEADING.forEach(([pattern, why]) => { if (pattern.test(line)) errors.push(`line ${number}: ${why}: "${line.replace(/^(?:[-*]|\d+[.)])\s/, '')}"`); });
+  });
+  if (questions.length < 8) errors.push(`has ${questions.length} questions; a guide needs at least 8`);
+  if (!/^#{1,3}\s*Commitments? to ask for/im.test(text)) errors.push('has no "Commitments to ask for" section: every conversation ends by asking for time, an introduction or money');
+  findPersonalData(text).forEach((kind) => errors.push(`contains a ${kind}: the repository is public`));
+  findSecrets(text).forEach((kind) => errors.push(`contains a ${kind}`));
+  return errors;
 }
 
 /* ---- decision log ---- */
@@ -260,8 +355,10 @@ export function validateAll(stores, { today } = {}) {
   ];
   const warnings = [];
   const caps = (stores.guardrails && stores.guardrails.daily_cap) || {};
-  if (caps.tokens == null || caps.cloud_inr == null) {
-    warnings.push('daily cost cap is not set (guardrails.json daily_cap): hard rule 3 cannot halt anything until it is');
+  /* "unbounded" is a choice the founder has made on purpose; null is a choice nobody has made. */
+  const unset = ['tokens', 'cloud_inr'].filter((key) => caps[key] == null);
+  if (unset.length) {
+    warnings.push(`daily cost cap is not set for ${unset.join(' and ')} (guardrails.json daily_cap): hard rule 3 cannot halt anything until it is, or the founder records "unbounded"`);
   }
   return { errors, warnings };
 }

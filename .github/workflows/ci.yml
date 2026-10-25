@@ -28,6 +28,7 @@ jobs:
           node-version: 22
       - run: node scripts/ops.mjs validate
       - run: node scripts/ops.mjs scan
+      - run: node scripts/ops.mjs lint-guide ops/interviews/*.md
       - run: node --test "ops/test/*.test.mjs"
 
   site:
