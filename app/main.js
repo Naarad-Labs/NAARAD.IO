@@ -20,6 +20,7 @@ import * as Data from './data.js';
 import * as Audio from './audio.js';
 import * as Journey from './journey-store.js';
 import * as Offline from './offline-bundles.js';
+import * as Account from './account.js';
 import * as Drafts from './studio-store.js';
 import * as Motion from './motion.js';
 import * as Urls from './urls.js';
@@ -612,6 +613,9 @@ document.addEventListener('click', async (event) => {
     return;
   }
 
+  const accountButton = event.target.closest('[data-account-mode], [data-account-signout]');
+  if (accountButton) { event.preventDefault(); await Account.click(accountButton, refreshStudio); return; }
+
   const stopButton = event.target.closest('[data-select-stop]');
   const listenTarget = event.target.closest('[data-action="listen"]');
   if (listenTarget) { event.preventDefault(); event.stopPropagation(); listen(Number(listenTarget.dataset.stop)); return; }
@@ -770,6 +774,12 @@ document.addEventListener('submit', async (event) => {
     const value = ($('#route-search')?.value || '').trim();
     await show(new URL(Urls.cataloguePath(value), location.origin));
     $('#catalogue-query')?.focus();
+    return;
+  }
+  if (event.target.matches('[data-account-form]')) {
+    event.preventDefault();
+    await started;
+    await Account.submit(event.target, refreshStudio);
     return;
   }
   if (event.target.matches('[data-journal-form]')) {
