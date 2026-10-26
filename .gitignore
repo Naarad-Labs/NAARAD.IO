@@ -26,3 +26,6 @@ e2e/playwright-report/
 
 # Output from the design-taste-frontend skill's inspector
 .taste-skill/
+
+# Python bytecode
+__pycache__/
