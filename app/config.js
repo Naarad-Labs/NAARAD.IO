@@ -6,5 +6,5 @@
  * this file or anywhere under app/. While these are empty, app/backend.js is
  * switched off and the Studio and My Journey say accounts are unavailable.
  */
-export const SUPABASE_URL = '';
+export const SUPABASE_URL = 'https://efpkaptocxhevywfqhyt.supabase.co';
 export const SUPABASE_ANON_KEY = '';

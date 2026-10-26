@@ -41,7 +41,10 @@ async function main() {
   try {
     const exists = (await client.query(`select to_regclass('public._naarad_migrations') as found`)).rows[0].found;
     if (!exists && !dryRun) {
-      await client.query('create table public._naarad_migrations (name text primary key, applied_at timestamptz not null default now())');
+      /* A table in the public schema is reachable by the browser's anon key unless it is locked. */
+      await client.query(`create table public._naarad_migrations (name text primary key, applied_at timestamptz not null default now());
+        alter table public._naarad_migrations enable row level security;
+        revoke all on public._naarad_migrations from public, anon, authenticated;`);
     }
     const done = new Set(exists || !dryRun
       ? (await client.query('select name from public._naarad_migrations')).rows.map((row) => row.name)
