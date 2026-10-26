@@ -747,3 +747,56 @@ test.describe('accounts: the sign-in panel (behind a flag)', () => {
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1)).toBe(true);
   });
 });
+
+test.describe('offline route bundles v2, part A: the kit and the space check', () => {
+  test.use({ serviceWorkers: 'allow' });
+  const SLUG = 'hampi-heritage-trail';
+  const FLAG = 'naarad.flag.offline-bundles';
+
+  async function openRoute(page) {
+    await page.addInitScript((key) => { try { localStorage.setItem(key, 'on'); } catch { /* ignore */ } }, FLAG);
+    await page.goto(`/routes/${SLUG}/`);
+    await page.evaluate(() => navigator.serviceWorker.ready);
+    await page.reload();
+    return (await page.locator('h1').first().textContent()).trim();
+  }
+
+  test('My Journey opens with no network once a route is saved, and lists it', async ({ page, context }) => {
+    const name = await openRoute(page);
+    await page.locator('[data-action="offline"]').click();
+    await expect(page.locator('[data-action="offline"]')).toContainText('Saved offline', { timeout: 30000 });
+
+    // Drop every cache but the bundles, so nothing but the bundle can answer.
+    await page.evaluate(async () => {
+      for (const key of await caches.keys()) if (key !== 'naarad-bundles') await caches.delete(key);
+    });
+    await context.setOffline(true);
+    await page.goto('/journey/');
+    await expect(page.locator('h1').first()).toBeVisible();
+    await page.getByRole('tab', { name: /Downloads/ }).click();
+    await expect(page.locator('[data-journey-panel="downloads"]')).toContainText(name);
+    await context.setOffline(false);
+  });
+
+  test('a download that will not fit says so in words about space, and keeps nothing', async ({ page }) => {
+    await openRoute(page);
+    await page.evaluate(() => {
+      Object.defineProperty(navigator.storage, 'estimate', { value: async () => ({ usage: 4_500_000, quota: 5_000_000 }), configurable: true });
+    });
+    await page.locator('[data-action="offline"]').click();
+    await expect(page.locator('#site-notice')).toContainText(/space/i, { timeout: 30000 });
+    await expect(page.locator('[data-action="offline"]')).toContainText('Download for offline');
+    expect(await page.evaluate(async () => (await (await caches.open('naarad-bundles')).keys()).length)).toBe(0);
+    expect(await page.evaluate(() => JSON.parse(localStorage.getItem('naarad.journey.v1') || '{"downloads":[]}').downloads.length)).toBe(0);
+  });
+
+  test('after a download the browser is asked to keep it, and the notice says honestly what it answered', async ({ page }) => {
+    await openRoute(page);
+    await page.evaluate(() => {
+      Object.defineProperty(navigator.storage, 'persisted', { value: async () => false, configurable: true });
+      Object.defineProperty(navigator.storage, 'persist', { value: async () => false, configurable: true });
+    });
+    await page.locator('[data-action="offline"]').click();
+    await expect(page.locator('#site-notice')).toContainText('may remove this if space runs low', { timeout: 30000 });
+  });
+});

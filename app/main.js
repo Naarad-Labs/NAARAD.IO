@@ -534,11 +534,12 @@ async function toggleOffline(button) {
     Journey.addDownload({ slug: route.slug, name: route.name, stops: route.stopCount || 0, sizeLabel: bundle.label, urls: bundle.urls, version: bundle.version });
     button.dataset.state = 'saved';
     words('Saved offline', `${bundle.label} · tap to remove`);
-    notify(`${route.name} is saved for offline use. Map tiles and audio are not included.`);
-  } catch {
+    const kept = Offline.persistenceNote(await Offline.requestPersistence());
+    notify(`${route.name} is saved for offline use. Map tiles and audio are not included. ${kept}`.trim());
+  } catch (error) {
     button.dataset.state = 'idle';
     words('Download for offline', 'Page, text and photos. No map tiles or audio.');
-    notify('Could not save this route for offline use. Nothing was kept.');
+    notify(error && error.name === 'SpaceError' ? error.message : 'Could not save this route for offline use. Nothing was kept.');
   } finally {
     button.disabled = false;
   }

@@ -18,9 +18,18 @@
  * cache only if all of them arrived, so a dropped connection keeps nothing.
  */
 
+import { formatBytes, assessSpace, isQuotaError, SpaceError } from './storage-budget.js';
+export { requestPersistence, persistenceNote, SpaceError } from './storage-budget.js';
+
 export const FLAG_KEY = 'naarad.flag.offline-bundles';
 export const BUNDLE_CACHE = 'naarad-bundles';
 export const BUNDLE_VERSION = 1;
+
+/* The offline kit: what My Journey needs to open with no network, so a saved
+   route can be found again. Every bundle lists these files, so the first
+   download stores them once and the last removal deletes them (remove() keeps
+   any file another bundle still lists). */
+export const KIT = ['/journey/', '/app/views/journey.js', '/app/journey.css'];
 
 /* The widths a phone asks for. Larger ones are left out to keep a bundle small. */
 export const MAX_PHOTO_WIDTH = 960;
@@ -54,7 +63,7 @@ export function parseSrcset(srcset) {
    tiles, ever), only the site's own folders, no service worker, and photographs
    no wider than MAX_PHOTO_WIDTH. Sorted, so the same page gives the same list. */
 export function selectUrls({ origin, slug, resources = [], srcsets = [], images = [] }) {
-  const out = new Set([`/routes/${slug}/`]);
+  const out = new Set([`/routes/${slug}/`, ...KIT]);
   const add = (raw) => {
     let url;
     try { url = new URL(raw, origin); } catch { return; }
@@ -68,9 +77,7 @@ export function selectUrls({ origin, slug, resources = [], srcsets = [], images 
   return [...out].sort();
 }
 
-export function sizeLabel(bytes) {
-  return bytes >= 1048576 ? `${(bytes / 1048576).toFixed(1)} MB` : `${Math.max(1, Math.round(bytes / 1024))} KB`;
-}
+export const sizeLabel = formatBytes;
 
 /** Keep this route on the device. Throws, and keeps nothing, if any file fails. */
 export async function download(route, env = {}) {
@@ -80,6 +87,9 @@ export async function download(route, env = {}) {
     origin = globalThis.location.origin,
     doc = globalThis.document,
     perf = globalThis.performance,
+    estimate = () => (globalThis.navigator && globalThis.navigator.storage && globalThis.navigator.storage.estimate
+      ? globalThis.navigator.storage.estimate()
+      : undefined),
   } = env;
 
   const urls = selectUrls({
@@ -98,8 +108,29 @@ export async function download(route, env = {}) {
     bytes += (await response.clone().arrayBuffer()).byteLength;
     fetched.push([path, response]);
   }
+
+  /* Refuse before writing anything if it will not fit. A browser that cannot
+     say how much room there is does not block the download: we try. */
+  let estimated;
+  try { estimated = await estimate(); } catch { estimated = undefined; }
+  const space = assessSpace(estimated, bytes);
+  if (!space.ok) throw new SpaceError(space.message);
+
+  /* All or nothing: if any write fails, the files already written are removed. */
   const cache = await cacheStorage.open(BUNDLE_CACHE);
-  for (const [path, response] of fetched) await cache.put(path, response);
+  const written = [];
+  try {
+    for (const [path, response] of fetched) {
+      await cache.put(path, response);
+      written.push(path);
+    }
+  } catch (error) {
+    for (const path of written) { try { await cache.delete(path); } catch { /* best effort */ } }
+    if (isQuotaError(error)) {
+      throw new SpaceError(`There is not enough space on this device to save this route (about ${formatBytes(bytes)}). Remove a saved route or free up space, then try again.`);
+    }
+    throw error;
+  }
   return { urls, bytes, label: sizeLabel(bytes), version: BUNDLE_VERSION };
 }
 
