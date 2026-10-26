@@ -747,3 +747,141 @@ test.describe('accounts: the sign-in panel (behind a flag)', () => {
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1)).toBe(true);
   });
 });
+
+test.describe('offline route bundles v2, part A: the kit and the space check', () => {
+  test.use({ serviceWorkers: 'allow' });
+  const SLUG = 'hampi-heritage-trail';
+  const FLAG = 'naarad.flag.offline-bundles';
+
+  async function openRoute(page) {
+    await page.addInitScript((key) => { try { localStorage.setItem(key, 'on'); } catch { /* ignore */ } }, FLAG);
+    await page.goto(`/routes/${SLUG}/`);
+    await page.evaluate(() => navigator.serviceWorker.ready);
+    await page.reload();
+    return (await page.locator('h1').first().textContent()).trim();
+  }
+
+  test('My Journey opens with no network once a route is saved, and lists it', async ({ page, context }) => {
+    const name = await openRoute(page);
+    await page.locator('[data-action="offline"]').click();
+    await expect(page.locator('[data-action="offline"]')).toContainText('Saved offline', { timeout: 30000 });
+
+    // Drop every cache but the bundles, so nothing but the bundle can answer.
+    await page.evaluate(async () => {
+      for (const key of await caches.keys()) if (key !== 'naarad-bundles') await caches.delete(key);
+    });
+    await context.setOffline(true);
+    await page.goto('/journey/');
+    await expect(page.locator('h1').first()).toBeVisible();
+    await page.getByRole('tab', { name: /Downloads/ }).click();
+    await expect(page.locator('[data-journey-panel="downloads"]')).toContainText(name);
+    await context.setOffline(false);
+  });
+
+  test('a download that will not fit says so in words about space, and keeps nothing', async ({ page }) => {
+    await openRoute(page);
+    await page.evaluate(() => {
+      Object.defineProperty(navigator.storage, 'estimate', { value: async () => ({ usage: 4_500_000, quota: 5_000_000 }), configurable: true });
+    });
+    await page.locator('[data-action="offline"]').click();
+    await expect(page.locator('#site-notice')).toContainText(/space/i, { timeout: 30000 });
+    await expect(page.locator('[data-action="offline"]')).toContainText('Download for offline');
+    expect(await page.evaluate(async () => (await (await caches.open('naarad-bundles')).keys()).length)).toBe(0);
+    expect(await page.evaluate(() => JSON.parse(localStorage.getItem('naarad.journey.v1') || '{"downloads":[]}').downloads.length)).toBe(0);
+  });
+
+  test('after a download the browser is asked to keep it, and the notice says honestly what it answered', async ({ page }) => {
+    await openRoute(page);
+    await page.evaluate(() => {
+      Object.defineProperty(navigator.storage, 'persisted', { value: async () => false, configurable: true });
+      Object.defineProperty(navigator.storage, 'persist', { value: async () => false, configurable: true });
+    });
+    await page.locator('[data-action="offline"]').click();
+    await expect(page.locator('#site-notice')).toContainText('may remove this if space runs low', { timeout: 30000 });
+  });
+});
+
+test.describe('offline route bundles v2, part B: the offline bar and unsaved routes', () => {
+  test.use({ serviceWorkers: 'allow' });
+  const SLUG = 'hampi-heritage-trail';
+  const FLAG = 'naarad.flag.offline-bundles';
+
+  async function ready(page, { flag = true } = {}) {
+    if (flag) await page.addInitScript((key) => { try { localStorage.setItem(key, 'on'); } catch { /* ignore */ } }, FLAG);
+    await page.goto(`/routes/${SLUG}/`);
+    await page.evaluate(() => navigator.serviceWorker.ready);
+    await page.reload();
+  }
+  async function saveThisRoute(page) {
+    await page.locator('[data-action="offline"]').click();
+    await expect(page.locator('[data-action="offline"]')).toContainText('Saved offline', { timeout: 30000 });
+  }
+  const dropOtherCaches = (page) => page.evaluate(async () => {
+    for (const key of await caches.keys()) if (key !== 'naarad-bundles') await caches.delete(key);
+  });
+
+  test('flag off: no bar, even with no network', async ({ page, context }) => {
+    await ready(page, { flag: false });
+    await context.setOffline(true);
+    await page.evaluate(() => window.dispatchEvent(new Event('offline')));
+    await expect(page.locator('#offline-bar')).toHaveCount(0);
+    await context.setOffline(false);
+  });
+
+  test('the bar appears when the network goes and disappears when it returns', async ({ page, context }) => {
+    await ready(page);
+    await expect(page.locator('#offline-bar')).toHaveCount(0);
+    await context.setOffline(true);
+    await expect(page.locator('#offline-bar')).toContainText('You are offline', { timeout: 10000 });
+    await expect(page.locator('#offline-bar')).toContainText('No routes are saved on this device yet');
+    await context.setOffline(false);
+    await expect(page.locator('#offline-bar')).toHaveCount(0, { timeout: 10000 });
+  });
+
+  test('with a route saved, the bar says so, the catalogue opens offline, and unsaved routes are marked and do not open', async ({ page, context }) => {
+    await ready(page);
+    await saveThisRoute(page);
+    await dropOtherCaches(page);
+    await context.setOffline(true);
+
+    await page.goto('/routes/');
+    await expect(page.locator('#offline-bar')).toContainText('Showing routes saved on this device', { timeout: 10000 });
+    const saved = page.locator(`a[href="/routes/${SLUG}/"]`).first();
+    const other = page.locator(`a.route-card[href^="/routes/"]:not([href="/routes/${SLUG}/"])`).first();
+    await expect(saved).toBeVisible();
+    await expect(saved).not.toHaveAttribute('data-unsaved-offline', /.*/);
+    await expect(other).toHaveAttribute('data-unsaved-offline', '', { timeout: 10000 });
+    await expect(other).toContainText('Not saved for offline');
+
+    // A visitor can still tap it (aria-disabled only tells assistive tech), so force the click.
+    await other.click({ force: true });
+    await expect(page.locator('#site-notice')).toContainText('not saved');
+    expect(new URL(page.url()).pathname).toBe('/routes/');
+
+    await saved.click();
+    await expect(page).toHaveURL(new RegExp(`/routes/${SLUG}/`));
+    await expect(page.locator('h1').first()).toBeVisible();
+
+    // Back online, the marks go and every card is an ordinary link again.
+    await context.setOffline(false);
+    await page.goto('/routes/');
+    await expect(page.locator('[data-unsaved-offline]')).toHaveCount(0, { timeout: 10000 });
+    await expect(page.locator('.unsaved-note')).toHaveCount(0);
+    await expect(page.locator('#offline-bar')).toHaveCount(0);
+  });
+
+  test('on a route page, links to routes that are not saved are marked too', async ({ page, context }) => {
+    await ready(page);
+    await saveThis(page);
+    await context.setOffline(true);
+    await page.evaluate(() => window.dispatchEvent(new Event('offline')));
+    await expect(page.locator('.route-page a[data-unsaved-offline]').first()).toBeVisible({ timeout: 10000 });
+    for (const link of await page.locator('.route-page a[data-unsaved-offline]').all()) {
+      expect(await link.getAttribute('href')).toMatch(/^\/routes\/[a-z0-9-]+\/?$/);
+      expect(await link.getAttribute('href')).not.toContain(SLUG);
+    }
+    await context.setOffline(false);
+
+    async function saveThis(p) { await saveThisRoute(p); }
+  });
+});

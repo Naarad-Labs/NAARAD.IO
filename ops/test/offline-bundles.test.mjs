@@ -61,8 +61,8 @@ test('download keeps all of it or none of it', async () => {
   const good = fakeEnv();
   const bundle = await download({ slug: 'x' }, good.env);
   assert.deepEqual([...good.store.keys()].sort(), bundle.urls);
-  assert.equal(bundle.bytes, 3000);
-  assert.equal(bundle.label, '3 KB');
+  assert.equal(bundle.bytes, bundle.urls.length * 1000, 'every file is counted');
+  assert.equal(bundle.label, `${bundle.urls.length} KB`);
 
   const bad = fakeEnv({ failOn: '/content/routes.json' });
   await assert.rejects(download({ slug: 'x' }, bad.env), /503/);
@@ -76,4 +76,60 @@ test('removing one route leaves files another downloaded route still needs', asy
   assert.equal(await remove('one', downloads, { cacheStorage: env.cacheStorage }), 1);
   assert.deepEqual([...store.keys()].sort(), ['/b', '/shared']);
   assert.equal(await remove('nobody', downloads, { cacheStorage: env.cacheStorage }), 0);
+});
+
+/* ---- offline bundles v2, part A: the kit, space, and all-or-nothing writes ---- */
+
+test('every bundle carries the offline kit, so My Journey and the catalogue open with no network', () => {
+  const urls = selectUrls({ origin, slug: 'x', resources: [], srcsets: [], images: [] });
+  for (const path of ['/journey/', '/app/views/journey.js', '/app/journey.css', '/routes/', '/app/views/explore.js', '/app/explore.css']) assert.ok(urls.includes(path), path);
+});
+
+function spaceEnv({ estimate, failPutAt = null, putError = null } = {}) {
+  const store = new Map();
+  let puts = 0;
+  const cache = {
+    put: async (path, response) => {
+      puts += 1;
+      if (failPutAt === puts) throw putError || new Error('disk');
+      store.set(path, response);
+    },
+    delete: async (path) => store.delete(path),
+  };
+  return {
+    store,
+    env: {
+      origin,
+      fetchImpl: async () => ({ ok: true, status: 200, clone() { return this; }, arrayBuffer: async () => new ArrayBuffer(1_000_000) }),
+      cacheStorage: { open: async () => cache },
+      doc: { querySelectorAll: () => [] },
+      perf: { getEntriesByType: () => [] },
+      estimate,
+    },
+  };
+}
+
+test('a download that will not fit is refused before anything is written, in words about space', async () => {
+  const { store, env } = spaceEnv({ estimate: async () => ({ usage: 4_000_000, quota: 5_000_000 }) });
+  await assert.rejects(download({ slug: 'x' }, env), (error) => error.name === 'SpaceError' && /space/i.test(error.message));
+  assert.equal(store.size, 0);
+});
+
+test('when the browser reports the store full part-way, nothing is left behind', async () => {
+  const full = Object.assign(new Error('full'), { name: 'QuotaExceededError' });
+  const { store, env } = spaceEnv({ estimate: async () => ({ usage: 0, quota: 1e12 }), failPutAt: 3, putError: full });
+  await assert.rejects(download({ slug: 'x' }, env), (error) => error.name === 'SpaceError');
+  assert.equal(store.size, 0, 'the files already written are removed again');
+});
+
+test('any other write failure also leaves nothing behind, and is not mistaken for a space problem', async () => {
+  const { store, env } = spaceEnv({ estimate: async () => ({ usage: 0, quota: 1e12 }), failPutAt: 2 });
+  await assert.rejects(download({ slug: 'x' }, env), (error) => error.name !== 'SpaceError' && /disk/.test(error.message));
+  assert.equal(store.size, 0);
+});
+
+test('an unknown estimate does not block a download', async () => {
+  const { store, env } = spaceEnv({ estimate: async () => undefined });
+  const bundle = await download({ slug: 'x' }, env);
+  assert.equal(store.size, bundle.urls.length);
 });

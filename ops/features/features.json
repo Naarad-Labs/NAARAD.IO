@@ -3,7 +3,7 @@
     "id": "F-001",
     "name": "Creator accounts and Studio submissions",
     "area": "accounts",
-    "summary": "Creators sign up, send route drafts for review and can delete their account. Database applied and tested; no screens yet.",
+    "summary": "Creators sign up, send route drafts for review and can delete their account. Database applied and tested; sign-in screen built behind a flag; submit, deletion screen and moderation not built.",
     "status": "building",
     "flag": null,
     "origin": "built-under-override",
@@ -17,7 +17,9 @@
     "spec": "ops/specs/F-001-creator-accounts.md",
     "tests": [
       "supabase/test/migrations.test.mjs",
-      "ops/test/backend.test.mjs"
+      "ops/test/backend.test.mjs",
+      "ops/test/account-ui.test.mjs",
+      "e2e/site.spec.js"
     ],
     "decisions": [
       "D-0004",
@@ -27,7 +29,8 @@
     "evidence": [],
     "pr": [
       13,
-      14
+      14,
+      16
     ],
     "since": "2026-10-26"
   },
@@ -35,7 +38,7 @@
     "id": "F-002",
     "name": "Offline route bundles",
     "area": "offline",
-    "summary": "Keep one route on the device and open it with no network. Page, text, photos; no map tiles or audio.",
+    "summary": "Keep one route on the device and open it with no network, including My Journey and the catalogue. Page, text, photos; no map tiles or audio. Checks space first, keeps nothing if a write fails, and while offline shows a bar and marks routes that are not saved.",
     "status": "flagged",
     "flag": "naarad.flag.offline-bundles",
     "origin": "built-under-override",
@@ -49,7 +52,9 @@
     "spec": null,
     "tests": [
       "e2e/site.spec.js",
-      "ops/test/offline-bundles.test.mjs"
+      "ops/test/offline-bundles.test.mjs",
+      "ops/test/offline-state.test.mjs",
+      "ops/test/storage-budget.test.mjs"
     ],
     "decisions": [
       "D-0004"
