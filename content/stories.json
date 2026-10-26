@@ -1,5 +1,5 @@
 {
-  "note": "Long-form stories written for Naarad. Each one is tied to a route and, where it describes a specific place on that route, to a stop. Reading times are computed from the word count; listening times are null until narration is recorded.",
+  "note": "Stories written for Naarad. Each one is tied to a route and, where it describes a specific place on that route, to a stop. Reading times are computed from the word count; listening times are null until narration is recorded. A story carries no \"published\" date until its real publication date is known; the page, the Article data and the share tags show a date only when the field is present.",
   "stories": [
     {
       "slug": "stone-chariot-of-hampi",
@@ -15,7 +15,6 @@
         "Temples",
         "Vijayanagara"
       ],
-      "published": "2026-09-18",
       "sections": [
         {
           "id": "a-city-of-wonders",
@@ -102,7 +101,6 @@
         "Trade",
         "Living Culture"
       ],
-      "published": "2026-09-22",
       "sections": [
         {
           "id": "a-market-a-mile-long",
@@ -156,7 +154,6 @@
         "Engineering",
         "History"
       ],
-      "published": "2026-09-29",
       "sections": [
         {
           "id": "a-dry-place",

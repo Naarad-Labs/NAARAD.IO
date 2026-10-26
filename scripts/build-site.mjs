@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /* Pre-render every page, draw the share cards and write the sitemap.
  *
- *   node scripts/build-site.mjs
+ *   node scripts/build-site.mjs [--allow-removal]
  *
  * Run it after changing a view, the shell (app/shell.html) or the content, and
  * commit what it writes:
@@ -9,7 +9,9 @@
  *   stories/<slug>/index.html      every page, as the app draws it
  *   Images/og/<card>.jpg           1200 x 630 share cards
  *   Images/og/manifest.json        which photograph each card uses, and its licence
- *   sitemap.xml                    every indexable page, dated by git
+ *   sitemap.xml                    every indexable page, with its lastmod
+ *   content/lastmod.json           what each of those pages said when it was last
+ *                                  dated (scripts/sitemap.mjs explains the dates)
  *
  * A small static server answers every page address with app/shell.html, the
  * way GitHub Pages answers an address it has no file for with 404.html, and
@@ -20,20 +22,27 @@
  * (publicPages in app/main.js), so a new section is built as soon as it is
  * registered there.
  *
- * Same input, same bytes: nothing here reads the clock, pages are rendered one
- * at a time in a fixed order, and a file is only rewritten when it changed.
+ * Same input, same bytes: pages are rendered one at a time in a fixed order, a
+ * file is only rewritten when it changed, and the clock is read only to date a
+ * page whose content changed (NAARAD_BUILD_DATE=YYYY-MM-DD overrides it).
  * Chromium is the one the e2e suite uses (e2e/node_modules, and the browser in
  * /opt/pw-browsers when it is there).
+ *
+ * The build is all or nothing. A page that fails to load, a request that
+ * fails, a console error, an unreadable content file: any of them stops it
+ * with a non-zero exit before a single file is written or deleted. It also
+ * refuses to delete pages or cards it wrote earlier unless --allow-removal is
+ * given, so a typo in the content cannot quietly take pages off the site.
  */
 
 import fs from 'node:fs';
 import http from 'node:http';
 import path from 'node:path';
-import { execFileSync } from 'node:child_process';
 import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
 import { ORIGIN } from '../app/urls.js';
 import { CARD_WIDTH, CARD_HEIGHT, cardPath } from '../app/seo.js';
+import { contentHash, nextManifest, sitemapXml } from './sitemap.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const SHELL = path.join(ROOT, 'app', 'shell.html');
@@ -113,6 +122,17 @@ function remove(file) {
   if (dir !== ROOT && fs.readdirSync(dir).length === 0) fs.rmdirSync(dir);
 }
 
+/** A content file as data. A file that is not valid JSON is named in the error. */
+function readJson(relative, { optional = false } = {}) {
+  const file = path.join(ROOT, relative);
+  if (optional && !fs.existsSync(file)) return null;
+  try {
+    return JSON.parse(fs.readFileSync(file, 'utf8'));
+  } catch (error) {
+    throw new Error(`${relative}: ${error.message}`);
+  }
+}
+
 /** Where a page address is saved: /routes/x/ -> routes/x/index.html. */
 const outputFor = (address) => (address === NOT_FOUND_ADDRESS
   ? path.join(ROOT, '404.html')
@@ -132,43 +152,71 @@ function generatedPages(dir = ROOT, found = []) {
   return found;
 }
 
-/** The last commit date of the files a page is built from (YYYY-MM-DD), or null. */
-function lastModified(sources) {
-  const files = sources.filter((file) => fs.existsSync(path.join(ROOT, file)));
-  if (!files.length) return null;
-  try {
-    const date = execFileSync('git', ['log', '-1', '--format=%cs', '--', ...files], { cwd: ROOT, encoding: 'utf8' }).trim();
-    return /^\d{4}-\d{2}-\d{2}$/.test(date) ? date : null;
-  } catch {
-    return null;
-  }
-}
+/** The date a changed page is given: the build date, today unless it is set. */
+const today = () => process.env.NAARAD_BUILD_DATE || new Date().toISOString().slice(0, 10);
 
 /* ── Pages ──────────────────────────────────────────────────────── */
 
-async function renderPage(page, base, address) {
+/**
+ * Collect everything that goes wrong on a page while it loads: a script error,
+ * a console error, a request that failed, a response that was an error.
+ * Photographs, fonts and media are deliberately not fetched (see main), so
+ * their aborted requests are not faults. `failed` rejects at the first problem,
+ * so a build does not wait out a timeout to say what broke.
+ */
+function watch(page, base) {
   const problems = [];
-  const onError = (error) => problems.push(error.message);
+  let fail;
+  const failed = new Promise((_, reject) => { fail = reject; });
+  failed.catch(() => {});
+  const report = (text) => { problems.push(text); fail(new Error(text)); };
+  const onError = (error) => report(error.message);
   const onConsole = (message) => {
-    // Photographs and fonts are not fetched while pre-rendering; that is not a fault.
-    if (message.type() === 'error' && !/Failed to load resource/.test(message.text())) problems.push(message.text());
+    // The failures behind "Failed to load resource" are reported by the two below.
+    if (message.type() === 'error' && !/Failed to load resource/.test(message.text())) report(message.text());
+  };
+  const onResponse = (response) => {
+    if (response.url().startsWith(base) && response.status() >= 400) report(`${response.status()} for ${response.url().slice(base.length)}`);
+  };
+  const onFailed = (request) => {
+    if (['image', 'font', 'media'].includes(request.resourceType())) return;
+    report(`request failed: ${request.url()} (${request.failure()?.errorText || 'unknown'})`);
   };
   page.on('pageerror', onError);
   page.on('console', onConsole);
+  page.on('response', onResponse);
+  page.on('requestfailed', onFailed);
+  return {
+    problems,
+    failed,
+    stop() {
+      page.off('pageerror', onError);
+      page.off('console', onConsole);
+      page.off('response', onResponse);
+      page.off('requestfailed', onFailed);
+    },
+  };
+}
+
+async function renderPage(page, base, address) {
+  const watcher = watch(page, base);
   try {
-    await page.goto(base + address, { waitUntil: 'domcontentloaded' });
-    await page.waitForSelector('#app-content[data-prerendered]', { state: 'attached', timeout: 30000 });
+    const loaded = (async () => {
+      await page.goto(base + address, { waitUntil: 'domcontentloaded' });
+      await page.waitForSelector('#app-content[data-prerendered]', { state: 'attached', timeout: 30000 });
+    })();
+    loaded.catch(() => {});
+    await Promise.race([loaded, watcher.failed]);
     const html = await page.content();
     const meta = await page.evaluate(() => window.__NAARAD_META__ || null);
     const h1 = await page.locator('#app-content h1').count();
-    if (problems.length) throw new Error(problems.join(' | '));
+    if (watcher.problems.length) throw new Error(watcher.problems.join(' | '));
     if (h1 !== 1) throw new Error(`${h1} h1 elements`);
     return { html, meta };
   } catch (error) {
     throw new Error(`${address}: ${error.message}`);
   } finally {
-    page.off('pageerror', onError);
-    page.off('console', onConsole);
+    watcher.stop();
   }
 }
 
@@ -190,12 +238,29 @@ function photoFor(id, photos) {
   return { photo, src };
 }
 
+/** Draw every card. Returns the files to write (not written here) and notes. */
 async function drawCards(browser, base, cards, pagesByCard, photos) {
   const context = await browser.newContext({ viewport: { width: CARD_WIDTH, height: CARD_HEIGHT }, deviceScaleFactor: 1, serviceWorkers: 'block' });
   const page = await context.newPage();
-  await page.goto(base + CARD_TEMPLATE, { waitUntil: 'load' });
-  await page.waitForFunction(() => window.cardReady === true);
+  const watcher = watch(page, base);
+  try {
+    const loaded = (async () => {
+      await page.goto(base + CARD_TEMPLATE, { waitUntil: 'load' });
+      await page.waitForFunction(() => window.cardReady === true);
+    })();
+    loaded.catch(() => {});
+    await Promise.race([loaded, watcher.failed]);
+    return await drawAll(page, watcher, cards, pagesByCard, photos);
+  } catch (error) {
+    throw new Error(`share cards: ${error.message}`);
+  } finally {
+    watcher.stop();
+    await context.close();
+  }
+}
 
+async function drawAll(page, watcher, cards, pagesByCard, photos) {
+  const files = [];
   const entries = [];
   const notes = [];
   for (const [name, card] of [...cards.entries()].sort(([a], [b]) => a.localeCompare(b))) {
@@ -203,10 +268,11 @@ async function drawCards(browser, base, cards, pagesByCard, photos) {
     if (chosen?.skip) notes.push(`${name}: drawn without a photograph (${chosen.skip})`);
     const photo = chosen?.photo || null;
     const credit = photo ? `Photo: ${photo.author}, ${photo.licence}. Cropped, with text added.` : null;
-    await page.evaluate((spec) => window.drawCard(spec), {
+    const { fits } = await page.evaluate((spec) => window.drawCard(spec), {
       eyebrow: card.eyebrow, title: card.title, facts: card.facts || [],
       photoSrc: chosen?.src || null, credit, route: card.route || null,
     });
+    if (!fits) notes.push(`${name}: the title "${card.title}" does not fit even at the smallest size`);
     let jpeg = null;
     let quality = null;
     for (quality of CARD_QUALITIES) {
@@ -214,7 +280,8 @@ async function drawCards(browser, base, cards, pagesByCard, photos) {
       if (jpeg.length <= CARD_LIMIT) break;
     }
     if (jpeg.length > CARD_LIMIT) notes.push(`${name}: ${Math.round(jpeg.length / 1024)} KB even at quality ${quality}`);
-    writeIfChanged(path.join(ROOT, cardPath(name)), jpeg);
+    if (watcher.problems.length) throw new Error(`${name}: ${watcher.problems.join(' | ')}`);
+    files.push([path.join(ROOT, cardPath(name)), jpeg]);
     entries.push({
       file: path.basename(cardPath(name)),
       pages: pagesByCard.get(name),
@@ -236,36 +303,27 @@ async function drawCards(browser, base, cards, pagesByCard, photos) {
       licence: photo ? photo.licence : 'Naarad: text, logo and route line only',
     });
   }
-  await context.close();
 
   const manifest = {
     note: 'Share cards drawn by scripts/build-site.mjs from scripts/og-card.html. Each photograph is used under the licence recorded in content/photo-sources.json, which allows adaptation; the credit is printed on the card and repeated here.',
     cards: entries,
   };
-  writeIfChanged(path.join(CARD_DIR, 'manifest.json'), `${JSON.stringify(manifest, null, 2)}\n`);
-
-  // Cards for pages that no longer exist.
-  const keep = new Set(entries.map((entry) => entry.file));
-  if (fs.existsSync(CARD_DIR)) {
-    fs.readdirSync(CARD_DIR).filter((file) => file.endsWith('.jpg') && !keep.has(file))
-      .forEach((file) => remove(path.join(CARD_DIR, file)));
-  }
-  return notes;
-}
-
-/* ── Sitemap ────────────────────────────────────────────────────── */
-
-function sitemap(rendered) {
-  const rows = rendered.filter((entry) => entry.indexable).map((entry) => {
-    const lastmod = lastModified(entry.sources);
-    return `  <url><loc>${entry.url}</loc>${lastmod ? `<lastmod>${lastmod}</lastmod>` : ''}</url>`;
-  });
-  return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${rows.join('\n')}\n</urlset>\n`;
+  files.push([path.join(CARD_DIR, 'manifest.json'), `${JSON.stringify(manifest, null, 2)}\n`]);
+  return { files, notes };
 }
 
 /* ── Run ────────────────────────────────────────────────────────── */
 
 async function main() {
+  const flags = process.argv.slice(2);
+  const unknown = flags.filter((flag) => flag !== '--allow-removal');
+  if (unknown.length) throw new Error(`unknown option ${unknown.join(' ')} (the only one is --allow-removal)`);
+  const allowRemoval = flags.includes('--allow-removal');
+
+  // Everything the build reads is read, and must parse, before anything is rendered or written.
+  const photos = readJson('content/photo-sources.json').photos || {};
+  const previousDates = readJson('content/lastmod.json', { optional: true });
+
   const server = await startServer();
   const base = `http://127.0.0.1:${server.address().port}`;
   const browser = await chromium.launch({ executablePath: chromiumPath(), args: ['--no-sandbox'] });
@@ -281,18 +339,18 @@ async function main() {
     });
     const page = await context.newPage();
 
-    await page.goto(`${base}/`, { waitUntil: 'domcontentloaded' });
-    await page.waitForSelector('#app-content[data-prerendered]', { state: 'attached', timeout: 30000 });
-    const pages = await page.evaluate(async () => (await import('/app/main.js')).publicPages());
+    // The first page is the homepage; the list of pages comes from the app it draws.
+    const home = await renderPage(page, base, '/');
+    const addresses = await page.evaluate(async () => (await import('/app/main.js')).publicPages());
 
     const rendered = [];
-    for (const entry of pages) {
-      const { html, meta } = await renderPage(page, base, entry.path);
-      const url = new URL(entry.path, ORIGIN).href;
+    for (const address of addresses) {
+      const { html, meta } = address === '/' ? home : await renderPage(page, base, address);
+      const url = new URL(address, ORIGIN).href;
       const canonical = meta?.path ? new URL(meta.path, ORIGIN).href : null;
       rendered.push({
-        ...entry,
-        html,
+        address,
+        html: finish(html),
         meta,
         url,
         indexable: canonical === url && !/noindex/.test(meta?.robots || ''),
@@ -301,16 +359,6 @@ async function main() {
     const missing = await renderPage(page, base, NOT_FOUND_ADDRESS);
     await context.close();
 
-    // Write the pages only once every one of them rendered.
-    const previous = new Set(generatedPages());
-    const outputs = new Set();
-    for (const entry of [...rendered, { path: NOT_FOUND_ADDRESS, html: missing.html }]) {
-      const file = outputFor(entry.path);
-      outputs.add(file);
-      writeIfChanged(file, finish(entry.html));
-    }
-    [...previous].filter((file) => !outputs.has(file)).sort().forEach(remove);
-
     // One card per name; pages that share a card must describe it the same way.
     const cards = new Map();
     const pagesByCard = new Map();
@@ -318,22 +366,42 @@ async function main() {
       const card = entry.meta?.card;
       if (!card) continue;
       if (cards.has(card.name) && JSON.stringify(cards.get(card.name)) !== JSON.stringify(card)) {
-        throw new Error(`card ${card.name} is described two ways (${entry.path})`);
+        throw new Error(`card ${card.name} is described two ways (${entry.address})`);
       }
       cards.set(card.name, card);
-      pagesByCard.set(card.name, [...(pagesByCard.get(card.name) || []), entry.path]);
+      pagesByCard.set(card.name, [...(pagesByCard.get(card.name) || []), entry.address]);
     }
-    const photos = JSON.parse(fs.readFileSync(path.join(ROOT, 'content', 'photo-sources.json'), 'utf8')).photos || {};
-    const notes = await drawCards(browser, base, cards, pagesByCard, photos);
+    const drawn = await drawCards(browser, base, cards, pagesByCard, photos);
 
-    writeIfChanged(path.join(ROOT, 'sitemap.xml'), sitemap(rendered));
+    // The sitemap: every indexable page, dated by what it says (scripts/sitemap.mjs).
+    const listed = rendered.filter((entry) => entry.indexable);
+    const dates = nextManifest(previousDates, Object.fromEntries(listed.map((entry) => [entry.address, contentHash(entry.html)])), today);
 
-    const indexable = rendered.filter((entry) => entry.indexable).length;
-    console.log(`${rendered.length + 1} pages (${indexable} in the sitemap), ${cards.size} share cards`);
+    // Everything is known now. Plan the whole tree, then touch the disk.
+    const outputs = new Map();
+    for (const entry of rendered) outputs.set(outputFor(entry.address), entry.html);
+    outputs.set(outputFor(NOT_FOUND_ADDRESS), finish(missing.html));
+    drawn.files.forEach(([file, bytes]) => outputs.set(file, bytes));
+    outputs.set(path.join(ROOT, 'content', 'lastmod.json'), `${JSON.stringify(dates, null, 2)}\n`);
+    outputs.set(path.join(ROOT, 'sitemap.xml'), sitemapXml(listed, dates));
+
+    // Pages and cards an earlier build wrote for things that no longer exist.
+    const cardFiles = fs.existsSync(CARD_DIR)
+      ? fs.readdirSync(CARD_DIR).filter((file) => file.endsWith('.jpg')).map((file) => path.join(CARD_DIR, file))
+      : [];
+    const stale = [...generatedPages(), ...cardFiles].filter((file) => !outputs.has(file)).sort();
+    if (stale.length && !allowRemoval) {
+      throw new Error(`this build would delete ${stale.length} file${stale.length === 1 ? '' : 's'} an earlier build wrote:\n${stale.map((file) => `  ${path.relative(ROOT, file)}`).join('\n')}\nNothing was written. If that is intended (a page was removed on purpose), run it again with --allow-removal.`);
+    }
+
+    outputs.forEach((bytes, file) => writeIfChanged(file, bytes));
+    stale.forEach(remove);
+
+    console.log(`${rendered.length + 1} pages (${listed.length} in the sitemap), ${cards.size} share cards`);
     console.log(`${written.changed.length} files written, ${written.unchanged} unchanged, ${written.removed.length} removed`);
     written.changed.forEach((file) => console.log(`  wrote   ${file}`));
     written.removed.forEach((file) => console.log(`  removed ${file}`));
-    notes.forEach((note) => console.log(`  note    ${note}`));
+    drawn.notes.forEach((note) => console.log(`  note    ${note}`));
   } finally {
     await browser.close();
     server.close();

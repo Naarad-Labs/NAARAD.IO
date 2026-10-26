@@ -239,7 +239,7 @@ export const stylesheet = '/app/studio.css';
 export function meta() {
   return {
     title: 'Creator Studio · Naarad',
-    description: 'Prepare audio stories for Naarad routes: choose a stop, add narration, write a transcript and set the languages.',
+    description: 'A drafting space for narrators: pick a route and stop, write a story and note its languages. Drafts stay in your browser; publishing is not open yet.',
     path: sectionPath('creators'),
     card: Seo.HOME_CARD,
     schema: [Seo.breadcrumbs([['Creators', sectionPath('creators')]])],

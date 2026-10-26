@@ -11,7 +11,8 @@
  *     de-duplicated (the two files hold the same routes under different names)
  *
  * Nothing is invented. A field the sources do not have is null, and the screens
- * leave it out. The curated routes have no real GPS line (their `path` is a 4 or
+ * leave it out. The ratings in the old inline data were demo figures, not
+ * anyone's rating of these routes, so they are not carried over. The curated routes have no real GPS line (their `path` is a 4 or
  * 5 point sketch that is 21 to 40 per cent of the stated distance), so they get
  * path = null and show as a start point only.
  */
@@ -22,6 +23,9 @@ import { fileURLToPath } from 'node:url';
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const OUT = path.join(ROOT, 'discover', 'seed-tours.json');
 const read = (p) => fs.readFileSync(path.join(ROOT, p), 'utf8');
+
+// Corrections to the old inline data: Puducherry is a Union Territory, not part of Tamil Nadu.
+const LOCATION_FIXES = { 'Puducherry, Tamil Nadu': 'Puducherry' };
 
 const slugify = (s) => s.toLowerCase().normalize('NFKD').replace(/[^\w\s-]/g, '').trim().replace(/[\s_]+/g, '-').replace(/-+/g, '-');
 
@@ -59,7 +63,7 @@ const curated = ROUTES.map((r) => ({
   id: 'cur-' + r.id,
   slug: routesJson[r.name] || slugify(r.name),
   name: r.name,
-  location_label: r.location,
+  location_label: LOCATION_FIXES[r.location] || r.location,
   sport: SPORT[r.type] ?? null,
   theme: r.type === 'cycling' ? null : r.type,
   difficulty: r.diff,
@@ -68,8 +72,8 @@ const curated = ROUTES.map((r) => ({
   distance_m: Math.round(r.dist * 1000),
   duration_min: r.time,
   ascent_m: r.elev,
-  rating_avg: r.rating,
-  rating_count: r.reviews,
+  rating_avg: null,
+  rating_count: 0,
   cover_image_path: null,
   start_lat: r.lat,
   start_lng: r.lng,

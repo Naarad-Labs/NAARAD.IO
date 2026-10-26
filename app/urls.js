@@ -72,7 +72,8 @@ export function legacyTarget(url) {
 
   const old = path.match(/^\/(route|story)\/([^/]+)\/?$/);
   if (old) {
-    const slug = decodeURIComponent(old[2]);
+    let slug;
+    try { slug = decodeURIComponent(old[2]); } catch { return null; }   // a malformed escape names nothing
     const stop = Number(params.get('stop')) || null;
     return (old[1] === 'route' ? routePath(slug, stop) : storyPath(slug)) + hash;
   }

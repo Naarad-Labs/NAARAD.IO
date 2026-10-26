@@ -33,6 +33,9 @@ const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
 let state = { page: null, route: null, stop: null, story: null };
 let map = null;
 let generation = 0;
+// The path and query of the current history entry. A popstate that leaves them
+// as they were is the browser moving to an in-page anchor, which draws nothing.
+let here = location.pathname + location.search;
 // Settles once the first page is drawn. A pre-rendered page can be used
 // before then; the handlers below wait for it rather than drop the input.
 let started = null;
@@ -44,6 +47,9 @@ const modules = {};
 
 const catalogueContext = (url) => ({ query: url.searchParams.get('q') || '' });
 
+const pushAddress = (address) => { history.pushState(null, '', address); here = location.pathname + location.search; };
+const replaceAddress = (address) => { history.replaceState(null, '', address); here = location.pathname + location.search; };
+
 /* A pre-rendered catalogue can be typed into before the script arrives; what
    the visitor already typed or ticked still counts once it has. */
 async function syncCatalogue() {
@@ -54,17 +60,15 @@ async function syncCatalogue() {
     region: $('[data-filter-region]')?.value || 'all',
     withStories: Boolean($('[data-filter-stories]')?.checked),
   });
-  if (input?.value && state.page?.address) history.replaceState(null, '', state.page.address({ query: input.value.trim() }));
+  if (input?.value && state.page?.address) replaceAddress(state.page.address({ query: input.value.trim() }));
 }
 
 /* Every page the site has. A page answers one fixed `path`, or a `prefix`
  * under which /<prefix><slug>/ names one item. `view` is the module that
- * draws it (moduleFor), `nav` the header link it lights, and `sources` the
- * repository files its content is built from, which date it in the sitemap.
- * Optional hooks:
+ * draws it (moduleFor) and `nav` the header link it lights. Optional hooks:
  *   context(url)            render context read from the address
  *   load(slug, url, view)   the item as render context, or null if there is none
- *   list(view)              every item, for the build: [{ path, sources }]
+ *   list(view)              every item's address, for the build
  *   address(context)        the address to show for this state, when not `path`
  *   after(context, gen)     wiring markup cannot carry: a map, a scroll watcher
  * The blog registers here as two entries, /blog/ and the /blog/ prefix, with a
@@ -74,11 +78,9 @@ async function syncCatalogue() {
 const PAGES = [
   {
     name: 'home', path: '/', view: 'home', nav: 'home',
-    sources: ['app/views/home.js', 'content/routes.json', 'routes/geo-tracks.json'],
   },
   {
     name: 'routes', path: '/routes/', view: 'explore', nav: 'routes',
-    sources: ['app/views/explore.js', ...Data.catalogueFiles()],
     context: catalogueContext,
     address: ({ query }) => Urls.cataloguePath(query, '/routes/'),
     after: () => syncCatalogue(),
@@ -86,14 +88,12 @@ const PAGES = [
   {
     // The same catalogue under its other name; its canonical is /routes/.
     name: 'explore', path: '/explore/', view: 'explore', nav: 'explore',
-    sources: ['app/views/explore.js', ...Data.catalogueFiles()],
     context: catalogueContext,
     address: ({ query }) => Urls.cataloguePath(query, '/explore/'),
     after: () => syncCatalogue(),
   },
   {
     name: 'route', prefix: '/routes/', view: 'route', nav: 'routes', body: 'route',
-    sources: ['app/views/route.js'],
     async load(slug, url) {
       const route = await Data.getRoute(slug);
       if (!route) return null;
@@ -102,33 +102,30 @@ const PAGES = [
     },
     async list() {
       const routes = await Data.loadRoutes();
-      return routes.map((route) => ({ path: Urls.routePath(route.slug), sources: [Data.sourceFile(route)] }));
+      return routes.map((route) => Urls.routePath(route.slug));
     },
     address: ({ route, stop }) => Urls.routePath(route.slug, stop !== route.stops[0]?.order ? stop : null),
     after: ({ route }, current) => { if (route.hasGeometry || route.startLat != null) mountMap(route, current); },
   },
   {
     name: 'stories', path: '/stories/', view: 'story', nav: 'stories',
-    sources: ['app/views/story.js', 'content/stories.json'],
     context: () => ({ indexOnly: true }),
   },
   {
     name: 'story', prefix: '/stories/', view: 'story', nav: 'stories', body: 'story',
-    sources: ['app/views/story.js', 'content/stories.json'],
     async load(slug, url, view) {
       const story = await view.getStory(slug);
       return story ? { story } : null;
     },
     async list(view) {
-      return (await view.loadStories()).map((story) => ({ path: Urls.storyPath(story.slug) }));
+      return (await view.loadStories()).map((story) => Urls.storyPath(story.slug));
     },
     after: () => watchStoryScroll(),
   },
-  { name: 'creators', path: '/creators/', view: 'studio', nav: 'creators', sources: ['app/views/studio.js'] },
-  { name: 'journey', path: '/journey/', view: 'journey', nav: 'journey', sources: ['app/views/journey.js'] },
+  { name: 'creators', path: '/creators/', view: 'studio', nav: 'creators' },
+  { name: 'journey', path: '/journey/', view: 'journey', nav: 'journey' },
   {
     name: 'about', path: '/about/', view: 'info', nav: 'about',
-    sources: ['app/views/info.js'],
     context: () => ({ view: 'about' }),
   },
 ];
@@ -151,18 +148,15 @@ function resolve(url) {
 }
 
 /**
- * Every public address, for scripts/build-site.mjs: [{ path, sources }].
- * The build renders each, then leaves out of the sitemap any page whose head
- * says noindex or names another page as canonical.
+ * Every public address, for scripts/build-site.mjs. The build renders each,
+ * then leaves out of the sitemap any page whose head says noindex or names
+ * another page as canonical.
  */
 export async function publicPages() {
   const pages = [];
   for (const page of PAGES) {
-    if (page.path) pages.push({ path: page.path, sources: page.sources });
-    if (page.list) {
-      const items = await page.list(await moduleFor(page.view));
-      items.forEach((item) => pages.push({ path: item.path, sources: [...page.sources, ...(item.sources || [])] }));
-    }
+    if (page.path) pages.push(page.path);
+    if (page.list) pages.push(...await page.list(await moduleFor(page.view)));
   }
   return pages;
 }
@@ -327,6 +321,7 @@ async function paint(view, context = {}, { keep = false, scroll = true } = {}) {
   const describe = context.indexOnly ? view.indexMeta : view.meta;
   const meta = await (typeof describe === 'function' ? describe(context) : describe);
   if (!(keep && drawn(markup))) {
+    destroyMap();
     shell.innerHTML = markup;
     delete shell.dataset.prerendered;
     if (scroll) window.scrollTo(0, 0);
@@ -336,21 +331,32 @@ async function paint(view, context = {}, { keep = false, scroll = true } = {}) {
   return meta;
 }
 
+/** The id a #fragment names; a malformed escape (#100%) is taken as written. */
+function anchorId(hash) {
+  try { return decodeURIComponent(hash.slice(1)); } catch { return hash.slice(1); }
+}
+
 /**
  * Show the page at `url`. `push` adds a history entry; otherwise the address
  * is only tidied in place (a dropped ?stop=1, an added trailing slash).
  */
 async function show(url, { push = true, boot = false } = {}) {
   const current = ++generation;
-  destroyMap();
   const match = resolve(url);
   let page = match?.page || NOT_FOUND;
   let view = await moduleFor(page.view);
   let context = page.context?.(url) || {};
   if (page.load) {
+    // A module or data that cannot be fetched rejects from here, and from paint
+    // below, before anything on screen is touched; only a source that loaded
+    // and has no such item is "not found".
     const item = await page.load(match.slug, url, view);
     if (item) context = { ...context, ...item };
-    else {
+    else if (shell.dataset.prerendered === Urls.normalPath(url.pathname)) {
+      // The server sent a page for this address that the data does not know,
+      // which is a stale copy of the data, not a missing page: leave it be.
+      return;
+    } else {
       page = NOT_FOUND;
       view = await moduleFor(page.view);
       context = page.context(url);
@@ -369,9 +375,12 @@ async function show(url, { push = true, boot = false } = {}) {
   const address = page === NOT_FOUND
     ? `${url.pathname}${url.search}`
     : `${page.address?.(context) || page.path || key}`;
-  if (push) history.pushState(null, '', address + url.hash);
-  else if (address + url.hash !== location.pathname + location.search + location.hash) history.replaceState(null, '', address + url.hash);
-  if (url.hash && !boot) document.getElementById(decodeURIComponent(url.hash.slice(1)))?.scrollIntoView();
+  // A link to the address you are already on adds no history entry.
+  if (address + url.hash !== location.pathname + location.search + location.hash) {
+    if (push) pushAddress(address + url.hash);
+    else replaceAddress(address + url.hash);
+  }
+  if (url.hash && !boot) document.getElementById(anchorId(url.hash))?.scrollIntoView();
 
   if (PRERENDER) {
     shell.dataset.prerendered = key;
@@ -381,11 +390,26 @@ async function show(url, { push = true, boot = false } = {}) {
   page.after?.(context, current);
 }
 
+/**
+ * show() for a visitor's own navigation. When this page cannot be drawn here
+ * (a view or its data failed to load), the browser loads the address itself,
+ * so the link is never left dead; the page it gets handles its own failure.
+ */
+async function navigate(url, options) {
+  try {
+    await show(url, options);
+  } catch (error) {
+    console.error('Could not draw the page in place; loading it instead', error);
+    location.assign(url.href);
+  }
+}
+
 /* ── Map ────────────────────────────────────────────────────────── */
 
 function destroyMap() { map?.destroy?.(); map = null; }
 
 async function mountMap(route, current) {
+  destroyMap();
   try {
     const { mountRouteMap } = await import('./map.js');
     const node = $('#map');
@@ -426,7 +450,7 @@ async function selectStop(order) {
     item.setAttribute('aria-current', String(active));
   });
   map?.selectStop?.(stop.order);
-  history.replaceState(null, '', state.page.address({ route: state.route, stop: stop.order }));
+  replaceAddress(state.page.address({ route: state.route, stop: stop.order }));
 }
 
 /* ── Listening ──────────────────────────────────────────────────── */
@@ -565,7 +589,7 @@ document.addEventListener('click', async (event) => {
   if (url) {
     event.preventDefault();
     await started;
-    await show(url);
+    await navigate(url);
     return;
   }
   await started;
@@ -680,7 +704,7 @@ document.addEventListener('input', async (event) => {
     const explore = await moduleFor('explore');
     explore.setQuery(target.value);
     // The search is part of the address, so a filtered catalogue can be shared.
-    if (state.page?.address) history.replaceState(null, '', state.page.address({ query: target.value.trim() }));
+    if (state.page?.address) replaceAddress(state.page.address({ query: target.value.trim() }));
   }
   if (target.dataset.filterRegion !== undefined) {
     const explore = await moduleFor('explore');
@@ -724,7 +748,7 @@ document.addEventListener('submit', async (event) => {
     event.preventDefault();
     await started;
     const value = ($('#route-search')?.value || '').trim();
-    await show(new URL(Urls.cataloguePath(value), location.origin));
+    await navigate(new URL(Urls.cataloguePath(value), location.origin));
     $('#catalogue-query')?.focus();
     return;
   }
@@ -747,14 +771,19 @@ document.addEventListener('submit', async (event) => {
   }
 });
 
-window.addEventListener('popstate', () => show(new URL(location.href), { push: false }));
+window.addEventListener('popstate', () => {
+  const at = location.pathname + location.search;
+  const moved = at !== here;
+  here = at;
+  if (moved) navigate(new URL(location.href), { push: false });
+});
 
 /* ── Boot ───────────────────────────────────────────────────────── */
 
 async function boot() {
   // An address from the single-document site becomes the page that replaced it.
   const old = Urls.legacyTarget(new URL(location.href));
-  if (old) history.replaceState(null, '', old);
+  if (old) replaceAddress(old);
   // Whatever was pre-rendered is on screen now, so motion must not replay it.
   const settle = Boolean(shell.dataset.prerendered);
   await loadMedia();
@@ -765,7 +794,10 @@ async function boot() {
 
 started = boot().catch((error) => {
   console.error('Naarad could not start', error);
-  showError('Routes could not be loaded.');
+  // A pre-rendered page that is still on screen is a good page; only what
+  // needed script is missing. Keep it, and let the visitor retry.
+  if (shell.dataset.prerendered) notify('Part of this page could not load. Reload to try again.');
+  else showError('Routes could not be loaded.');
 });
 await started;
 

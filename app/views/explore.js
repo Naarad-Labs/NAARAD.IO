@@ -130,9 +130,10 @@ export const stylesheet = '/app/explore.css';
 export function meta() {
   // render() has just loaded the routes; the card shows the first one's photograph.
   const lead = routes[0];
+  const withStops = routes.filter((route) => route.hasStops).length;
   return {
     title: 'Explore routes · Naarad',
-    description: 'Search heritage walking routes across India: distance, duration, stops and terrain for every published route.',
+    description: `Search ${routes.length} heritage walking routes across India. ${withStops} ${withStops === 1 ? 'has' : 'have'} ordered stops with a written story at each; the rest are listed with the facts known so far.`,
     path: '/routes/',
     card: {
       name: 'routes',

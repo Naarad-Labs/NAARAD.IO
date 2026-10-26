@@ -278,11 +278,26 @@ export async function render(context) {
 
 export const stylesheet = '/app/route.css';
 
+/**
+ * Only a route with published stops has content of its own. The rest are
+ * catalogue rows and recorded tracks with a headline fact or two: their pages
+ * stay reachable and linked, but are kept out of search (see meta) until a
+ * route gets its stops and its text.
+ */
+const isStub = (route) => !route.hasStops;
+
+/**
+ * The distance a snippet or share card may state. A catalogue row's distance
+ * is a stand-in from discover/seed-tours.json, not a measurement; a recorded
+ * track's is its GPS length.
+ */
+const statedDistance = (route) => (route.source === 'catalogue' ? null : Data.formatDistance(route.distanceM));
+
 /** One line about the route that is true of it, for search results and cards. */
 function summary(route) {
   if (route.lede) return route.lede;
   const place = route.location || route.region || 'India';
-  const distance = Data.formatDistance(route.distanceM);
+  const distance = statedDistance(route);
   const length = distance ? `, ${distance} long` : '';
   if (route.source === 'track') {
     return `A route recorded on the ground in ${place}${length}. Its line is on the map; its stops and stories have not been published yet.`;
@@ -313,7 +328,7 @@ function trip(route, url) {
     image: imageUrl(stop.photo),
     geo: { '@type': 'GeoCoordinates', latitude: stop.lat, longitude: stop.lng },
   }));
-  const distance = Data.formatDistance(route.distanceM);
+  const distance = statedDistance(route);
   return Seo.compact({
     '@type': 'TouristTrip',
     '@id': `${url}#trip`,
@@ -338,17 +353,20 @@ export function meta({ route }) {
   const place = route.location || route.region || 'India';
   const photo = route.media?.photo || null;
   const facts = [
-    Data.formatDistance(route.distanceM),
+    statedDistance(route),
     route.stopCount ? `${route.stopCount} stops` : null,
     route.source === 'track' ? 'Recorded track' : null,
   ].filter(Boolean);
   let backdrop = '';
   if (photo) backdrop = ', set on a photograph from the route';
   else if (route.hasGeometry) backdrop = ', with the route line drawn on a plain map';
+  const stub = isStub(route);
   return {
     title: `${route.name} · Naarad`,
     description: summary(route),
     path,
+    // A stub stays out of search and describes no trip to it (see isStub).
+    robots: stub ? 'noindex,follow' : null,
     card: {
       name: `route-${route.slug}`,
       eyebrow: place,
@@ -361,7 +379,7 @@ export function meta({ route }) {
     preload: photo ? { photo, sizes: HERO_SIZES } : null,
     schema: [
       Seo.breadcrumbs([['Routes', sectionPath('routes')], [route.name, path]]),
-      trip(route, absoluteUrl(path)),
+      ...(stub ? [] : [trip(route, absoluteUrl(path))]),
       Seo.organization(),
     ],
   };

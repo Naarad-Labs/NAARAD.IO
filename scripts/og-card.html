@@ -21,7 +21,7 @@
     .card-media .card-mark { inset: auto; left: 50%; top: 50%; width: 248px; height: 248px; object-fit: contain; transform: translate(-40%, -50%);
       border: 1px solid var(--line-strong); border-radius: 22px; box-shadow: var(--shadow-md); }
 
-    .card-copy { position: absolute; left: 64px; top: 52px; bottom: 50px; width: 520px; display: flex; flex-direction: column; }
+    .card-copy { position: absolute; left: 64px; top: 52px; bottom: 50px; width: 480px; display: flex; flex-direction: column; }
     .card-brand { display: flex; align-items: center; gap: 14px; }
     .card-brand img { width: 58px; height: 58px; object-fit: contain; }
     .card-brand b { display: block; font: 800 31px/1 var(--serif); letter-spacing: .055em; color: var(--ink); }
@@ -48,7 +48,8 @@
       { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]
     ));
 
-    /* Draw one card and resolve when its fonts and photograph are ready.
+    /* Draw one card and resolve when its fonts and photograph are ready, with
+       whether the title fits at its smallest size.
        spec: { eyebrow, title, facts, photoSrc, credit, route } */
     window.drawCard = async (spec) => {
       const card = document.querySelector('#card');
@@ -85,14 +86,16 @@
       ]);
       await Promise.all([...card.querySelectorAll('img')].map((img) => img.decode().catch(() => {})));
 
-      // The title is set as large as fits in four lines.
+      // The title is set as large as fits in four lines, and in the column
+      // beside the photograph: a long word steps the size down too.
       const title = card.querySelector('.card-title');
-      for (let size = 72; size >= 40; size -= 2) {
+      let fits = false;
+      for (let size = 72; size >= 40 && !fits; size -= 2) {
         title.style.fontSize = `${size}px`;
-        if (title.scrollHeight <= 300) break;
+        fits = title.scrollHeight <= 300 && title.scrollWidth <= title.clientWidth;
       }
       await document.fonts.ready;
-      return true;
+      return { fits };
     };
     window.cardReady = true;
   </script>

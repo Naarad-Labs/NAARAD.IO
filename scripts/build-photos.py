@@ -84,6 +84,10 @@ WANTED = {
     "india-storyteller": ("indian musician performer", "feature", 800),
 }
 
+# Photographs whose uploads carry black bars (checked by eye); they are cropped
+# off before encoding. Others are left whole: a dark scene is not a bar.
+LETTERBOXED = {"chennai-marina", "mysore-palace"}
+
 TAGS = re.compile(r"<[^>]*>")
 
 
@@ -199,6 +203,30 @@ def download(url: str, target: Path) -> None:
     raise last_error or RuntimeError("no downloadable copy")
 
 
+def trim_bars(image: Image.Image) -> Image.Image:
+    """Crop the black bars an upload carries above and below, or beside, the picture.
+
+    A row or column is a bar only while it is black through and through, and
+    no more than a fifth of a side is ever taken.
+    """
+    lit = image.convert("L").point(lambda value: 255 if value > 10 else 0)
+    width, height = image.size
+
+    def edges(profile: Image.Image, length: int) -> tuple[int, int]:
+        values = list(profile.tobytes())
+        first = next((i for i, v in enumerate(values) if v > 1), 0)
+        last = next((i for i, v in enumerate(reversed(values)) if v > 1), 0)
+        limit = length // 5
+        # Two pixels of margin: the edge of a bar is blended with the picture.
+        return (min(first, limit) + 2 if first else 0, min(last, limit) + 2 if last else 0)
+
+    top, bottom = edges(lit.resize((1, height), Image.BOX), height)
+    left, right = edges(lit.resize((width, 1), Image.BOX), width)
+    if not (top or bottom or left or right):
+        return image
+    return image.crop((left, top, width - right, height - bottom))
+
+
 def encode(photo_id: str, role: str, source: Path) -> dict:
     image = Image.open(source)
     if image.mode in ("RGBA", "P", "LA"):
@@ -208,6 +236,8 @@ def encode(photo_id: str, role: str, source: Path) -> dict:
         image = background
     else:
         image = image.convert("RGB")
+    if photo_id in LETTERBOXED:
+        image = trim_bars(image)
     native = image.width
     sizes = [width for width in ROLES[role] if width <= native] or [min(ROLES[role][0], native)]
     OUT.mkdir(parents=True, exist_ok=True)
