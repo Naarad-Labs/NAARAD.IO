@@ -135,6 +135,21 @@ distance sits on a TravelAction and its walking time stays on the page.
 4. Run `node scripts/build-site.mjs`. The page, its card and its sitemap entry
    follow from the registry; nothing else has to change.
 
+## Offline route bundles (flag, off by default)
+
+`app/offline-bundles.js` keeps one route on the visitor's device: its page, the
+code and data that page loaded, and its photographs up to 960px wide, in a cache
+called `naarad-bundles` that `sw.js` reads when the network fails. It is
+all-or-nothing, and it never includes map tiles (OpenStreetMap's policy forbids
+bulk prefetch) or audio (none is recorded yet). Turn it on in one browser with
+`?offline-bundles=on` (`=off` turns it off); pre-rendered pages never show it.
+To roll it back, remove the flag: nothing else depends on it. `sw.js` keeps the
+`naarad-bundles` cache across releases, so bump `VERSION` as usual.
+
+It was built under decision D-0004, a logged founder override of gate G1 (no
+ledger evidence exists yet). The override expires on 2026-11-26; `node
+scripts/ops.mjs validate` reports it until then.
+
 ## The data, and what is not there
 
 Nothing on the site fills a gap with a plausible-looking number.

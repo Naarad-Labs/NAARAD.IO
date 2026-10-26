@@ -17,7 +17,7 @@ const EMPTY = {
   saved: [],       // [{ slug, name, location, photo, savedAt }]
   walks: [],       // [{ slug, name, location, photo, distanceM, stops, completedAt }]
   journal: [],     // [{ id, routeSlug, title, place, body, createdAt }]
-  downloads: [],   // [{ slug, name, stops, sizeLabel, savedAt }]
+  downloads: [],   // [{ slug, name, stops, sizeLabel, urls, version, savedAt }]
   listened: {},    // stopSlug -> seconds listened
 };
 
@@ -73,6 +73,23 @@ export function toggleSaved(route) {
 }
 
 export function isWalked(slug) { return read().walks.some((entry) => entry.slug === slug); }
+
+/* Offline bundles kept on this device (see offline-bundles.js). `urls` is the
+   list of files the bundle holds, so removing one route can leave alone a file
+   another downloaded route still needs. */
+export function isDownloaded(slug) { return read().downloads.some((entry) => entry.slug === slug); }
+export function getDownloads() { return read().downloads.map((entry) => ({ ...entry })); }
+export function addDownload(entry) {
+  const current = read();
+  current.downloads = current.downloads.filter((item) => item.slug !== entry.slug);
+  current.downloads.unshift({ ...entry, savedAt: new Date().toISOString() });
+  write();
+}
+export function removeDownload(slug) {
+  const current = read();
+  current.downloads = current.downloads.filter((entry) => entry.slug !== slug);
+  write();
+}
 
 export function completeWalk(route) {
   const current = read();

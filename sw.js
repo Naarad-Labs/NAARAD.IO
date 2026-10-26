@@ -10,12 +10,15 @@
  * are cached as they are used, with the tile cache kept small.
  */
 
-const VERSION = 'v11';
+const VERSION = 'v12';
 const SHELL = `naarad-shell-${VERSION}`;
 const PAGES = `naarad-pages-${VERSION}`;
 const CONTENT = `naarad-content-${VERSION}`;
 const MEDIA = `naarad-media-${VERSION}`;
 const TILES = `naarad-tiles-${VERSION}`;
+/* Offline route bundles (app/offline-bundles.js). Not versioned with the rest: a
+   visitor's downloaded routes must survive a new release of the worker. */
+const BUNDLES = 'naarad-bundles';
 const TILE_LIMIT = 220;
 const PAGE_LIMIT = 60;
 const OFFLINE_SHELL = '/app/shell.html';
@@ -61,7 +64,7 @@ self.addEventListener('install', (event) => {
 
 self.addEventListener('activate', (event) => {
   event.waitUntil((async () => {
-    const keep = new Set([SHELL, PAGES, CONTENT, MEDIA, TILES]);
+    const keep = new Set([SHELL, PAGES, CONTENT, MEDIA, TILES, BUNDLES]);
     const names = await caches.keys();
     await Promise.all(names.filter((name) => !keep.has(name)).map((name) => caches.delete(name)));
     await self.clients.claim();
@@ -75,11 +78,13 @@ async function trim(cacheName, limit) {
   await Promise.all(keys.slice(0, keys.length - limit).map((key) => cache.delete(key)));
 }
 
+const fromBundle = (request) => caches.match(request, { cacheName: BUNDLES, ignoreSearch: true });
+
 async function cacheFirst(request, cacheName) {
   const cache = await caches.open(cacheName);
   const hit = await cache.match(request);
   if (hit) return hit;
-  const response = await fetch(request);
+  const response = await fetch(request).catch(async (error) => (await fromBundle(request)) || Promise.reject(error));
   if (response.ok || response.type === 'opaque') cache.put(request, response.clone());
   return response;
 }
@@ -112,7 +117,7 @@ async function networkFirst(request, cacheName) {
     if (response.ok) cache.put(request, response.clone());
     return response;
   } catch (error) {
-    const hit = await cache.match(request);
+    const hit = (await cache.match(request)) || (await fromBundle(request));
     if (hit) return hit;
     throw error;
   }
