@@ -5,14 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#f8f3e9">
   <title>Mahabalipuram Shore Temple · Naarad</title>
-  <meta name="description" content="A route in Mahabalipuram, Tamil Nadu in the Naarad catalogue, 5.1 km long. Its stops and stories have not been published yet." data-page="">
+  <meta name="description" content="A route in Mahabalipuram, Tamil Nadu in the Naarad catalogue. Its stops and stories have not been published yet." data-page="">
+  <meta name="robots" content="noindex,follow" data-page="">
   <link rel="canonical" href="https://naarad.io/routes/mahabalipuram-shore-temple/" data-page="">
   <meta property="og:type" content="website" data-page="">
   <meta property="og:site_name" content="Naarad" data-page="">
   <meta property="og:locale" content="en_IN" data-page="">
   <meta property="og:url" content="https://naarad.io/routes/mahabalipuram-shore-temple/" data-page="">
   <meta property="og:title" content="Mahabalipuram Shore Temple · Naarad" data-page="">
-  <meta property="og:description" content="A route in Mahabalipuram, Tamil Nadu in the Naarad catalogue, 5.1 km long. Its stops and stories have not been published yet." data-page="">
+  <meta property="og:description" content="A route in Mahabalipuram, Tamil Nadu in the Naarad catalogue. Its stops and stories have not been published yet." data-page="">
   <meta property="og:image" content="https://naarad.io/Images/og/route-mahabalipuram-shore-temple.jpg" data-page="">
   <meta property="og:image:type" content="image/jpeg" data-page="">
   <meta property="og:image:width" content="1200" data-page="">
@@ -20,10 +21,10 @@
   <meta property="og:image:alt" content="Mahabalipuram Shore Temple, Mahabalipuram, Tamil Nadu: the Naarad title card." data-page="">
   <meta name="twitter:card" content="summary_large_image" data-page="">
   <meta name="twitter:title" content="Mahabalipuram Shore Temple · Naarad" data-page="">
-  <meta name="twitter:description" content="A route in Mahabalipuram, Tamil Nadu in the Naarad catalogue, 5.1 km long. Its stops and stories have not been published yet." data-page="">
+  <meta name="twitter:description" content="A route in Mahabalipuram, Tamil Nadu in the Naarad catalogue. Its stops and stories have not been published yet." data-page="">
   <meta name="twitter:image" content="https://naarad.io/Images/og/route-mahabalipuram-shore-temple.jpg" data-page="">
   <meta name="twitter:image:alt" content="Mahabalipuram Shore Temple, Mahabalipuram, Tamil Nadu: the Naarad title card." data-page="">
-  <script type="application/ld+json" data-page="">{"@context":"https://schema.org","@graph":[{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://naarad.io/"},{"@type":"ListItem","position":2,"name":"Routes","item":"https://naarad.io/routes/"},{"@type":"ListItem","position":3,"name":"Mahabalipuram Shore Temple","item":"https://naarad.io/routes/mahabalipuram-shore-temple/"}]},{"@type":"TouristTrip","@id":"https://naarad.io/routes/mahabalipuram-shore-temple/#trip","name":"Mahabalipuram Shore Temple","description":"A route in Mahabalipuram, Tamil Nadu in the Naarad catalogue, 5.1 km long. Its stops and stories have not been published yet.","url":"https://naarad.io/routes/mahabalipuram-shore-temple/","provider":{"@id":"https://naarad.io/#organization"},"potentialAction":{"@type":"TravelAction","distance":"5.1 km"}},{"@type":"Organization","@id":"https://naarad.io/#organization","name":"Naarad","url":"https://naarad.io/","logo":{"@type":"ImageObject","url":"https://naarad.io/Images/naarad-icon-512.png","width":512,"height":512}}]}</script>
+  <script type="application/ld+json" data-page="">{"@context":"https://schema.org","@graph":[{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://naarad.io/"},{"@type":"ListItem","position":2,"name":"Routes","item":"https://naarad.io/routes/"},{"@type":"ListItem","position":3,"name":"Mahabalipuram Shore Temple","item":"https://naarad.io/routes/mahabalipuram-shore-temple/"}]},{"@type":"Organization","@id":"https://naarad.io/#organization","name":"Naarad","url":"https://naarad.io/","logo":{"@type":"ImageObject","url":"https://naarad.io/Images/naarad-icon-512.png","width":512,"height":512}}]}</script>
   <link rel="icon" type="image/png" href="/Images/cropped_logo.png">
   <link rel="apple-touch-icon" href="/Images/naarad-icon-192.png">
   <link rel="manifest" href="/manifest.json">
@@ -38,6 +39,23 @@
       else if (/^\/(explore|routes|stories|creators|journey|about)$/.test(path)) to = path + '/';
       else if (/^\/(routes|stories)\/[^/.]+$/.test(path)) to = path + '/';
       if (to) location.replace(to + location.search + location.hash);
+    })();
+  </script>
+
+  <script>
+    /* Before pages had addresses of their own, a service worker (v10, or v11
+       in a test build) cached the old app code and serves it for every page.
+       Its copy cannot draw these pages, so once: remove it and its caches and
+       load the page again. Visitors without it never run any of this. */
+    (function () {
+      if (window.__NAARAD_PRERENDER__ || !window.caches || !navigator.serviceWorker) return;
+      caches.keys().then(function (names) {
+        if (!names.some(function (name) { return name === 'naarad-shell-v10' || name === 'naarad-shell-v11'; })) return;
+        return navigator.serviceWorker.getRegistrations()
+          .then(function (list) { return Promise.all(list.map(function (item) { return item.unregister(); })); })
+          .then(function () { return Promise.all(names.filter(function (name) { return name.indexOf('naarad-') === 0; }).map(function (name) { return caches.delete(name); })); })
+          .then(function () { location.reload(); });
+      }).catch(function () {});
     })();
   </script>
 
@@ -359,6 +377,13 @@
   <script type="module" src="/app/main.js"></script>
   <script>
     if ('serviceWorker' in navigator && !window.__NAARAD_PRERENDER__) {
+      // A page that a worker already controlled holds code that worker cached;
+      // when a new worker takes over, load the page again rather than mix old
+      // and new modules. The first worker a visitor gets is no change of code.
+      var controlled = Boolean(navigator.serviceWorker.controller);
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        if (controlled) { controlled = false; location.reload(); }
+      });
       addEventListener('load', () => navigator.serviceWorker.register('/sw.js').catch(() => {}));
     }
   </script>

@@ -18,14 +18,13 @@
   <meta property="og:image:width" content="1200" data-page="">
   <meta property="og:image:height" content="630" data-page="">
   <meta property="og:image:alt" content="The Stone Chariot of Hampi: the Naarad title card, set on the story's lead photograph." data-page="">
-  <meta property="article:published_time" content="2026-09-18" data-page="">
   <meta name="twitter:card" content="summary_large_image" data-page="">
   <meta name="twitter:title" content="The Stone Chariot of Hampi · Naarad" data-page="">
   <meta name="twitter:description" content="More than a monument, the Stone Chariot is the emblem of an empire, an exercise in showing off, and a reminder that the people who built it meant it to move." data-page="">
   <meta name="twitter:image" content="https://naarad.io/Images/og/story-stone-chariot-of-hampi.jpg" data-page="">
   <meta name="twitter:image:alt" content="The Stone Chariot of Hampi: the Naarad title card, set on the story's lead photograph." data-page="">
   <link rel="preload" as="image" type="image/avif" href="/Images/photos/hampi-stone-chariot-1600.avif" imagesrcset="/Images/photos/hampi-stone-chariot-800.avif 800w, /Images/photos/hampi-stone-chariot-1200.avif 1200w, /Images/photos/hampi-stone-chariot-1600.avif 1600w" imagesizes="(max-width: 1023px) 100vw, 58vw" fetchpriority="high" data-page="">
-  <script type="application/ld+json" data-page="">{"@context":"https://schema.org","@graph":[{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://naarad.io/"},{"@type":"ListItem","position":2,"name":"Stories","item":"https://naarad.io/stories/"},{"@type":"ListItem","position":3,"name":"The Stone Chariot of Hampi","item":"https://naarad.io/stories/stone-chariot-of-hampi/"}]},{"@type":"Article","@id":"https://naarad.io/stories/stone-chariot-of-hampi/#article","headline":"The Stone Chariot of Hampi","description":"More than a monument, the Stone Chariot is the emblem of an empire, an exercise in showing off, and a reminder that the people who built it meant it to move.","url":"https://naarad.io/stories/stone-chariot-of-hampi/","mainEntityOfPage":"https://naarad.io/stories/stone-chariot-of-hampi/","inLanguage":"en-IN","image":["https://naarad.io/Images/photos/hampi-stone-chariot-1600.webp","https://naarad.io/Images/og/story-stone-chariot-of-hampi.jpg"],"author":{"@type":"Organization","name":"Naarad editorial","url":"https://naarad.io/about/"},"publisher":{"@id":"https://naarad.io/#organization"},"datePublished":"2026-09-18","about":{"@type":"TouristTrip","@id":"https://naarad.io/routes/hampi-heritage-trail/#trip","name":"Hampi Heritage Trail","url":"https://naarad.io/routes/hampi-heritage-trail/"}},{"@type":"Organization","@id":"https://naarad.io/#organization","name":"Naarad","url":"https://naarad.io/","logo":{"@type":"ImageObject","url":"https://naarad.io/Images/naarad-icon-512.png","width":512,"height":512}}]}</script>
+  <script type="application/ld+json" data-page="">{"@context":"https://schema.org","@graph":[{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://naarad.io/"},{"@type":"ListItem","position":2,"name":"Stories","item":"https://naarad.io/stories/"},{"@type":"ListItem","position":3,"name":"The Stone Chariot of Hampi","item":"https://naarad.io/stories/stone-chariot-of-hampi/"}]},{"@type":"Article","@id":"https://naarad.io/stories/stone-chariot-of-hampi/#article","headline":"The Stone Chariot of Hampi","description":"More than a monument, the Stone Chariot is the emblem of an empire, an exercise in showing off, and a reminder that the people who built it meant it to move.","url":"https://naarad.io/stories/stone-chariot-of-hampi/","mainEntityOfPage":"https://naarad.io/stories/stone-chariot-of-hampi/","inLanguage":"en-IN","image":["https://naarad.io/Images/photos/hampi-stone-chariot-1600.webp","https://naarad.io/Images/og/story-stone-chariot-of-hampi.jpg"],"author":{"@type":"Organization","name":"Naarad editorial","url":"https://naarad.io/about/"},"publisher":{"@id":"https://naarad.io/#organization"},"about":{"@type":"TouristTrip","@id":"https://naarad.io/routes/hampi-heritage-trail/#trip","name":"Hampi Heritage Trail","url":"https://naarad.io/routes/hampi-heritage-trail/"}},{"@type":"Organization","@id":"https://naarad.io/#organization","name":"Naarad","url":"https://naarad.io/","logo":{"@type":"ImageObject","url":"https://naarad.io/Images/naarad-icon-512.png","width":512,"height":512}}]}</script>
   <link rel="icon" type="image/png" href="/Images/cropped_logo.png">
   <link rel="apple-touch-icon" href="/Images/naarad-icon-192.png">
   <link rel="manifest" href="/manifest.json">
@@ -40,6 +39,23 @@
       else if (/^\/(explore|routes|stories|creators|journey|about)$/.test(path)) to = path + '/';
       else if (/^\/(routes|stories)\/[^/.]+$/.test(path)) to = path + '/';
       if (to) location.replace(to + location.search + location.hash);
+    })();
+  </script>
+
+  <script>
+    /* Before pages had addresses of their own, a service worker (v10, or v11
+       in a test build) cached the old app code and serves it for every page.
+       Its copy cannot draw these pages, so once: remove it and its caches and
+       load the page again. Visitors without it never run any of this. */
+    (function () {
+      if (window.__NAARAD_PRERENDER__ || !window.caches || !navigator.serviceWorker) return;
+      caches.keys().then(function (names) {
+        if (!names.some(function (name) { return name === 'naarad-shell-v10' || name === 'naarad-shell-v11'; })) return;
+        return navigator.serviceWorker.getRegistrations()
+          .then(function (list) { return Promise.all(list.map(function (item) { return item.unregister(); })); })
+          .then(function () { return Promise.all(names.filter(function (name) { return name.indexOf('naarad-') === 0; }).map(function (name) { return caches.delete(name); })); })
+          .then(function () { location.reload(); });
+      }).catch(function () {});
     })();
   </script>
 
@@ -104,7 +120,7 @@
         <picture class="photo story-hero-photo">
     <source type="image/avif" srcset="/Images/photos/hampi-stone-chariot-800.avif 800w, /Images/photos/hampi-stone-chariot-1200.avif 1200w, /Images/photos/hampi-stone-chariot-1600.avif 1600w" sizes="(max-width: 1023px) 100vw, 58vw">
     <source type="image/webp" srcset="/Images/photos/hampi-stone-chariot-800.webp 800w, /Images/photos/hampi-stone-chariot-1200.webp 1200w, /Images/photos/hampi-stone-chariot-1600.webp 1600w" sizes="(max-width: 1023px) 100vw, 58vw">
-    <img src="/Images/photos/hampi-stone-chariot-1200.webp" alt="The Stone Chariot of Hampi" loading="eager" decoding="async" fetchpriority="high">
+    <img src="/Images/photos/hampi-stone-chariot-1200.webp" alt="The Stone Chariot of Hampi" loading="eager" decoding="async" fetchpriority="high" style="aspect-ratio:1.5">
     <span class="photo-credit">Photo: Ram Nagesh Thota (<a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener noreferrer">CC BY-SA 4.0</a>)</span>
   </picture>
       </div>
@@ -217,7 +233,7 @@
     
   </section>
         <footer class="story-footer">
-          <p class="data-note">Written for Naarad · published 2026-09-18. Photographs are credited where they appear.</p>
+          <p class="data-note">Written for Naarad. Photographs are credited where they appear.</p>
         </footer>
       </div>
 
@@ -355,6 +371,13 @@
   <script type="module" src="/app/main.js"></script>
   <script>
     if ('serviceWorker' in navigator && !window.__NAARAD_PRERENDER__) {
+      // A page that a worker already controlled holds code that worker cached;
+      // when a new worker takes over, load the page again rather than mix old
+      // and new modules. The first worker a visitor gets is no change of code.
+      var controlled = Boolean(navigator.serviceWorker.controller);
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        if (controlled) { controlled = false; location.reload(); }
+      });
       addEventListener('load', () => navigator.serviceWorker.register('/sw.js').catch(() => {}));
     }
   </script>

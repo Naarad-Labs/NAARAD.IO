@@ -6,6 +6,7 @@
   <meta name="theme-color" content="#f8f3e9">
   <title>IIT Madras Wildlife Walk · Naarad</title>
   <meta name="description" content="A route recorded on the ground in Chennai, Tamil Nadu, 6.0 km long. Its line is on the map; its stops and stories have not been published yet." data-page="">
+  <meta name="robots" content="noindex,follow" data-page="">
   <link rel="canonical" href="https://naarad.io/routes/iit-madras-wildlife-walk/" data-page="">
   <meta property="og:type" content="website" data-page="">
   <meta property="og:site_name" content="Naarad" data-page="">
@@ -24,7 +25,7 @@
   <meta name="twitter:image" content="https://naarad.io/Images/og/route-iit-madras-wildlife-walk.jpg" data-page="">
   <meta name="twitter:image:alt" content="IIT Madras Wildlife Walk, Chennai, Tamil Nadu: the Naarad title card, set on a photograph from the route." data-page="">
   <link rel="preload" as="image" type="image/avif" href="/Images/photos/chennai-iitm-800.avif" imagesrcset="/Images/photos/chennai-iitm-320.avif 320w, /Images/photos/chennai-iitm-480.avif 480w, /Images/photos/chennai-iitm-640.avif 640w, /Images/photos/chennai-iitm-800.avif 800w" imagesizes="(max-width: 1023px) 100vw, 56vw" fetchpriority="high" data-page="">
-  <script type="application/ld+json" data-page="">{"@context":"https://schema.org","@graph":[{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://naarad.io/"},{"@type":"ListItem","position":2,"name":"Routes","item":"https://naarad.io/routes/"},{"@type":"ListItem","position":3,"name":"IIT Madras Wildlife Walk","item":"https://naarad.io/routes/iit-madras-wildlife-walk/"}]},{"@type":"TouristTrip","@id":"https://naarad.io/routes/iit-madras-wildlife-walk/#trip","name":"IIT Madras Wildlife Walk","description":"A route recorded on the ground in Chennai, Tamil Nadu, 6.0 km long. Its line is on the map; its stops and stories have not been published yet.","url":"https://naarad.io/routes/iit-madras-wildlife-walk/","image":"https://naarad.io/Images/photos/chennai-iitm-800.webp","provider":{"@id":"https://naarad.io/#organization"},"potentialAction":{"@type":"TravelAction","distance":"6.0 km"}},{"@type":"Organization","@id":"https://naarad.io/#organization","name":"Naarad","url":"https://naarad.io/","logo":{"@type":"ImageObject","url":"https://naarad.io/Images/naarad-icon-512.png","width":512,"height":512}}]}</script>
+  <script type="application/ld+json" data-page="">{"@context":"https://schema.org","@graph":[{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://naarad.io/"},{"@type":"ListItem","position":2,"name":"Routes","item":"https://naarad.io/routes/"},{"@type":"ListItem","position":3,"name":"IIT Madras Wildlife Walk","item":"https://naarad.io/routes/iit-madras-wildlife-walk/"}]},{"@type":"Organization","@id":"https://naarad.io/#organization","name":"Naarad","url":"https://naarad.io/","logo":{"@type":"ImageObject","url":"https://naarad.io/Images/naarad-icon-512.png","width":512,"height":512}}]}</script>
   <link rel="icon" type="image/png" href="/Images/cropped_logo.png">
   <link rel="apple-touch-icon" href="/Images/naarad-icon-192.png">
   <link rel="manifest" href="/manifest.json">
@@ -39,6 +40,23 @@
       else if (/^\/(explore|routes|stories|creators|journey|about)$/.test(path)) to = path + '/';
       else if (/^\/(routes|stories)\/[^/.]+$/.test(path)) to = path + '/';
       if (to) location.replace(to + location.search + location.hash);
+    })();
+  </script>
+
+  <script>
+    /* Before pages had addresses of their own, a service worker (v10, or v11
+       in a test build) cached the old app code and serves it for every page.
+       Its copy cannot draw these pages, so once: remove it and its caches and
+       load the page again. Visitors without it never run any of this. */
+    (function () {
+      if (window.__NAARAD_PRERENDER__ || !window.caches || !navigator.serviceWorker) return;
+      caches.keys().then(function (names) {
+        if (!names.some(function (name) { return name === 'naarad-shell-v10' || name === 'naarad-shell-v11'; })) return;
+        return navigator.serviceWorker.getRegistrations()
+          .then(function (list) { return Promise.all(list.map(function (item) { return item.unregister(); })); })
+          .then(function () { return Promise.all(names.filter(function (name) { return name.indexOf('naarad-') === 0; }).map(function (name) { return caches.delete(name); })); })
+          .then(function () { location.reload(); });
+      }).catch(function () {});
     })();
   </script>
 
@@ -104,7 +122,7 @@
       <picture class="photo route-hero-photo torn-left">
     <source type="image/avif" srcset="/Images/photos/chennai-iitm-320.avif 320w, /Images/photos/chennai-iitm-480.avif 480w, /Images/photos/chennai-iitm-640.avif 640w, /Images/photos/chennai-iitm-800.avif 800w" sizes="(max-width: 1023px) 100vw, 56vw">
     <source type="image/webp" srcset="/Images/photos/chennai-iitm-320.webp 320w, /Images/photos/chennai-iitm-480.webp 480w, /Images/photos/chennai-iitm-640.webp 640w, /Images/photos/chennai-iitm-800.webp 800w" sizes="(max-width: 1023px) 100vw, 56vw">
-    <img src="/Images/photos/chennai-iitm-480.webp" alt="IIT Madras Wildlife Walk, Chennai, Tamil Nadu" loading="eager" decoding="async" fetchpriority="high">
+    <img src="/Images/photos/chennai-iitm-480.webp" alt="IIT Madras Wildlife Walk, Chennai, Tamil Nadu" loading="eager" decoding="async" fetchpriority="high" style="aspect-ratio:1.5">
     <span class="photo-credit">Photo: Timothy A. Gonsalves (<a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener noreferrer">CC BY-SA 4.0</a>)</span>
   </picture>
       
@@ -373,6 +391,13 @@
   <script type="module" src="/app/main.js"></script>
   <script>
     if ('serviceWorker' in navigator && !window.__NAARAD_PRERENDER__) {
+      // A page that a worker already controlled holds code that worker cached;
+      // when a new worker takes over, load the page again rather than mix old
+      // and new modules. The first worker a visitor gets is no change of code.
+      var controlled = Boolean(navigator.serviceWorker.controller);
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        if (controlled) { controlled = false; location.reload(); }
+      });
       addEventListener('load', () => navigator.serviceWorker.register('/sw.js').catch(() => {}));
     }
   </script>
