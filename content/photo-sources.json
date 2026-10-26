@@ -100,21 +100,6 @@
       ],
       "aspect": 1.5214
     },
-    "hampi-vittala-hall": {
-      "id": "hampi-vittala-hall",
-      "role": "feature",
-      "title": "vitthala temple, hampi",
-      "author": "nevil zaveri (thank you for 20+M views:)",
-      "licence": "CC BY 2.0",
-      "licenceUrl": "https://creativecommons.org/licenses/by/2.0/",
-      "sourcePage": "https://www.flickr.com/photos/43109416@N00/6157256087",
-      "source": "flickr",
-      "widths": [
-        640,
-        960
-      ],
-      "aspect": 1.4993
-    },
     "hampi-krishna-temple": {
       "id": "hampi-krishna-temple",
       "role": "card",

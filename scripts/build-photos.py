@@ -59,7 +59,6 @@ WANTED = {
     "hampi-bazaar": ("hampi bazaar pillared street market", "feature", 900),
     "hampi-stone-chariot": ("stone chariot vittala temple hampi", "hero", 1500),
     "hampi-chariot-wheel": ("stone chariot wheel hampi carving", "feature", 900),
-    "hampi-vittala-hall": ("vittala temple hampi pillars hall", "feature", 1000),
     "hampi-krishna-temple": ("krishna temple hampi", "card", 800),
     "hampi-royal-enclosure": ("mahanavami dibba hampi royal enclosure", "card", 800),
     "hampi-queens-bath": ("queens bath hampi", "card", 800),
