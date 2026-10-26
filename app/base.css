@@ -429,3 +429,8 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
   .button, .icon-button, .chip, .map-control, .stop-item, .route-card, .journey-card,
   .story-card, .magazine-page, .language-list li, .filter-chips button, .quick-links a { transition: none; }
 }
+
+/* Offline bar and unsaved-route marks (behind the offline-bundles flag; see app/offline-ui.js). */
+.offline-bar { padding: 10px 16px; text-align: center; font-weight: 600; background: var(--navy, #172752); color: #fff; }
+a[data-unsaved-offline] { opacity: .6; cursor: not-allowed; }
+.unsaved-note { display: block; margin-top: 4px; font-size: .8125rem; font-weight: 600; }

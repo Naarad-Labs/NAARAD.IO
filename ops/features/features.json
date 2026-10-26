@@ -38,7 +38,7 @@
     "id": "F-002",
     "name": "Offline route bundles",
     "area": "offline",
-    "summary": "Keep one route on the device and open it with no network, including My Journey. Page, text, photos; no map tiles or audio. Checks space first and keeps nothing if a write fails.",
+    "summary": "Keep one route on the device and open it with no network, including My Journey and the catalogue. Page, text, photos; no map tiles or audio. Checks space first, keeps nothing if a write fails, and while offline shows a bar and marks routes that are not saved.",
     "status": "flagged",
     "flag": "naarad.flag.offline-bundles",
     "origin": "built-under-override",
@@ -53,6 +53,7 @@
     "tests": [
       "e2e/site.spec.js",
       "ops/test/offline-bundles.test.mjs",
+      "ops/test/offline-state.test.mjs",
       "ops/test/storage-budget.test.mjs"
     ],
     "decisions": [

@@ -25,11 +25,12 @@ export const FLAG_KEY = 'naarad.flag.offline-bundles';
 export const BUNDLE_CACHE = 'naarad-bundles';
 export const BUNDLE_VERSION = 1;
 
-/* The offline kit: what My Journey needs to open with no network, so a saved
-   route can be found again. Every bundle lists these files, so the first
+/* The offline kit: what My Journey and the catalogue need to open with no
+   network, so a saved route can be found again and the others can be seen to be
+   unavailable. Every bundle lists these files, so the first
    download stores them once and the last removal deletes them (remove() keeps
    any file another bundle still lists). */
-export const KIT = ['/journey/', '/app/views/journey.js', '/app/journey.css'];
+export const KIT = ['/journey/', '/app/views/journey.js', '/app/journey.css', '/routes/', '/app/views/explore.js', '/app/explore.css'];
 
 /* The widths a phone asks for. Larger ones are left out to keep a bundle small. */
 export const MAX_PHOTO_WIDTH = 960;
