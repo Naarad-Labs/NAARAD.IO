@@ -159,3 +159,36 @@ test('delete_my_account refuses a caller who is not signed in', async () => {
     await assert.rejects(q(db, 'select public.delete_my_account()'), /not signed in/);
   });
 });
+
+/* G3 asks for a migration that can be reversed. The down script must leave the
+   database as it was before 0001, without touching anyone's sign-in account. */
+const downFile = path.join(dir, 'down', '0001_creator_accounts.down.sql');
+const applyUp = (db) => db.exec(fs.readFileSync(path.join(dir, '0001_creator_accounts.sql'), 'utf8'));
+
+test('the down migration removes everything 0001 made and leaves sign-in accounts alone', async () => {
+  const db = new PGlite();
+  await db.exec(STUB);
+  await db.exec(`insert into auth.users (id) values ('${A}')`);
+  const snapshot = () => q(db, `select
+    (select count(*) from pg_class c join pg_namespace n on n.oid = c.relnamespace where n.nspname = 'public' and c.relkind in ('r','i')) as relations,
+    (select count(*) from pg_type t join pg_namespace n on n.oid = t.typnamespace where n.nspname = 'public' and t.typname = 'submission_status') as types,
+    (select count(*) from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname = 'public') as functions,
+    (select count(*) from pg_policies where schemaname = 'public') as policies`);
+  const before = await snapshot();
+  await applyUp(db);
+  await asA(db, () => insertDraft(db));
+  assert.notDeepEqual(await snapshot(), before);
+  await db.exec(fs.readFileSync(downFile, 'utf8'));
+  assert.deepEqual(await snapshot(), before);
+  assert.equal((await q(db, 'select count(*)::int as n from auth.users'))[0].n, 1);
+});
+
+test('the down migration is safe to run twice, and the up migration applies again afterwards', async () => {
+  const db = new PGlite();
+  await db.exec(STUB);
+  await applyUp(db);
+  await db.exec(fs.readFileSync(downFile, 'utf8'));
+  await db.exec(fs.readFileSync(downFile, 'utf8'));
+  await applyUp(db);
+  assert.equal((await q(db, `select count(*)::int as n from pg_class where relname = 'creator_submissions'`))[0].n, 1);
+});
