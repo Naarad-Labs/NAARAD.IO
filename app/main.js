@@ -21,6 +21,7 @@ import * as Audio from './audio.js';
 import * as Journey from './journey-store.js';
 import * as Offline from './offline-bundles.js';
 import * as Account from './account.js';
+import * as OfflineUI from './offline-ui.js';
 import * as Drafts from './studio-store.js';
 import * as Motion from './motion.js';
 import * as Urls from './urls.js';
@@ -335,6 +336,8 @@ async function paint(view, context = {}, { keep = false, scroll = true } = {}) {
   }
   setMeta(meta);
   Motion.scan(shell);
+  OfflineUI.start();
+  OfflineUI.refresh();
   return meta;
 }
 
@@ -601,6 +604,8 @@ document.addEventListener('click', async (event) => {
   const url = pageLink(event);
   if (url) {
     event.preventDefault();
+    const dead = OfflineUI.blocks(url);
+    if (dead.blocked) { notify(dead.reason); return; }
     await started;
     await show(url);
     return;

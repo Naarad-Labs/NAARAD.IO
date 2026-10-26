@@ -80,9 +80,9 @@ test('removing one route leaves files another downloaded route still needs', asy
 
 /* ---- offline bundles v2, part A: the kit, space, and all-or-nothing writes ---- */
 
-test('every bundle carries the offline kit, so My Journey opens with no network', () => {
+test('every bundle carries the offline kit, so My Journey and the catalogue open with no network', () => {
   const urls = selectUrls({ origin, slug: 'x', resources: [], srcsets: [], images: [] });
-  for (const path of ['/journey/', '/app/views/journey.js', '/app/journey.css']) assert.ok(urls.includes(path), path);
+  for (const path of ['/journey/', '/app/views/journey.js', '/app/journey.css', '/routes/', '/app/views/explore.js', '/app/explore.css']) assert.ok(urls.includes(path), path);
 });
 
 function spaceEnv({ estimate, failPutAt = null, putError = null } = {}) {
