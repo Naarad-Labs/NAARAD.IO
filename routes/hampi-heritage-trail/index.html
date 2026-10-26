@@ -75,7 +75,7 @@
           <span class="brand-motto">Explore. Listen. Connect.</span>
         </span>
       </a>
-      <nav class="primary-nav" aria-label="Main navigation">
+      <nav class="primary-nav" id="primary-nav" aria-label="Main navigation">
         <a id="nav-explore" href="/explore/" data-view="explore">Explore</a>
         <a id="nav-routes" href="/routes/" data-view="routes" class="is-current" aria-current="page">Routes</a>
         <a id="nav-stories" href="/stories/" data-view="stories">Stories</a>
@@ -83,7 +83,7 @@
         <a id="nav-journey" href="/journey/" data-view="journey">My Journey</a>
         <a id="nav-about" href="/about/" data-view="about">About</a>
       </nav>
-      <form class="header-search" role="search" action="/routes/">
+      <form class="header-search" role="search" aria-label="Site search" action="/routes/">
         <label class="sr-only" for="route-search">Search places, routes and stories</label>
         <input id="route-search" type="search" name="q" placeholder="Search places, routes, stories…" autocomplete="off">
         <button type="submit" aria-label="Search">
@@ -94,7 +94,7 @@
         Start Exploring
         <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 12h15"></path><path d="m13.6 6 5.9 6-5.9 6"></path></svg>
       </a>
-      <button class="menu-toggle" type="button" aria-label="Open navigation" aria-expanded="false"><span></span><span></span><span></span></button>
+      <button class="menu-toggle" type="button" aria-label="Menu" aria-controls="primary-nav" aria-expanded="false"><span></span><span></span><span></span></button>
     </header>
 
     <main id="app-content" class="view-route" data-prerendered="/routes/hampi-heritage-trail/"><article class="route-page" data-route="hampi-heritage-trail">
@@ -156,22 +156,17 @@
     </div>
   </div>
     <div class="route-bar">
-    <div class="route-tabs" role="tablist" aria-label="Route sections">
-      <button type="button" role="tab" id="tab-overview" data-tab="overview" aria-selected="true" aria-controls="panel-overview" tabindex="0">
-        <svg class="ico " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M13.4 3.6H6.4v16.8h11.2V7.8Z"></path><path d="M13.4 3.6v4.2h4.2"></path></svg><span>Overview</span></button><button type="button" role="tab" id="tab-stops" data-tab="stops" aria-selected="false" aria-controls="panel-stops" tabindex="-1">
-        <svg class="ico " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M19 10.2c0 5-7 11.6-7 11.6S5 15.2 5 10.2a7 7 0 1 1 14 0Z"></path><circle cx="12" cy="10" r="2.4"></circle></svg><span>Stops</span></button><button type="button" role="tab" id="tab-stories" data-tab="stories" aria-selected="false" aria-controls="panel-stories" tabindex="-1">
-        <svg class="ico " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4.4 15v-2.8a7.6 7.6 0 0 1 15.2 0V15"></path><path d="M4.4 14.2h2.2a1 1 0 0 1 1 1v3.2a1 1 0 0 1-1 1H5.6a1.2 1.2 0 0 1-1.2-1.2Z"></path><path d="M19.6 14.2h-2.2a1 1 0 0 0-1 1v3.2a1 1 0 0 0 1 1h1a1.2 1.2 0 0 0 1.2-1.2Z"></path></svg><span>Stories</span></button><button type="button" role="tab" id="tab-terrain" data-tab="terrain" aria-selected="false" aria-controls="panel-terrain" tabindex="-1">
-        <svg class="ico " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3 17.5l4.6-5.6 3.2 3.4 3.4-5.2L21 17.5Z"></path><path d="M3 20.2h18"></path></svg><span>Terrain</span></button><button type="button" role="tab" id="tab-map" data-tab="map" aria-selected="false" aria-controls="panel-map" tabindex="-1">
-        <svg class="ico " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 4.3 3.8 6.6v13l5.2-2.3 6 2.4 5.2-2.3v-13l-5.2 2.3Z"></path><path d="M9 4.3v13.4"></path><path d="M15 6.7v13"></path></svg><span>Map</span></button>
-    </div>
+    <nav class="route-tabs" aria-label="Route sections">
+      <a href="#section-overview" data-tab="overview" aria-current="location"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M13.4 3.6H6.4v16.8h11.2V7.8Z"></path><path d="M13.4 3.6v4.2h4.2"></path></svg><span>Overview</span></a><a href="#section-stops" data-tab="stops"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M19 10.2c0 5-7 11.6-7 11.6S5 15.2 5 10.2a7 7 0 1 1 14 0Z"></path><circle cx="12" cy="10" r="2.4"></circle></svg><span>Stops</span></a><a href="#section-stories" data-tab="stories"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4.4 15v-2.8a7.6 7.6 0 0 1 15.2 0V15"></path><path d="M4.4 14.2h2.2a1 1 0 0 1 1 1v3.2a1 1 0 0 1-1 1H5.6a1.2 1.2 0 0 1-1.2-1.2Z"></path><path d="M19.6 14.2h-2.2a1 1 0 0 0-1 1v3.2a1 1 0 0 0 1 1h1a1.2 1.2 0 0 0 1.2-1.2Z"></path></svg><span>Stories</span></a><a href="#section-terrain" data-tab="terrain"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3 17.5l4.6-5.6 3.2 3.4 3.4-5.2L21 17.5Z"></path><path d="M3 20.2h18"></path></svg><span>Terrain</span></a><a href="#section-map" data-tab="map"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 4.3 3.8 6.6v13l5.2-2.3 6 2.4 5.2-2.3v-13l-5.2 2.3Z"></path><path d="M9 4.3v13.4"></path><path d="M15 6.7v13"></path></svg><span>Map</span></a>
+    </nav>
     <div class="route-bar-actions">
       <button type="button" class="button button-sm" data-action="share"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="17.6" cy="6" r="2.6"></circle><circle cx="6.4" cy="12" r="2.6"></circle><circle cx="17.6" cy="18" r="2.6"></circle><path d="m8.7 10.8 6.6-3.5"></path><path d="m8.7 13.2 6.6 3.5"></path></svg> Share</button>
       <button type="button" class="button button-sm" data-action="save" aria-pressed="false"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6.4 4.4h11.2v15.4L12 15.6l-5.6 4.2Z"></path></svg> <span>Save</span></button>
       <button type="button" class="button button-primary button-sm" data-action="start"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 20.4c-1.5 0-2.4-.8-2.4-2.3 0-1.3.6-2 .6-3.4 0-1-.6-1.6-.6-3C4.6 9.4 5.8 8 7.4 8s2.6 1.4 2.4 3.6c-.2 2-.8 3-.8 4.6s-.5 4.2-2 4.2Z"></path><path d="M17 16.4c-1.5 0-2-2.6-2-4.2 0-1.6-.6-2.6-.8-4.6C14 5.4 15.4 4 17 4s2.8 1.4 2.8 3.7c0 1.4-.6 2-.6 3 0 1.4.6 2.1.6 3.4 0 1.5-.9 2.3-2.8 2.3Z"></path></svg> Start Walk</button>
     </div>
   </div>
-    <div class="route-workspace" id="panel-stops" role="tabpanel" aria-labelledby="tab-stops">
-      <section class="map-panel" id="panel-map" role="tabpanel" aria-labelledby="tab-map">
+    <div class="route-workspace">
+      <section class="map-panel" id="section-map">
     <div class="map-frame">
       <div id="map" class="route-map" role="application" aria-label="Map of Hampi Heritage Trail">
         <svg class="route-preview map-placeholder" viewBox="0 0 560 620" role="img" aria-label="Map preview of Hampi Heritage Trail with 8 numbered stops" preserveAspectRatio="xMidYMid slice">
@@ -223,7 +218,7 @@
       <p class="map-note script">Stories at every stop</p>
     </div>
   </section>
-      <section class="stop-panel" aria-live="polite" data-stop="1">
+      <section class="stop-panel" id="section-stories" aria-live="polite" data-stop="1">
     <div class="stop-panel-head">
       <p class="eyebrow eyebrow-mark">Stop 1 of 8</p>
       <div class="stop-panel-meta">
@@ -277,13 +272,13 @@
       </ul>
     </div>
   </section>
-      <aside class="stop-rail" aria-labelledby="stops-heading">
+      <aside class="stop-rail" id="section-stops" aria-labelledby="stops-heading">
     <div class="stop-rail-head">
       <h2 id="stops-heading" class="eyebrow eyebrow-mark">All stops (8)</h2>
       <span class="chip">In route order</span>
     </div>
     <ol class="stop-list">
-      <li>
+      <li class="stop-row">
         <button type="button" class="stop-item is-active" data-select-stop="1" aria-current="true">
           <span class="stop-index">1</span>
           <span class="stop-thumb"><picture class="photo ">
@@ -297,9 +292,9 @@
             <small>Living faith across centuries</small>
             <span class="stop-item-meta"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M13 4.6a1.6 1.6 0 1 0 0-.1"></path><path d="M11 21l1.4-5.1-2.6-2.3.9-4.6L8 10.6 7 13.6"></path><path d="M17 12.4l-2.3-1.1-1.4-3.2-2.6.9"></path><path d="M14.6 15.9L16.4 21"></path></svg>0 m</span>
           </span>
-          <span class="stop-item-play" data-action="listen" data-stop="1" role="button" tabindex="0" aria-label="Listen to Virupaksha Temple"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M8.6 5.6 18.4 12l-9.8 6.4Z"></path></svg></span>
         </button>
-      </li><li>
+        <button type="button" class="stop-item-play" data-action="listen" data-stop="1" aria-label="Listen to Virupaksha Temple"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M8.6 5.6 18.4 12l-9.8 6.4Z"></path></svg></button>
+      </li><li class="stop-row">
         <button type="button" class="stop-item" data-select-stop="2" aria-current="false">
           <span class="stop-index">2</span>
           <span class="stop-thumb"><picture class="photo ">
@@ -313,9 +308,9 @@
             <small>Monumental beginnings</small>
             <span class="stop-item-meta"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M13 4.6a1.6 1.6 0 1 0 0-.1"></path><path d="M11 21l1.4-5.1-2.6-2.3.9-4.6L8 10.6 7 13.6"></path><path d="M17 12.4l-2.3-1.1-1.4-3.2-2.6.9"></path><path d="M14.6 15.9L16.4 21"></path></svg>250 m</span>
           </span>
-          <span class="stop-item-play" data-action="listen" data-stop="2" role="button" tabindex="0" aria-label="Listen to Sasivekalu Ganesha"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M8.6 5.6 18.4 12l-9.8 6.4Z"></path></svg></span>
         </button>
-      </li><li>
+        <button type="button" class="stop-item-play" data-action="listen" data-stop="2" aria-label="Listen to Sasivekalu Ganesha"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M8.6 5.6 18.4 12l-9.8 6.4Z"></path></svg></button>
+      </li><li class="stop-row">
         <button type="button" class="stop-item" data-select-stop="3" aria-current="false">
           <span class="stop-index">3</span>
           <span class="stop-thumb"><picture class="photo ">
@@ -329,9 +324,9 @@
             <small>A marketplace of the world</small>
             <span class="stop-item-meta"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M13 4.6a1.6 1.6 0 1 0 0-.1"></path><path d="M11 21l1.4-5.1-2.6-2.3.9-4.6L8 10.6 7 13.6"></path><path d="M17 12.4l-2.3-1.1-1.4-3.2-2.6.9"></path><path d="M14.6 15.9L16.4 21"></path></svg>544 m</span>
           </span>
-          <span class="stop-item-play" data-action="listen" data-stop="3" role="button" tabindex="0" aria-label="Listen to Hampi Bazaar"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M8.6 5.6 18.4 12l-9.8 6.4Z"></path></svg></span>
         </button>
-      </li><li>
+        <button type="button" class="stop-item-play" data-action="listen" data-stop="3" aria-label="Listen to Hampi Bazaar"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M8.6 5.6 18.4 12l-9.8 6.4Z"></path></svg></button>
+      </li><li class="stop-row">
         <button type="button" class="stop-item" data-select-stop="4" aria-current="false">
           <span class="stop-index">4</span>
           <span class="stop-thumb"><picture class="photo ">
@@ -345,9 +340,9 @@
             <small>Devotion in stone</small>
             <span class="stop-item-meta"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M13 4.6a1.6 1.6 0 1 0 0-.1"></path><path d="M11 21l1.4-5.1-2.6-2.3.9-4.6L8 10.6 7 13.6"></path><path d="M17 12.4l-2.3-1.1-1.4-3.2-2.6.9"></path><path d="M14.6 15.9L16.4 21"></path></svg>1.4 km</span>
           </span>
-          <span class="stop-item-play" data-action="listen" data-stop="4" role="button" tabindex="0" aria-label="Listen to Krishna Temple"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M8.6 5.6 18.4 12l-9.8 6.4Z"></path></svg></span>
         </button>
-      </li><li>
+        <button type="button" class="stop-item-play" data-action="listen" data-stop="4" aria-label="Listen to Krishna Temple"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M8.6 5.6 18.4 12l-9.8 6.4Z"></path></svg></button>
+      </li><li class="stop-row">
         <button type="button" class="stop-item" data-select-stop="5" aria-current="false">
           <span class="stop-index">5</span>
           <span class="stop-thumb"><picture class="photo ">
@@ -361,9 +356,9 @@
             <small>Power, people and palaces</small>
             <span class="stop-item-meta"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M13 4.6a1.6 1.6 0 1 0 0-.1"></path><path d="M11 21l1.4-5.1-2.6-2.3.9-4.6L8 10.6 7 13.6"></path><path d="M17 12.4l-2.3-1.1-1.4-3.2-2.6.9"></path><path d="M14.6 15.9L16.4 21"></path></svg>2.1 km</span>
           </span>
-          <span class="stop-item-play" data-action="listen" data-stop="5" role="button" tabindex="0" aria-label="Listen to Royal Enclosure"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M8.6 5.6 18.4 12l-9.8 6.4Z"></path></svg></span>
         </button>
-      </li><li>
+        <button type="button" class="stop-item-play" data-action="listen" data-stop="5" aria-label="Listen to Royal Enclosure"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M8.6 5.6 18.4 12l-9.8 6.4Z"></path></svg></button>
+      </li><li class="stop-row">
         <button type="button" class="stop-item" data-select-stop="6" aria-current="false">
           <span class="stop-index">6</span>
           <span class="stop-thumb"><picture class="photo ">
@@ -377,9 +372,9 @@
             <small>A glimpse into royal life</small>
             <span class="stop-item-meta"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M13 4.6a1.6 1.6 0 1 0 0-.1"></path><path d="M11 21l1.4-5.1-2.6-2.3.9-4.6L8 10.6 7 13.6"></path><path d="M17 12.4l-2.3-1.1-1.4-3.2-2.6.9"></path><path d="M14.6 15.9L16.4 21"></path></svg>2.8 km</span>
           </span>
-          <span class="stop-item-play" data-action="listen" data-stop="6" role="button" tabindex="0" aria-label="Listen to Queen's Bath"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M8.6 5.6 18.4 12l-9.8 6.4Z"></path></svg></span>
         </button>
-      </li><li>
+        <button type="button" class="stop-item-play" data-action="listen" data-stop="6" aria-label="Listen to Queen's Bath"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M8.6 5.6 18.4 12l-9.8 6.4Z"></path></svg></button>
+      </li><li class="stop-row">
         <button type="button" class="stop-item" data-select-stop="7" aria-current="false">
           <span class="stop-index">7</span>
           <span class="stop-thumb"><picture class="photo ">
@@ -393,9 +388,9 @@
             <small>Engineering for an empire</small>
             <span class="stop-item-meta"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M13 4.6a1.6 1.6 0 1 0 0-.1"></path><path d="M11 21l1.4-5.1-2.6-2.3.9-4.6L8 10.6 7 13.6"></path><path d="M17 12.4l-2.3-1.1-1.4-3.2-2.6.9"></path><path d="M14.6 15.9L16.4 21"></path></svg>3.8 km</span>
           </span>
-          <span class="stop-item-play" data-action="listen" data-stop="7" role="button" tabindex="0" aria-label="Listen to Elephant Stables"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M8.6 5.6 18.4 12l-9.8 6.4Z"></path></svg></span>
         </button>
-      </li><li>
+        <button type="button" class="stop-item-play" data-action="listen" data-stop="7" aria-label="Listen to Elephant Stables"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M8.6 5.6 18.4 12l-9.8 6.4Z"></path></svg></button>
+      </li><li class="stop-row">
         <button type="button" class="stop-item" data-select-stop="8" aria-current="false">
           <span class="stop-index">8</span>
           <span class="stop-thumb"><picture class="photo ">
@@ -409,14 +404,14 @@
             <small>Hampi through time</small>
             <span class="stop-item-meta"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M13 4.6a1.6 1.6 0 1 0 0-.1"></path><path d="M11 21l1.4-5.1-2.6-2.3.9-4.6L8 10.6 7 13.6"></path><path d="M17 12.4l-2.3-1.1-1.4-3.2-2.6.9"></path><path d="M14.6 15.9L16.4 21"></path></svg>4.2 km</span>
           </span>
-          <span class="stop-item-play" data-action="listen" data-stop="8" role="button" tabindex="0" aria-label="Listen to Matanga Hill Viewpoint"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M8.6 5.6 18.4 12l-9.8 6.4Z"></path></svg></span>
         </button>
+        <button type="button" class="stop-item-play" data-action="listen" data-stop="8" aria-label="Listen to Matanga Hill Viewpoint"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M8.6 5.6 18.4 12l-9.8 6.4Z"></path></svg></button>
       </li>
     </ol>
     <button type="button" class="button button-sm stop-rail-all" data-action="listen-all"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4.4 15v-2.8a7.6 7.6 0 0 1 15.2 0V15"></path><path d="M4.4 14.2h2.2a1 1 0 0 1 1 1v3.2a1 1 0 0 1-1 1H5.6a1.2 1.2 0 0 1-1.2-1.2Z"></path><path d="M19.6 14.2h-2.2a1 1 0 0 0-1 1v3.2a1 1 0 0 0 1 1h1a1.2 1.2 0 0 0 1.2-1.2Z"></path></svg> Play all stops</button>
   </aside>
     </div>
-    <section class="route-glance" id="panel-terrain" role="tabpanel" aria-labelledby="tab-terrain">
+    <section class="route-glance" id="section-terrain">
     <div class="glance-facts">
       <h2 class="eyebrow eyebrow-mark">Route at a glance</h2>
       <div class="metric-row">
@@ -481,7 +476,7 @@
   </svg>
     </div>
   </section>
-    <section class="route-overview" id="panel-overview" role="tabpanel" aria-labelledby="tab-overview">
+    <section class="route-overview" id="section-overview">
     <div class="overview-copy">
       <h2 class="eyebrow eyebrow-mark">About this route</h2>
       <p>Vijayanagara, the city the world knew as Hampi, was one of the largest cities on earth in the sixteenth century. This walk crosses it from the temple that never stopped praying to the hill the empire watched its enemies from, taking in the bazaar where Persian horses were sold and the enclosure where kings reviewed their armies.</p>

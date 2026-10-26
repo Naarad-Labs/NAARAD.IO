@@ -75,7 +75,7 @@
           <span class="brand-motto">Explore. Listen. Connect.</span>
         </span>
       </a>
-      <nav class="primary-nav" aria-label="Main navigation">
+      <nav class="primary-nav" id="primary-nav" aria-label="Main navigation">
         <a id="nav-explore" href="/explore/" data-view="explore">Explore</a>
         <a id="nav-routes" href="/routes/" data-view="routes">Routes</a>
         <a id="nav-stories" href="/stories/" data-view="stories">Stories</a>
@@ -83,7 +83,7 @@
         <a id="nav-journey" href="/journey/" data-view="journey">My Journey</a>
         <a id="nav-about" href="/about/" data-view="about">About</a>
       </nav>
-      <form class="header-search" role="search" action="/routes/">
+      <form class="header-search" role="search" aria-label="Site search" action="/routes/">
         <label class="sr-only" for="route-search">Search places, routes and stories</label>
         <input id="route-search" type="search" name="q" placeholder="Search places, routes, stories…" autocomplete="off">
         <button type="submit" aria-label="Search">
@@ -94,7 +94,7 @@
         Start Exploring
         <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 12h15"></path><path d="m13.6 6 5.9 6-5.9 6"></path></svg>
       </a>
-      <button class="menu-toggle" type="button" aria-label="Open navigation" aria-expanded="false"><span></span><span></span><span></span></button>
+      <button class="menu-toggle" type="button" aria-label="Menu" aria-controls="primary-nav" aria-expanded="false"><span></span><span></span><span></span></button>
     </header>
 
     <main id="app-content" class="view-home" data-prerendered="/"><div class="home">
@@ -388,8 +388,8 @@
       <p>Stories, photography and interactive routes in one piece, so reading about a place and walking it are the same experience.</p>
       <a class="button button-sm" href="/routes/hampi-heritage-trail/" data-route="hampi-heritage-trail">Take a Look Inside <svg class="ico " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4.5 12h15"></path><path d="m13.6 6 5.9 6-5.9 6"></path></svg></a>
     </div>
-    <div class="experience-strip" role="list">
-      <article class="magazine-page" role="listitem" style="--index:0">
+    <div class="experience-strip">
+      <article class="magazine-page" style="--index:0">
         <picture class="photo ">
     <source type="image/avif" srcset="/Images/photos/hampi-gopuram-800.avif 800w, /Images/photos/hampi-gopuram-1200.avif 1200w, /Images/photos/hampi-gopuram-1600.avif 1600w" sizes="230px">
     <source type="image/webp" srcset="/Images/photos/hampi-gopuram-800.webp 800w, /Images/photos/hampi-gopuram-1200.webp 1200w, /Images/photos/hampi-gopuram-1600.webp 1600w" sizes="230px">
@@ -401,7 +401,7 @@
           <h3>Hampi Heritage Trail</h3>
           <p>Walk through a landscape where kings, poets, traders and common people shaped an extraordina…</p>
         </div>
-      </article><article class="magazine-page" role="listitem" style="--index:1">
+      </article><article class="magazine-page" style="--index:1">
         <picture class="photo ">
     <source type="image/avif" srcset="/Images/photos/thanjavur-temple-640.avif 640w, /Images/photos/thanjavur-temple-960.avif 960w" sizes="230px">
     <source type="image/webp" srcset="/Images/photos/thanjavur-temple-640.webp 640w, /Images/photos/thanjavur-temple-960.webp 960w" sizes="230px">
@@ -413,7 +413,7 @@
           <h3>Thanjavur Living Heritage</h3>
           <p>Rajaraja Chola's great temple is still the tallest thing in Thanjavur, and the city has spen…</p>
         </div>
-      </article><article class="magazine-page" role="listitem" style="--index:2">
+      </article><article class="magazine-page" style="--index:2">
         <picture class="photo ">
     <source type="image/avif" srcset="/Images/photos/auroville-matrimandir-640.avif 640w, /Images/photos/auroville-matrimandir-960.avif 960w" sizes="230px">
     <source type="image/webp" srcset="/Images/photos/auroville-matrimandir-640.webp 640w, /Images/photos/auroville-matrimandir-960.webp 960w" sizes="230px">
