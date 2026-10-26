@@ -12,8 +12,11 @@
 #      that caused them. (While the change is still uncommitted, run with
 #      VERIFY_ALLOW_UNCOMMITTED=1 to skip the comparison with the commit.)
 #   2  node --test tests/: the unit tests, which need nothing but node
-#   3  node scripts/check-practical.mjs: the sourced visitor facts (skipped
-#      while that script is not in the tree)
+#   3  node scripts/check-practical.mjs: the sourced visitor facts in
+#      content/practical. Any error fails the step (a value with no source, an
+#      API endpoint cited without its method, a figure in the gap notes, stops
+#      that are not the route's stops, or a `checked` date more than 180 days
+#      old); warnings are allowed
 #   4  cd e2e && npx playwright test: the browser checks (needs e2e/node_modules
 #      and Chromium)
 
@@ -98,11 +101,7 @@ check_e2e() {
 
 step "build is deterministic and committed  (node scripts/build-site.mjs, twice)" check_build
 step "unit tests                            (node --test tests/)" check_tests
-if [ -f scripts/check-practical.mjs ]; then
-  step "practical facts                       (node scripts/check-practical.mjs)" check_practical
-else
-  echo "SKIP  practical facts                       (scripts/check-practical.mjs is not in the tree yet)"
-fi
+step "practical facts                       (node scripts/check-practical.mjs)" check_practical
 step "browser checks                        (cd e2e && npx playwright test)" check_e2e
 
 if [ "$failed" = 0 ]; then

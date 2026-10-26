@@ -34,7 +34,8 @@ content/
 Images/photos/      AVIF and WebP at the widths the layouts ask for
 Images/og/          1200 x 630 share cards and their photo credits (generated)
 scripts/            build-site.mjs, sitemap.mjs and og-card.html (pages, cards,
-                    sitemap), verify.sh, and the scripts that produce the content
+                    sitemap), verify.sh, check-practical.mjs (the linter for
+                    content/practical), and the scripts that produce the content
                     files above
 tests/              unit tests that need nothing but node (node --test)
 e2e/                Playwright checks (cd e2e && npm install && npm test)
@@ -212,6 +213,88 @@ Nothing on the site fills a gap with a plausible-looking number, date or claim.
   browser and publishes nothing; the catalogue says how many routes have stops;
   the stories are short.
 
+## Sourced visitor facts (`content/practical/`)
+
+One file per route that has stops, `<slug>.json`: how to get there, each stop's
+hours, closed days, fees, dress and facilities, and the climate. No page shows
+them yet. They are held to the rules below so that nothing is shown before it can
+be defended, and `scripts/check-practical.mjs` (step 3 of `verify.sh`) enforces
+what a machine can.
+
+The three files share one schema. Top level, in this order: `route` (the slug),
+`checked`, `site`, `gettingThere`, `stops`, `climate`, `unsourced`.
+
+- `site`: `null`, or `{hours, sources}` for a fact about the whole place. Hampi's
+  ASI timing ("sunrise to sunset") is for the World Heritage Site as a whole, so
+  it is here once and never copied into a monument's own `hours`.
+- `gettingThere`: `from` (one entry per origin city: `city`, `road`, `rail`,
+  `bus`; `road` always has a `km`, `rail` and `bus` are `null` when nothing
+  citable is known), `nearestStation`, `nearestAirport`, `timetables`,
+  `localTransport`.
+- `stops`: keyed `"1"`, `"2"`, ... in the order and with the names of the route's
+  stops in `content/routes.source.json` (the linter checks this, so reordering a
+  route cannot move facts to the wrong stop). Every stop has the same nine keys:
+  `name`, `hours`, `closed`, `fees`, `free`, `dress`, `shadeWater`, `notes`,
+  `sources`.
+- `climate`: IMD normals, 12 months, with the station, the period and the table.
+
+Rules for the data:
+
+- **A value goes in only with a page someone opened.** Removing a value that
+  cannot be supported is always fine; adding one is not. Every number, `hours`,
+  `closed`, `free` and `fees` value sits in an object with a `source`, or in a
+  stop with `sources`.
+- **Unknown is an explicit `null`**, never a missing key and never a guess.
+  `fees: []` means no fee is sourced, not that entry is free; `free` is `true` or
+  `false` only when a source says so.
+- **Hours belong to a stop only when that stop's own source gives them.** A timing
+  that is the site's goes in `site`. A page that is a list of many monuments is
+  not a source for one of them.
+- **Where official pages disagree, no single figure is published.** The figure is
+  `null` and `note` gives each page's wording, with the pages in `sources`.
+- **A computed value says so.** A figure taken from a routing service is
+  `computed: true` with a `method`: the service, the two points named in words and
+  as coordinates, what the figure measures, the day it was run and the data
+  licence. `source` stays the re-runnable URL. A bare API endpoint as a source
+  (the OSRM `/route/v1/` URL, a KSRTC `/api/` call, an `erail.in` `getTrains.aspx`
+  data call) is an error without it, because a reader cannot open it as a page.
+  A routing engine's driving time is free-flow (no traffic, stops or closures), so
+  it is never a journey time: `hours` on a computed object is published only for a
+  leg of 150 km or less and must say "free-flow" and "computed"; for a longer leg
+  it is `null` and only the distance is published.
+- **Buses and trains rest on pages, not on searches.** No counts, departure times
+  or durations from a booking form or a one-day timetable query (they cannot be
+  reopened and are stale the next day). A Wikipedia or erail.in source is named as
+  such in the summary.
+- **`note`** (optional, on a road, station or airport object) is one sentence about
+  a disagreement between sources. Show it next to the figure it qualifies.
+- **`source` and `sources`**: `source` is the primary page, `sources` every page the
+  statement rests on. Read both.
+- **`unsourced`** is the editor's list of what was looked for and not found or
+  removed, with the reason. It is never shown on a page, and the linter fails if
+  it holds a price, a clock time, a distance or a duration, so it cannot leak a
+  number nobody sourced.
+- **`checked`** is the day the facts were last verified against their pages. Change
+  it only after reopening those pages and confirming the values; the linter fails
+  when it is more than 180 days old.
+
+```bash
+node scripts/check-practical.mjs                      # lint content/practical
+node scripts/check-practical.mjs --today 2027-01-01   # pretend it is that day
+node scripts/check-practical.mjs some/dir --routes some/routes.json
+```
+
+Exit status: 0 when there are no errors (warnings are printed), 1 on any error, 2
+for bad arguments. It prints each error with its rule id and JSON path, then
+per-file coverage (how many stops have hours, fees and so on, how many source URLs
+are APIs and how many of those carry a method). The rules: `unsourced-value`,
+`non-https`, `api-source`, `computed-method`, `computed-hours`, `stale-checked`,
+`climate`, `schema-keys`, `schema-type`, `stop-names`, `gap-note-figure`,
+`invalid-json`; warnings `date-specific`, `unsourced-text`, `stop-no-sources`,
+`computed-flag`. The header of `scripts/check-practical.mjs` defines each, and
+`tests/check-practical.test.mjs` pins them (and runs the linter on the committed
+files).
+
 ## Rebuilding the generated files
 
 ```bash
@@ -256,10 +339,13 @@ failed:
    skips the comparison with the commit);
 2. `node --test tests/*.test.mjs`: unit tests with no dependencies (Node 22 or
    later): the address scheme, the sitemap dates, the service worker run in a
-   sandbox, the loaders, what each page claims about itself, and the build
-   failing safely (those run the real build in a copy of the site, so they need
-   Chromium like the build does);
-3. `node scripts/check-practical.mjs` once that script is in the tree;
+   sandbox, the loaders, what each page claims about itself, the practical-facts
+   linter on fixtures and on the committed files, and the build failing safely
+   (those run the real build in a copy of the site, so they need Chromium like
+   the build does);
+3. `node scripts/check-practical.mjs`: the sourced visitor facts in
+   `content/practical` (below). Any error fails the step; so does a `checked`
+   date more than 180 days old. Warnings are allowed;
 4. the Playwright checks in `e2e`, which cover both compositions, the clean
    addresses, canonicals, the pre-rendered HTML and its structured data, the
    sitemap, what happens when a fetch fails, history and anchors, layout shift
