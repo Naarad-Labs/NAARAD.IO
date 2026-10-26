@@ -42,7 +42,7 @@ test('the committed stores validate', () => {
 
 test('an unset cap is a warning, never silence; a chosen one is not', () => {
   const stores = loadStores(ROOT);
-  assert.deepEqual(validateAll(stores, { today: TODAY }).warnings, []);
+  assert.deepEqual(validateAll(stores, { today: TODAY }).warnings.filter((warning) => /cap/.test(warning)), []);
   stores.guardrails.daily_cap.cloud_inr = null;
   assert.ok(validateAll(stores, { today: TODAY }).warnings.some((warning) => /cloud_inr/.test(warning)));
   stores.guardrails.daily_cap.tokens = 'unbounded';
@@ -248,4 +248,21 @@ test('guide lint: a "Do not" section may quote the bad questions it forbids', ()
   assert.deepEqual(lintGuide(guide), []);
   /* but the quoting ends at the next heading */
   assert.ok(lintGuide(`${guide}\n## More questions\n- Would you use this?\n`).length > 0);
+});
+
+test('override: needs a human approver, a scope and an expiry, and is reported while it lasts', () => {
+  const base = { id: 'D-0009', date: '2026-10-26', gate: 'G1', subject: 's', reason: 'r', result: 'override', author: 'claude' };
+  const errors = validateDecisions([base], [], { today: TODAY });
+  assert.ok(errors.some((error) => /human approver/.test(error)));
+  assert.ok(errors.some((error) => /scope/.test(error)));
+  assert.ok(errors.some((error) => /expires/.test(error)));
+  const good = { ...base, approved_by: 'founder', scope: 'offline bundles', expires: '2026-11-26' };
+  assert.deepEqual(validateDecisions([good], [], { today: TODAY }), []);
+  const { warnings } = validateAll({ ...loadStores(ROOT), decisions: [good] }, { today: TODAY });
+  assert.ok(warnings.some((warning) => /D-0009: G1 override active until 2026-11-26/.test(warning)));
+  assert.ok(validateAll({ ...loadStores(ROOT), decisions: [good] }, { today: '2026-12-01' }).warnings.some((warning) => /EXPIRED/.test(warning)));
+});
+
+test('override: does not make a failing opportunity pass G1', () => {
+  assert.equal(gateG1(opportunity({ evidence: [] }), ledger3).pass, false);
 });

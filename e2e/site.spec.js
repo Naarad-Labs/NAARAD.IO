@@ -538,3 +538,76 @@ test.describe('sitemap, robots and links', () => {
     }
   });
 });
+
+test.describe('offline route bundles (behind a flag)', () => {
+  const SLUG = 'hampi-heritage-trail';
+  const FLAG = 'naarad.flag.offline-bundles';
+
+  test('flag off: the route page still says offline bundles are not available', async ({ page }) => {
+    await page.goto(`/routes/${SLUG}/`);
+    await expect(page.locator('.route-facts')).toContainText('Not yet available');
+    await expect(page.locator('[data-action="offline"]')).toHaveCount(0);
+    await page.goto('/journey/');
+    await page.getByRole('tab', { name: /Downloads/ }).click();
+    await expect(page.locator('[data-journey-panel="downloads"]')).toContainText('not available yet');
+  });
+
+  test.describe('flag on', () => {
+    test.use({ serviceWorkers: 'allow' });
+
+    test('keeps a route on the device, opens it with no network, and removes it', async ({ page, context }) => {
+      await page.addInitScript((key) => { try { localStorage.setItem(key, 'on'); } catch { /* ignore */ } }, FLAG);
+      await page.goto(`/routes/${SLUG}/`);
+      await page.evaluate(() => navigator.serviceWorker.ready);
+      await page.reload();
+      const name = (await page.locator('h1').first().textContent()).trim();
+      const button = page.locator('[data-action="offline"]');
+      await expect(button).toContainText('Download for offline');
+      await expect(button).toContainText('No map tiles or audio');
+
+      await button.click();
+      await expect(button).toContainText('Saved offline', { timeout: 30000 });
+      await expect(button).toContainText(/\d+(\.\d)? (KB|MB)/);
+
+      // The bundle must stand on its own: drop every other cache, then lose the network.
+      await page.evaluate(async () => {
+        for (const key of await caches.keys()) if (key !== 'naarad-bundles') await caches.delete(key);
+      });
+      await context.setOffline(true);
+      await page.goto(`/routes/${SLUG}/`);
+      await expect(page.locator('h1').first()).toContainText(name);
+      expect(await page.locator('[data-select-stop]').count()).toBeGreaterThan(0);
+      await expect(page.locator('[data-action="offline"]')).toContainText('Saved offline');
+      await context.setOffline(false);
+
+      // My Journey lists it, and removing it deletes the files.
+      await page.goto('/journey/');
+      await page.getByRole('tab', { name: /Downloads/ }).click();
+      const panel = page.locator('[data-journey-panel="downloads"]');
+      await expect(panel).toContainText(name);
+      await expect(panel).toContainText('no map tiles or audio');
+      await panel.locator('[data-download-remove]').click();
+      await page.getByRole('tab', { name: /Downloads/ }).click();
+      await expect(page.locator('[data-journey-panel="downloads"]')).toContainText('No offline routes yet');
+      expect(await page.evaluate(async () => (await (await caches.open('naarad-bundles')).keys()).length)).toBe(0);
+    });
+
+    test('a failed download keeps nothing and says so', async ({ page }) => {
+      await page.addInitScript((key) => { try { localStorage.setItem(key, 'on'); } catch { /* ignore */ } }, FLAG);
+      await page.goto(`/routes/${SLUG}/`);
+      await page.evaluate(() => navigator.serviceWorker.ready);
+      await page.reload();
+      // page.route cannot see the service worker's fetches, so fail the page's own fetch.
+      await page.evaluate(() => {
+        const real = window.fetch.bind(window);
+        window.fetch = (url, init) => (String(url).includes('/content/routes.json')
+          ? Promise.resolve(new Response('down', { status: 503 }))
+          : real(url, init));
+      });
+      await page.locator('[data-action="offline"]').click();
+      await expect(page.locator('[data-action="offline"]')).toContainText('Download for offline', { timeout: 30000 });
+      expect(await page.evaluate(async () => (await (await caches.open('naarad-bundles')).keys()).length)).toBe(0);
+      expect(await page.evaluate(() => JSON.parse(localStorage.getItem('naarad.journey.v1') || '{"downloads":[]}').downloads.length)).toBe(0);
+    });
+  });
+});

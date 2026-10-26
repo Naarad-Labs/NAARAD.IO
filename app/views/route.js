@@ -10,6 +10,7 @@ import { icon } from '../icons.js';
 import * as Data from '../data.js';
 import { routePreview, elevationProfile } from '../previews.js';
 import * as Journey from '../journey-store.js';
+import * as Offline from '../offline-bundles.js';
 import { routePath, sectionPath, absoluteUrl } from '../urls.js';
 import * as Seo from '../seo.js';
 
@@ -27,6 +28,14 @@ const LANGUAGE_NAMES = {
   en: 'English', hi: 'हिंदी', ta: 'தமிழ்', te: 'తెలుగు', kn: 'ಕನ್ನಡ', ml: 'മലയാളം', mr: 'मराठी', bn: 'বাংলা',
 };
 
+/* Behind the offline-bundles flag. The words say what a bundle leaves out. */
+function offlineState(route) {
+  const entry = Journey.getDownloads().find((item) => item.slug === route.slug);
+  return entry
+    ? { value: 'Saved offline', label: `${entry.sizeLabel} · tap to remove`, state: 'saved' }
+    : { value: 'Download for offline', label: 'Page, text and photos. No map tiles or audio.', state: 'idle' };
+}
+
 function factRow(route) {
   const facts = [
     { icon: 'pin', value: route.location || 'India', label: '' },
@@ -35,12 +44,19 @@ function factRow(route) {
     { icon: 'flag', value: route.stopCount ? `${route.stopCount} stops` : null, label: '' },
     { icon: 'gauge', value: Data.formatDifficulty(route.difficulty), label: 'Difficulty' },
     { icon: 'terrain', value: Data.terrainLabel(route), label: 'Terrain' },
-    { icon: 'download', value: 'Offline bundle', label: 'Not yet available', muted: true },
+    Offline.enabled()
+      ? { icon: 'download', button: true, ...offlineState(route) }
+      : { icon: 'download', value: 'Offline bundle', label: 'Not yet available', muted: true },
     { icon: 'globe', value: route.languages?.length ? `${route.languages.length} languages` : 'English', label: route.languages?.length ? route.languages.map((code) => LANGUAGE_NAMES[code] || code).slice(0, 4).join(' · ') : '' },
   ].filter((fact) => fact.value);
 
   return `<div class="route-facts">
-    ${facts.map((fact) => `<div class="metric${fact.muted ? ' is-muted' : ''}">
+    ${facts.map((fact) => fact.button ? `<div class="metric">
+      <button type="button" class="metric-button" data-action="offline" data-state="${fact.state}">
+        ${icon(fact.icon)}
+        <span class="metric-text"><b>${escapeHtml(fact.value)}</b><span>${escapeHtml(fact.label)}</span></span>
+      </button>
+    </div>` : `<div class="metric${fact.muted ? ' is-muted' : ''}">
       ${icon(fact.icon)}
       <span class="metric-text"><b>${escapeHtml(fact.value)}</b>${fact.label ? `<span>${escapeHtml(fact.label)}</span>` : ''}</span>
     </div>`).join('')}

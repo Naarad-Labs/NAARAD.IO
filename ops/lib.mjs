@@ -291,7 +291,15 @@ export function validateDecisions(decisions, ledger, { today } = {}) {
     if (!['adopt', 'G1', 'G2', 'G3', 'G4', 'learn'].includes(decision.gate)) fail('gate must be adopt, G1, G2, G3, G4 or learn');
     if (!isText(decision.subject)) fail('subject is missing');
     if (!isText(decision.reason)) fail('reason is missing');
-    if (!['pass', 'fail', 'proposed'].includes(decision.result)) fail('result must be pass, fail or proposed');
+    if (!['pass', 'fail', 'proposed', 'override'].includes(decision.result)) fail('result must be pass, fail, proposed or override');
+    /* An override is the founder choosing to go ahead without a gate passing. It
+       is allowed, but it is named, scoped, dated and approved by a human, and it
+       never turns a failing gate into a passing one. */
+    if (decision.result === 'override') {
+      if (!isText(decision.approved_by)) fail('an override needs a named human approver');
+      if (!isText(decision.scope)) fail('an override must say exactly what it covers (scope)');
+      if (!isRealDate(decision.expires || '')) fail('an override must have an expires date (YYYY-MM-DD)');
+    }
     if (!isText(decision.author)) fail('author is missing');
     (decision.evidence || []).forEach((id) => { if (!ids.has(id)) fail(`evidence ${id} is not in the ledger`); });
 
@@ -354,6 +362,10 @@ export function validateAll(stores, { today } = {}) {
     ...validateGuardrails(stores.guardrails),
   ];
   const warnings = [];
+  stores.decisions.filter((decision) => decision.result === 'override').forEach((decision) => {
+    const live = decision.expires && today && decision.expires >= today;
+    warnings.push(`${decision.id}: ${decision.gate} override ${live ? 'active until' : 'EXPIRED on'} ${decision.expires}: ${decision.scope}`);
+  });
   const caps = (stores.guardrails && stores.guardrails.daily_cap) || {};
   /* "unbounded" is a choice the founder has made on purpose; null is a choice nobody has made. */
   const unset = ['tokens', 'cloud_inr'].filter((key) => caps[key] == null);

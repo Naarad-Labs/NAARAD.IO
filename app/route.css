@@ -29,6 +29,9 @@
 .route-facts .metric:nth-child(4n) { border-right: 0; }
 .route-facts .metric:nth-child(n+5) { border-bottom: 0; }
 .route-facts .metric.is-muted { color: var(--ink-muted); }
+.route-facts .metric-button { display: flex; align-items: center; gap: inherit; width: 100%; min-height: 44px; padding: 0; border: 0; background: none; color: inherit; font: inherit; text-align: left; cursor: pointer; }
+.route-facts .metric-button:focus-visible { outline: 2px solid var(--focus, currentColor); outline-offset: 4px; }
+.route-facts .metric-button[disabled] { cursor: progress; opacity: .7; }
 .route-facts .metric.is-muted .ico { color: var(--ink-muted); }
 .route-facts .metric.is-muted b { color: var(--ink-soft); }
 

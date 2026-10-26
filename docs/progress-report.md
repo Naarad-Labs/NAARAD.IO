@@ -31,7 +31,7 @@ Against the 18-week plan we are through weeks 1–10 and most of 11–13, with o
 | Image pipeline (AVIF/WebP, widths, crops) | Done | 29 photos, 4 widths per role, AVIF + WebP |
 | Attribution per image | Done | `content/photo-sources.json`; credit shown on the page |
 | Rendering: pre-render / SSR | **Not done** | Still client-rendered; hero markup is inline for LCP |
-| Offline route bundles | **Not done** | Stated as unavailable in the interface |
+| Offline route bundles | **Partial, behind a flag (off by default)** | `app/offline-bundles.js`. Keeps a route's page, text, code, data and phone-width photos on the device, and opens it with no network. No map tiles (OpenStreetMap forbids bulk prefetch) and no audio (none recorded). Built under the founder's logged override D-0004, without ledger evidence. |
 | Accounts | **Not done** | My Journey and Studio are device-local by design for now |
 
 ## 3. Measurements

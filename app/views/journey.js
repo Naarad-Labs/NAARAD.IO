@@ -11,6 +11,7 @@ import { picture, escapeHtml, getPhoto } from '../media.js';
 import { icon } from '../icons.js';
 import * as Data from '../data.js';
 import * as Journey from '../journey-store.js';
+import * as Offline from '../offline-bundles.js';
 import { routePreview } from '../previews.js';
 import { routePath, sectionPath } from '../urls.js';
 import * as Seo from '../seo.js';
@@ -103,6 +104,24 @@ function emptyPanel(title, copy, action = '') {
   return `<div class="empty-state">${icon('sparkle')}<div><strong>${escapeHtml(title)}</strong><p>${escapeHtml(copy)}</p>${action}</div></div>`;
 }
 
+/* Behind the offline-bundles flag; otherwise the honest "not available" panel. */
+function downloadsPanel(store) {
+  if (!Offline.enabled()) {
+    return emptyPanel('Offline bundles are not available yet',
+      'Downloading a route for offline use needs versioned bundles of map data, audio and transcripts. The route pages say where this stands.');
+  }
+  if (!store.downloads.length) {
+    return emptyPanel('No offline routes yet', 'Use "Download for offline" on a route page. Map tiles and audio are not included.');
+  }
+  return `<ul class="journal-list">
+    ${store.downloads.map((entry) => `<li class="journal-note">
+      <div class="journal-note-head"><b>${escapeHtml(entry.name)}</b><span>${escapeHtml(entry.sizeLabel)}</span></div>
+      <small>${entry.stops ? `${entry.stops} stops · ` : ''}page, text and photos; no map tiles or audio · ${escapeHtml(dateLabel(entry.savedAt))}</small>
+      <button type="button" class="icon-button" data-download-remove="${escapeHtml(entry.slug)}" aria-label="Remove ${escapeHtml(entry.name)} from this device">${icon('trash')}</button>
+    </li>`).join('')}
+  </ul>`;
+}
+
 export async function render() {
   const store = Journey.all();
   const totals = Journey.stats();
@@ -188,8 +207,7 @@ export async function render() {
     </section>
 
     <section class="journey-panel" data-journey-panel="downloads" hidden>
-      ${emptyPanel('Offline bundles are not available yet',
-    'Downloading a route for offline use needs versioned bundles of map data, audio and transcripts. The route pages say where this stands.')}
+      ${downloadsPanel(store)}
     </section>
 
     <section class="journey-panel" data-journey-panel="badges" hidden>

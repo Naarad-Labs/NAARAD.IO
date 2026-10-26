@@ -19,6 +19,7 @@ import { loadMedia, escapeHtml, preloadHint } from './media.js';
 import * as Data from './data.js';
 import * as Audio from './audio.js';
 import * as Journey from './journey-store.js';
+import * as Offline from './offline-bundles.js';
 import * as Drafts from './studio-store.js';
 import * as Motion from './motion.js';
 import * as Urls from './urls.js';
@@ -508,6 +509,40 @@ function toggleSave(button) {
   notify(saved ? `${state.route.name} saved to My Journey.` : 'Removed from My Journey.');
 }
 
+/* Behind the offline-bundles flag. A download keeps nothing if any file fails. */
+async function toggleOffline(button) {
+  const route = state.route;
+  if (!route || !button) return;
+  const words = (title, detail) => {
+    button.querySelector('b').textContent = title;
+    button.querySelector('span span').textContent = detail;
+  };
+  if (!Offline.supported()) { notify('This browser cannot keep routes for offline use.'); return; }
+  if (Journey.isDownloaded(route.slug)) {
+    await Offline.remove(route.slug, Journey.getDownloads());
+    Journey.removeDownload(route.slug);
+    button.dataset.state = 'idle';
+    words('Download for offline', 'Page, text and photos. No map tiles or audio.');
+    notify('The offline copy was removed from this device.');
+    return;
+  }
+  button.disabled = true;
+  words('Downloading…', 'Keep this page open.');
+  try {
+    const bundle = await Offline.download(route);
+    Journey.addDownload({ slug: route.slug, name: route.name, stops: route.stopCount || 0, sizeLabel: bundle.label, urls: bundle.urls, version: bundle.version });
+    button.dataset.state = 'saved';
+    words('Saved offline', `${bundle.label} · tap to remove`);
+    notify(`${route.name} is saved for offline use. Map tiles and audio are not included.`);
+  } catch {
+    button.dataset.state = 'idle';
+    words('Download for offline', 'Page, text and photos. No map tiles or audio.');
+    notify('Could not save this route for offline use. Nothing was kept.');
+  } finally {
+    button.disabled = false;
+  }
+}
+
 async function repaintJourney() {
   await paint(await moduleFor('journey'));
 }
@@ -587,6 +622,7 @@ document.addEventListener('click', async (event) => {
   if (action === 'listen-story') { await listenStory(); return; }
   if (action === 'share') { await share(state.route?.name || state.story?.title || 'Naarad'); return; }
   if (action === 'save') { toggleSave(event.target.closest('[data-action="save"]')); return; }
+  if (action === 'offline') { await toggleOffline(event.target.closest('[data-action="offline"]')); return; }
   if (action === 'start' && state.route) {
     Journey.completeWalk(state.route);
     notify(`${state.route.name} added to My Journey. Open the first stop to start listening.`);
@@ -639,6 +675,14 @@ document.addEventListener('click', async (event) => {
     return;
   }
 
+  const removeDownload = event.target.closest('[data-download-remove]');
+  if (removeDownload) {
+    const slug = removeDownload.dataset.downloadRemove;
+    await Offline.remove(slug, Journey.getDownloads());
+    Journey.removeDownload(slug);
+    await repaintJourney();
+    return;
+  }
   const deleteNote = event.target.closest('[data-journal-delete]');
   if (deleteNote) { Journey.removeJournalEntry(deleteNote.dataset.journalDelete); await repaintJourney(); return; }
 
