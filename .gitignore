@@ -26,3 +26,9 @@ e2e/playwright-report/
 
 # Output from the design-taste-frontend skill's inspector
 .taste-skill/
+
+# Secrets and local tooling: never committed. The repository is public.
+.env
+.env.*
+!.env.example
+supabase/node_modules/

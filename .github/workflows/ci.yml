@@ -2,6 +2,8 @@
 #
 #   ops    the evidence ledger, decision log and guardrails are well formed, no
 #          key is committed, and the rules' own tests pass
+#   db     the Supabase migrations apply to a real PostgreSQL engine and the
+#          row level security rules hold (supabase/test)
 #   site   the committed pages are exactly what the build writes, and the
 #          browser checks in e2e/ pass
 #
@@ -30,6 +32,21 @@ jobs:
       - run: node scripts/ops.mjs scan
       - run: node scripts/ops.mjs lint-guide ops/interviews/*.md
       - run: node --test "ops/test/*.test.mjs"
+
+  db:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: supabase/package-lock.json
+      - run: npm ci
+        working-directory: supabase
+      - name: Migrations and row level security
+        run: npm test
+        working-directory: supabase
 
   site:
     runs-on: ubuntu-latest
