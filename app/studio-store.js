@@ -28,15 +28,46 @@ const blank = (route) => ({
 
 let state = null;
 
+const isObject = (value) => value !== null && typeof value === 'object' && !Array.isArray(value);
+
+/* The kind of value each field of a draft holds. */
+const SHAPE = {
+  id: 'text', routeSlug: 'text?', routeName: 'text?', stopOrder: 'number?', step: 'text', audioName: 'text?',
+  language: 'text', transcript: 'text', targetLanguages: 'texts', title: 'text', summary: 'text',
+  status: 'text', updatedAt: 'text',
+};
+
+const fits = (kind, value) => ({
+  text: typeof value === 'string',
+  'text?': value === null || typeof value === 'string',
+  'number?': value === null || Number.isFinite(value),
+  texts: Array.isArray(value) && value.every((item) => typeof item === 'string'),
+}[kind]);
+
+/** A stored draft, with each field that is not the kind blank() writes replaced by blank()'s own. */
+function repair(draft) {
+  const fixed = blank();
+  for (const [key, kind] of Object.entries(SHAPE)) if (fits(kind, draft[key])) fixed[key] = draft[key];
+  return fixed;
+}
+
+/** What was stored, kept only where it has the shape this module writes. */
+function normalise(stored) {
+  const drafts = isObject(stored) && Array.isArray(stored.drafts)
+    ? stored.drafts.filter((draft) => isObject(draft) && typeof draft.id === 'string' && draft.id).map(repair)
+    : [];
+  const currentId = isObject(stored) && typeof stored.currentId === 'string' ? stored.currentId : null;
+  return { drafts, currentId };
+}
+
 function read() {
   if (state) return state;
   try {
     const raw = PRERENDER ? null : localStorage.getItem(KEY);
-    state = raw ? JSON.parse(raw) : { drafts: [], currentId: null };
+    state = normalise(raw ? JSON.parse(raw) : null);
   } catch {
-    state = { drafts: [], currentId: null };
+    state = normalise(null);
   }
-  if (!Array.isArray(state.drafts)) state.drafts = [];
   return state;
 }
 

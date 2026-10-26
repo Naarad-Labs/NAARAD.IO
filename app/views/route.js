@@ -15,6 +15,8 @@ import * as Seo from '../seo.js';
 
 const HERO_SIZES = '(max-width: 1023px) 100vw, 56vw';
 
+/* The bar under the header links to the sections of this one page (#section-<id>).
+   It is navigation, not a tab widget: every section is on the page at once. */
 const TABS = [
   { id: 'overview', label: 'Overview', icon: 'file' },
   { id: 'stops', label: 'Stops', icon: 'pin' },
@@ -83,12 +85,12 @@ function hero(route) {
 
 function tabBar(route) {
   const saved = Journey.isSaved(route.slug);
+  // A route with no stops has no list of them to jump to.
+  const tabs = TABS.filter((tab) => tab.id !== 'stops' || route.stops.length);
   return `<div class="route-bar">
-    <div class="route-tabs" role="tablist" aria-label="Route sections">
-      ${TABS.map((tab, index) => `<button type="button" role="tab" id="tab-${tab.id}" data-tab="${tab.id}"
-        aria-selected="${index === 0}" aria-controls="panel-${tab.id}" tabindex="${index === 0 ? 0 : -1}">
-        ${icon(tab.icon)}<span>${tab.label}</span></button>`).join('')}
-    </div>
+    <nav class="route-tabs" aria-label="Route sections">
+      ${tabs.map((tab, index) => `<a href="#section-${tab.id}" data-tab="${tab.id}"${index === 0 ? ' aria-current="location"' : ''}>${icon(tab.icon)}<span>${tab.label}</span></a>`).join('')}
+    </nav>
     <div class="route-bar-actions">
       <button type="button" class="button button-sm" data-action="share">${icon('share')} Share</button>
       <button type="button" class="button button-sm${saved ? ' is-saved' : ''}" data-action="save" aria-pressed="${saved}">${icon('bookmark')} <span>${saved ? 'Saved' : 'Save'}</span></button>
@@ -99,7 +101,7 @@ function tabBar(route) {
 
 function stopPanel(route, stop) {
   if (!stop) {
-    return `<section class="stop-panel" aria-live="polite">
+    return `<section class="stop-panel" id="section-stories" aria-live="polite">
       <div class="empty-state">${icon('sparkle')}<div>
         <strong>Stops are not published for this route</strong>
         <p>This route is in the catalogue with its distance and duration, but no one has published its ordered stops yet. Routes with stops show each one here, with its story.</p>
@@ -108,7 +110,7 @@ function stopPanel(route, stop) {
   }
 
   const minutes = Math.max(1, Math.round(stop.story.length / 900));
-  return `<section class="stop-panel" aria-live="polite" data-stop="${stop.order}">
+  return `<section class="stop-panel" id="section-stories" aria-live="polite" data-stop="${stop.order}">
     <div class="stop-panel-head">
       <p class="eyebrow eyebrow-mark">Stop ${stop.order} of ${route.stopCount}</p>
       <div class="stop-panel-meta">
@@ -157,13 +159,13 @@ function stopPanel(route, stop) {
 
 function stopRail(route, selected) {
   if (!route.stops.length) return '';
-  return `<aside class="stop-rail" aria-labelledby="stops-heading">
+  return `<aside class="stop-rail" id="section-stops" aria-labelledby="stops-heading">
     <div class="stop-rail-head">
       <h2 id="stops-heading" class="eyebrow eyebrow-mark">All stops (${route.stopCount})</h2>
       <span class="chip">In route order</span>
     </div>
     <ol class="stop-list">
-      ${route.stops.map((stop) => `<li>
+      ${route.stops.map((stop) => `<li class="stop-row">
         <button type="button" class="stop-item${stop.order === selected ? ' is-active' : ''}" data-select-stop="${stop.order}" aria-current="${stop.order === selected}">
           <span class="stop-index">${stop.order}</span>
           <span class="stop-thumb">${picture(stop.photo, { sizes: '72px', alt: '', ratio: '1 / 1' })}</span>
@@ -172,8 +174,8 @@ function stopRail(route, selected) {
             <small>${escapeHtml(stop.tagline)}</small>
             <span class="stop-item-meta">${icon('walk')}${escapeHtml(Data.formatDistance(stop.distanceM) || '')}</span>
           </span>
-          <span class="stop-item-play" data-action="listen" data-stop="${stop.order}" role="button" tabindex="0" aria-label="Listen to ${escapeHtml(stop.name)}">${icon('play')}</span>
         </button>
+        <button type="button" class="stop-item-play" data-action="listen" data-stop="${stop.order}" aria-label="Listen to ${escapeHtml(stop.name)}">${icon('play')}</button>
       </li>`).join('')}
     </ol>
     <button type="button" class="button button-sm stop-rail-all" data-action="listen-all">${icon('headphones')} Play all stops</button>
@@ -181,7 +183,7 @@ function stopRail(route, selected) {
 }
 
 function mapPanel(route) {
-  return `<section class="map-panel" id="panel-map" role="tabpanel" aria-labelledby="tab-map">
+  return `<section class="map-panel" id="section-map">
     <div class="map-frame">
       <div id="map" class="route-map" role="application" aria-label="Map of ${escapeHtml(route.name)}">
         ${routePreview(route, { width: 560, height: 620, numbered: true, className: 'map-placeholder' })}
@@ -202,7 +204,7 @@ function mapPanel(route) {
 
 function glance(route) {
   const profile = elevationProfile(route, { width: 760, height: 168 });
-  return `<section class="route-glance" id="panel-terrain" role="tabpanel" aria-labelledby="tab-terrain">
+  return `<section class="route-glance" id="section-terrain">
     <div class="glance-facts">
       <h2 class="eyebrow eyebrow-mark">Route at a glance</h2>
       <div class="metric-row">
@@ -230,7 +232,7 @@ function glance(route) {
 }
 
 function overview(route) {
-  return `<section class="route-overview" id="panel-overview" role="tabpanel" aria-labelledby="tab-overview">
+  return `<section class="route-overview" id="section-overview">
     <div class="overview-copy">
       <h2 class="eyebrow eyebrow-mark">About this route</h2>
       <p>${escapeHtml(route.overview || route.lede || 'This route is published with its headline facts. Its description has not been written yet.')}</p>
@@ -265,7 +267,7 @@ export async function render(context) {
     ${hero(route)}
     ${factRow(route)}
     ${tabBar(route)}
-    <div class="route-workspace" id="panel-stops" role="tabpanel" aria-labelledby="tab-stops">
+    <div class="route-workspace">
       ${mapPanel(route)}
       ${stopPanel(route, Data.getStop(route, selected))}
       ${stopRail(route, selected)}

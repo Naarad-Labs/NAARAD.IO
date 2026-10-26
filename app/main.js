@@ -47,8 +47,27 @@ const modules = {};
 
 const catalogueContext = (url) => ({ query: url.searchParams.get('q') || '' });
 
-const pushAddress = (address) => { history.pushState(null, '', address); here = location.pathname + location.search; };
-const replaceAddress = (address) => { history.replaceState(null, '', address); here = location.pathname + location.search; };
+/* An entry remembers how far it was scrolled (in history.state), so Back and
+   Forward land where the visitor was, not at the top. It is kept current while
+   they scroll, and written exactly when they leave by a link. The browser's own
+   restoring is switched off: it runs after a page is drawn in place and undoes
+   this, so reloads and Back from another site are handled below, in boot(). */
+let scrollTimer = null;
+function rememberScroll(top = window.scrollY) {
+  clearTimeout(scrollTimer);
+  try { history.replaceState({ ...history.state, scrollY: Math.round(top) }, ''); } catch { /* the browser limits how often this may be called */ }
+}
+if (!PRERENDER) {
+  if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+  addEventListener('scroll', () => { clearTimeout(scrollTimer); scrollTimer = setTimeout(rememberScroll, 200); }, { passive: true });
+}
+
+const pushAddress = (address, leftAt) => {
+  rememberScroll(leftAt);
+  history.pushState(null, '', address);
+  here = location.pathname + location.search;
+};
+const replaceAddress = (address) => { history.replaceState(history.state, '', address); here = location.pathname + location.search; };
 
 /* A pre-rendered catalogue can be typed into before the script arrives; what
    the visitor already typed or ticked still counts once it has. */
@@ -105,7 +124,10 @@ const PAGES = [
       return routes.map((route) => Urls.routePath(route.slug));
     },
     address: ({ route, stop }) => Urls.routePath(route.slug, stop !== route.stops[0]?.order ? stop : null),
-    after: ({ route }, current) => { if (route.hasGeometry || route.startLat != null) mountMap(route, current); },
+    after: ({ route }, current) => {
+      watchRouteBar();
+      if (route.hasGeometry || route.startLat != null) mountMap(route, current);
+    },
   },
   {
     name: 'stories', path: '/stories/', view: 'story', nav: 'stories',
@@ -256,6 +278,10 @@ function setNav(view) {
     if (active) link.setAttribute('aria-current', 'page');
     else link.removeAttribute('aria-current');
   });
+  closeMenu();
+}
+
+function closeMenu() {
   $('.site-header')?.classList.remove('nav-open');
   $('.menu-toggle')?.setAttribute('aria-expanded', 'false');
 }
@@ -310,25 +336,74 @@ function drawn(markup) {
 }
 
 /**
- * Draw a view and its head. With `keep`, markup that is already on screen
- * (a pre-rendered page) is left untouched when the view would draw the same
- * thing, so booting on it neither flashes nor shifts; when it would draw
- * something else, such as this visitor's own saved routes, it is replaced.
+ * Draw a view and its head, in two steps. prepare() does what can take time:
+ * the view's stylesheet, its markup and its head. commit() is the one step that
+ * touches the page, and it does not wait for anything. The caller asks, between
+ * the two, whether it is still the latest navigation: a slow earlier one must
+ * not paint over the page the visitor has since moved on to.
  */
-async function paint(view, context = {}, { keep = false, scroll = true } = {}) {
+async function prepare(view, context = {}) {
   await loadStylesheet(view.stylesheet || view.meta?.stylesheet);
   const markup = context.indexOnly ? await view.renderIndex() : await view.render(context);
   const describe = context.indexOnly ? view.indexMeta : view.meta;
   const meta = await (typeof describe === 'function' ? describe(context) : describe);
+  return { markup, meta };
+}
+
+/**
+ * Put a prepared view on screen. With `keep`, markup that is already there (a
+ * pre-rendered page) is left untouched when the view would draw the same thing,
+ * so booting on it neither flashes nor shifts; when it would draw something
+ * else, such as this visitor's own saved routes, it is replaced. `scrollY` is
+ * where the new page opens (null leaves the scroll position alone).
+ */
+function commit({ markup, meta }, { keep = false, scrollY = 0 } = {}) {
   if (!(keep && drawn(markup))) {
     destroyMap();
+    unwatchRouteBar();
     shell.innerHTML = markup;
     delete shell.dataset.prerendered;
-    if (scroll) window.scrollTo(0, 0);
+    // 'instant': the page is replaced, so it opens in place rather than gliding there.
+    if (scrollY != null) window.scrollTo({ top: scrollY, left: 0, behavior: 'instant' });
   }
   setMeta(meta);
   Motion.scan(shell);
-  return meta;
+}
+
+/** prepare() and commit() for a redraw of the current page. Null when a navigation has taken over meanwhile. */
+async function paint(view, context = {}, { current = generation, ...options } = {}) {
+  const ready = await prepare(view, context);
+  if (current !== generation) return null;
+  commit(ready, options);
+  return ready.meta;
+}
+
+/* ── Focus ──────────────────────────────────────────────────────── */
+
+/** Focus a node that is not a control (a heading, a panel), without moving the page. */
+function focusNode(node) {
+  if (!node) return;
+  if (!node.matches('a[href], button, input, select, textarea, [tabindex]')) node.tabIndex = -1;
+  node.focus({ preventScroll: true });
+}
+
+const focusHeading = () => focusNode($('h1', shell));
+
+/** A selector that finds, after the page redraws it, the control the keyboard is on. */
+function focusMark() {
+  const node = document.activeElement;
+  if (!node || node === document.body || !shell.contains(node)) return null;
+  const data = [...node.attributes].filter((attribute) => attribute.name.startsWith('data-'))
+    .map((attribute) => `[${attribute.name}="${CSS.escape(attribute.value)}"]`).join('');
+  if (data) return `${node.localName}${data}`;
+  return node.id ? `#${CSS.escape(node.id)}` : null;
+}
+
+/** Put the keyboard back on the same control after a redraw, or on `fallback` when that control is gone. */
+function restoreFocus(mark, fallback) {
+  if (!mark) return;
+  const target = $(mark, shell);
+  focusNode(target && !target.disabled ? target : $(fallback, shell));
 }
 
 /** The id a #fragment names; a malformed escape (#100%) is taken as written. */
@@ -339,17 +414,18 @@ function anchorId(hash) {
 /**
  * Show the page at `url`. `push` adds a history entry; otherwise the address
  * is only tidied in place (a dropped ?stop=1, an added trailing slash).
+ * `scrollY` is where the page opens: the top, or where Back left it.
  */
-async function show(url, { push = true, boot = false } = {}) {
+async function show(url, { push = true, boot = false, scrollY = 0 } = {}) {
   const current = ++generation;
   const match = resolve(url);
   let page = match?.page || NOT_FOUND;
   let view = await moduleFor(page.view);
   let context = page.context?.(url) || {};
   if (page.load) {
-    // A module or data that cannot be fetched rejects from here, and from paint
-    // below, before anything on screen is touched; only a source that loaded
-    // and has no such item is "not found".
+    // A module or data that cannot be fetched rejects from here, and from
+    // prepare() below, before anything on screen is touched; only a source that
+    // loaded and has no such item is "not found".
     const item = await page.load(match.slug, url, view);
     if (item) context = { ...context, ...item };
     else if (shell.dataset.prerendered === Urls.normalPath(url.pathname)) {
@@ -365,11 +441,15 @@ async function show(url, { push = true, boot = false } = {}) {
   if (current !== generation) return;
 
   const key = page === NOT_FOUND ? '404' : Urls.normalPath(url.pathname);
+  const ready = await prepare(view, context);
+  if (current !== generation) return;
+  // Nothing below waits, so no other navigation can slip in between these lines.
   state = { page, route: context.route || null, stop: context.stop || null, story: context.story || null };
   document.body.dataset.view = page.body || page.name;
   shell.className = `view-${page.body || page.name}`;
-  const meta = await paint(view, context, { keep: shell.dataset.prerendered === key, scroll: !boot });
-  if (current !== generation) return;
+  const { meta } = ready;
+  const leftAt = window.scrollY;
+  commit(ready, { keep: shell.dataset.prerendered === key, scrollY: boot ? null : scrollY });
   setNav(page.nav);
 
   const address = page === NOT_FOUND
@@ -377,10 +457,12 @@ async function show(url, { push = true, boot = false } = {}) {
     : `${page.address?.(context) || page.path || key}`;
   // A link to the address you are already on adds no history entry.
   if (address + url.hash !== location.pathname + location.search + location.hash) {
-    if (push) pushAddress(address + url.hash);
+    if (push) pushAddress(address + url.hash, leftAt);
     else replaceAddress(address + url.hash);
   }
   if (url.hash && !boot) document.getElementById(anchorId(url.hash))?.scrollIntoView();
+  // A page drawn in place is a new page: the keyboard and screen readers start at its heading.
+  if (!boot && !PRERENDER) focusHeading();
 
   if (PRERENDER) {
     shell.dataset.prerendered = key;
@@ -396,12 +478,44 @@ async function show(url, { push = true, boot = false } = {}) {
  * so the link is never left dead; the page it gets handles its own failure.
  */
 async function navigate(url, options) {
+  const mine = generation + 1;      // the number show() takes first thing
   try {
     await show(url, options);
   } catch (error) {
+    // A slower earlier navigation that fails must not pull the browser away
+    // from the page the visitor has since moved on to.
+    if (generation !== mine) return;
     console.error('Could not draw the page in place; loading it instead', error);
     location.assign(url.href);
   }
+}
+
+/* ── Route section bar ──────────────────────────────────────────── */
+
+/* The bar of section links sticks under the header, and how tall it is depends
+   on the window and the text size (its links wrap). A jump to a section must
+   stop below it, so its height is published as --route-bar-h for route.css. */
+let barWatcher = null;
+
+function watchRouteBar() {
+  unwatchRouteBar();
+  const bar = $('.route-bar');
+  if (!bar || !('ResizeObserver' in window)) return;
+  const measure = () => {
+    // On a phone .route-bar has no box of its own and the links are what sticks.
+    const sticky = getComputedStyle(bar).display === 'contents' ? $('.route-tabs', bar) : bar;
+    document.documentElement.style.setProperty('--route-bar-h', `${Math.round(sticky.getBoundingClientRect().height)}px`);
+  };
+  barWatcher = new ResizeObserver(measure);
+  barWatcher.observe(bar);
+  barWatcher.observe($('.route-tabs', bar));
+  measure();
+}
+
+function unwatchRouteBar() {
+  barWatcher?.disconnect();
+  barWatcher = null;
+  document.documentElement.style.removeProperty('--route-bar-h');
 }
 
 /* ── Map ────────────────────────────────────────────────────────── */
@@ -442,7 +556,13 @@ async function selectStop(order) {
     const fresh = document.createElement('div');
     fresh.innerHTML = await view.render({ route: state.route, stop: stop.order });
     const replacement = fresh.querySelector('.stop-panel');
-    if (replacement) { panel.replaceWith(replacement); Motion.scan(replacement); }
+    if (replacement) {
+      // A control inside the story (Related stops) is replaced with it; the keyboard follows to the new title.
+      const inside = panel.contains(document.activeElement);
+      panel.replaceWith(replacement);
+      Motion.scan(replacement);
+      if (inside) focusNode($('.stop-title', replacement));
+    }
   }
   $$('.stop-item').forEach((item) => {
     const active = Number(item.dataset.selectStop) === stop.order;
@@ -532,15 +652,43 @@ function toggleSave(button) {
   notify(saved ? `${state.route.name} saved to My Journey.` : 'Removed from My Journey.');
 }
 
-async function repaintJourney() {
-  await paint(await moduleFor('journey'));
+function selectJourneyTab(id) {
+  $$('[data-journey-tab]').forEach((button) => {
+    const active = button.dataset.journeyTab === id;
+    button.setAttribute('aria-selected', String(active));
+    button.tabIndex = active ? 0 : -1;
+  });
+  $$('[data-journey-panel]').forEach((panel) => { panel.hidden = panel.dataset.journeyPanel !== id; });
+}
+
+/**
+ * Draw My Journey again after something in it changed. The visitor stays where
+ * they were: same scroll position, same tab, and the keyboard on the control
+ * that took the place of the one they used (`selector`, at the same position
+ * in the list, or the last one left).
+ */
+async function repaintJourney({ selector = null, at = 0 } = {}) {
+  const current = generation;
+  const tab = $('[data-journey-tab][aria-selected="true"]')?.dataset.journeyTab;
+  const journey = await moduleFor('journey');
+  if (!await paint(journey, {}, { current, scrollY: null })) return;
+  if (tab) selectJourneyTab(tab);
+  if (!selector) return;
+  const left = $$(selector, shell).filter((node) => node.offsetParent);
+  focusNode(left[Math.min(at, left.length - 1)] || $('[data-journey-tab][aria-selected="true"]', shell));
 }
 
 /* ── Studio ─────────────────────────────────────────────────────── */
 
 async function refreshStudio() {
+  const current = generation;
+  const mark = focusMark();
   const studio = await moduleFor('studio');
-  shell.innerHTML = await studio.render();
+  const markup = await studio.render();
+  if (current !== generation) return;
+  shell.innerHTML = markup;
+  // The keyboard stays on the same control; when a step replaces it (Next on the last step), on the step's heading.
+  restoreFocus(mark, '.studio-panel:not([hidden]) h3');
 }
 
 async function handleStudio(target) {
@@ -595,8 +743,7 @@ document.addEventListener('click', async (event) => {
   await started;
 
   if (event.target.closest('.menu-toggle')) {
-    const header = $('.site-header');
-    const open = header?.classList.toggle('nav-open');
+    const open = $('.site-header')?.classList.toggle('nav-open');
     $('.menu-toggle')?.setAttribute('aria-expanded', String(Boolean(open)));
     return;
   }
@@ -624,15 +771,15 @@ document.addEventListener('click', async (event) => {
     return;
   }
 
+  // The route's section links are plain in-page anchors: the browser does the
+  // scrolling (smoothly, unless the visitor asked for reduced motion), and this
+  // only says which section the visitor went to.
   const tab = event.target.closest('[data-tab]');
   if (tab) {
-    $$('[data-tab]').forEach((button) => {
-      const active = button === tab;
-      button.setAttribute('aria-selected', String(active));
-      button.tabIndex = active ? 0 : -1;
+    $$('[data-tab]').forEach((link) => {
+      if (link === tab) link.setAttribute('aria-current', 'location');
+      else link.removeAttribute('aria-current');
     });
-    const target = { overview: '.route-overview', stops: '.stop-rail', stories: '.stop-panel', terrain: '.route-glance', map: '.map-panel' }[tab.dataset.tab];
-    $(target)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     return;
   }
 
@@ -644,27 +791,24 @@ document.addEventListener('click', async (event) => {
   }
 
   const journeyTab = event.target.closest('[data-journey-tab]');
-  if (journeyTab) {
-    $$('[data-journey-tab]').forEach((button) => {
-      const active = button === journeyTab;
-      button.setAttribute('aria-selected', String(active));
-      button.tabIndex = active ? 0 : -1;
-    });
-    $$('[data-journey-panel]').forEach((panel) => { panel.hidden = panel.dataset.journeyPanel !== journeyTab.dataset.journeyTab; });
-    return;
-  }
+  if (journeyTab) { selectJourneyTab(journeyTab.dataset.journeyTab); return; }
 
   const unsave = event.target.closest('[data-journey-unsave]');
   if (unsave) {
-    const slug = unsave.dataset.journeyUnsave;
-    const route = await Data.getRoute(slug);
+    const at = $$('[data-journey-unsave]').filter((node) => node.offsetParent).indexOf(unsave);
+    const route = await Data.getRoute(unsave.dataset.journeyUnsave);
     if (route) Journey.toggleSaved(route);
-    await repaintJourney();
+    await repaintJourney({ selector: '[data-journey-unsave]', at });
     return;
   }
 
   const deleteNote = event.target.closest('[data-journal-delete]');
-  if (deleteNote) { Journey.removeJournalEntry(deleteNote.dataset.journalDelete); await repaintJourney(); return; }
+  if (deleteNote) {
+    const at = $$('[data-journal-delete]').indexOf(deleteNote);
+    Journey.removeJournalEntry(deleteNote.dataset.journalDelete);
+    await repaintJourney({ selector: '[data-journal-delete]', at });
+    return;
+  }
 
   const filterSport = event.target.closest('[data-filter-sport]');
   if (filterSport) {
@@ -697,12 +841,16 @@ document.addEventListener('click', async (event) => {
   }
 });
 
+let filterTimer = null;
+
 document.addEventListener('input', async (event) => {
   await started;
   const target = event.target;
   if (target.id === 'catalogue-query') {
     const explore = await moduleFor('explore');
-    explore.setQuery(target.value);
+    // The grid redraws once typing pauses, so a screen reader is not read the whole list for every letter.
+    clearTimeout(filterTimer);
+    filterTimer = setTimeout(() => explore.setQuery(target.value), 150);
     // The search is part of the address, so a filtered catalogue can be shared.
     if (state.page?.address) replaceAddress(state.page.address({ query: target.value.trim() }));
   }
@@ -764,18 +912,48 @@ document.addEventListener('submit', async (event) => {
       body: String(form.get('body') || '').trim(),
     });
     await repaintJourney();
-    const panel = $('[data-journey-panel="journal"]');
-    $$('[data-journey-panel]').forEach((node) => { node.hidden = node !== panel; });
-    $$('[data-journey-tab]').forEach((button) => button.setAttribute('aria-selected', String(button.dataset.journeyTab === 'journal')));
+    focusNode($('[data-journal-form] input[name="title"]'));
     notify('Journal entry saved on this device.');
   }
 });
 
+document.addEventListener('keydown', async (event) => {
+  // Escape closes the phone menu and hands the keyboard back to its button.
+  if (event.key === 'Escape' && $('.site-header')?.classList.contains('nav-open')) {
+    closeMenu();
+    $('.menu-toggle')?.focus();
+    return;
+  }
+  // The journey's tabs are a real tab list: one stop in the tab order, arrows move within it.
+  const tab = event.target.closest?.('[data-journey-tab]');
+  if (tab && ['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) {
+    event.preventDefault();
+    const id = tab.dataset.journeyTab;
+    await started;
+    const tabs = $$('[data-journey-tab]');
+    const from = tabs.findIndex((button) => button.dataset.journeyTab === id);
+    const to = { Home: 0, End: tabs.length - 1 }[event.key] ?? (from + (event.key === 'ArrowRight' ? 1 : -1) + tabs.length) % tabs.length;
+    selectJourneyTab(tabs[to].dataset.journeyTab);
+    tabs[to].focus();
+  }
+});
+
 window.addEventListener('popstate', () => {
+  clearTimeout(scrollTimer);      // what is pending belongs to the entry just left
   const at = location.pathname + location.search;
   const moved = at !== here;
   here = at;
-  if (moved) navigate(new URL(location.href), { push: false });
+  // Back and Forward return to where that entry was left (see pushAddress).
+  const saved = history.state?.scrollY;
+  if (moved) {
+    navigate(new URL(location.href), { push: false, scrollY: Number.isFinite(saved) ? saved : 0 });
+  } else if (Number.isFinite(saved)) {
+    window.scrollTo({ top: saved, left: 0, behavior: 'instant' });       // only the #fragment changed
+  } else if (location.hash) {
+    document.getElementById(anchorId(location.hash))?.scrollIntoView();
+  } else {
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+  }
 });
 
 /* ── Boot ───────────────────────────────────────────────────────── */
@@ -789,7 +967,15 @@ async function boot() {
   await loadMedia();
   await Data.loadRoutes();
   await show(new URL(location.href), { push: false, boot: true });
-  if (!PRERENDER) Motion.start({ settle });
+  if (!PRERENDER) {
+    Motion.start({ settle });
+    // A reload, or Back from another site, opens the page unscrolled: return to where this entry was left.
+    const opened = performance.getEntriesByType?.('navigation')[0]?.type;
+    const saved = history.state?.scrollY;
+    if (!location.hash && (opened === 'reload' || opened === 'back_forward') && saved > 0) {
+      window.scrollTo({ top: saved, left: 0, behavior: 'instant' });
+    }
+  }
 }
 
 started = boot().catch((error) => {

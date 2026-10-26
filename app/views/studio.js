@@ -107,7 +107,7 @@ function builder(draft, route, stop) {
       <h3>Audio upload</h3>
       <label class="studio-drop" for="studio-audio">
         ${icon('upload')}
-        <span><b>Drag and drop an audio file, or browse</b><small>MP3, M4A or WAV · up to 10 minutes</small></span>
+        <span><b>Choose an audio file from this device</b><small>MP3, M4A or WAV. Nothing is uploaded.</small></span>
         <input id="studio-audio" type="file" accept="audio/*" data-studio="audio" hidden>
       </label>
       <div class="studio-audio-preview" data-studio-audio-preview>
@@ -218,7 +218,7 @@ export async function render() {
         <div class="studio-hero-copy">
           <p class="eyebrow eyebrow-mark">Creator Studio</p>
           <h1 class="display">Real places.<br><span class="accent">Your voice.</span></h1>
-          <p class="lede">Record, write and prepare audio stories for the places on Naarad's routes. Help travellers hear the stories that live in them.</p>
+          <p class="lede">A drafting space for narrators: pick a stop on one of Naarad's routes, write the story you would tell there and note the languages it should come in. Your drafts stay in this browser, and publishing is not open yet.</p>
         </div>
         <div class="studio-hero-media">
           ${picture('india-storyteller', { sizes: '(max-width: 1023px) 100vw, 40vw', alt: '', credit: true, className: 'torn-left' })}

@@ -4,6 +4,7 @@
 // canonicals, structured data and the pre-rendered pages.
 // Run with: cd e2e && npm install && npm test (after node scripts/build-site.mjs)
 const { test, expect } = require('@playwright/test');
+const { AxeBuilder } = require('@axe-core/playwright');
 
 const PHONE = { width: 390, height: 844 };
 const DESKTOP = { width: 1440, height: 900 };
@@ -778,6 +779,658 @@ test.describe('layout shift', () => {
         await page.waitForTimeout(300);
         expect(await page.evaluate(() => window.__cls), `CLS at ${path}`).toBeLessThan(0.02);
       }
+    });
+  }
+});
+
+/* ── Navigation draws the latest page, and puts focus where it belongs ── */
+
+/** A speech synthesis that never finishes, so the listening bar can be driven without a voice. */
+const withSpeech = () => {
+  const synth = {
+    speaking: false, pause() {}, resume() {}, cancel() {},
+    speak(utterance) { window.__spoken = utterance; setTimeout(() => utterance.onend && utterance.onend(), 100000); },
+  };
+  Object.defineProperty(window, 'speechSynthesis', { value: synth, configurable: true });
+  window.SpeechSynthesisUtterance = function (text) { this.text = text; };
+};
+
+/** What has the keyboard, in a few words. */
+const focused = (page) => page.evaluate(() => {
+  const node = document.activeElement;
+  if (!node || node === document.body) return 'body';
+  return `${node.tagName.toLowerCase()}${node.id ? `#${node.id}` : ''}${node.className && typeof node.className === 'string' ? `.${node.className.trim().split(/\s+/)[0]}` : ''}`;
+});
+
+/** Wait for a scroll (smooth or not) to come to rest: still for 300 ms running. */
+const settled = (page) => page.waitForFunction(() => new Promise((resolve) => {
+  let last = window.scrollY;
+  let still = 0;
+  const timer = setInterval(() => {
+    still = Math.abs(window.scrollY - last) < 1 ? still + 1 : 0;
+    last = window.scrollY;
+    if (still >= 3) { clearInterval(timer); resolve(true); }
+  }, 100);
+}));
+
+test.describe('a slow navigation does not paint over the one after it', () => {
+  test('a first-visit stylesheet that arrives late is not drawn over the page the visitor moved on to', async ({ page }) => {
+    await page.route('**/app/route.css', async (route) => { await new Promise((resolve) => setTimeout(resolve, 1500)); await route.continue(); });
+    await page.goto('/');
+    await expect(page.locator('.route-card').first()).toBeVisible();
+    await page.locator('.route-card').first().click();          // a route page, whose stylesheet is slow
+    await page.locator('#nav-about').click();                   // and the visitor moves on at once
+    await expect(page.locator('h1')).toContainText('Explore.');
+    await page.waitForTimeout(2200);                            // the slow stylesheet has arrived by now
+    await expect(page.locator('h1')).toContainText('Explore.');
+    expect(new URL(page.url()).pathname).toBe('/about/');
+    await expect(page).toHaveTitle('About · Naarad');
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', `${ORIGIN}/about/`);
+    await expect(page.locator('#app-content')).toHaveClass('view-about');
+    await expect(page.locator('body')).toHaveAttribute('data-view', 'about');
+    await expect(page.locator('#nav-about')).toHaveAttribute('aria-current', 'page');
+  });
+});
+
+test.describe('focus after a page is drawn in place', () => {
+  test('the first page takes no focus; a page reached by keyboard puts it on the new heading', async ({ page }) => {
+    await page.goto('/');
+    await expect(page.locator('#home-title')).toBeVisible();
+    expect(await focused(page)).toBe('body');
+
+    await page.locator('.route-card').first().focus();
+    await page.keyboard.press('Enter');
+    await expect(page.locator('#route-title')).toBeFocused();
+
+    await page.locator('#nav-stories').focus();
+    await page.keyboard.press('Enter');
+    await expect(page.locator('h1')).toContainText('Listen closer.');
+    await expect(page.locator('h1')).toBeFocused();
+
+    await page.goBack();
+    await expect(page.locator('#route-title')).toBeFocused();
+  });
+
+  test('a heading that takes focus is not ringed, and the focus is on no scroll', async ({ page }) => {
+    await page.goto('/about/');
+    await page.locator('#nav-stories').focus();
+    await page.keyboard.press('Enter');
+    await expect(page.locator('h1')).toBeFocused();
+    expect(await page.evaluate(() => getComputedStyle(document.activeElement).outlineStyle)).toBe('none');
+    expect(await page.evaluate(() => window.scrollY)).toBe(0);
+  });
+
+  test('the keyboard follows a re-render of the same page: related stops, studio steps, journey lists', async ({ page }) => {
+    await page.goto('/routes/hampi-heritage-trail/', { waitUntil: 'networkidle' });
+    await page.locator('[data-stop-tab="related"]').click();
+    await expect(page.locator('[data-stop-panel="related"]')).toBeVisible();
+    await page.locator('[data-stop-panel="related"] button').first().focus();
+    await page.keyboard.press('Enter');
+    await expect(page).toHaveURL(/stop=\d/);
+    await expect(page.locator('.stop-title')).toBeFocused();
+
+    await page.goto('/creators/', { waitUntil: 'networkidle' });
+    await page.locator('[data-studio="next"]').focus();
+    await page.keyboard.press('Enter');
+    await expect(page.locator('[data-step="transcript"]')).toBeVisible();
+    await expect(page.locator('[data-studio="next"]')).toBeFocused();
+  });
+
+  test('removing a saved route keeps the visitor where they were: same tab, same scroll, keyboard on the next one', async ({ page }) => {
+    await page.addInitScript(() => localStorage.setItem('naarad.journey.v1', JSON.stringify({
+      saved: ['hampi-heritage-trail', 'thanjavur-living-heritage', 'auroville-explorer'].map((slug, index) => ({
+        slug, name: slug.replace(/-/g, ' '), location: 'India', stops: 8, savedAt: `2026-10-0${index + 1}T00:00:00Z`,
+      })),
+    })));
+    await page.setViewportSize({ width: 1440, height: 500 });
+    await page.goto('/journey/', { waitUntil: 'networkidle' });
+    await page.locator('[data-journey-tab="saved"]').click();
+    const unsave = page.locator('[data-journey-panel="saved"] [data-journey-unsave]');
+    await expect(unsave).toHaveCount(3);
+    await unsave.first().scrollIntoViewIfNeeded();
+    await page.evaluate(() => window.scrollTo({ top: 300, behavior: 'instant' }));
+    const top = await page.evaluate(() => window.scrollY);
+    expect(top).toBeGreaterThan(100);
+
+    await unsave.first().focus();
+    await page.keyboard.press('Enter');
+    await expect(unsave).toHaveCount(2);
+    await expect(page.locator('[data-journey-tab="saved"]')).toHaveAttribute('aria-selected', 'true');
+    await expect(page.locator('[data-journey-panel="saved"]')).toBeVisible();
+    expect(await page.evaluate(() => document.activeElement.matches('[data-journey-panel="saved"] [data-journey-unsave]'))).toBe(true);
+    expect(Math.abs((await page.evaluate(() => window.scrollY)) - top)).toBeLessThan(2);
+  });
+
+  test('a journal entry is saved without losing the tab, and the title field is ready for the next one', async ({ page }) => {
+    await page.goto('/journey/', { waitUntil: 'networkidle' });
+    await page.locator('[data-journey-tab="journal"]').click();
+    await page.locator('[data-journal-form] input[name="title"]').fill('Dusk at the river');
+    await page.locator('[data-journal-form] button[type="submit"]').click();
+    await expect(page.locator('.journal-note')).toContainText('Dusk at the river');
+    await expect(page.locator('[data-journey-tab="journal"]')).toHaveAttribute('aria-selected', 'true');
+    await expect(page.locator('[data-journey-tab="journal"]')).toHaveAttribute('tabindex', '0');
+    await expect(page.locator('[data-journal-form] input[name="title"]')).toBeFocused();
+  });
+
+  test('the journey tabs are one stop in the tab order, and the arrow keys move along them', async ({ page }) => {
+    await page.goto('/journey/', { waitUntil: 'networkidle' });
+    const tabs = page.locator('[data-journey-tab]');
+    await tabs.first().focus();
+    await page.keyboard.press('ArrowRight');
+    await expect(tabs.nth(1)).toBeFocused();
+    await expect(tabs.nth(1)).toHaveAttribute('aria-selected', 'true');
+    await expect(page.locator('[data-journey-panel="saved"]')).toBeVisible();
+    await page.keyboard.press('End');
+    await expect(tabs.last()).toBeFocused();
+    await page.keyboard.press('ArrowRight');
+    await expect(tabs.first()).toBeFocused();
+    await page.keyboard.press('ArrowLeft');
+    await expect(tabs.last()).toBeFocused();
+  });
+});
+
+/* ── The route page works from the keyboard ───────────────────────── */
+
+test.describe('the route page by keyboard', () => {
+  test.beforeEach(async ({ page }) => { await page.addInitScript(withSpeech); });
+
+  test('the section links are plain links in the tab order; following one goes there and marks it', async ({ page }) => {
+    await page.goto('/routes/hampi-heritage-trail/');
+    const links = page.locator('nav[aria-label="Route sections"] a');
+    await expect(links).toHaveCount(5);
+    expect(await page.locator('.route-bar [role="tab"], .route-bar [role="tablist"], .route-bar [aria-controls]').count()).toBe(0);
+    await links.first().focus();
+    for (let index = 1; index < 5; index += 1) {
+      await page.keyboard.press('Tab');
+      await expect(links.nth(index)).toBeFocused();
+    }
+    await links.nth(3).focus();
+    await page.keyboard.press('Enter');
+    await expect(page).toHaveURL(/#section-terrain$/);
+    await expect(links.nth(3)).toHaveAttribute('aria-current', 'location');
+    await expect(page.locator('nav[aria-label="Route sections"] [aria-current]')).toHaveCount(1);
+    await expect(page.locator('#section-terrain')).toBeInViewport();
+  });
+
+  test('a route with no stops has no link to a list of them', async ({ page }) => {
+    await page.goto('/routes/mysore-palace-heritage-walk/');
+    await expect(page.locator('nav[aria-label="Route sections"] a')).toHaveCount(4);
+    for (const href of await page.locator('nav[aria-label="Route sections"] a').evaluateAll((links) => links.map((link) => link.getAttribute('href')))) {
+      expect(await page.locator(href).count(), href).toBe(1);
+    }
+  });
+
+  test('Enter on a stop\'s play button starts the audio and does not select the stop', async ({ page }) => {
+    await page.goto('/routes/hampi-heritage-trail/');
+    await expect(page.locator('.stop-item.is-active')).toContainText('Virupaksha Temple');
+    await page.locator('.stop-item-play[data-stop="2"]').focus();
+    await page.keyboard.press('Enter');
+    await expect(page.locator('.listen-bar')).toContainText('Sasivekalu Ganesha');
+    await expect(page.locator('.stop-item.is-active')).toContainText('Virupaksha Temple');
+    await page.locator('.listen-close').click();
+    await page.locator('.stop-item-play[data-stop="3"]').focus();
+    await page.keyboard.press('Space');
+    await expect(page.locator('.listen-bar')).toContainText('Hampi Bazaar');
+  });
+
+  test('the play button and the stop button are siblings, each its own control', async ({ page }) => {
+    await page.goto('/routes/hampi-heritage-trail/');
+    expect(await page.locator('.stop-item button, .stop-item [role="button"], .stop-item [tabindex]').count()).toBe(0);
+    await expect(page.locator('.stop-row')).toHaveCount(8);
+    await page.locator('.stop-item[data-select-stop="4"]').focus();
+    await page.keyboard.press('Tab');
+    await expect(page.locator('.stop-item-play[data-stop="4"]')).toBeFocused();
+  });
+
+  test('the keyboard stays on the listening bar\'s controls, and the bar is not rebuilt as the words go by', async ({ page }) => {
+    await page.goto('/routes/hampi-heritage-trail/');
+    await page.locator('.stop-play').focus();
+    await page.keyboard.press('Enter');
+    const toggle = page.locator('.listen-bar [data-audio="toggle"]');
+    await expect(toggle).toHaveAttribute('aria-label', 'Pause');
+
+    await toggle.focus();
+    await page.evaluate(() => {
+      window.__bar = [...document.querySelector('.listen-bar').querySelectorAll('button, input, .listen-art, .listen-meta, .listen-meta *, .listen-controls, .listen-progress, .listen-time, .listen-aside')];
+      window.__toggle = document.activeElement;
+    });
+    await page.keyboard.press('Enter');
+    await expect(toggle).toHaveAttribute('aria-label', 'Play');
+    await expect(toggle).toBeFocused();
+    await page.keyboard.press('Enter');
+    await expect(toggle).toHaveAttribute('aria-label', 'Pause');
+    await expect(toggle).toBeFocused();
+
+    const rate = page.locator('.listen-bar [data-audio="rate"]');
+    await rate.focus();
+    await page.keyboard.press('Enter');
+    await expect(rate).toHaveText('1.25x');
+    await expect(rate).toBeFocused();
+
+    await page.locator('[data-audio="forward"]').focus();
+    await page.keyboard.press('Enter');
+    await expect(page.locator('[data-audio="forward"]')).toBeFocused();
+
+    // Words being spoken move the progress and the clock, and replace nothing.
+    const before = await page.locator('.listen-time').textContent();
+    await page.evaluate(() => window.__spoken.onboundary({ charIndex: 600 }));
+    await expect(page.locator('.listen-time')).not.toHaveText(before);
+    expect(await page.evaluate(() => window.__bar.every((node) => node.isConnected) && window.__toggle === document.querySelector('[data-audio="toggle"]'))).toBe(true);
+  });
+
+  test('closing the bar from the keyboard returns to the button that opened it', async ({ page }) => {
+    await page.goto('/routes/hampi-heritage-trail/');
+    await page.locator('.stop-play').focus();
+    await page.keyboard.press('Enter');
+    await page.locator('.listen-close').focus();
+    await page.keyboard.press('Enter');
+    await expect(page.locator('.listen-bar')).toHaveCount(0);
+    await expect(page.locator('.stop-play')).toBeFocused();
+  });
+
+  test('no focusable thing is nested in another, no ARIA points at nothing (axe)', async ({ page }) => {
+    const rules = ['nested-interactive', 'aria-valid-attr-value', 'aria-valid-attr', 'aria-allowed-role', 'aria-allowed-attr', 'aria-required-children', 'aria-required-parent', 'landmark-unique', 'aria-roles'];
+    const check = async (label) => {
+      const { violations } = await new AxeBuilder({ page }).withRules(rules).analyze();
+      expect(violations.map((item) => `${item.id}: ${item.nodes.map((node) => node.target.join(' ')).join(', ')}`), label).toEqual([]);
+    };
+    for (const path of ['/', '/routes/', '/routes/hampi-heritage-trail/', '/stories/stone-chariot-of-hampi/', '/creators/', '/journey/', '/about/']) {
+      await page.goto(path);
+      await expect(page.locator('h1')).toHaveCount(1);
+      await check(path);
+    }
+    await page.goto('/routes/hampi-heritage-trail/');
+    await page.locator('nav[aria-label="Route sections"] a').nth(2).click();
+    await page.locator('.stop-play').click();
+    await page.locator('[data-stop-tab="related"]').click();
+    await check('a route page after using its links, its audio and its tabs');
+  });
+});
+
+test.describe('the player\'s marks', () => {
+  test.use({ deviceScaleFactor: 2 });
+  test.beforeEach(async ({ page }) => { await page.addInitScript(withSpeech); });
+
+  test('the pause mark is drawn: the player shows a mark whether it is playing or paused', async ({ page }) => {
+    await page.goto('/routes/hampi-heritage-trail/');
+    await page.locator('.stop-play').click();
+    const toggle = page.locator('.listen-bar [data-audio="toggle"]');
+    // White pixels on the orange disc: a disc with no mark in it has none.
+    const marks = async () => {
+      const png = (await toggle.screenshot()).toString('base64');
+      return page.evaluate(async (data) => {
+        const image = new Image();
+        image.src = `data:image/png;base64,${data}`;
+        await image.decode();
+        const canvas = document.createElement('canvas');
+        canvas.width = image.width; canvas.height = image.height;
+        const context = canvas.getContext('2d');
+        context.drawImage(image, 0, 0);
+        const { data: pixels } = context.getImageData(0, 0, canvas.width, canvas.height);
+        let white = 0;
+        for (let at = 0; at < pixels.length; at += 4) if (pixels[at] > 235 && pixels[at + 1] > 235 && pixels[at + 2] > 235) white += 1;
+        return white;
+      }, png);
+    };
+    await expect(toggle).toHaveAttribute('aria-label', 'Pause');
+    expect(await marks(), 'pause mark').toBeGreaterThan(60);
+    await toggle.click();
+    await expect(toggle).toHaveAttribute('aria-label', 'Play');
+    expect(await marks(), 'play mark').toBeGreaterThan(60);
+  });
+});
+
+test.describe('sections and anchors clear what sticks to the top of the window', () => {
+  const clears = (page) => page.evaluate(() => {
+    const bottom = (node) => (node ? node.getBoundingClientRect().bottom : 0);
+    const bar = document.querySelector('.route-bar');
+    const tabs = document.querySelector('.route-tabs');
+    const sticky = getComputedStyle(bar).display === 'contents' ? tabs : bar;
+    const header = bottom(document.querySelector('.site-header'));
+    // The bar only covers the page once it has stuck under the header.
+    const stuck = sticky.getBoundingClientRect().top <= header + 1;
+    return { header, bar: stuck ? bottom(sticky) : 0 };
+  });
+
+  for (const size of [{ width: 1440, height: 900 }, { width: 1024, height: 800 }, { width: 768, height: 1000 }, { width: 390, height: 844 }]) {
+    test(`a route's section links land below the header and the bar at ${size.width} px`, async ({ page }) => {
+      await page.setViewportSize(size);
+      await page.goto('/routes/hampi-heritage-trail/');
+      await expect(page.locator('nav[aria-label="Route sections"] a')).toHaveCount(5);
+      for (const tab of ['overview', 'stops', 'stories', 'terrain', 'map']) {
+        await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }));
+        await page.locator(`[data-tab="${tab}"]`).click();
+        await settled(page);
+        const { header, bar } = await clears(page);
+        const top = await page.locator(`#section-${tab}`).evaluate((node) => node.getBoundingClientRect().top);
+        expect(top, `${tab}: top of the section`).toBeGreaterThanOrEqual(Math.max(header, bar) - 1);
+      }
+    });
+  }
+
+  for (const size of [{ width: 1440, height: 900 }, { width: 390, height: 844 }]) {
+    test(`a story's contents link lands its heading below the header at ${size.width} px`, async ({ page }) => {
+      await page.setViewportSize(size);
+      await page.goto('/stories/stone-chariot-of-hampi/');
+      await page.locator('[data-toc="belief-and-symbolism"]').click();
+      await settled(page);
+      const { header, top } = await page.evaluate(() => ({
+        header: document.querySelector('.site-header').getBoundingClientRect().bottom,
+        top: document.querySelector('#belief-and-symbolism h2').getBoundingClientRect().top,
+      }));
+      expect(top).toBeGreaterThanOrEqual(header);
+    });
+  }
+
+  test('a link in the sticky header takes the keyboard without the page moving', async ({ page }) => {
+    await page.goto('/routes/hampi-heritage-trail/');
+    await page.evaluate(() => window.scrollTo({ top: 1500, behavior: 'instant' }));
+    await page.locator('#nav-stories').focus();
+    await page.waitForTimeout(400);
+    expect(await page.evaluate(() => window.scrollY)).toBe(1500);
+    await page.locator('nav[aria-label="Route sections"] a').nth(2).focus();
+    await page.waitForTimeout(400);
+    expect(await page.evaluate(() => window.scrollY)).toBe(1500);
+  });
+
+  test('with reduced motion asked for, a section link jumps rather than glides', async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await page.goto('/routes/hampi-heritage-trail/');
+    expect(await page.evaluate(() => getComputedStyle(document.documentElement).scrollBehavior)).toBe('auto');
+    await page.locator('[data-tab="terrain"]').click();
+    const at = await page.evaluate(() => window.scrollY);
+    expect(at).toBeGreaterThan(500);
+    await page.waitForTimeout(600);
+    expect(await page.evaluate(() => window.scrollY)).toBe(at);
+  });
+
+  test('and with no such request, it glides', async ({ page }) => {
+    await page.goto('/routes/hampi-heritage-trail/');
+    expect(await page.evaluate(() => getComputedStyle(document.documentElement).scrollBehavior)).toBe('smooth');
+  });
+});
+
+test.describe('history keeps where the visitor was', () => {
+  test('Back from a route to the catalogue lands on the card that was opened', async ({ page }) => {
+    await page.goto('/routes/');
+    await expect(page.locator('.route-card').nth(8)).toBeAttached();
+    const card = page.locator('.route-card').nth(8);
+    // By keyboard: a mouse click makes the test driver scroll the page itself first.
+    await card.focus();
+    await settled(page);
+    const before = await page.evaluate(() => window.scrollY);
+    expect(before).toBeGreaterThan(500);
+    await page.keyboard.press('Enter');
+    await expect(page.locator('h1')).not.toContainText('Go where');
+    expect(await page.evaluate(() => window.scrollY)).toBe(0);
+    await page.goBack();
+    await expect(page.locator('h1')).toContainText('Go where');
+    expect(Math.abs((await page.evaluate(() => window.scrollY)) - before)).toBeLessThan(2);
+    await page.goForward();
+    await expect(page.locator('.route-card').first()).toBeAttached();
+    await expect(page.locator('h1')).not.toContainText('Go where');
+    expect(await page.evaluate(() => window.scrollY)).toBe(0);
+  });
+
+  test('Back from a story to a long route page returns to where it was read', async ({ page }) => {
+    await page.goto('/routes/hampi-heritage-trail/');
+    await page.evaluate(() => window.scrollTo({ top: 1500, behavior: 'instant' }));
+    await page.waitForTimeout(350);          // longer than the debounce that writes the position down while scrolling
+    await page.locator('#nav-stories').focus();
+    await settled(page);
+    expect(await page.evaluate(() => window.scrollY)).toBe(1500);
+    await page.keyboard.press('Enter');
+    await expect(page.locator('h1')).toContainText('Listen closer.');
+    await page.goBack();
+    await expect(page.locator('#route-title')).toBeAttached();
+    expect(Math.abs((await page.evaluate(() => window.scrollY)) - 1500)).toBeLessThan(2);
+  });
+
+  test('a reload returns to where the page was', async ({ page }) => {
+    await page.goto('/routes/hampi-heritage-trail/');
+    await page.evaluate(() => window.scrollTo({ top: 1200, behavior: 'instant' }));
+    await page.waitForTimeout(350);
+    await page.reload();
+    await expect(page.locator('#map .leaflet-pane').first()).toBeAttached();
+    await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(1200);
+  });
+
+  test('Back over an in-page jump returns to where the page was before it', async ({ page }) => {
+    await page.goto('/stories/stone-chariot-of-hampi/', { waitUntil: 'networkidle' });
+    await page.evaluate(() => window.scrollTo({ top: 300, behavior: 'instant' }));
+    await page.waitForTimeout(350);
+    await page.locator('.story-toc a').nth(3).click();
+    await expect(page).toHaveURL(/#[a-z-]+$/);
+    await settled(page);
+    expect(await page.evaluate(() => window.scrollY)).toBeGreaterThan(600);
+    await page.goBack();
+    await expect.poll(() => page.evaluate(() => window.scrollY)).toBeLessThan(400);
+    expect(new URL(page.url()).hash).toBe('');
+  });
+});
+
+/* ── Search, menu and landmarks ───────────────────────────────────── */
+
+test.describe('search, menu and landmarks', () => {
+  test('both search boxes show a ring when the keyboard is in them', async ({ page }) => {
+    await page.goto('/routes/');
+    for (const [input, wrapper] of [['#route-search', '.header-search'], ['#catalogue-query', '.catalogue-search']]) {
+      await page.locator(input).focus();
+      const ring = await page.locator(wrapper).evaluate((node) => { const style = getComputedStyle(node); return [style.outlineStyle, style.outlineWidth]; });
+      expect(ring, wrapper).toEqual(['solid', '3px']);
+    }
+  });
+
+  test('two search landmarks have two names', async ({ page }) => {
+    await page.goto('/routes/');
+    const names = await page.locator('[role="search"]').evaluateAll((nodes) => nodes.map((node) => node.getAttribute('aria-label')));
+    expect(names).toEqual(['Site search', 'Search routes']);
+  });
+
+  test('only the count is announced while typing, and the list redraws once typing pauses', async ({ page }) => {
+    await page.goto('/routes/');
+    await expect(page.locator('.route-card').first()).toBeVisible();
+    expect(await page.locator('.catalogue-results[aria-live], .catalogue-results [aria-live]').count()).toBe(0);
+    await expect(page.locator('#catalogue-count')).toHaveAttribute('role', 'status');
+    await page.evaluate(() => {
+      window.__redraws = 0;
+      new MutationObserver((records) => { window.__redraws += records.length; }).observe(document.querySelector('#catalogue-grid'), { childList: true });
+    });
+    await page.locator('#catalogue-query').pressSequentially('hampi', { delay: 20 });
+    await expect(page.locator('.route-card')).toHaveCount(1);
+    await expect(page.locator('#catalogue-count')).toHaveText('1 route');
+    expect(await page.evaluate(() => window.__redraws)).toBeLessThanOrEqual(2);
+  });
+
+  test.describe('on a phone', () => {
+    test.use({ viewport: PHONE, isMobile: true, hasTouch: true });
+
+    test('the menu button keeps one name, says what it opens, and Escape shuts it', async ({ page }) => {
+      await page.goto('/about/');
+      const toggle = page.locator('.menu-toggle');
+      await expect(toggle).toHaveAttribute('aria-label', 'Menu');
+      await expect(toggle).toHaveAttribute('aria-controls', 'primary-nav');
+      await expect(page.locator('#primary-nav')).toBeHidden();
+      await toggle.click();
+      await expect(toggle).toHaveAttribute('aria-expanded', 'true');
+      await expect(toggle).toHaveAttribute('aria-label', 'Menu');
+      await expect(page.locator('#primary-nav')).toBeVisible();
+      await page.keyboard.press('Escape');
+      await expect(toggle).toHaveAttribute('aria-expanded', 'false');
+      await expect(page.locator('#primary-nav')).toBeHidden();
+      await expect(toggle).toBeFocused();
+      // And Escape with the menu shut does nothing to it.
+      await page.keyboard.press('Escape');
+      await expect(toggle).toHaveAttribute('aria-expanded', 'false');
+    });
+  });
+});
+
+/* ── Layout ───────────────────────────────────────────────────────── */
+
+test.describe('layout', () => {
+  test('no element reaches past the window on any kind of page, measured by its own edge', async ({ page }) => {
+    const paths = [...PAGE_TYPES.map((type) => type.path), '/no-such-place/'];
+    for (const width of [360, 390, 768]) {
+      await page.setViewportSize({ width, height: 900 });
+      for (const path of paths) {
+        await page.goto(path);
+        await expect(page.locator('h1')).toHaveCount(1);
+        // The shell clips overflow, so scrollWidth never shows it: ask each element where its edge is.
+        // Something inside a box that scrolls or clips on purpose (the map, a row of filters) is meant to.
+        const past = await page.evaluate(() => {
+          const limit = window.innerWidth + 0.5;
+          const clipped = (node) => {
+            for (let parent = node.parentElement; parent && parent !== document.body; parent = parent.parentElement) {
+              if (parent.classList.contains('site-shell')) return false;
+              if (getComputedStyle(parent).overflowX !== 'visible') return true;
+            }
+            return false;
+          };
+          return [...document.querySelectorAll('body *')].filter((node) => {
+            const box = node.getBoundingClientRect();
+            return box.width > 0 && box.height > 0 && box.right > limit && getComputedStyle(node).visibility !== 'hidden'
+              && !node.closest('.skip-link, .sr-only') && !clipped(node);
+          }).map((node) => `${node.tagName.toLowerCase()}.${String(node.className).split(' ')[0]} right=${Math.round(node.getBoundingClientRect().right)}`);
+        });
+        expect(past, `${path} at ${width} px`).toEqual([]);
+      }
+    }
+  });
+
+  for (const width of [1024, 1280, 1440, 1920]) {
+    test(`the route photograph's credit and place are not under the facts card at ${width} px`, async ({ page }) => {
+      await page.setViewportSize({ width, height: 1000 });
+      for (const path of ['/routes/hampi-heritage-trail/', '/routes/thanjavur-living-heritage/', '/routes/marina-beach-trail/']) {
+        await page.goto(path);
+        await expect(page.locator('.route-hero-media .photo-credit')).toBeVisible();
+        const covered = await page.evaluate(() => {
+          const box = (selector) => document.querySelector(selector).getBoundingClientRect();
+          const facts = box('.route-facts');
+          const meets = (a) => a.left < facts.right && a.right > facts.left && a.top < facts.bottom && a.bottom > facts.top;
+          const hero = box('.route-hero-media');
+          const inside = (a) => a.top >= hero.top && a.bottom <= hero.bottom && a.left >= hero.left && a.right <= hero.right;
+          return {
+            credit: meets(box('.route-hero-media .photo-credit')), chip: meets(box('.route-hero-place')),
+            creditInHero: inside(box('.route-hero-media .photo-credit')), chipInHero: inside(box('.route-hero-place')),
+          };
+        });
+        expect(covered, `${path} at ${width} px`).toEqual({ credit: false, chip: false, creditInHero: true, chipInHero: true });
+      }
+    });
+  }
+
+  for (const size of [{ width: 1440, height: 844 }, { width: 390, height: 844 }]) {
+    test(`the footer is at the bottom of the page, even a short one (${size.width} px)`, async ({ page }) => {
+      await page.setViewportSize(size);
+      await page.goto('/no-such-place/');
+      await expect(page.locator('h1')).toContainText('not');
+      const { footer, view, height } = await page.evaluate(() => ({
+        footer: document.querySelector('.site-footer').getBoundingClientRect().bottom + window.scrollY,
+        view: window.innerHeight,
+        height: document.documentElement.scrollHeight,
+      }));
+      expect(Math.round(footer), 'the footer ends where the page does, with no bare paper beneath it').toBe(height);
+      if (size.width > 1000) expect(height, 'and a page this short does not scroll').toBe(view);
+    });
+  }
+
+  test('the journal form is styled the same on a fresh load as after the studio has been visited', async ({ page }) => {
+    const styles = () => page.evaluate(() => {
+      const label = getComputedStyle(document.querySelector('.journal-form .field > span'));
+      const input = getComputedStyle(document.querySelector('.journal-form .field input'));
+      return { weight: label.fontWeight, size: label.fontSize, display: getComputedStyle(document.querySelector('.journal-form .field')).display, padding: input.paddingTop, radius: input.borderRadius };
+    });
+    await page.goto('/journey/');
+    await page.locator('[data-journey-tab="journal"]').click();
+    const fresh = await styles();
+    expect(fresh.weight).toBe('600');
+    expect(fresh.display).toBe('grid');
+    await page.goto('/creators/');
+    await page.locator('#nav-journey').click();
+    await expect(page.locator('h1')).toContainText('My Journey');
+    await page.locator('[data-journey-tab="journal"]').click();
+    expect(await styles()).toEqual(fresh);
+  });
+
+  test('the note over the journey photograph reads against even a white sky', async ({ page }) => {
+    await page.goto('/journey/');
+    const { alpha, contrast } = await page.locator('.journey-hero-note').evaluate((node) => {
+      const style = getComputedStyle(node);
+      const [r, g, b, a = 1] = style.backgroundColor.match(/[\d.]+/g).map(Number);
+      const text = style.color.match(/[\d.]+/g).map(Number);
+      const light = (c) => { const v = c / 255; return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4; };
+      const luminance = (rgb) => 0.2126 * light(rgb[0]) + 0.7152 * light(rgb[1]) + 0.0722 * light(rgb[2]);
+      // The lightest ground there could be under it is white.
+      const ground = [r, g, b].map((c) => 255 * (1 - a) + c * a);
+      const [high, low] = [luminance(text), luminance(ground)].sort((x, y) => y - x);
+      return { alpha: a, contrast: (high + 0.05) / (low + 0.05) };
+    });
+    expect(alpha).toBeGreaterThan(0.65);
+    expect(contrast).toBeGreaterThanOrEqual(4.5);
+  });
+});
+
+/* ── Touch targets on a phone ─────────────────────────────────────── */
+
+test.describe('touch targets on a phone', () => {
+  test.use({ viewport: PHONE, isMobile: true, hasTouch: true });
+  test.beforeEach(async ({ page }) => { await page.addInitScript(withSpeech); });
+
+  /** Every shown element matching one of the selectors that is under 44 px either way. */
+  const small = (page, selectors) => page.evaluate((list) => list.flatMap((selector) => [...document.querySelectorAll(selector)]
+    .filter((node) => node.offsetParent !== null || getComputedStyle(node).position === 'fixed')
+    .map((node) => ({ selector, box: node.getBoundingClientRect() }))
+    .filter(({ box }) => box.width > 0 && (box.width < 43.5 || box.height < 43.5))
+    .map(({ selector: name, box }) => `${name} ${Math.round(box.width)}x${Math.round(box.height)}`)), selectors);
+
+  test('on a route page', async ({ page }) => {
+    await page.goto('/routes/hampi-heritage-trail/');
+    await page.locator('.stop-play').click();
+    expect(await small(page, [
+      '.menu-toggle', '.site-footer nav a', '.site-footer .footer-brand', '.breadcrumb a', '.route-tabs a', '.stop-item', '.stop-item-play',
+      '.stop-tabs button', '.stop-related button', '.map-control', '.route-bar-actions .button', '.route-card',
+      '.listen-skip', '.listen-play', '.listen-close',
+    ])).toEqual([]);
+  });
+
+  test('on the catalogue, a story, the journey and the studio', async ({ page }) => {
+    await page.goto('/routes/');
+    expect(await small(page, ['.filter-chips button', '.catalogue-filters select', '.catalogue-filters .filter-check', '.route-card', '.site-footer nav a'])).toEqual([]);
+    await page.goto('/stories/stone-chariot-of-hampi/');
+    expect(await small(page, ['.story-actions button', '.story-actions a', '.story-toc a', '.breadcrumb a', '.story-route-cta'])).toEqual([]);
+    await page.goto('/journey/');
+    expect(await small(page, ['.journey-tabs button', '.breadcrumb a', '.button-sm'])).toEqual([]);
+    await page.goto('/creators/');
+    expect(await small(page, ['.studio-nav button', '.studio-stop-list button', '.studio-actions .button', '.button-sm'])).toEqual([]);
+  });
+});
+
+/* ── What the browser's storage holds is not trusted ──────────────── */
+
+test.describe('storage of the wrong shape', () => {
+  const cases = [
+    ['naarad.journey.v1', '{"saved":"x"}'],
+    ['naarad.journey.v1', '{"journal":null,"walks":5,"listened":[1]}'],
+    ['naarad.journey.v1', 'null'],
+    ['naarad.studio.v1', 'null'],
+    ['naarad.studio.v1', '{"drafts":"x","currentId":4}'],
+    ['naarad.studio.v1', '{"drafts":[null,{"id":"d1","targetLanguages":"en","stopOrder":"x"}],"currentId":"d1"}'],
+  ];
+  for (const [key, value] of cases) {
+    test(`${key} = ${value} does not stop a page being drawn`, async ({ page }) => {
+      await page.addInitScript(([name, text]) => localStorage.setItem(name, text), [key, value]);
+      await noPageErrors(page, async () => {
+        for (const path of ['/routes/hampi-heritage-trail/', '/journey/', '/creators/']) {
+          await page.goto(path, { waitUntil: 'networkidle' });
+          await expect(page.locator('h1')).toHaveCount(1);
+          await expect(page.locator('.load-error')).toHaveCount(0);
+        }
+        await page.locator('#nav-journey').click();
+        await expect(page.locator('.journey-hero h1')).toBeVisible();
+        await page.locator('#nav-creators').click();
+        await expect(page.locator('.studio-steps li')).toHaveCount(5);
+      });
     });
   }
 });

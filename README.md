@@ -87,6 +87,12 @@ Navigation never leaves a link dead: a click draws the page in place, and when
 its view or data cannot be fetched the browser loads the address itself. A link
 to the page you are on adds no history entry, and an in-page `#anchor` only
 scrolls (it fires `popstate`, which `main.js` ignores when just the hash changed).
+Only the latest navigation draws: a slower earlier one (a first-visit stylesheet
+on a poor connection) is dropped when it arrives, so the page, its head and the
+address never disagree. A page drawn in place takes keyboard focus on its `h1`.
+Each history entry keeps how far it was scrolled in `history.state`, and
+`main.js` turns the browser's own scroll restoring off and does it, because the
+browser's runs after a page is drawn in place and undoes it.
 
 ## Pre-rendered pages, structured data and share cards
 
@@ -339,18 +345,23 @@ failed:
    skips the comparison with the commit);
 2. `node --test tests/*.test.mjs`: unit tests with no dependencies (Node 22 or
    later): the address scheme, the sitemap dates, the service worker run in a
-   sandbox, the loaders, what each page claims about itself, the practical-facts
-   linter on fixtures and on the committed files, and the build failing safely
-   (those run the real build in a copy of the site, so they need Chromium like
-   the build does);
+   sandbox, the loaders, what each page claims about itself, the accessibility
+   rules of the markup the views draw, the device-local stores given storage of
+   the wrong shape, the practical-facts linter on fixtures and on the committed
+   files, and the build failing safely (those run the real build in a copy of
+   the site, so they need Chromium like the build does);
 3. `node scripts/check-practical.mjs`: the sourced visitor facts in
    `content/practical` (below). Any error fails the step; so does a `checked`
    date more than 180 days old. Warnings are allowed;
 4. the Playwright checks in `e2e`, which cover both compositions, the clean
    addresses, canonicals, the pre-rendered HTML and its structured data, the
-   sitemap, what happens when a fetch fails, history and anchors, layout shift
-   at tablet widths, and the service worker. They need `cd e2e && npm install`
-   once, and the generated pages to be current (`verify.sh` builds first).
+   sitemap, what happens when a fetch fails, history, scroll and anchors, layout
+   shift at tablet widths, nothing wider than the window (each element's own
+   edge, since the shell clips what scrollWidth would show), keyboard use and
+   focus (the route's section links, the stop rail, the listening bar, re-draws),
+   axe rules on the markup, touch targets on a phone, and the service worker.
+   They need `cd e2e && npm install` once, and the generated pages to be current
+   (`verify.sh` builds first).
 
 ### The service worker
 

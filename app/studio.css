@@ -51,13 +51,6 @@
 .studio-drafts { margin: 22px clamp(20px, 2.4vw, 42px) 0; }
 
 .studio-picker-controls { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 16px; }
-.field { display: grid; gap: 6px; min-width: 0; }
-.field > span { font-size: 14px; font-weight: 600; color: var(--ink-soft); }
-.field select, .field input[type='text'], .field textarea {
-  width: 100%; padding: 10px 12px; border: 1px solid var(--line-strong); border-radius: 8px;
-  background: var(--paper); font-size: 16px; color: var(--ink);
-}
-.field textarea { resize: vertical; line-height: 1.6; font-family: var(--sans); }
 .studio-picker-controls .field { flex: 1 1 180px; }
 
 .studio-picker-body { display: grid; grid-template-columns: minmax(0, .85fr) minmax(0, 1.15fr); gap: 16px; }
@@ -125,16 +118,18 @@
 .status-pill.is-submitted::before { background: var(--orange); }
 
 /* ── Tablet and phone ──────────────────────────────────────────── */
+/* minmax(0, 1fr), not 1fr: a bare 1fr track will not shrink below its widest
+   content (the selects and the link row), and /creators/ ran off a phone's edge. */
 @media (max-width: 1240px) {
-  .studio-grid { grid-template-columns: 1fr; }
-  .studio-hero { grid-template-columns: 1fr; }
+  .studio-grid { grid-template-columns: minmax(0, 1fr); }
+  .studio-hero { grid-template-columns: minmax(0, 1fr); }
   .studio-hero-copy { order: 2; padding: 26px 20px 30px; }
   .studio-hero-media { order: 1; min-height: 240px; }
   .studio-hero-media .photo { position: relative; }
   .studio-hero-media .photo.torn-left { -webkit-mask-image: none; mask-image: none; }
 }
 @media (max-width: 1023px) {
-  .studio { grid-template-columns: 1fr; }
+  .studio { grid-template-columns: minmax(0, 1fr); }
   .studio-nav {
     position: static; flex-direction: row; align-items: center; gap: 4px; min-height: 0;
     padding: 10px 16px; overflow-x: auto; border-right: 0; border-bottom: 1px solid var(--line);
@@ -144,14 +139,17 @@
   .studio-nav button { white-space: nowrap; }
 }
 @media (max-width: 639px) {
-  .studio-picker-body { grid-template-columns: 1fr; }
+  .studio-picker-body { grid-template-columns: minmax(0, 1fr); }
+  .studio-nav button { min-height: 44px; }
+  .studio-stop-list button { min-height: 44px; }
+  .studio-table .icon-button { width: 44px; height: 44px; }
   .studio-grid, .studio-drafts { padding-inline: 14px; margin-inline: 14px; }
   .studio-grid { padding-inline: 0; margin-inline: 14px; }
   .studio-steps li { min-width: 76px; }
   .studio-actions .button { flex: 1; }
   .studio-actions .button:last-child { margin-left: 0; }
   .studio-table thead { display: none; }
-  .studio-table tr { display: grid; grid-template-columns: 1fr auto; gap: 4px; padding: 12px 0; border-bottom: 1px solid var(--line); }
+  .studio-table tr { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px; padding: 12px 0; border-bottom: 1px solid var(--line); }
   .studio-table td { padding: 0; border: 0; }
   .studio-table td:first-child { display: none; }
   .studio-table td:nth-child(2) { font-weight: 600; font-size: 15px; }

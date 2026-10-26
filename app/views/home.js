@@ -157,8 +157,8 @@ function experienceSection(routes) {
       <p>Stories, photography and interactive routes in one piece, so reading about a place and walking it are the same experience.</p>
       <a class="button button-sm" href="${routePath('hampi-heritage-trail')}" data-route="hampi-heritage-trail">Take a Look Inside ${icon('arrow')}</a>
     </div>
-    <div class="experience-strip" role="list">
-      ${strip.map((route, index) => `<article class="magazine-page" role="listitem" style="--index:${index}">
+    <div class="experience-strip">
+      ${strip.map((route, index) => `<article class="magazine-page" style="--index:${index}">
         ${picture(route.media.photo, { sizes: '230px', alt: '', ratio: '3 / 4' })}
         <div class="magazine-page-copy">
           <span class="magazine-index">0${index + 1}</span>

@@ -75,9 +75,9 @@ export async function render(context = {}) {
       <div>
         <p class="eyebrow eyebrow-mark">The Naarad atlas · ${routes.length} routes</p>
         <h1 class="display">Go where<br>stories live.</h1>
-        <p class="lede">Search places and browse published routes across India. ${withStops} ${withStories === 1 ? 'route has' : 'routes have'} ordered stops with stories; the rest carry their route facts while stops are written.</p>
+        <p class="lede">Search places and browse published routes across India. ${withStops} ${withStops === 1 ? 'route has' : 'routes have'} ordered stops with stories; the rest carry their route facts while stops are written.</p>
       </div>
-      <form class="catalogue-search" role="search" onsubmit="return false">
+      <form class="catalogue-search" role="search" aria-label="Search routes" onsubmit="return false">
         <label class="sr-only" for="catalogue-query">Search routes and places</label>
         ${icon('search')}
         <input id="catalogue-query" type="search" placeholder="Search a place, route or theme" autocomplete="off" value="${escapeHtml(query)}">
@@ -111,11 +111,11 @@ export async function render(context = {}) {
         <p class="data-note">Route lines are shown only where a track or a published stop sequence exists.</p>
       </aside>
 
-      <section class="catalogue-results" aria-live="polite">
+      <section class="catalogue-results">
         <div class="section-head">
           <div>
             <p class="eyebrow eyebrow-mark">Curated and community routes</p>
-            <h2 id="catalogue-count" class="section-title">${shown.length} ${shown.length === 1 ? 'route' : 'routes'}</h2>
+            <h2 class="section-title"><span id="catalogue-count" role="status">${shown.length} ${shown.length === 1 ? 'route' : 'routes'}</span></h2>
           </div>
         </div>
         <div id="catalogue-grid" class="route-card-grid">${grid(shown)}</div>
