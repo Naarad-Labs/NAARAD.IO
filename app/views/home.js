@@ -38,6 +38,7 @@ export function routeCard(route, options = {}) {
   const { compact = false } = options;
   const distance = Data.formatDistance(route.distanceM);
   const duration = Data.formatDuration(route.durationMin);
+  const unmeasured = Data.isUnmeasured(route, route.distanceM) && Data.isUnmeasured(route, route.durationMin);
   const terrain = Data.terrainLabel(route);
   const preview = routePreview(route, { width: 150, height: 210, numbered: route.hasStops });
   const spark = terrainSparkline(route);
@@ -55,6 +56,7 @@ export function routeCard(route, options = {}) {
       <span class="route-card-metrics">
         ${distance ? `<span>${icon('walk')}${escapeHtml(distance)}</span>` : ''}
         ${duration ? `<span>${icon('clock')}${escapeHtml(duration)}</span>` : ''}
+        ${unmeasured ? `<span class="is-unmeasured">${icon('walk')}${Data.NOT_MEASURED}</span>` : ''}
         ${route.stopCount ? `<span>${icon('pin')}${route.stopCount} stops</span>` : ''}
       </span>
       ${route.themes?.length ? `<span class="chip-list">${route.themes.slice(0, 3).map((theme) => `<span class="chip">${escapeHtml(theme)}</span>`).join('')}</span>` : ''}

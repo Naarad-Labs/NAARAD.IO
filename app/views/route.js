@@ -29,11 +29,18 @@ const LANGUAGE_NAMES = {
   en: 'English', hi: 'हिंदी', ta: 'தமிழ்', te: 'తెలుగు', kn: 'ಕನ್ನಡ', ml: 'മലയാളം', mr: 'मराठी', bn: 'বাংলা',
 };
 
+/* A measurement a catalogue row does not have yet is said to be missing, in the
+   place it would have been, rather than left out as if the route had none. */
+function measured(name, route, raw, shown, label) {
+  if (Data.isUnmeasured(route, raw)) return { icon: name, value: Data.NOT_MEASURED, label, muted: true };
+  return { icon: name, value: shown, label: '' };
+}
+
 function factRow(route) {
   const facts = [
     { icon: 'pin', value: route.location || 'India', label: '' },
-    { icon: 'clock', value: Data.formatDuration(route.durationMin), label: '' },
-    { icon: 'walk', value: Data.formatDistance(route.distanceM), label: '' },
+    measured('clock', route, route.durationMin, Data.formatDuration(route.durationMin), 'Duration'),
+    measured('walk', route, route.distanceM, Data.formatDistance(route.distanceM), 'Distance'),
     { icon: 'flag', value: route.stopCount ? `${route.stopCount} stops` : null, label: '' },
     { icon: 'gauge', value: Data.formatDifficulty(route.difficulty), label: 'Difficulty' },
     { icon: 'terrain', value: Data.terrainLabel(route), label: 'Terrain' },
@@ -104,7 +111,7 @@ function stopPanel(route, stop) {
     return `<section class="stop-panel" id="section-stories" aria-live="polite">
       <div class="empty-state">${icon('sparkle')}<div>
         <strong>Stops are not published for this route</strong>
-        <p>This route is in the catalogue with its distance and duration, but no one has published its ordered stops yet. Routes with stops show each one here, with its story.</p>
+        <p>This route is in the catalogue, but no one has published its ordered stops yet. Routes with stops show each one here, with its story.</p>
       </div></div>
     </section>`;
   }
@@ -204,18 +211,19 @@ function mapPanel(route) {
 
 function glance(route) {
   const profile = elevationProfile(route, { width: 760, height: 168 });
+  const gap = (value) => (Data.isUnmeasured(route, value) ? Data.NOT_MEASURED : null);
   return `<section class="route-glance" id="section-terrain">
     <div class="glance-facts">
       <h2 class="eyebrow eyebrow-mark">Route at a glance</h2>
       <div class="metric-row">
-        ${[['walk', Data.formatDistance(route.distanceM), 'Distance'],
-    ['clock', Data.formatDuration(route.durationMin), 'Duration'],
+        ${[['walk', Data.formatDistance(route.distanceM) || gap(route.distanceM), 'Distance'],
+    ['clock', Data.formatDuration(route.durationMin) || gap(route.durationMin), 'Duration'],
     ['pin', route.stopCount ? `${route.stopCount}` : null, 'Stops'],
     ['gauge', Data.formatDifficulty(route.difficulty), 'Difficulty'],
     ['terrain', Data.terrainLabel(route), 'Terrain'],
-    ['flag', route.ascentM != null ? `${route.ascentM} m` : null, 'Ascent']]
+    ['flag', route.ascentM != null ? `${route.ascentM} m` : gap(route.ascentM), 'Ascent']]
     .filter(([, value]) => value)
-    .map(([name, value, label]) => `<div class="metric">${icon(name)}<span class="metric-text"><b>${escapeHtml(value)}</b><span>${label}</span></span></div>`).join('')}
+    .map(([name, value, label]) => `<div class="metric${value === Data.NOT_MEASURED ? ' is-muted' : ''}">${icon(name)}<span class="metric-text"><b>${escapeHtml(value)}</b><span>${label}</span></span></div>`).join('')}
       </div>
       ${route.surface ? `<p class="data-note">${escapeHtml(route.surface)}.</p>` : ''}
     </div>
@@ -289,8 +297,9 @@ export const stylesheet = '/app/route.css';
 const isStub = (route) => !route.hasStops;
 
 /**
- * The distance a snippet or share card may state. A catalogue row's distance
- * is a stand-in from discover/seed-tours.json, not a measurement; a recorded
+ * The distance a snippet or share card may state. A catalogue row has none
+ * measured (discover/seed-tours.json carries no distance for it), and a number
+ * added there that nobody measured must not reach a snippet; a recorded
  * track's is its GPS length.
  */
 const statedDistance = (route) => (route.source === 'catalogue' ? null : Data.formatDistance(route.distanceM));

@@ -21,6 +21,9 @@ const Icons = await import('../app/icons.js');
 await Media.loadMedia();
 const routes = await Data.loadRoutes();
 
+/** The page without its "compare routes" cards, which are other routes' (catalogue rows among them). */
+const withoutRelated = (html) => html.replace(/<section class="route-related">[\s\S]*$/, '');
+
 const ids = (html) => [...html.matchAll(/\sid="([^"]+)"/g)].map((match) => match[1]);
 
 test('a route\'s section links are navigation to targets that exist, not a tab widget', async () => {
@@ -67,6 +70,42 @@ test('the stop rail has two sibling buttons per stop, and no control inside a co
     }
     assert.ok(row.indexOf('</button>') < row.lastIndexOf('<button'), `stop ${index + 1}: the buttons are siblings`);
   }
+});
+
+test('a catalogue row says "Not yet measured" where its distance, duration and ascent would be, and states no number', async () => {
+  const rows = routes.filter((route) => route.source === 'catalogue');
+  assert.equal(rows.length, 9);
+  const text = (html) => html.replace(/<svg[\s\S]*?<\/svg>/g, '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ');
+  for (const route of rows) {
+    const card = HomeView.routeCard(route);
+    assert.match(card, /class="is-unmeasured"[^>]*>(<svg[\s\S]*?<\/svg>)?Not yet measured</, `${route.slug}: its card`);
+    assert.doesNotMatch(text(card), /\d\s?(km|m|min|hrs?)\b/, `${route.slug}: its card states a figure`);
+
+    const page = await RouteView.render({ route });
+    const facts = page.match(/<div class="route-facts">([\s\S]*?)\n  <\/div>\s*<div class="route-bar">/)[1];
+    assert.equal((facts.match(/<b>Not yet measured<\/b>/g) || []).length, 2, `${route.slug}: distance and duration, in the facts`);
+    assert.match(facts, /<span>Duration<\/span>/);
+    assert.match(facts, /<span>Distance<\/span>/);
+    const glance = page.match(/<section class="route-glance"[\s\S]*?<\/section>/)[0];
+    assert.equal((glance.match(/<b>Not yet measured<\/b>/g) || []).length, 3, `${route.slug}: distance, duration and ascent, at a glance`);
+    assert.match(glance, /No elevation profile yet/);
+    assert.doesNotMatch(text(withoutRelated(page)), /\b\d+(\.\d)?\s?(km|min|hrs?)\b|\b\d+\s?m\b/, `${route.slug}: the page states a figure`);
+    assert.doesNotMatch(page, /This route is in the catalogue with its distance/);
+  }
+});
+
+test('an editorial route and a recorded track keep their measured figures, and say nothing about being unmeasured', async () => {
+  const hampi = routes.find((route) => route.slug === 'hampi-heritage-trail');
+  const marina = routes.find((route) => route.slug === 'marina-beach-trail');
+  for (const route of [hampi, marina]) {
+    assert.doesNotMatch(HomeView.routeCard(route), /Not yet measured/, route.slug);
+    assert.doesNotMatch(withoutRelated(await RouteView.render({ route })), /Not yet measured/, route.slug);
+  }
+  assert.match(HomeView.routeCard(hampi), /5\.2 km/);
+  const recorded = Data.formatDistance(marina.distanceM);
+  assert.match(recorded, /^15 km$/);
+  assert.match(HomeView.routeCard(marina), new RegExp(`<span>[^<]*(<svg[\\s\\S]*?</svg>)?${recorded}</span>`));
+  assert.match(await RouteView.render({ route: marina }), new RegExp(`<b>${recorded}</b>`));
 });
 
 test('the pause mark is drawn as shapes, so it is solid where the player fills icons', () => {

@@ -30,9 +30,9 @@
 .route-facts .metric { padding: 15px 18px; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); }
 .route-facts .metric:nth-child(4n) { border-right: 0; }
 .route-facts .metric:nth-child(n+5) { border-bottom: 0; }
-.route-facts .metric.is-muted { color: var(--ink-muted); }
-.route-facts .metric.is-muted .ico { color: var(--ink-muted); }
-.route-facts .metric.is-muted b { color: var(--ink-soft); }
+.metric.is-muted { color: var(--ink-muted); }
+.metric.is-muted .ico { color: var(--ink-muted); }
+.metric.is-muted b { color: var(--ink-soft); font-weight: 600; }
 
 /* ── Tab bar ───────────────────────────────────────────────────── */
 .route-bar {

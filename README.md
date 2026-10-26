@@ -148,8 +148,8 @@ Only a route with published stops (today Hampi, Thanjavur and Auroville) has
 content of its own. The other routes are catalogue rows and recorded GPS tracks
 with a headline fact or two. Their pages stay reachable and linked, but they are
 `noindex,follow`, are left out of the sitemap, and carry no `TouristTrip` data:
-a stand-in distance in `discover/seed-tours.json` is not a trip to describe, and
-a snippet or share card never states it. A route leaves this state on its own
+a catalogue row is a place and a theme, not a trip to describe, and a snippet or
+share card never states a distance for it. A route leaves this state on its own
 the day it gets stops (`isStub` in `app/views/route.js`).
 
 When a visitor opens a pre-rendered page, `#app-content` carries
@@ -211,9 +211,13 @@ Nothing on the site fills a gap with a plausible-looking number, date or claim.
   data and the share tags together. Nothing is back-dated to look established.
   The sitemap's `lastmod` is the day the page's content changed (above).
 - **Catalogue rows.** `discover/seed-tours.json` is a stand-in for a tours table
-  that does not exist yet. Its distances, durations and ascents are not
-  measurements, it carries no ratings (the old demo ratings are gone), and the
-  search snippets, share cards and structured data never state them. Recorded
+  that does not exist yet, kept by hand (the script that once generated it read a
+  route list that is gone). The nine routes that come only from it have a place,
+  a sport and a theme. The distances, durations and ascents they once carried were
+  demo figures, not measurements, so they are `null`, there are no ratings, and
+  the cards and pages say "Not yet measured" where a figure would be (the same
+  honest gap as "Terrain not surveyed" and "No elevation profile yet"). Once a
+  row is measured, its figure goes into the file and the pages show it. Recorded
   tracks have their real GPS length.
 - **Descriptions** say what the page has: the studio keeps drafts in the
   browser and publishes nothing; the catalogue says how many routes have stops;

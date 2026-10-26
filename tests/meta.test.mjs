@@ -47,12 +47,16 @@ test('every route without stops is noindex,follow and describes no trip', () => 
   }
 });
 
-test('a catalogue row states no distance of its own, a recorded track states the recorded one', () => {
+test('a catalogue row has no distance, duration or ascent, a recorded track states the recorded one', () => {
   const rows = routes.filter((route) => route.source === 'catalogue');
   const tracks = routes.filter((route) => route.source === 'track');
-  assert.ok(rows.length && tracks.length);
+  assert.equal(rows.length, 9);
+  assert.ok(tracks.length);
   for (const route of rows) {
-    assert.ok(route.distanceM != null, 'the row has a stand-in distance');
+    // The demo figures the rows once carried were never measured; nothing stands in for them.
+    assert.equal(route.distanceM, null, route.slug);
+    assert.equal(route.durationMin, null, route.slug);
+    assert.equal(route.ascentM, null, route.slug);
     const meta = RouteView.meta({ route });
     assert.doesNotMatch(meta.description, /\d\s?km|\d\s?m long/, route.slug);
     assert.deepEqual(meta.card.facts, [], route.slug);

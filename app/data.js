@@ -1,14 +1,17 @@
 /* The route model.
  *
- * Two sources feed the catalogue:
+ * Three sources feed the catalogue:
  *   content/routes.json      editorial routes with stops, geometry and a real
  *                            elevation profile (scripts/build-routes.py)
- *   discover/seed-tours.json the inherited catalogue rows, which carry route
- *                            facts but no stops, geometry or elevation
+ *   discover/seed-tours.json the inherited catalogue rows: a place, a sport, a
+ *                            theme. No stops, line, elevation or measured
+ *                            distance, duration or ascent
  *   routes/*.geojson         recorded tracks for some Chennai routes
  *
  * A field that no source published stays null. Nothing here fills a gap with
- * a plausible-looking number.
+ * a plausible-looking number: a catalogue row with no measured distance says
+ * so (NOT_MEASURED) wherever a distance would be, and a route with no heights
+ * says it has no elevation profile.
  */
 
 const ROUTES_URL = '/content/routes.json';
@@ -19,6 +22,12 @@ const THEME_LABELS = {
   temples: 'Temples', history: 'History', nature: 'Nature', architecture: 'Architecture',
   culture: 'Living Culture', food: 'Food', art: 'Art & Music', community: 'Community',
 };
+
+/** What a page says where a catalogue row has no measurement yet. */
+export const NOT_MEASURED = 'Not yet measured';
+
+/** Whether a measurement is missing from a catalogue row, as opposed to a route that simply has none to show. */
+export const isUnmeasured = (route, value) => route.source === 'catalogue' && value == null;
 
 let loading = null;
 

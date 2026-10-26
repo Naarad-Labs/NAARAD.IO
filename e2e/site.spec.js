@@ -586,6 +586,63 @@ test.describe('routes without stops', () => {
   });
 });
 
+/* ── A catalogue row has not been measured, and says so ───────────── */
+
+test.describe('routes nobody has measured', () => {
+  const ROWS = {
+    'mysore-palace-heritage-walk': 'Mysore Palace Heritage Walk', 'varanasi-ghats-dawn-walk': 'Varanasi Ghats Dawn Walk',
+    'jaipur-pink-city-cycling': 'Jaipur Pink City Cycling', 'konark-sun-temple-circuit': 'Konark Sun Temple Circuit',
+    'mahabalipuram-shore-temple': 'Mahabalipuram Shore Temple', 'khajuraho-temple-corridor': 'Khajuraho Temple Corridor',
+    'pondicherry-french-quarter': 'Pondicherry French Quarter', 'coorg-plantation-hike': 'Coorg Plantation Hike',
+    'udaipur-lake-palace-circuit': 'Udaipur Lake Palace Circuit',
+  };
+  const FIGURE = /\d+(\.\d+)?\s?(km|m|min|hrs?)\b|\d–\d hrs/;
+
+  test('the catalogue cards say "Not yet measured" for a row, and keep the length of a recorded track', async ({ page }) => {
+    await page.goto('/routes/');
+    await expect(page.locator('.route-card').first()).toBeVisible();
+    for (const name of Object.values(ROWS)) {
+      const card = page.locator('.route-card', { hasText: name });
+      await expect(card.locator('.route-card-metrics'), name).toHaveText('Not yet measured');
+      await expect(card, name).toContainText('Terrain not surveyed');
+    }
+    const track = page.locator('.route-card', { hasText: 'Marina Beach Trail' }).locator('.route-card-metrics');
+    await expect(track).toContainText('15 km');
+    await expect(track).not.toContainText('Not yet measured');
+    await expect(page.locator('.route-card', { hasText: 'Hampi Heritage Trail' }).locator('.route-card-metrics')).toContainText('5.2 km');
+  });
+
+  test('a row\'s page says so in its facts and at a glance, in the HTML a crawler gets and in the page a visitor gets', async ({ page, request }) => {
+    for (const slug of Object.keys(ROWS)) {
+      const html = await (await request.get(`/routes/${slug}/`)).text();
+      const main = html.slice(html.indexOf('<main id="app-content"'), html.indexOf('<section class="route-related">'));
+      expect(main.match(/<b>Not yet measured<\/b>/g), `${slug}: the prerendered page`).toHaveLength(5);
+      expect(main.replace(/<[^>]+>/g, ' '), `${slug}: the prerendered page`).not.toMatch(FIGURE);
+
+      await page.goto(`/routes/${slug}/`);
+      await expect(page.locator('.route-facts .is-muted', { hasText: 'Not yet measured' })).toHaveCount(2);
+      await expect(page.locator('.route-facts')).toContainText('Duration');
+      await expect(page.locator('.route-facts')).toContainText('Distance');
+      await expect(page.locator('.route-glance .is-muted', { hasText: 'Not yet measured' })).toHaveCount(3);
+      await expect(page.locator('.route-glance')).toContainText('No elevation profile yet');
+      const body = await page.locator('.route-hero, .route-facts, .route-glance, .stop-panel, .route-overview').allInnerTexts();
+      expect(body.join(' '), slug).not.toMatch(FIGURE);
+      await expect(page.locator('.stop-panel')).toContainText('Stops are not published');
+      await expect(page.locator('.stop-panel')).not.toContainText('with its distance and duration');
+    }
+  });
+
+  test('a saved card does not keep a figure the route never had', async ({ page }) => {
+    await page.addInitScript(() => localStorage.setItem('naarad.journey.v1', JSON.stringify({
+      saved: [{ slug: 'mysore-palace-heritage-walk', name: 'Mysore Palace Heritage Walk', location: 'Mysore, Karnataka', distanceM: 3100, durationMin: 60, savedAt: '2026-10-01T00:00:00Z' }],
+      walks: [{ slug: 'mysore-palace-heritage-walk', name: 'Mysore Palace Heritage Walk', location: 'Mysore, Karnataka', distanceM: 3100, completedAt: '2026-10-02T00:00:00Z' }],
+    })));
+    await page.goto('/journey/', { waitUntil: 'networkidle' });
+    await expect(page.locator('.journey-card').first()).toContainText('Mysore Palace Heritage Walk');
+    for (const card of await page.locator('.journey-card').all()) await expect(card).not.toContainText(/3\.1 km|1 hrs/);
+  });
+});
+
 /* ── Nothing is dated, described or promised without a source ─────── */
 
 test.describe('what the pages claim', () => {
