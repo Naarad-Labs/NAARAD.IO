@@ -135,6 +135,28 @@ distance sits on a TravelAction and its walking time stays on the page.
 4. Run `node scripts/build-site.mjs`. The page, its card and its sitemap entry
    follow from the registry; nothing else has to change.
 
+## Backend: accounts and Studio submissions (not live yet)
+
+`supabase/migrations/` holds the database for creator accounts and Studio
+submissions on Naarad's Supabase project: two tables with row level security, a
+guard trigger and an erasure function (`delete_my_account`). `app/backend.js` is
+the browser client (plain `fetch`, no library) and stays off while
+`app/config.js` is empty. Nothing loads it yet.
+
+- `npm test` in `supabase/` runs the migration on an in-process PostgreSQL
+  (PGlite) with Supabase's auth pieces stubbed: who can read, write, approve and
+  erase what. It does not run against the real project.
+- Secrets live in `.env.local` (ignored by git; copy `.env.example`). Only the
+  project URL and the anon key, which are public by design, go in
+  `app/config.js`. The database password and the service-role key never go
+  under `app/` or into the repository.
+- `node supabase/apply.mjs --dry-run`, then `node supabase/apply.mjs`, applies
+  pending migrations in transactions. It stops without changing anything if a
+  table it would create (such as `profiles`) already exists.
+- Accounts are for people aged 18 or over for now; sign-up records that in the
+  account. Whether approved, published work is erased with its author or kept
+  anonymised is a decision for the founder: the migration erases it.
+
 ## Offline route bundles (flag, off by default)
 
 `app/offline-bundles.js` keeps one route on the visitor's device: its page, the

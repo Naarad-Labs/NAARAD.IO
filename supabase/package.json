@@ -1,0 +1,15 @@
+{
+  "name": "naarad-supabase-tests",
+  "private": true,
+  "description": "Runs the migrations against an in-process PostgreSQL (PGlite) with Supabase's auth pieces stubbed.",
+  "type": "module",
+  "scripts": {
+    "test": "node --test \"test/*.test.mjs\""
+  },
+  "devDependencies": {
+    "@electric-sql/pglite": "^0.3.0"
+  },
+  "dependencies": {
+    "pg": "^8.23.1"
+  }
+}
