@@ -17,6 +17,7 @@ import { routePreview } from '../previews.js';
 import * as Drafts from '../studio-store.js';
 import { routePath, sectionPath } from '../urls.js';
 import * as Seo from '../seo.js';
+import * as Account from '../account.js';
 
 const STEPS = [
   { id: 'upload', label: 'Upload' },
@@ -214,6 +215,7 @@ export async function render() {
   return `<div class="studio">
     ${sidebar()}
     <div class="studio-main">
+      ${Account.panel()}
       <header class="studio-hero">
         <div class="studio-hero-copy">
           <p class="eyebrow eyebrow-mark">Creator Studio</p>

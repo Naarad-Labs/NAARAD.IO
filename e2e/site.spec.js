@@ -611,3 +611,139 @@ test.describe('offline route bundles (behind a flag)', () => {
     });
   });
 });
+
+test.describe('accounts: the sign-in panel (behind a flag)', () => {
+  const FLAG = 'naarad.flag.accounts';
+  const SUPABASE = /^https:\/\/efpkaptocxhevywfqhyt\.supabase\.co\//;
+  const CORS = { 'access-control-allow-origin': '*', 'access-control-allow-headers': '*', 'access-control-allow-methods': '*' };
+
+  /* A stand-in for Supabase: no real account is ever made. Records every request. */
+  async function mockSupabase(page, { signupSession = false } = {}) {
+    const seen = [];
+    await page.route(SUPABASE, async (route) => {
+      const request = route.request();
+      if (request.method() === 'OPTIONS') return route.fulfill({ status: 204, headers: CORS });
+      const url = new URL(request.url());
+      const body = request.postDataJSON ? request.postDataJSON() : null;
+      seen.push({ method: request.method(), url: request.url(), headers: request.headers(), body });
+      const json = (status, data) => route.fulfill({ status, headers: { ...CORS, 'content-type': 'application/json' }, body: JSON.stringify(data) });
+      const user = { id: 'u-1', email: 'person@example.com' };
+      if (url.pathname === '/auth/v1/signup') return json(200, signupSession ? { access_token: 'at', refresh_token: 'rt', expires_in: 3600, user } : user);
+      if (url.pathname === '/auth/v1/token') {
+        if (body.password === 'wrong-password') return json(400, { error_description: 'Invalid login credentials' });
+        if (body.password === 'xss-password') return json(400, { error_description: '<img src=x onerror="window.__xss=1">' });
+        return json(200, { access_token: 'at', refresh_token: 'rt', expires_in: 3600, user });
+      }
+      if (url.pathname === '/auth/v1/logout') return route.fulfill({ status: 204, headers: CORS });
+      return json(404, { message: 'not mocked' });
+    });
+    return seen;
+  }
+  const flagOn = (page) => page.addInitScript((key) => { try { localStorage.setItem(key, 'on'); } catch { /* ignore */ } }, FLAG);
+  const panel = (page) => page.locator('.account-panel');
+
+  test('flag off: no panel, and the pre-rendered Studio page has none either', async ({ page, request }) => {
+    await page.goto('/creators/');
+    await expect(page.locator('.studio')).toBeVisible();
+    await expect(panel(page)).toHaveCount(0);
+    expect(await (await request.get('/creators/')).text()).not.toContain('account-panel');
+  });
+
+  test('flag on: the panel shows a labelled sign-in form', async ({ page }) => {
+    await mockSupabase(page);
+    await flagOn(page);
+    await page.goto('/creators/');
+    await expect(panel(page)).toBeVisible();
+    await expect(page.getByLabel('Email')).toBeVisible();
+    await expect(page.getByLabel('Password')).toHaveAttribute('type', 'password');
+  });
+
+  test('sign-up needs the 18-or-older box and sends nothing without it', async ({ page }) => {
+    const seen = await mockSupabase(page);
+    await flagOn(page);
+    await page.goto('/creators/');
+    await page.getByRole('button', { name: 'Create an account' }).click();
+    await expect(panel(page)).toContainText('delete');
+    await page.getByLabel('Email').fill('person@example.com');
+    await page.getByLabel('Password').fill('long-enough-password');
+    await page.getByRole('button', { name: 'Create account' }).click();
+    await expect(page.locator('[data-account-error]')).toContainText('18 or over');
+    expect(seen.length).toBe(0);
+  });
+
+  test('sign-up with the box records it in the account, then asks the person to confirm their email', async ({ page }) => {
+    const seen = await mockSupabase(page);
+    await flagOn(page);
+    await page.goto('/creators/');
+    await page.getByRole('button', { name: 'Create an account' }).click();
+    await page.getByLabel('Email').fill('person@example.com');
+    await page.getByLabel('Password').fill('long-enough-password');
+    await page.getByLabel('I am 18 or older').check();
+    await page.getByRole('button', { name: 'Create account' }).click();
+    await expect(panel(page)).toContainText(/check your (inbox|email)/i);
+    const signup = seen.find((entry) => entry.url.endsWith('/auth/v1/signup'));
+    expect(signup.body.data).toEqual({ over_18: true });
+    expect(signup.body.email).toBe('person@example.com');
+    expect(signup.headers.apikey).toMatch(/^eyJ/);
+    expect(await page.evaluate(() => localStorage.getItem('naarad.auth.v1'))).toBeNull();
+  });
+
+  test('a wrong password is shown plainly and keeps no session', async ({ page }) => {
+    await mockSupabase(page);
+    await flagOn(page);
+    await page.goto('/creators/');
+    await page.getByLabel('Email').fill('person@example.com');
+    await page.getByLabel('Password').fill('wrong-password');
+    await page.getByRole('button', { name: 'Sign in' }).click();
+    await expect(page.locator('[data-account-error]')).toContainText('Invalid login credentials');
+    expect(await page.evaluate(() => localStorage.getItem('naarad.auth.v1'))).toBeNull();
+  });
+
+  test('signing in shows who, never keeps the password anywhere, and signing out clears the session', async ({ page }) => {
+    const seen = await mockSupabase(page);
+    await flagOn(page);
+    await page.goto('/creators/');
+    await page.getByLabel('Email').fill('person@example.com');
+    await page.getByLabel('Password').fill('correct-horse-battery');
+    await page.getByRole('button', { name: 'Sign in' }).click();
+    await expect(panel(page)).toContainText('Signed in as person@example.com');
+    await expect(page.getByLabel('Password')).toHaveCount(0);
+
+    const stored = await page.evaluate(() => JSON.stringify({ ...localStorage }));
+    expect(stored).toContain('naarad.auth.v1');
+    expect(stored).not.toContain('correct-horse-battery');
+    expect(await page.content()).not.toContain('correct-horse-battery');
+    expect(seen.every((entry) => !entry.url.includes('correct-horse-battery'))).toBe(true);
+
+    await page.reload();
+    await expect(panel(page)).toContainText('Signed in as person@example.com');
+    await page.getByRole('button', { name: /sign out/i }).click();
+    await expect(page.getByLabel('Password')).toBeVisible();
+    expect(await page.evaluate(() => localStorage.getItem('naarad.auth.v1'))).toBeNull();
+    expect(seen.some((entry) => entry.url.endsWith('/auth/v1/logout'))).toBe(true);
+  });
+
+  test('markup in a server error is shown as text and never runs', async ({ page }) => {
+    await mockSupabase(page);
+    await flagOn(page);
+    await page.goto('/creators/');
+    await page.getByLabel('Email').fill('person@example.com');
+    await page.getByLabel('Password').fill('xss-password');
+    await page.getByRole('button', { name: 'Sign in' }).click();
+    await expect(page.locator('[data-account-error]')).toContainText('<img src=x');
+    expect(await page.evaluate(() => window.__xss)).toBeUndefined();
+  });
+
+  test('on a phone the controls are large enough to touch and nothing overflows', async ({ page }) => {
+    await mockSupabase(page);
+    await flagOn(page);
+    await page.setViewportSize(PHONE);
+    await page.goto('/creators/');
+    await page.getByRole('button', { name: 'Create an account' }).click();
+    for (const target of [page.getByRole('button', { name: 'Create account' }), page.getByLabel('I am 18 or older'), page.getByLabel('Email')]) {
+      const box = await target.boundingBox();
+      expect(box.height, 'touch target height').toBeGreaterThanOrEqual(22);
+    }
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1)).toBe(true);
+  });
+});
