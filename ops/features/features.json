@@ -1,0 +1,483 @@
+[
+  {
+    "id": "F-001",
+    "name": "Creator accounts and Studio submissions",
+    "area": "accounts",
+    "summary": "Creators sign up, send route drafts for review and can delete their account. Database applied and tested; no screens yet.",
+    "status": "building",
+    "flag": null,
+    "origin": "built-under-override",
+    "gates": {
+      "G1": "override:D-0004",
+      "G2": "proposed:D-0005",
+      "G3": "not-checked",
+      "G4": "required"
+    },
+    "metric": null,
+    "spec": "ops/specs/F-001-creator-accounts.md",
+    "tests": [
+      "supabase/test/migrations.test.mjs",
+      "ops/test/backend.test.mjs"
+    ],
+    "decisions": [
+      "D-0004",
+      "D-0005",
+      "D-0006"
+    ],
+    "evidence": [],
+    "pr": [
+      13,
+      14
+    ],
+    "since": "2026-10-26"
+  },
+  {
+    "id": "F-002",
+    "name": "Offline route bundles",
+    "area": "offline",
+    "summary": "Keep one route on the device and open it with no network. Page, text, photos; no map tiles or audio.",
+    "status": "flagged",
+    "flag": "naarad.flag.offline-bundles",
+    "origin": "built-under-override",
+    "gates": {
+      "G1": "override:D-0004",
+      "G2": "required",
+      "G3": "not-checked",
+      "G4": "not-required"
+    },
+    "metric": null,
+    "spec": null,
+    "tests": [
+      "e2e/site.spec.js",
+      "ops/test/offline-bundles.test.mjs"
+    ],
+    "decisions": [
+      "D-0004"
+    ],
+    "evidence": [],
+    "pr": [
+      12
+    ],
+    "since": "2026-10-26"
+  },
+  {
+    "id": "F-010",
+    "name": "Home",
+    "area": "discover",
+    "summary": "Editorial hero, featured routes, voices and language bands.",
+    "status": "live",
+    "flag": null,
+    "origin": "pre-os",
+    "gates": {
+      "G1": "not-passed",
+      "G2": "not-required",
+      "G3": "not-checked",
+      "G4": "not-required"
+    },
+    "metric": null,
+    "spec": null,
+    "tests": [
+      "e2e/site.spec.js"
+    ],
+    "decisions": [],
+    "evidence": [],
+    "pr": [],
+    "since": "2026-10-13"
+  },
+  {
+    "id": "F-011",
+    "name": "Route catalogue and filters",
+    "area": "discover",
+    "summary": "Browse and filter routes without reloading; header search lands here.",
+    "status": "live",
+    "flag": null,
+    "origin": "pre-os",
+    "gates": {
+      "G1": "not-passed",
+      "G2": "not-required",
+      "G3": "not-checked",
+      "G4": "not-required"
+    },
+    "metric": null,
+    "spec": null,
+    "tests": [
+      "e2e/site.spec.js"
+    ],
+    "decisions": [],
+    "evidence": [],
+    "pr": [],
+    "since": "2026-10-13"
+  },
+  {
+    "id": "F-012",
+    "name": "Route page with map and numbered stops",
+    "area": "route",
+    "summary": "Facts, tabs, interactive map, stop stories, stop rail and terrain profile; phone leads with the map.",
+    "status": "live",
+    "flag": null,
+    "origin": "pre-os",
+    "gates": {
+      "G1": "not-passed",
+      "G2": "not-required",
+      "G3": "not-checked",
+      "G4": "not-required"
+    },
+    "metric": null,
+    "spec": null,
+    "tests": [
+      "e2e/site.spec.js"
+    ],
+    "decisions": [],
+    "evidence": [],
+    "pr": [],
+    "since": "2026-10-13"
+  },
+  {
+    "id": "F-013",
+    "name": "Stories",
+    "area": "story",
+    "summary": "Long-form stories with credited figures and links to their route.",
+    "status": "live",
+    "flag": null,
+    "origin": "pre-os",
+    "gates": {
+      "G1": "not-passed",
+      "G2": "not-required",
+      "G3": "not-checked",
+      "G4": "not-required"
+    },
+    "metric": null,
+    "spec": null,
+    "tests": [
+      "e2e/site.spec.js"
+    ],
+    "decisions": [],
+    "evidence": [],
+    "pr": [],
+    "since": "2026-10-13"
+  },
+  {
+    "id": "F-014",
+    "name": "My Journey (on this device)",
+    "area": "journey",
+    "summary": "Saved routes, walks, journal, badges; kept in this browser, no account.",
+    "status": "live",
+    "flag": null,
+    "origin": "pre-os",
+    "gates": {
+      "G1": "not-passed",
+      "G2": "not-required",
+      "G3": "not-checked",
+      "G4": "not-required"
+    },
+    "metric": null,
+    "spec": null,
+    "tests": [
+      "e2e/site.spec.js"
+    ],
+    "decisions": [],
+    "evidence": [],
+    "pr": [],
+    "since": "2026-10-13"
+  },
+  {
+    "id": "F-015",
+    "name": "Creator Studio drafts (on this device)",
+    "area": "studio",
+    "summary": "Five-step route builder; drafts stay in this browser, publishing needs the backend.",
+    "status": "live",
+    "flag": null,
+    "origin": "pre-os",
+    "gates": {
+      "G1": "not-passed",
+      "G2": "not-required",
+      "G3": "not-checked",
+      "G4": "not-required"
+    },
+    "metric": null,
+    "spec": null,
+    "tests": [
+      "e2e/site.spec.js"
+    ],
+    "decisions": [],
+    "evidence": [],
+    "pr": [],
+    "since": "2026-10-13"
+  },
+  {
+    "id": "F-016",
+    "name": "Listening bar",
+    "area": "audio",
+    "summary": "Reads stop text aloud with the device voice; persists across pages. No creator recordings yet.",
+    "status": "live",
+    "flag": null,
+    "origin": "pre-os",
+    "gates": {
+      "G1": "not-passed",
+      "G2": "not-required",
+      "G3": "not-checked",
+      "G4": "not-required"
+    },
+    "metric": null,
+    "spec": null,
+    "tests": [
+      "e2e/site.spec.js"
+    ],
+    "decisions": [],
+    "evidence": [],
+    "pr": [],
+    "since": "2026-10-13"
+  },
+  {
+    "id": "F-017",
+    "name": "Static route previews and elevation",
+    "area": "route",
+    "summary": "Route line, stops and elevation drawn from the route data without a map instance.",
+    "status": "live",
+    "flag": null,
+    "origin": "pre-os",
+    "gates": {
+      "G1": "not-passed",
+      "G2": "not-required",
+      "G3": "not-checked",
+      "G4": "not-required"
+    },
+    "metric": null,
+    "spec": null,
+    "tests": [
+      "e2e/site.spec.js"
+    ],
+    "decisions": [],
+    "evidence": [],
+    "pr": [],
+    "since": "2026-10-13"
+  },
+  {
+    "id": "F-018",
+    "name": "Pre-rendered pages, structured data and sitemap",
+    "area": "seo",
+    "summary": "One HTML page per address with JSON-LD, canonicals and a dated sitemap.",
+    "status": "live",
+    "flag": null,
+    "origin": "pre-os",
+    "gates": {
+      "G1": "not-passed",
+      "G2": "not-required",
+      "G3": "not-checked",
+      "G4": "not-required"
+    },
+    "metric": null,
+    "spec": null,
+    "tests": [
+      "e2e/site.spec.js"
+    ],
+    "decisions": [],
+    "evidence": [],
+    "pr": [],
+    "since": "2026-10-15"
+  },
+  {
+    "id": "F-019",
+    "name": "Share cards",
+    "area": "seo",
+    "summary": "1200x630 cards per route and story, licence-checked photographs only.",
+    "status": "live",
+    "flag": null,
+    "origin": "pre-os",
+    "gates": {
+      "G1": "not-passed",
+      "G2": "not-required",
+      "G3": "not-checked",
+      "G4": "not-required"
+    },
+    "metric": null,
+    "spec": null,
+    "tests": [
+      "e2e/site.spec.js"
+    ],
+    "decisions": [],
+    "evidence": [],
+    "pr": [],
+    "since": "2026-10-15"
+  },
+  {
+    "id": "F-020",
+    "name": "Photo pipeline with licences",
+    "area": "platform",
+    "summary": "AVIF and WebP at four widths with author and licence kept per image.",
+    "status": "live",
+    "flag": null,
+    "origin": "pre-os",
+    "gates": {
+      "G1": "not-passed",
+      "G2": "not-required",
+      "G3": "not-checked",
+      "G4": "not-required"
+    },
+    "metric": null,
+    "spec": null,
+    "tests": [
+      "e2e/site.spec.js"
+    ],
+    "decisions": [],
+    "evidence": [],
+    "pr": [],
+    "since": "2026-10-13"
+  },
+  {
+    "id": "F-021",
+    "name": "Service worker and offline pages",
+    "area": "platform",
+    "summary": "Shell cache, network-first pages, cached photos and tiles.",
+    "status": "live",
+    "flag": null,
+    "origin": "pre-os",
+    "gates": {
+      "G1": "not-passed",
+      "G2": "not-required",
+      "G3": "not-checked",
+      "G4": "not-required"
+    },
+    "metric": null,
+    "spec": null,
+    "tests": [
+      "e2e/site.spec.js"
+    ],
+    "decisions": [],
+    "evidence": [],
+    "pr": [],
+    "since": "2026-10-13"
+  },
+  {
+    "id": "F-030",
+    "name": "Sync My Journey across devices",
+    "area": "journey",
+    "summary": "My Journey follows a person between devices. Needs accounts (F-001).",
+    "status": "idea",
+    "flag": null,
+    "origin": "planned",
+    "gates": {
+      "G1": "not-passed",
+      "G2": "not-required",
+      "G3": "not-checked",
+      "G4": "not-required"
+    },
+    "metric": null,
+    "spec": null,
+    "tests": [],
+    "decisions": [],
+    "evidence": [],
+    "pr": [],
+    "since": "2026-10-26"
+  },
+  {
+    "id": "F-031",
+    "name": "Field performance on low-end Android",
+    "area": "platform",
+    "summary": "Real-device checks on slow networks and old phones. Lab numbers only so far.",
+    "status": "idea",
+    "flag": null,
+    "origin": "planned",
+    "gates": {
+      "G1": "not-passed",
+      "G2": "not-required",
+      "G3": "not-checked",
+      "G4": "not-required"
+    },
+    "metric": "field Core Web Vitals at the 75th percentile",
+    "spec": null,
+    "tests": [],
+    "decisions": [],
+    "evidence": [],
+    "pr": [],
+    "since": "2026-10-26"
+  },
+  {
+    "id": "F-032",
+    "name": "More routes and stories",
+    "area": "discover",
+    "summary": "Content, not engineering: the engine is ready.",
+    "status": "idea",
+    "flag": null,
+    "origin": "planned",
+    "gates": {
+      "G1": "not-passed",
+      "G2": "not-required",
+      "G3": "not-checked",
+      "G4": "not-required"
+    },
+    "metric": null,
+    "spec": null,
+    "tests": [],
+    "decisions": [],
+    "evidence": [],
+    "pr": [],
+    "since": "2026-10-26"
+  },
+  {
+    "id": "F-033",
+    "name": "Creator audio recordings",
+    "area": "audio",
+    "summary": "Recorded narration per stop, replacing device read-aloud where present. Needs F-001.",
+    "status": "idea",
+    "flag": null,
+    "origin": "planned",
+    "gates": {
+      "G1": "not-passed",
+      "G2": "not-required",
+      "G3": "not-checked",
+      "G4": "not-required"
+    },
+    "metric": null,
+    "spec": null,
+    "tests": [],
+    "decisions": [],
+    "evidence": [],
+    "pr": [],
+    "since": "2026-10-26"
+  },
+  {
+    "id": "F-034",
+    "name": "Walk mode with live location",
+    "area": "route",
+    "summary": "Guide a walker stop to stop. Location is personal data: ask-first, and it needs its own privacy design.",
+    "status": "idea",
+    "flag": null,
+    "origin": "planned",
+    "gates": {
+      "G1": "not-passed",
+      "G2": "not-required",
+      "G3": "not-checked",
+      "G4": "not-required"
+    },
+    "metric": null,
+    "spec": null,
+    "tests": [],
+    "decisions": [],
+    "evidence": [],
+    "pr": [],
+    "since": "2026-10-26"
+  },
+  {
+    "id": "F-035",
+    "name": "Moderation view for submissions",
+    "area": "accounts",
+    "summary": "Approve or reject creator drafts with escaped content. Part of the F-001 plan, not built.",
+    "status": "idea",
+    "flag": null,
+    "origin": "planned",
+    "gates": {
+      "G1": "not-passed",
+      "G2": "not-required",
+      "G3": "not-checked",
+      "G4": "not-required"
+    },
+    "metric": null,
+    "spec": null,
+    "tests": [],
+    "decisions": [],
+    "evidence": [],
+    "pr": [],
+    "since": "2026-10-26"
+  }
+]
