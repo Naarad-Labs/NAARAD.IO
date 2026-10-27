@@ -77,11 +77,25 @@ function stopEverything() {
   playing = false;
 }
 
+/** The most natural voice the device has for this language: an exact locale match first, then neural/online ones. */
+function pickVoice(lang) {
+  const voices = synth?.getVoices?.() || [];
+  const base = lang.split('-')[0].toLowerCase();
+  const score = (voice) => {
+    const l = voice.lang.replace('_', '-').toLowerCase();
+    if (l !== lang.toLowerCase() && l.split('-')[0] !== base) return -1;
+    return (l === lang.toLowerCase() ? 4 : 0) + (/natural|neural|online|google|enhanced|premium/i.test(voice.name) ? 2 : 0) + (voice.localService ? 0 : 1);
+  };
+  return voices.map((voice) => [score(voice), voice]).filter(([value]) => value >= 0).sort((a, b) => b[0] - a[0])[0]?.[1] || null;
+}
+
 function speakChunk() {
   if (!canRead || chunkIndex >= chunks.length) { finishItem(); return; }
   const utterance = new SpeechSynthesisUtterance(chunks[chunkIndex]);
   utterance.rate = rate;
   utterance.lang = queue[index]?.lang || 'en-IN';
+  const voice = pickVoice(utterance.lang);
+  if (voice) utterance.voice = voice;
   const base = chunks.slice(0, chunkIndex).reduce((sum, chunk) => sum + chunk.length, 0);
   utterance.onboundary = (event) => {
     spokenChars = base + (event.charIndex || 0);
