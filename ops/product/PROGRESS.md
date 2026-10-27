@@ -4,7 +4,7 @@ Source of truth for the 1,000-point roadmap (`ROADMAP-1000.md`). Read and edit w
 
 Statuses: `todo` · `doing` · `done` · `blocked` (waiting on the tag in the note) · `parked` (guardrail says ask the founder) · `dropped` (with reason).
 
-Run lock: 2026-10-27T17:39:19.427Z interactive-session-aryan
+Run lock: none
 
 | # | status | tags | title | section | note |
 |---|---|---|---|---|---|
@@ -20,20 +20,20 @@ Run lock: 2026-10-27T17:39:19.427Z interactive-session-aryan
 | 10 | done |  | Log the merge in the decision log | Merge the pending review-fix branch | D-0008 |
 | 11 | parked |  | Delete stale remote branches | Merge the pending review-fix branch | data_deletion: deleting remote branches waits for the founder |
 | 12 | done |  | Write a branch naming and lifetime rule | Merge the pending review-fix branch | branch rule added to the runbook |
-| 13 | todo |  | Add a CI check that features need evidence | Governance gates (ops/ decision log and |  |
-| 14 | todo |  | Add a CI check that overrides are logged | Governance gates (ops/ decision log and |  |
-| 15 | todo |  | Validate features.json against a JSON schema | Governance gates (ops/ decision log and |  |
-| 16 | todo |  | Reconcile F-001 and F-002 status with reality | Governance gates (ops/ decision log and |  |
-| 17 | todo |  | Make the register readable on a public page or keep it explicitly priv | Governance gates (ops/ decision log and |  |
-| 18 | todo |  | Add decision-log numbering lint | Governance gates (ops/ decision log and |  |
-| 19 | todo |  | Add an evidence-ledger staleness report | Governance gates (ops/ decision log and |  |
-| 20 | todo |  | Require a source for every number in content/ | Governance gates (ops/ decision log and |  |
-| 21 | todo |  | Write the cloud-spend guard | Governance gates (ops/ decision log and |  |
-| 22 | todo |  | Log the Sarvam 403 block as a risk | Governance gates (ops/ decision log and |  |
-| 23 | todo |  | Log the local-only LLM endpoint as non-shippable | Governance gates (ops/ decision log and |  |
-| 24 | todo |  | Define the G1 gate in one page | Governance gates (ops/ decision log and |  |
-| 25 | todo |  | Add a PR template with governance fields | Governance gates (ops/ decision log and |  |
-| 26 | todo |  | Add a weekly governance review note | Governance gates (ops/ decision log and |  |
+| 13 | done |  | Add a CI check that features need evidence | Governance gates (ops/ decision log and | ops/GOVERNANCE.md, features.mjs, lib.mjs, tests |
+| 14 | done |  | Add a CI check that overrides are logged | Governance gates (ops/ decision log and | ops/GOVERNANCE.md, features.mjs, lib.mjs, tests |
+| 15 | done |  | Validate features.json against a JSON schema | Governance gates (ops/ decision log and | ops/GOVERNANCE.md, features.mjs, lib.mjs, tests |
+| 16 | done |  | Reconcile F-001 and F-002 status with reality | Governance gates (ops/ decision log and | ops/GOVERNANCE.md, features.mjs, lib.mjs, tests |
+| 17 | done |  | Make the register readable on a public page or keep it explicitly priv | Governance gates (ops/ decision log and | ops/GOVERNANCE.md, features.mjs, lib.mjs, tests |
+| 18 | done |  | Add decision-log numbering lint | Governance gates (ops/ decision log and | ops/GOVERNANCE.md, features.mjs, lib.mjs, tests |
+| 19 | todo |  | Add an evidence-ledger staleness report | Governance gates (ops/ decision log and | staleness report: ledger is empty, nothing to go stale |
+| 20 | todo |  | Require a source for every number in content/ | Governance gates (ops/ decision log and | needs a numbers scan of content/ |
+| 21 | done |  | Write the cloud-spend guard | Governance gates (ops/ decision log and | ops/GOVERNANCE.md, features.mjs, lib.mjs, tests |
+| 22 | done |  | Log the Sarvam 403 block as a risk | Governance gates (ops/ decision log and | ops/GOVERNANCE.md, features.mjs, lib.mjs, tests |
+| 23 | done |  | Log the local-only LLM endpoint as non-shippable | Governance gates (ops/ decision log and | ops/GOVERNANCE.md, features.mjs, lib.mjs, tests |
+| 24 | done |  | Define the G1 gate in one page | Governance gates (ops/ decision log and | ops/GOVERNANCE.md, features.mjs, lib.mjs, tests |
+| 25 | done |  | Add a PR template with governance fields | Governance gates (ops/ decision log and | ops/GOVERNANCE.md, features.mjs, lib.mjs, tests |
+| 26 | todo |  | Add a weekly governance review note | Governance gates (ops/ decision log and | weekly note, recurring |
 | 27 | todo |  | Document what verify.sh checks | verify.sh and CI |  |
 | 28 | todo |  | Make verify.sh fail fast with clear stage names | verify.sh and CI |  |
 | 29 | todo |  | Time every verify.sh stage | verify.sh and CI |  |

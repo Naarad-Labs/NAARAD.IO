@@ -38,7 +38,7 @@ if (command === 'validate') {
   const { errors, warnings } = validateAll(stores, { today });
   const register = loadRegister();
   errors.push(
-    ...validateFeatures(register.features, { root: ROOT, decisionIds: new Set(stores.decisions.map((d) => d.id)), evidenceIds: new Set(stores.ledger.map((e) => e.id)), today }),
+    ...validateFeatures(register.features, { root: ROOT, decisionIds: new Set(stores.decisions.map((d) => d.id)), overrideIds: new Set(stores.decisions.filter((d) => d.result === 'override').map((d) => d.id)), evidenceIds: new Set(stores.ledger.map((e) => e.id)), today }),
     ...validateFeatureLog(register.log, register.features, { today }),
   );
   warnings.forEach((warning) => console.warn(`warning: ${warning}`));

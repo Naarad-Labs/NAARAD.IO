@@ -97,6 +97,8 @@ export function validateFeatures(features, ctx) {
           const dId = G1.split(':')[1];
           if (!ctx.decisionIds.has(dId)) {
             fail('G1', `override decision ${dId} not found in decisionIds`);
+          } else if (ctx.overrideIds && !ctx.overrideIds.has(dId)) {
+            fail('G1', `${dId} is not a decision with result override, so it cannot stand in for G1`);
           }
         }
 
