@@ -18,6 +18,7 @@ founder.**
 | `stranger-test.md` | The weekend stranger test: protocol and observation log. Not run yet. |
 | `interviews/` | Customer-discovery guides for tourism boards, temple trusts and CSR teams. Linted: no leading questions. No interview has been held yet. |
 | `redteam/` | Reports from `scripts/redteam.mjs`, the fresh-context reviewer. Empty until an opportunity has evidence. |
+| `product/` | The 1,000-point product roadmap (`ROADMAP-1000.md`), its progress table and helper, the runbook a resumed session follows, and the running report to the founder. D-0007 authorises the programme within the guardrails. |
 | `test/` | Tests for the rules and for the offline event queue. |
 
 Elsewhere: `scripts/ops.mjs` (command line), `scripts/redteam.mjs` (red-team runner), `app/events.js` and
