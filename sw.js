@@ -21,7 +21,7 @@
  * a page that was already controlled reload once when the worker changes.
  */
 
-const VERSION = 'v17';
+const VERSION = 'v18';
 const SHELL = `naarad-shell-${VERSION}`;
 const PAGES = `naarad-pages-${VERSION}`;
 const CONTENT = `naarad-content-${VERSION}`;
@@ -34,7 +34,8 @@ const TILE_LIMIT = 220;
 const PAGE_LIMIT = 60;
 const OFFLINE_SHELL = '/app/shell.html';
 
-/* The shell: the homepage, the page template, and the code to draw any page. */
+/* The shell: the homepage, the page template, and every script and stylesheet
+   that draws a page (the map's own files load only on a route page). */
 const SHELL_ASSETS = [
   '/',
   OFFLINE_SHELL,
@@ -53,6 +54,27 @@ const SHELL_ASSETS = [
   '/app/urls.js',
   '/app/seo.js',
   '/app/views/home.js',
+  '/app/account-ui.js',
+  '/app/account.js',
+  '/app/backend.js',
+  '/app/config.js',
+  '/app/events.js',
+  '/app/explore.css',
+  '/app/info.css',
+  '/app/journey.css',
+  '/app/offline-bundles.js',
+  '/app/offline-state.js',
+  '/app/offline-ui.js',
+  '/app/route.css',
+  '/app/storage-budget.js',
+  '/app/story.css',
+  '/app/studio.css',
+  '/app/views/explore.js',
+  '/app/views/info.js',
+  '/app/views/journey.js',
+  '/app/views/route.js',
+  '/app/views/story.js',
+  '/app/views/studio.js',
   '/app/fonts/DMSans.woff2',
   '/app/fonts/PlayfairDisplay.woff2',
   '/app/fonts/Caveat-latin.woff2',
