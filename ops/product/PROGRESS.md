@@ -4,11 +4,11 @@ Source of truth for the 1,000-point roadmap (`ROADMAP-1000.md`). Read and edit w
 
 Statuses: `todo` · `doing` · `done` · `blocked` (waiting on the tag in the note) · `parked` (guardrail says ask the founder) · `dropped` (with reason).
 
-Run lock: none
+Run lock: 2026-10-27T17:29:25.025Z interactive-session-aryan
 
 | # | status | tags | title | section | note |
 |---|---|---|---|---|---|
-| 1 | todo |  | Inventory the unmerged commits | Merge the pending review-fix branch |  |
+| 1 | doing |  | Inventory the unmerged commits | Merge the pending review-fix branch | merging review-fix branch |
 | 2 | todo |  | Dry-run the merge against main | Merge the pending review-fix branch |  |
 | 3 | todo |  | Predict the sw.js conflict | Merge the pending review-fix branch |  |
 | 4 | todo |  | Rebase review fixes onto main in small steps | Merge the pending review-fix branch |  |
