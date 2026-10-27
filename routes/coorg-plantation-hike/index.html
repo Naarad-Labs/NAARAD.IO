@@ -5,14 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#f8f3e9">
   <title>Coorg Plantation Hike · Naarad</title>
-  <meta name="description" content="A route in Coorg, Karnataka in the Naarad catalogue, 12 km long. Its stops and stories have not been published yet." data-page="">
+  <meta name="description" content="A route in Coorg, Karnataka in the Naarad catalogue. Its stops and stories have not been published yet." data-page="">
+  <meta name="robots" content="noindex,follow" data-page="">
   <link rel="canonical" href="https://naarad.io/routes/coorg-plantation-hike/" data-page="">
   <meta property="og:type" content="website" data-page="">
   <meta property="og:site_name" content="Naarad" data-page="">
   <meta property="og:locale" content="en_IN" data-page="">
   <meta property="og:url" content="https://naarad.io/routes/coorg-plantation-hike/" data-page="">
   <meta property="og:title" content="Coorg Plantation Hike · Naarad" data-page="">
-  <meta property="og:description" content="A route in Coorg, Karnataka in the Naarad catalogue, 12 km long. Its stops and stories have not been published yet." data-page="">
+  <meta property="og:description" content="A route in Coorg, Karnataka in the Naarad catalogue. Its stops and stories have not been published yet." data-page="">
   <meta property="og:image" content="https://naarad.io/Images/og/route-coorg-plantation-hike.jpg" data-page="">
   <meta property="og:image:type" content="image/jpeg" data-page="">
   <meta property="og:image:width" content="1200" data-page="">
@@ -20,10 +21,10 @@
   <meta property="og:image:alt" content="Coorg Plantation Hike, Coorg, Karnataka: the Naarad title card." data-page="">
   <meta name="twitter:card" content="summary_large_image" data-page="">
   <meta name="twitter:title" content="Coorg Plantation Hike · Naarad" data-page="">
-  <meta name="twitter:description" content="A route in Coorg, Karnataka in the Naarad catalogue, 12 km long. Its stops and stories have not been published yet." data-page="">
+  <meta name="twitter:description" content="A route in Coorg, Karnataka in the Naarad catalogue. Its stops and stories have not been published yet." data-page="">
   <meta name="twitter:image" content="https://naarad.io/Images/og/route-coorg-plantation-hike.jpg" data-page="">
   <meta name="twitter:image:alt" content="Coorg Plantation Hike, Coorg, Karnataka: the Naarad title card." data-page="">
-  <script type="application/ld+json" data-page="">{"@context":"https://schema.org","@graph":[{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://naarad.io/"},{"@type":"ListItem","position":2,"name":"Routes","item":"https://naarad.io/routes/"},{"@type":"ListItem","position":3,"name":"Coorg Plantation Hike","item":"https://naarad.io/routes/coorg-plantation-hike/"}]},{"@type":"TouristTrip","@id":"https://naarad.io/routes/coorg-plantation-hike/#trip","name":"Coorg Plantation Hike","description":"A route in Coorg, Karnataka in the Naarad catalogue, 12 km long. Its stops and stories have not been published yet.","url":"https://naarad.io/routes/coorg-plantation-hike/","provider":{"@id":"https://naarad.io/#organization"},"potentialAction":{"@type":"TravelAction","distance":"12 km"}},{"@type":"Organization","@id":"https://naarad.io/#organization","name":"Naarad","url":"https://naarad.io/","logo":{"@type":"ImageObject","url":"https://naarad.io/Images/naarad-icon-512.png","width":512,"height":512}}]}</script>
+  <script type="application/ld+json" data-page="">{"@context":"https://schema.org","@graph":[{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://naarad.io/"},{"@type":"ListItem","position":2,"name":"Routes","item":"https://naarad.io/routes/"},{"@type":"ListItem","position":3,"name":"Coorg Plantation Hike","item":"https://naarad.io/routes/coorg-plantation-hike/"}]},{"@type":"Organization","@id":"https://naarad.io/#organization","name":"Naarad","url":"https://naarad.io/","logo":{"@type":"ImageObject","url":"https://naarad.io/Images/naarad-icon-512.png","width":512,"height":512}}]}</script>
   <link rel="icon" type="image/png" href="/Images/cropped_logo.png">
   <link rel="apple-touch-icon" href="/Images/naarad-icon-192.png">
   <link rel="manifest" href="/manifest.json">
@@ -38,6 +39,23 @@
       else if (/^\/(explore|routes|stories|creators|journey|about)$/.test(path)) to = path + '/';
       else if (/^\/(routes|stories)\/[^/.]+$/.test(path)) to = path + '/';
       if (to) location.replace(to + location.search + location.hash);
+    })();
+  </script>
+
+  <script>
+    /* Before pages had addresses of their own, a service worker (v10, or v11
+       in a test build) cached the old app code and serves it for every page.
+       Its copy cannot draw these pages, so once: remove it and its caches and
+       load the page again. Visitors without it never run any of this. */
+    (function () {
+      if (window.__NAARAD_PRERENDER__ || !window.caches || !navigator.serviceWorker) return;
+      caches.keys().then(function (names) {
+        if (!names.some(function (name) { return name === 'naarad-shell-v10' || name === 'naarad-shell-v11'; })) return;
+        return navigator.serviceWorker.getRegistrations()
+          .then(function (list) { return Promise.all(list.map(function (item) { return item.unregister(); })); })
+          .then(function () { return Promise.all(names.filter(function (name) { return name.indexOf('naarad-') === 0 && name !== 'naarad-bundles'; }).map(function (name) { return caches.delete(name); })); })
+          .then(function () { location.reload(); });
+      }).catch(function () {});
     })();
   </script>
 
@@ -57,7 +75,7 @@
           <span class="brand-motto">Explore. Listen. Connect.</span>
         </span>
       </a>
-      <nav class="primary-nav" aria-label="Main navigation">
+      <nav class="primary-nav" id="primary-nav" aria-label="Main navigation">
         <a id="nav-explore" href="/explore/" data-view="explore">Explore</a>
         <a id="nav-routes" href="/routes/" data-view="routes" class="is-current" aria-current="page">Routes</a>
         <a id="nav-stories" href="/stories/" data-view="stories">Stories</a>
@@ -65,7 +83,7 @@
         <a id="nav-journey" href="/journey/" data-view="journey">My Journey</a>
         <a id="nav-about" href="/about/" data-view="about">About</a>
       </nav>
-      <form class="header-search" role="search" action="/routes/">
+      <form class="header-search" role="search" aria-label="Site search" action="/routes/">
         <label class="sr-only" for="route-search">Search places, routes and stories</label>
         <input id="route-search" type="search" name="q" placeholder="Search places, routes, stories…" autocomplete="off">
         <button type="submit" aria-label="Search">
@@ -76,7 +94,7 @@
         Start Exploring
         <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 12h15"></path><path d="m13.6 6 5.9 6-5.9 6"></path></svg>
       </a>
-      <button class="menu-toggle" type="button" aria-label="Open navigation" aria-expanded="false"><span></span><span></span><span></span></button>
+      <button class="menu-toggle" type="button" aria-label="Menu" aria-controls="primary-nav" aria-expanded="false"><span></span><span></span><span></span></button>
     </header>
 
     <main id="app-content" class="view-route" data-prerendered="/routes/coorg-plantation-hike/"><article class="route-page" data-route="coorg-plantation-hike">
@@ -109,12 +127,12 @@
     <div class="metric">
       <svg class="ico " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M19 10.2c0 5-7 11.6-7 11.6S5 15.2 5 10.2a7 7 0 1 1 14 0Z"></path><circle cx="12" cy="10" r="2.4"></circle></svg>
       <span class="metric-text"><b>Coorg, Karnataka</b></span>
-    </div><div class="metric">
+    </div><div class="metric is-muted">
       <svg class="ico " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="8.4"></circle><path d="M12 7.3V12l3.1 1.9"></path></svg>
-      <span class="metric-text"><b>4 hrs</b></span>
-    </div><div class="metric">
+      <span class="metric-text"><b>Not yet measured</b><span>Duration</span></span>
+    </div><div class="metric is-muted">
       <svg class="ico " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M13 4.6a1.6 1.6 0 1 0 0-.1"></path><path d="M11 21l1.4-5.1-2.6-2.3.9-4.6L8 10.6 7 13.6"></path><path d="M17 12.4l-2.3-1.1-1.4-3.2-2.6.9"></path><path d="M14.6 15.9L16.4 21"></path></svg>
-      <span class="metric-text"><b>12 km</b></span>
+      <span class="metric-text"><b>Not yet measured</b><span>Distance</span></span>
     </div><div class="metric">
       <svg class="ico " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 19.5v-5"></path><path d="M12 19.5V9"></path><path d="M19 19.5V4.6"></path></svg>
       <span class="metric-text"><b>Hard</b><span>Difficulty</span></span>
@@ -127,22 +145,17 @@
     </div>
   </div>
     <div class="route-bar">
-    <div class="route-tabs" role="tablist" aria-label="Route sections">
-      <button type="button" role="tab" id="tab-overview" data-tab="overview" aria-selected="true" aria-controls="panel-overview" tabindex="0">
-        <svg class="ico " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M13.4 3.6H6.4v16.8h11.2V7.8Z"></path><path d="M13.4 3.6v4.2h4.2"></path></svg><span>Overview</span></button><button type="button" role="tab" id="tab-stops" data-tab="stops" aria-selected="false" aria-controls="panel-stops" tabindex="-1">
-        <svg class="ico " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M19 10.2c0 5-7 11.6-7 11.6S5 15.2 5 10.2a7 7 0 1 1 14 0Z"></path><circle cx="12" cy="10" r="2.4"></circle></svg><span>Stops</span></button><button type="button" role="tab" id="tab-stories" data-tab="stories" aria-selected="false" aria-controls="panel-stories" tabindex="-1">
-        <svg class="ico " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4.4 15v-2.8a7.6 7.6 0 0 1 15.2 0V15"></path><path d="M4.4 14.2h2.2a1 1 0 0 1 1 1v3.2a1 1 0 0 1-1 1H5.6a1.2 1.2 0 0 1-1.2-1.2Z"></path><path d="M19.6 14.2h-2.2a1 1 0 0 0-1 1v3.2a1 1 0 0 0 1 1h1a1.2 1.2 0 0 0 1.2-1.2Z"></path></svg><span>Stories</span></button><button type="button" role="tab" id="tab-terrain" data-tab="terrain" aria-selected="false" aria-controls="panel-terrain" tabindex="-1">
-        <svg class="ico " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3 17.5l4.6-5.6 3.2 3.4 3.4-5.2L21 17.5Z"></path><path d="M3 20.2h18"></path></svg><span>Terrain</span></button><button type="button" role="tab" id="tab-map" data-tab="map" aria-selected="false" aria-controls="panel-map" tabindex="-1">
-        <svg class="ico " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 4.3 3.8 6.6v13l5.2-2.3 6 2.4 5.2-2.3v-13l-5.2 2.3Z"></path><path d="M9 4.3v13.4"></path><path d="M15 6.7v13"></path></svg><span>Map</span></button>
-    </div>
+    <nav class="route-tabs" aria-label="Route sections">
+      <a href="#section-overview" data-tab="overview" aria-current="location"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M13.4 3.6H6.4v16.8h11.2V7.8Z"></path><path d="M13.4 3.6v4.2h4.2"></path></svg><span>Overview</span></a><a href="#section-stories" data-tab="stories"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4.4 15v-2.8a7.6 7.6 0 0 1 15.2 0V15"></path><path d="M4.4 14.2h2.2a1 1 0 0 1 1 1v3.2a1 1 0 0 1-1 1H5.6a1.2 1.2 0 0 1-1.2-1.2Z"></path><path d="M19.6 14.2h-2.2a1 1 0 0 0-1 1v3.2a1 1 0 0 0 1 1h1a1.2 1.2 0 0 0 1.2-1.2Z"></path></svg><span>Stories</span></a><a href="#section-terrain" data-tab="terrain"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3 17.5l4.6-5.6 3.2 3.4 3.4-5.2L21 17.5Z"></path><path d="M3 20.2h18"></path></svg><span>Terrain</span></a><a href="#section-map" data-tab="map"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 4.3 3.8 6.6v13l5.2-2.3 6 2.4 5.2-2.3v-13l-5.2 2.3Z"></path><path d="M9 4.3v13.4"></path><path d="M15 6.7v13"></path></svg><span>Map</span></a>
+    </nav>
     <div class="route-bar-actions">
       <button type="button" class="button button-sm" data-action="share"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="17.6" cy="6" r="2.6"></circle><circle cx="6.4" cy="12" r="2.6"></circle><circle cx="17.6" cy="18" r="2.6"></circle><path d="m8.7 10.8 6.6-3.5"></path><path d="m8.7 13.2 6.6 3.5"></path></svg> Share</button>
       <button type="button" class="button button-sm" data-action="save" aria-pressed="false"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6.4 4.4h11.2v15.4L12 15.6l-5.6 4.2Z"></path></svg> <span>Save</span></button>
       <button type="button" class="button button-primary button-sm" data-action="start"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 20.4c-1.5 0-2.4-.8-2.4-2.3 0-1.3.6-2 .6-3.4 0-1-.6-1.6-.6-3C4.6 9.4 5.8 8 7.4 8s2.6 1.4 2.4 3.6c-.2 2-.8 3-.8 4.6s-.5 4.2-2 4.2Z"></path><path d="M17 16.4c-1.5 0-2-2.6-2-4.2 0-1.6-.6-2.6-.8-4.6C14 5.4 15.4 4 17 4s2.8 1.4 2.8 3.7c0 1.4-.6 2-.6 3 0 1.4.6 2.1.6 3.4 0 1.5-.9 2.3-2.8 2.3Z"></path></svg> Start Walk</button>
     </div>
   </div>
-    <div class="route-workspace" id="panel-stops" role="tabpanel" aria-labelledby="tab-stops">
-      <section class="map-panel" id="panel-map" role="tabpanel" aria-labelledby="tab-map">
+    <div class="route-workspace">
+      <section class="map-panel" id="section-map">
     <div class="map-frame">
       <div id="map" class="route-map" role="application" aria-label="Map of Coorg Plantation Hike">
         
@@ -159,19 +172,19 @@
       <p class="map-note script">Stories at every stop</p>
     </div>
   </section>
-      <section class="stop-panel" aria-live="polite">
+      <section class="stop-panel" id="section-stories" aria-live="polite">
       <div class="empty-state"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 3.6 13.8 9l5.4 1.8-5.4 1.8L12 18l-1.8-5.4L4.8 10.8 10.2 9Z"></path></svg><div>
         <strong>Stops are not published for this route</strong>
-        <p>This route is in the catalogue with its distance and duration, but no one has published its ordered stops yet. Routes with stops show each one here, with its story.</p>
+        <p>This route is in the catalogue, but no one has published its ordered stops yet. Routes with stops show each one here, with its story.</p>
       </div></div>
     </section>
       
     </div>
-    <section class="route-glance" id="panel-terrain" role="tabpanel" aria-labelledby="tab-terrain">
+    <section class="route-glance" id="section-terrain">
     <div class="glance-facts">
       <h2 class="eyebrow eyebrow-mark">Route at a glance</h2>
       <div class="metric-row">
-        <div class="metric"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M13 4.6a1.6 1.6 0 1 0 0-.1"></path><path d="M11 21l1.4-5.1-2.6-2.3.9-4.6L8 10.6 7 13.6"></path><path d="M17 12.4l-2.3-1.1-1.4-3.2-2.6.9"></path><path d="M14.6 15.9L16.4 21"></path></svg><span class="metric-text"><b>12 km</b><span>Distance</span></span></div><div class="metric"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="8.4"></circle><path d="M12 7.3V12l3.1 1.9"></path></svg><span class="metric-text"><b>4 hrs</b><span>Duration</span></span></div><div class="metric"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 19.5v-5"></path><path d="M12 19.5V9"></path><path d="M19 19.5V4.6"></path></svg><span class="metric-text"><b>Hard</b><span>Difficulty</span></span></div><div class="metric"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 21V4.2"></path><path d="M6 4.6c3.4-1.6 6.2 1.3 9.6 0v7.8c-3.4 1.3-6.2-1.6-9.6 0Z"></path></svg><span class="metric-text"><b>480 m</b><span>Ascent</span></span></div>
+        <div class="metric is-muted"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M13 4.6a1.6 1.6 0 1 0 0-.1"></path><path d="M11 21l1.4-5.1-2.6-2.3.9-4.6L8 10.6 7 13.6"></path><path d="M17 12.4l-2.3-1.1-1.4-3.2-2.6.9"></path><path d="M14.6 15.9L16.4 21"></path></svg><span class="metric-text"><b>Not yet measured</b><span>Distance</span></span></div><div class="metric is-muted"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="8.4"></circle><path d="M12 7.3V12l3.1 1.9"></path></svg><span class="metric-text"><b>Not yet measured</b><span>Duration</span></span></div><div class="metric"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 19.5v-5"></path><path d="M12 19.5V9"></path><path d="M19 19.5V4.6"></path></svg><span class="metric-text"><b>Hard</b><span>Difficulty</span></span></div><div class="metric is-muted"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 21V4.2"></path><path d="M6 4.6c3.4-1.6 6.2 1.3 9.6 0v7.8c-3.4 1.3-6.2-1.6-9.6 0Z"></path></svg><span class="metric-text"><b>Not yet measured</b><span>Ascent</span></span></div>
       </div>
       
     </div>
@@ -185,7 +198,7 @@
         <p>This route has no sampled heights, so no profile is drawn.</p></div></div>
     </div>
   </section>
-    <section class="route-overview" id="panel-overview" role="tabpanel" aria-labelledby="tab-overview">
+    <section class="route-overview" id="section-overview">
     <div class="overview-copy">
       <h2 class="eyebrow eyebrow-mark">About this route</h2>
       <p>This route is published with its headline facts. Its description has not been written yet.</p>
@@ -252,6 +265,7 @@
       <span class="route-card-metrics">
         <span><svg class="ico " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M13 4.6a1.6 1.6 0 1 0 0-.1"></path><path d="M11 21l1.4-5.1-2.6-2.3.9-4.6L8 10.6 7 13.6"></path><path d="M17 12.4l-2.3-1.1-1.4-3.2-2.6.9"></path><path d="M14.6 15.9L16.4 21"></path></svg>5.2 km</span>
         <span><svg class="ico " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="8.4"></circle><path d="M12 7.3V12l3.1 1.9"></path></svg>2–3 hrs</span>
+        
         <span><svg class="ico " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M19 10.2c0 5-7 11.6-7 11.6S5 15.2 5 10.2a7 7 0 1 1 14 0Z"></path><circle cx="12" cy="10" r="2.4"></circle></svg>8 stops</span>
       </span>
       <span class="chip-list"><span class="chip">Temples</span><span class="chip">History</span><span class="chip">Living Culture</span></span>
@@ -305,6 +319,7 @@
       <span class="route-card-metrics">
         <span><svg class="ico " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M13 4.6a1.6 1.6 0 1 0 0-.1"></path><path d="M11 21l1.4-5.1-2.6-2.3.9-4.6L8 10.6 7 13.6"></path><path d="M17 12.4l-2.3-1.1-1.4-3.2-2.6.9"></path><path d="M14.6 15.9L16.4 21"></path></svg>979 m</span>
         <span><svg class="ico " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="8.4"></circle><path d="M12 7.3V12l3.1 1.9"></path></svg>2–3 hrs</span>
+        
         <span><svg class="ico " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M19 10.2c0 5-7 11.6-7 11.6S5 15.2 5 10.2a7 7 0 1 1 14 0Z"></path><circle cx="12" cy="10" r="2.4"></circle></svg>4 stops</span>
       </span>
       <span class="chip-list"><span class="chip">Chola Heritage</span><span class="chip">Temples</span><span class="chip">Art &amp; Music</span></span>
@@ -355,6 +370,7 @@
       <span class="route-card-metrics">
         <span><svg class="ico " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M13 4.6a1.6 1.6 0 1 0 0-.1"></path><path d="M11 21l1.4-5.1-2.6-2.3.9-4.6L8 10.6 7 13.6"></path><path d="M17 12.4l-2.3-1.1-1.4-3.2-2.6.9"></path><path d="M14.6 15.9L16.4 21"></path></svg>984 m</span>
         <span><svg class="ico " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="8.4"></circle><path d="M12 7.3V12l3.1 1.9"></path></svg>2–3 hrs</span>
+        
         <span><svg class="ico " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M19 10.2c0 5-7 11.6-7 11.6S5 15.2 5 10.2a7 7 0 1 1 14 0Z"></path><circle cx="12" cy="10" r="2.4"></circle></svg>3 stops</span>
       </span>
       <span class="chip-list"><span class="chip">Community</span><span class="chip">Architecture</span><span class="chip">Nature</span></span>
@@ -393,6 +409,13 @@
   <script type="module" src="/app/main.js"></script>
   <script>
     if ('serviceWorker' in navigator && !window.__NAARAD_PRERENDER__) {
+      // A page that a worker already controlled holds code that worker cached;
+      // when a new worker takes over, load the page again rather than mix old
+      // and new modules. The first worker a visitor gets is no change of code.
+      var controlled = Boolean(navigator.serviceWorker.controller);
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        if (controlled) { controlled = false; location.reload(); }
+      });
       addEventListener('load', () => navigator.serviceWorker.register('/sw.js').catch(() => {}));
     }
   </script>

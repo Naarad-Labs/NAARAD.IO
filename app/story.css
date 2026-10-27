@@ -55,6 +55,10 @@
 
 .story-content { max-width: 70ch; }
 .story-section + .story-section { margin-top: 44px; }
+/* The contents links jump here: land below the sticky header, not under it. (This is on the
+   targets, not scroll-padding-top on the page: that makes the browser scroll the page whenever
+   a link in the sticky header takes focus.) */
+.story-section { scroll-margin-top: calc(var(--header-h) + 16px); }
 .story-section h2 { margin: 10px 0 16px; font-size: clamp(27px, 2.5vw, 38px); }
 .story-section p { font-size: 17.5px; line-height: 1.75; color: var(--ink); }
 .story-section p + p { margin-top: 18px; }
@@ -147,6 +151,7 @@
   .story-body, .story-index { width: calc(100% - 28px); }
   .story-section p { font-size: 16.5px; }
   .story-actions { grid-auto-flow: row; }
+  .story-actions button, .story-actions a, .story-toc a { display: flex; align-items: center; min-height: 44px; }
   .story-aside { grid-template-columns: 1fr; }
   .story-grid { grid-template-columns: 1fr; }
   .story-pull { padding: 22px 20px 20px 46px; }

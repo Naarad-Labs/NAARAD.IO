@@ -11,17 +11,18 @@ import * as Seo from '../seo.js';
 
 const HERO_SIZES = '(max-width: 1023px) 100vw, 58vw';
 
-let stories = null;
+let loading = null;
 
-export async function loadStories() {
-  if (stories) return stories;
-  try {
-    const response = await fetch('/content/stories.json', { cache: 'force-cache' });
-    stories = response.ok ? (await response.json()).stories || [] : [];
-  } catch {
-    stories = [];
-  }
-  return stories;
+/** Every story. A file that cannot be read rejects, and is read again next time. */
+export function loadStories() {
+  loading ||= readStories().catch((error) => { loading = null; throw error; });
+  return loading;
+}
+
+async function readStories() {
+  const response = await fetch('/content/stories.json', { cache: 'no-cache' });
+  if (!response.ok) throw new Error(`/content/stories.json: ${response.status}`);
+  try { return (await response.json()).stories || []; } catch (error) { throw new Error(`/content/stories.json: ${error.message}`); }
 }
 
 export async function getStory(slug) {
@@ -245,7 +246,7 @@ export async function renderIndex() {
     <header class="story-index-hero">
       <p class="eyebrow eyebrow-mark">Stories · Field notes</p>
       <h1 class="display">Listen closer.</h1>
-      <p class="lede">Long-form writing about the places on Naarad's routes: what happened there, who built it, and what is left to see.</p>
+      <p class="lede">Short written stories about the places on Naarad's routes: what happened there, who built it, and what is left to see.</p>
     </header>
     <a class="story-lead" href="${storyPath(lead.slug)}" data-story="${escapeHtml(lead.slug)}">
       ${picture(lead.heroPhoto, { sizes: '(max-width: 1023px) 100vw, 60vw', alt: lead.title, ratio: '16 / 9' })}
@@ -275,7 +276,7 @@ export async function indexMeta() {
   const lead = all[0];
   return {
     title: 'Stories · Naarad',
-    description: 'Long-form heritage stories from the places on Naarad’s walking routes.',
+    description: 'Short heritage stories from the places on Naarad’s walking routes.',
     path: sectionPath('stories'),
     card: {
       name: 'stories',

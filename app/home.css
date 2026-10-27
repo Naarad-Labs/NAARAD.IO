@@ -62,6 +62,8 @@
 .route-card-metrics { display: flex; flex-wrap: wrap; gap: 6px 14px; margin-top: 2px; }
 .route-card-metrics span { display: inline-flex; align-items: center; gap: 5px; font-size: 13px; font-weight: 600; color: var(--ink-soft); }
 .route-card-metrics .ico { width: 15px; height: 15px; color: var(--orange-text); }
+.route-card-metrics .is-unmeasured { font-weight: 500; color: var(--ink-muted); }
+.route-card-metrics .is-unmeasured .ico { color: var(--ink-muted); }
 .route-card-terrain { display: flex; align-items: center; gap: 10px; padding-top: 4px; border-top: 1px solid var(--line); margin-top: 4px; }
 .route-card-terrain small { font-size: 13px; line-height: 1.3; color: var(--ink-muted); }
 .route-card .text-link { margin-top: 2px; font-size: 13px; }

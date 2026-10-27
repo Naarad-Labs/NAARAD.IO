@@ -37,12 +37,15 @@ identical to it.
 - `.home-hero`, `.route-hero`, `.story-hero`, `.journey-hero`, `.studio-hero` —
   a copy column beside a full-bleed photograph, which carries `.torn-left`.
 - `.route-facts` — the eight-cell fact grid raised over the hero.
-- `.route-bar` — sticky tabs and walk actions; on a phone its two halves separate
-  (`display: contents`) into a sticky tab strip and a fixed action bar.
+- `.route-bar` — sticky section links (a `nav` of `#section-<id>` anchors, not a
+  tab widget) and walk actions; on a phone its two halves separate
+  (`display: contents`) into a sticky strip of links and a fixed action bar.
 - `.route-workspace` — map, stop story, stop rail. Flattened on a phone so the
   map can lead.
 - `.stop-panel`, `.stop-rail`, `.stop-item`, `.stop-index` — the stop being read
-  and the list of the rest.
+  and the list of the rest. Each row of the rail is two sibling buttons, one to
+  select the stop (`.stop-item`) and one to listen to it (`.stop-item-play`);
+  never a control inside a control.
 - `.story-body` — on-this-page rail, article column, route and related rails.
 - `.route-card`, `.route-card-grid` — a photograph, a generated map preview and
   the route's real facts. Used on home, explore, related and journey.
@@ -78,6 +81,11 @@ generous type. A photograph meets paper on a torn edge, never a hard rectangle.
 - Every photograph shows its author and licence, or says the rights are not
   recorded.
 - Interactive things are real `button`s and `a`s, focus-visible, with labels.
+  After a page is drawn in place the keyboard is on its `h1`, and a re-draw of
+  the same page puts it back on the control it replaced.
 - Never encode meaning in colour alone.
 - One map instance, ever. Cards use the generated SVG preview.
-- Touch targets on phone action bars are at least 44px.
+- Touch targets on a phone are at least 44px each way (the e2e suite lists what
+  it checks). In-page jumps clear what sticks to the top with `scroll-margin-top`
+  on the targets: `scroll-padding-top` on the page makes Chrome scroll whenever a
+  link in the sticky header takes focus.

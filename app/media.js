@@ -36,17 +36,22 @@ const UNVERIFIED = Object.freeze({
 });
 
 let photos = {};
-let loaded = false;
+let loading = null;
 
-export async function loadMedia() {
-  if (loaded) return photos;
-  try {
-    const response = await fetch(MANIFEST_URL, { cache: 'force-cache' });
-    if (response.ok) photos = (await response.json()).photos || {};
-  } catch {
-    photos = {};
-  }
-  loaded = true;
+/**
+ * Read the photograph manifest. A manifest that cannot be read rejects, and is
+ * read again next time: a page drawn without it would show every photograph as
+ * a gap.
+ */
+export function loadMedia() {
+  loading ||= readManifest().catch((error) => { loading = null; throw error; });
+  return loading;
+}
+
+async function readManifest() {
+  const response = await fetch(MANIFEST_URL, { cache: 'no-cache' });
+  if (!response.ok) throw new Error(`${MANIFEST_URL}: ${response.status}`);
+  try { photos = (await response.json()).photos || {}; } catch (error) { throw new Error(`${MANIFEST_URL}: ${error.message}`); }
   return photos;
 }
 
@@ -86,7 +91,9 @@ function srcset(id, widths, extension) {
  *   alt       - alternative text; '' marks the image decorative
  *   priority  - true for the one above-the-fold hero image on a page
  *   className - class for the wrapping <picture>
- *   ratio     - CSS aspect-ratio for the <img>, keeping layout stable
+ *   ratio     - CSS aspect-ratio for the <img>, keeping layout stable; when the
+ *               layout names none, the photograph's own shape from the manifest
+ *               is used, so a late image never pushes the page down
  *   credit    - render the licence badge over the image
  */
 export function picture(id, options = {}) {
@@ -96,7 +103,8 @@ export function picture(id, options = {}) {
   const photo = photos[id];
   const loading = priority ? 'eager' : 'lazy';
   const fetchPriority = priority ? 'high' : 'auto';
-  const style = ratio ? ` style="aspect-ratio:${ratio}"` : '';
+  const shape = ratio || (photo?.aspect ? String(photo.aspect) : '');
+  const style = shape ? ` style="aspect-ratio:${shape}"` : '';
 
   if (!photo) {
     const legacy = LEGACY[id];

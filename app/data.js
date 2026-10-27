@@ -1,14 +1,17 @@
 /* The route model.
  *
- * Two sources feed the catalogue:
+ * Three sources feed the catalogue:
  *   content/routes.json      editorial routes with stops, geometry and a real
  *                            elevation profile (scripts/build-routes.py)
- *   discover/seed-tours.json the inherited catalogue rows, which carry route
- *                            facts but no stops, geometry or elevation
+ *   discover/seed-tours.json the inherited catalogue rows: a place, a sport, a
+ *                            theme. No stops, line, elevation or measured
+ *                            distance, duration or ascent
  *   routes/*.geojson         recorded tracks for some Chennai routes
  *
  * A field that no source published stays null. Nothing here fills a gap with
- * a plausible-looking number.
+ * a plausible-looking number: a catalogue row with no measured distance says
+ * so (NOT_MEASURED) wherever a distance would be, and a route with no heights
+ * says it has no elevation profile.
  */
 
 const ROUTES_URL = '/content/routes.json';
@@ -20,10 +23,13 @@ const THEME_LABELS = {
   culture: 'Living Culture', food: 'Food', art: 'Art & Music', community: 'Community',
 };
 
-/* Which file a route is read from, for the build's sitemap dates. */
-const SOURCE_FILES = { editorial: ROUTES_URL, catalogue: SEED_URL, track: TRACKS_URL };
+/** What a page says where a catalogue row has no measurement yet. */
+export const NOT_MEASURED = 'Not yet measured';
 
-let cache = null;
+/** Whether a measurement is missing from a catalogue row, as opposed to a route that simply has none to show. */
+export const isUnmeasured = (route, value) => route.source === 'catalogue' && value == null;
+
+let loading = null;
 
 const titleCase = (value) => String(value || '').replace(/(^|[\s-])(\w)/g, (_, lead, char) => lead + char.toUpperCase());
 
@@ -113,33 +119,31 @@ function fromSeed(tour) {
   };
 }
 
+/* Revalidated on every read: a deploy that changes a file must reach a visitor
+   whose browser already holds the old copy (a 304 costs almost nothing). */
 async function getJson(url) {
-  const response = await fetch(url, { cache: 'force-cache' });
+  const response = await fetch(url, { cache: 'no-cache' });
   if (!response.ok) throw new Error(`${url}: ${response.status}`);
-  return response.json();
+  try { return await response.json(); } catch (error) { throw new Error(`${url}: ${error.message}`); }
 }
 
 /** Tracks actually recorded on the ground, from routes/geo-tracks.json. */
 async function loadTracks() {
-  try {
-    const data = await getJson(TRACKS_URL);
-    return (data?.tracks || []).map((track) => {
-      const coordinates = (track.coords || [])
-        .filter((pair) => Array.isArray(pair) && pair.length >= 2)
-        .map(([lat, lng]) => [lng, lat]);           // stored lat,lng; the model uses lng,lat
-      return {
-        slug: String(track.name || track.file || track.id).toLowerCase()
-          .replace(/\.[a-z]+$/, '').replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''),
-        name: track.name,
-        type: track.type,
-        distanceM: track.dist_km != null ? Math.round(track.dist_km * 1000) : null,
-        center: track.center,
-        coordinates,
-      };
-    }).filter((track) => track.coordinates.length > 1);
-  } catch {
-    return [];
-  }
+  const data = await getJson(TRACKS_URL);
+  return (data?.tracks || []).map((track) => {
+    const coordinates = (track.coords || [])
+      .filter((pair) => Array.isArray(pair) && pair.length >= 2)
+      .map(([lat, lng]) => [lng, lat]);           // stored lat,lng; the model uses lng,lat
+    return {
+      slug: String(track.name || track.file || track.id).toLowerCase()
+        .replace(/\.[a-z]+$/, '').replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''),
+      name: track.name,
+      type: track.type,
+      distanceM: track.dist_km != null ? Math.round(track.dist_km * 1000) : null,
+      center: track.center,
+      coordinates,
+    };
+  }).filter((track) => track.coordinates.length > 1);
 }
 
 const TRACK_SPORT = { 'nature-hike': 'hike', hike: 'hike', cycle: 'cycle', ride: 'cycle' };
@@ -194,13 +198,18 @@ function fromTrack(track) {
   };
 }
 
-export async function loadRoutes() {
-  if (cache) return cache;
-  const [editorial, seed, tracks] = await Promise.all([
-    getJson(ROUTES_URL).catch(() => ({ routes: [] })),
-    getJson(SEED_URL).catch(() => []),
-    loadTracks(),
-  ]);
+/**
+ * Every route. A source that cannot be read rejects the load: "the data is not
+ * there right now" must never look like "there is no such route", so a failed
+ * load is not remembered and the next call reads the sources again.
+ */
+export function loadRoutes() {
+  loading ||= readRoutes().catch((error) => { loading = null; throw error; });
+  return loading;
+}
+
+async function readRoutes() {
+  const [editorial, seed, tracks] = await Promise.all([getJson(ROUTES_URL), getJson(SEED_URL), loadTracks()]);
 
   const routes = (editorial.routes || []).map(fromEditorial);
   routes.push(...tracks.map(fromTrack));
@@ -218,7 +227,6 @@ export async function loadRoutes() {
     known.add(route.slug);
   }
 
-  cache = routes;
   return routes;
 }
 
@@ -237,14 +245,6 @@ export async function featuredRoutes(count = 4) {
     .sort((a, b) => (a.distanceM ?? Infinity) - (b.distanceM ?? Infinity));
   return [...editorial, ...mapped].slice(0, count);
 }
-
-/** The file a route's data comes from, as a repository path. */
-export function sourceFile(route) {
-  return SOURCE_FILES[route?.source]?.replace(/^\//, '') || null;
-}
-
-/** Every content file the catalogue is built from, as repository paths. */
-export const catalogueFiles = () => Object.values(SOURCE_FILES).map((url) => url.replace(/^\//, ''));
 
 export function getStop(route, order) {
   return route?.stops?.find((stop) => stop.order === Number(order)) || null;

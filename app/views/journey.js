@@ -58,7 +58,15 @@ function statList(totals) {
   </ul>`;
 }
 
+/* What was stored when a route was saved can be out of date: where the route is
+   still known its own figures are shown, so a number the route no longer carries
+   (a catalogue row's was never measured) does not live on in a saved card. */
+const figures = (entry, route) => (route
+  ? { distanceM: route.distanceM, durationMin: route.durationMin }
+  : { distanceM: entry.distanceM, durationMin: entry.durationMin });
+
 function savedCard(entry, route) {
+  const { distanceM, durationMin } = figures(entry, route);
   const preview = route ? routePreview(route, { width: 160, height: 150, numbered: Boolean(route.stops?.length) }) : '';
   return `<article class="journey-card">
     <div class="journey-card-media">
@@ -70,8 +78,8 @@ function savedCard(entry, route) {
       <strong>${escapeHtml(entry.name)}</strong>
       <small>${escapeHtml(entry.location || '')}</small>
       <span class="route-card-metrics">
-        ${entry.distanceM ? `<span>${icon('walk')}${escapeHtml(Data.formatDistance(entry.distanceM))}</span>` : ''}
-        ${entry.durationMin ? `<span>${icon('clock')}${escapeHtml(Data.formatDuration(entry.durationMin))}</span>` : ''}
+        ${distanceM ? `<span>${icon('walk')}${escapeHtml(Data.formatDistance(distanceM))}</span>` : ''}
+        ${durationMin ? `<span>${icon('clock')}${escapeHtml(Data.formatDuration(durationMin))}</span>` : ''}
         ${entry.stops ? `<span>${icon('pin')}${entry.stops} stops</span>` : ''}
       </span>
       <div class="journey-card-actions">
@@ -82,7 +90,8 @@ function savedCard(entry, route) {
   </article>`;
 }
 
-function walkCard(entry) {
+function walkCard(entry, route) {
+  const { distanceM } = figures(entry, route);
   return `<article class="journey-card is-complete">
     <div class="journey-card-media">
       ${entry.photo ? picture(entry.photo, { sizes: '220px', alt: '', ratio: '4 / 3' }) : '<span class="photo photo-missing"></span>'}
@@ -92,7 +101,7 @@ function walkCard(entry) {
       <strong>${escapeHtml(entry.name)}</strong>
       <small>${escapeHtml(entry.location || '')} · ${escapeHtml(dateLabel(entry.completedAt))}</small>
       <span class="route-card-metrics">
-        ${entry.distanceM ? `<span>${icon('walk')}${escapeHtml(Data.formatDistance(entry.distanceM))}</span>` : ''}
+        ${distanceM ? `<span>${icon('walk')}${escapeHtml(Data.formatDistance(distanceM))}</span>` : ''}
         ${entry.stops ? `<span>${icon('pin')}${entry.stops} stops</span>` : ''}
       </span>
       <a class="text-link" href="${routePath(entry.slug)}" data-route="${escapeHtml(entry.slug)}">Revisit ${icon('arrow')}</a>
@@ -178,7 +187,7 @@ export async function render() {
 
       ${store.walks.length ? `<div class="journey-section">
         <div class="section-head"><div><p class="eyebrow eyebrow-mark">Recently completed walks</p><h2 class="section-title">Journeys you have walked.</h2></div></div>
-        <div class="journey-grid">${store.walks.slice(0, 3).map(walkCard).join('')}</div>
+        <div class="journey-grid">${store.walks.slice(0, 3).map((entry) => walkCard(entry, bySlug.get(entry.slug))).join('')}</div>
       </div>` : ''}
     </section>
 

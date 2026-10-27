@@ -1,5 +1,7 @@
 /* Line icons, inline so no icon font or sprite request is needed.
-   All are drawn on a 24x24 grid and inherit colour and stroke from CSS. */
+   All are drawn on a 24x24 grid and inherit colour and stroke from CSS. The
+   play and pause marks are shapes, not strokes: where CSS fills an icon
+   (.listen-play) they come out solid, and elsewhere they show as outlines. */
 
 const PATHS = {
   walk: '<path d="M13 4.6a1.6 1.6 0 1 0 0-.1"/><path d="M11 21l1.4-5.1-2.6-2.3.9-4.6L8 10.6 7 13.6"/><path d="M17 12.4l-2.3-1.1-1.4-3.2-2.6.9"/><path d="M14.6 15.9L16.4 21"/>',
@@ -16,7 +18,7 @@ const PATHS = {
   compass: '<circle cx="12" cy="12" r="8.4"/><path d="m14.8 9.2-1.6 4.2-4.2 1.6 1.6-4.2Z"/>',
   users: '<circle cx="9.6" cy="9" r="3.2"/><path d="M3.8 19.2a5.9 5.9 0 0 1 11.6 0"/><path d="M16 6.2a3.1 3.1 0 0 1 0 5.8"/><path d="M17.6 14.6a5.6 5.6 0 0 1 2.7 4.6"/>',
   play: '<path d="M8.6 5.6 18.4 12l-9.8 6.4Z"/>',
-  pause: '<path d="M9.4 5.4v13.2"/><path d="M14.6 5.4v13.2"/>',
+  pause: '<rect x="6.6" y="4.8" width="3.8" height="14.4" rx="1.1"/><rect x="13.6" y="4.8" width="3.8" height="14.4" rx="1.1"/>',
   search: '<circle cx="10.8" cy="10.8" r="6.6"/><path d="m15.8 15.8 4.4 4.4"/>',
   share: '<circle cx="17.6" cy="6" r="2.6"/><circle cx="6.4" cy="12" r="2.6"/><circle cx="17.6" cy="18" r="2.6"/><path d="m8.7 10.8 6.6-3.5"/><path d="m8.7 13.2 6.6 3.5"/>',
   bookmark: '<path d="M6.4 4.4h11.2v15.4L12 15.6l-5.6 4.2Z"/>',

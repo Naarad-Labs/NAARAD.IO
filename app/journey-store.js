@@ -13,24 +13,50 @@ const KEY = 'naarad.journey.v1';
    writes anyone's journey (main.js explains the mode). */
 const PRERENDER = Boolean(globalThis.__NAARAD_PRERENDER__);
 
-const EMPTY = {
+/* A new record every time: the arrays are mutated in place, so a shared one
+   would carry one visitor's entries into the "empty" journey that follows. */
+const empty = () => ({
   saved: [],       // [{ slug, name, location, photo, savedAt }]
   walks: [],       // [{ slug, name, location, photo, distanceM, stops, completedAt }]
   journal: [],     // [{ id, routeSlug, title, place, body, createdAt }]
   downloads: [],   // [{ slug, name, stops, sizeLabel, urls, version, savedAt }]
   listened: {},    // stopSlug -> seconds listened
-};
+});
 
 let state = null;
 const listeners = new Set();
+
+const isObject = (value) => value !== null && typeof value === 'object' && !Array.isArray(value);
+
+/**
+ * What was stored, kept only where it has the shape this module writes. The
+ * browser's storage is the visitor's to edit and other versions have written
+ * to it, so valid JSON is not enough: a field of the wrong kind falls back to
+ * empty on its own, and the rest of the record is kept.
+ */
+function normalise(stored) {
+  const record = empty();
+  if (!isObject(stored)) return record;
+  const entries = (list, key) => (Array.isArray(list) ? list.filter((entry) => isObject(entry) && typeof entry[key] === 'string') : []);
+  record.saved = entries(stored.saved, 'slug');
+  record.walks = entries(stored.walks, 'slug');
+  record.journal = entries(stored.journal, 'id');
+  record.downloads = entries(stored.downloads, 'slug');
+  if (isObject(stored.listened)) {
+    for (const [slug, seconds] of Object.entries(stored.listened)) {
+      if (Number.isFinite(seconds)) record.listened[slug] = seconds;
+    }
+  }
+  return record;
+}
 
 function read() {
   if (state) return state;
   try {
     const raw = PRERENDER ? null : localStorage.getItem(KEY);
-    state = raw ? { ...EMPTY, ...JSON.parse(raw) } : { ...EMPTY };
+    state = normalise(raw ? JSON.parse(raw) : null);
   } catch {
-    state = { ...EMPTY };
+    state = empty();
   }
   return state;
 }
@@ -136,7 +162,7 @@ export function recordListening(stopSlug, seconds) {
 /** Totals for the journey dashboard, all derived from what is stored. */
 export function stats() {
   const current = read();
-  const metres = current.walks.reduce((sum, walk) => sum + (walk.distanceM || 0), 0);
+  const metres = current.walks.reduce((sum, walk) => sum + (Number.isFinite(walk.distanceM) ? walk.distanceM : 0), 0);
   const places = new Set(current.walks.map((walk) => walk.location).filter(Boolean)).size;
   const listenedSeconds = Object.values(current.listened).reduce((sum, value) => sum + value, 0);
   return {
@@ -164,6 +190,6 @@ export function badges() {
 }
 
 export function clearAll() {
-  state = { ...EMPTY };
+  state = empty();
   write();
 }

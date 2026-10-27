@@ -8,9 +8,20 @@
  * draws it from cached content. Content JSON is served network-first so new
  * routes and stories appear without a new worker. Photographs and map tiles
  * are cached as they are used, with the tile cache kept small.
+ *
+ * "Network" here means the server, not the browser's HTTP cache: GitHub Pages
+ * lets a browser keep any file for ten minutes, so network-first pages and
+ * content are revalidated (cache: 'no-cache'), and what goes into a versioned
+ * cache is fetched past the HTTP cache (cache: 'reload'). Otherwise a visit
+ * just before a deploy could pin the old code into the new version's cache
+ * until the next bump.
+ *
+ * A new worker takes over at once (skipWaiting, claim). The view modules call
+ * each other, so a tab must not run old code beside new: app/shell.html makes
+ * a page that was already controlled reload once when the worker changes.
  */
 
-const VERSION = 'v15';
+const VERSION = 'v16';
 const SHELL = `naarad-shell-${VERSION}`;
 const PAGES = `naarad-pages-${VERSION}`;
 const CONTENT = `naarad-content-${VERSION}`;
@@ -53,11 +64,17 @@ const isMedia = (url) => url.pathname.startsWith('/Images/');
 const isTile = (url) => /tile\.openstreetmap\.org|server\.arcgisonline\.com/.test(url.host);
 const isAppCode = (url) => url.pathname.startsWith('/app/');
 
+/* The same request, made to the server (see the note at the top). A request
+   that cannot be rebuilt (some navigations) is used as it came. */
+function asked(request, cache) {
+  try { return new Request(request, { cache }); } catch { return request; }
+}
+
 self.addEventListener('install', (event) => {
   event.waitUntil((async () => {
     const cache = await caches.open(SHELL);
     // One missing file must not fail the whole install.
-    await Promise.all(SHELL_ASSETS.map((asset) => cache.add(asset).catch(() => {})));
+    await Promise.all(SHELL_ASSETS.map((asset) => cache.add(asked(asset, 'reload')).catch(() => {})));
     await self.skipWaiting();
   })());
 });
@@ -80,11 +97,13 @@ async function trim(cacheName, limit) {
 
 const fromBundle = (request) => caches.match(request, { cacheName: BUNDLES, ignoreSearch: true });
 
-async function cacheFirst(request, cacheName) {
+/* Pass `fresh` for this site's own files: what is stored under a version is
+   fetched past the HTTP cache. Map tiles are another site's, and stay as they come. */
+async function cacheFirst(request, cacheName, fresh = false) {
   const cache = await caches.open(cacheName);
   const hit = await cache.match(request);
   if (hit) return hit;
-  const response = await fetch(request).catch(async (error) => (await fromBundle(request)) || Promise.reject(error));
+  const response = await fetch(fresh ? asked(request, 'reload') : request).catch(async (error) => (await fromBundle(request)) || Promise.reject(error));
   if (response.ok || response.type === 'opaque') cache.put(request, response.clone());
   return response;
 }
@@ -96,7 +115,7 @@ const pageKey = (url) => `${url.origin}${url.pathname}`;
 async function page(request, url) {
   const cache = await caches.open(PAGES);
   try {
-    const response = await fetch(request);
+    const response = await fetch(asked(request, 'no-cache'));
     if (response.ok && !response.redirected) {
       await cache.put(pageKey(url), response.clone());
       await trim(PAGES, PAGE_LIMIT);
@@ -113,7 +132,7 @@ async function page(request, url) {
 async function networkFirst(request, cacheName) {
   const cache = await caches.open(cacheName);
   try {
-    const response = await fetch(request);
+    const response = await fetch(asked(request, 'no-cache'));
     if (response.ok) cache.put(request, response.clone());
     return response;
   } catch (error) {
@@ -141,6 +160,6 @@ self.addEventListener('fetch', (event) => {
   // Pages first: /routes/<slug>/ is a page, though /routes/ also holds track data.
   if (request.mode === 'navigate') { event.respondWith(page(request, url)); return; }
   if (isContent(url)) { event.respondWith(networkFirst(request, CONTENT)); return; }
-  if (isMedia(url)) { event.respondWith(cacheFirst(request, MEDIA)); return; }
-  if (isAppCode(url)) { event.respondWith(cacheFirst(request, SHELL)); return; }
+  if (isMedia(url)) { event.respondWith(cacheFirst(request, MEDIA, true)); return; }
+  if (isAppCode(url)) { event.respondWith(cacheFirst(request, SHELL, true)); return; }
 });
