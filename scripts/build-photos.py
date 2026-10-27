@@ -68,7 +68,6 @@ WANTED = {
     "hampi-lotus-mahal": ("lotus mahal hampi", "card", 800),
     "hampi-tungabhadra": ("tungabhadra river hampi coracle", "feature", 900),
     "hampi-sasivekalu": ("sasivekalu ganesha hampi monolith", "card", 700),
-    "thanjavur-temple": ("brihadeeswarar temple thanjavur", "feature", 1100),
     "thanjavur-bronze": ("chola bronze sculpture nataraja", "card", 700),
     "varanasi-ghats": ("varanasi ghats ganges", "card", 900),
     "mysore-palace": ("mysore palace", "card", 900),
@@ -81,6 +80,21 @@ WANTED = {
     "india-reader": ("woman reading book india", "card", 700),
     "india-traveller": ("hampi tourist", "feature", 800),
     "india-storyteller": ("indian musician performer", "feature", 800),
+}
+
+# id -> (Wikimedia Commons file title, role). Chosen by eye where the search
+# result was hazy or off-subject; the author and licence come from Commons itself.
+PINNED = {
+    "thanjavur-temple": ("Brihadisvara Temple during Maha Shivaratri-WUS03611 (edit).jpg", "feature"),
+}
+
+# Stops with no relevant licensed photograph yet get an illustrated placeholder
+# that says so, so nothing shows an unrelated picture. id -> (label, kind).
+PLACEHOLDERS = {
+    "thanjavur-palace": ("Thanjavur Palace", "palace"),
+    "thanjavur-library": ("Saraswathi Mahal Library", "library"),
+    "auroville-amphitheatre": ("Amphitheatre and Urn", "amphitheatre"),
+    "auroville-visitor-centre": ("Auroville Visitor Centre", "pavilion"),
 }
 
 # Photographs whose uploads carry black bars (checked by eye); they are cropped
@@ -120,6 +134,25 @@ def fetch(url: str, timeout: int = 60) -> bytes:
             time.sleep(wait)
             delay = min(delay * 2, 30)
     raise RuntimeError("unreachable")
+
+
+def pinned(title: str) -> dict:
+    """One named Commons file, with its creator and licence as Commons records them."""
+    query = urllib.parse.urlencode({
+        "action": "query", "format": "json", "titles": f"File:{title}", "prop": "imageinfo",
+        "iiprop": "url|extmetadata", "iiurlwidth": 1920,
+    })
+    page = next(iter(json.loads(fetch(f"https://commons.wikimedia.org/w/api.php?{query}"))["query"]["pages"].values()))
+    info = page["imageinfo"][0]
+    meta = info["extmetadata"]
+    licence = clean(meta.get("LicenseShortName", {}).get("value"))
+    if not re.match(r"(CC0|Public domain|CC BY(-SA)? )", licence, re.I):
+        raise ValueError(f"licence '{licence}' is not one we accept")
+    return {
+        "url": info.get("thumburl") or info["url"], "title": shorten(clean(meta.get("ObjectName", {}).get("value")) or title),
+        "author": shorten(re.sub(r"^Original:\s*", "", clean(meta.get("Artist", {}).get("value"))) or "Unknown"), "licence": licence,
+        "licenceUrl": clean(meta.get("LicenseUrl", {}).get("value")), "sourcePage": info["descriptionurl"], "source": "wikimedia",
+    }
 
 
 def search(query: str, min_width: int) -> dict | None:
@@ -226,6 +259,67 @@ def trim_bars(image: Image.Image) -> Image.Image:
     return image.crop((left, top, width - right, height - bottom))
 
 
+def placeholder(photo_id: str, label: str, kind: str) -> dict:
+    """An original illustration (drawn here, so no one else's rights) on warm paper."""
+    from PIL import ImageDraw, ImageFont
+    k, w, h = 2, 1600, 900
+    image = Image.new("RGB", (w * k, h * k), (244, 235, 220))
+    d = ImageDraw.Draw(image)
+    ink, clay, sand = (122, 58, 30), (196, 112, 64), (231, 214, 190)
+    d.rectangle([0, 640 * k, w * k, h * k], fill=sand)
+    cx = 800 * k
+    if kind == "palace":      # a long arcaded facade with a central turret
+        d.rectangle([260 * k, 400 * k, 1340 * k, 640 * k], fill=clay)
+        d.rectangle([660 * k, 250 * k, 940 * k, 400 * k], fill=clay)
+        d.polygon([(640 * k, 250 * k), (800 * k, 150 * k), (960 * k, 250 * k)], fill=ink)
+        for x in range(300, 1300, 100):
+            d.pieslice([x * k, 470 * k, (x + 70) * k, 540 * k], 180, 360, fill=sand)
+            d.rectangle([x * k, 505 * k, (x + 70) * k, 640 * k], fill=sand)
+    elif kind == "library":   # shelves of stacked palm-leaf manuscripts
+        d.rectangle([380 * k, 190 * k, 1220 * k, 640 * k], fill=clay)
+        for row in range(4):
+            y = 215 + row * 107
+            d.rectangle([410 * k, y * k, 1190 * k, (y + 88) * k], fill=sand)
+            x = 420
+            for n in range(26):
+                d.rectangle([x * k, (y + 12) * k, (x + 20) * k, (y + 88) * k], fill=[ink, clay, (160, 90, 50)][n % 3])
+                x += 30
+    elif kind == "amphitheatre":   # stepped rings around a central urn
+        for i in range(5):
+            r = 330 - i * 55
+            d.pieslice([cx - r * k, (640 - r // 2) * k, cx + r * k, (640 + r // 2) * k], 180, 360, fill=[ink, clay, (160, 90, 50), clay, ink][i])
+        d.ellipse([cx - 40 * k, 470 * k, cx + 40 * k, 560 * k], fill=sand)
+        d.rectangle([cx - 14 * k, 440 * k, cx + 14 * k, 480 * k], fill=sand)
+    else:                     # a pavilion: roof, columns, steps
+        d.polygon([(330 * k, 330 * k), (800 * k, 190 * k), (1270 * k, 330 * k)], fill=ink)
+        d.rectangle([360 * k, 330 * k, 1240 * k, 365 * k], fill=clay)
+        for x in range(400, 1220, 130):
+            d.rectangle([x * k, 365 * k, (x + 40) * k, 620 * k], fill=clay)
+        d.rectangle([340 * k, 620 * k, 1260 * k, 660 * k], fill=ink)
+    image = image.resize((w, h), Image.LANCZOS)
+    d = ImageDraw.Draw(image)
+    font = None
+    for path in ("/usr/share/fonts/truetype/dejavu/DejaVuSerif.ttf", "/usr/share/fonts/dejavu/DejaVuSerif.ttf"):
+        if Path(path).exists():
+            font = ImageFont.truetype(path, 46)
+            small = ImageFont.truetype(path, 30)
+            break
+    if font:
+        d.text((w // 2, 745), label, fill=ink, font=font, anchor="mm")
+        d.text((w // 2, 805), "Photograph coming soon", fill=clay, font=small, anchor="mm")
+    OUT.mkdir(parents=True, exist_ok=True)
+    sizes = [width for width in ROLES["feature"] if width <= w]
+    for width in sizes:
+        resized = image.resize((width, round(h * width / w)), Image.LANCZOS)
+        resized.save(OUT / f"{photo_id}-{width}.avif", quality=58, speed=6)
+        resized.save(OUT / f"{photo_id}-{width}.webp", quality=80, method=5)
+    return {
+        "id": photo_id, "role": "card", "title": f"{label} (placeholder)", "author": "Naarad", "licence": "Original artwork",
+        "licenceUrl": "", "sourcePage": "https://naarad.io", "source": "naarad", "placeholder": True,
+        "widths": sizes, "aspect": round(w / h, 4),
+    }
+
+
 def encode(photo_id: str, role: str, source: Path) -> dict:
     image = Image.open(source)
     if image.mode in ("RGBA", "P", "LA"):
@@ -253,7 +347,7 @@ def encode(photo_id: str, role: str, source: Path) -> dict:
 def main() -> int:
     arguments = [value for value in sys.argv[1:] if not value.startswith("--")]
     encode_only = "--encode" in sys.argv
-    selected = set(arguments) if arguments else set(WANTED)
+    selected = set(arguments) if arguments else set(WANTED) | set(PINNED)
 
     CACHE.mkdir(parents=True, exist_ok=True)
     MANIFEST.parent.mkdir(parents=True, exist_ok=True)
@@ -261,7 +355,7 @@ def main() -> int:
 
     photos: dict[str, dict] = {}
     missing: list[str] = []
-    for photo_id, (query, role, min_width) in WANTED.items():
+    for photo_id, (query, role, min_width) in {**WANTED, **{k: (v[0], v[1], 0) for k, v in PINNED.items()}}.items():
         cached = CACHE / f"{photo_id}.jpg"
         record = existing.get(photo_id)
         if photo_id not in selected:
@@ -271,7 +365,7 @@ def main() -> int:
 
         if not encode_only and not (cached.exists() and record):
             try:
-                found = search(query, min_width)
+                found = pinned(query) if photo_id in PINNED else search(query, min_width)
                 if found:
                     download(found["url"], cached)
                     record = {
@@ -298,6 +392,10 @@ def main() -> int:
             continue
         photos[photo_id] = record
         print(f"+ {photo_id}: {record['author']} ({record['licence']}) {record['widths']}")
+
+    for photo_id, (label, kind) in PLACEHOLDERS.items():
+        photos[photo_id] = placeholder(photo_id, label, kind)
+        print(f"~ {photo_id}: placeholder")
 
     MANIFEST.write_text(json.dumps({
         "note": "Photographs found through the Openverse API. Author and licence are recorded as the API reported them. "
