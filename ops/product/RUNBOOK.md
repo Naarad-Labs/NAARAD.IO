@@ -47,6 +47,15 @@ Commit after every item. An interrupted run leaves a clean tree and a PROGRESS.m
 - Never put a key, token, password or private URL in a file, commit, PR, log or report. Secrets arrive as environment variables only. `node scripts/ops.mjs scan` must pass.
 - Work outside the roadmap is not covered by D-0007. A user-visible feature must be registered in `ops/features/features.json`.
 
+## Coding discipline (Karpathy's guidelines, binding on every run)
+
+From `forrestchang/andrej-karpathy-skills` (MIT). They bias toward caution and the smallest change that works.
+
+1. **Think before coding.** State assumptions. If an item can be read two ways, or something is unclear, do not pick silently: note it in PROGRESS.md and take the safer reading, or leave the item `blocked` with the question.
+2. **Simplicity first.** The minimum code that meets the item's "done when". No extra features, no abstraction for a single use, no configurability nobody asked for, no handling of impossible cases. If it can be 50 lines instead of 200, rewrite it. Prefer CSS to JavaScript, JavaScript to a dependency, and deleting to adding.
+3. **Surgical changes.** Touch only what the item needs. Do not tidy or reformat nearby code; match the existing style. Remove only what your own change made unused; mention other dead code in the report.
+4. **Goal-driven.** Turn each item into a check that fails before and passes after (a test, a measurement or a curl), run it, and report the result. No item is `done` without it.
+
 ## Honesty rules (the site's own contract)
 
 Nothing fills a gap with a plausible-looking number. The site has no recorded narration, no accounts, no app and no paid plans until the matching feature is live and verified; copy says what is true today. Every fact shown to visitors has a source and a checked date. AI-generated text or audio is labelled and has English source text; machine translation is labelled unreviewed. Photos need a licence that allows use and visible credit.
