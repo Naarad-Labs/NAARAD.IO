@@ -275,6 +275,11 @@ export function lintGuide(text) {
 
 /* ---- decision log ---- */
 
+/* The log is append-only, so ids run D-0001, D-0002 ... with no gap and no reuse. */
+export const validateDecisionOrder = (decisions) => decisions
+  .map((d, i) => (d.id === `D-${String(i + 1).padStart(4, '0')}` ? null : `${d.id}: ids must run D-0001, D-0002 ... in order; this is entry ${i + 1}`))
+  .filter(Boolean);
+
 export function validateDecisions(decisions, ledger, { today } = {}) {
   const errors = [];
   const ids = new Set(ledger.map((entry) => entry.id));
@@ -359,6 +364,7 @@ export function validateAll(stores, { today } = {}) {
     ...validateLedger(stores.ledger, { today }),
     ...validateOpportunities(stores.opportunities, stores.ledger),
     ...validateDecisions(stores.decisions, stores.ledger, { today }),
+    ...validateDecisionOrder(stores.decisions),
     ...validateGuardrails(stores.guardrails),
   ];
   const warnings = [];

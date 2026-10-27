@@ -4,7 +4,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import {
   loadStores, validateAll, validateLedger, validateOpportunities, validateDecisions,
-  validateGuardrails, gateG1, canAct, findSecrets, findPersonalData, intake, lintGuide,
+  validateGuardrails, validateDecisionOrder, gateG1, canAct, findSecrets, findPersonalData, intake, lintGuide,
 } from '../lib.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
@@ -265,4 +265,9 @@ test('override: needs a human approver, a scope and an expiry, and is reported w
 
 test('override: does not make a failing opportunity pass G1', () => {
   assert.equal(gateG1(opportunity({ evidence: [] }), ledger3).pass, false);
+});
+
+test('decision log: ids must be sequential', () => {
+  assert.equal(validateDecisionOrder([{ id: 'D-0001' }, { id: 'D-0003' }]).length, 1);
+  assert.deepEqual(validateDecisionOrder([{ id: 'D-0001' }, { id: 'D-0002' }]), []);
 });
