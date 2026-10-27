@@ -24,7 +24,7 @@ import urllib.parse
 import urllib.request
 from pathlib import Path
 
-from PIL import Image
+from PIL import Image, ImageFilter
 
 ROOT = Path(__file__).resolve().parent.parent
 CACHE = ROOT / ".cache/photos"
@@ -43,9 +43,9 @@ LICENCE_NAMES = {
 
 # Width sets per role. Keep them to what the layouts actually request.
 ROLES = {
-    "hero": [800, 1200, 1600, 2400],
-    "feature": [640, 960, 1280, 1600],
-    "card": [320, 480, 640, 800],
+    "hero": [800, 1200, 1600, 1920, 2400],
+    "feature": [640, 960, 1280, 1600, 1920],
+    "card": [320, 480, 640, 800, 1200],
     "thumb": [96, 192, 288],
     "portrait": [120, 240],
 }
@@ -243,8 +243,10 @@ def encode(photo_id: str, role: str, source: Path) -> dict:
     for width in sizes:
         height = max(1, round(image.height * width / image.width))
         resized = image.resize((width, height), Image.LANCZOS)
-        resized.save(OUT / f"{photo_id}-{width}.avif", quality=45, speed=6)
-        resized.save(OUT / f"{photo_id}-{width}.webp", quality=72, method=5)
+        if width < native:   # downscaling softens; a light unsharp mask brings the edges back
+            resized = resized.filter(ImageFilter.UnsharpMask(radius=0.8, percent=60, threshold=2))
+        resized.save(OUT / f"{photo_id}-{width}.avif", quality=58, speed=6)
+        resized.save(OUT / f"{photo_id}-{width}.webp", quality=80, method=5)
     return {"widths": sizes, "aspect": round(image.width / image.height, 4)}
 
 
