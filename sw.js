@@ -21,7 +21,7 @@
  * a page that was already controlled reload once when the worker changes.
  */
 
-const VERSION = 'v16';
+const VERSION = 'v17';
 const SHELL = `naarad-shell-${VERSION}`;
 const PAGES = `naarad-pages-${VERSION}`;
 const CONTENT = `naarad-content-${VERSION}`;
@@ -59,6 +59,10 @@ const SHELL_ASSETS = [
   '/Images/cropped_logo.png',
 ];
 
+/* The data every page is drawn from, kept at install: offline, a page the visitor
+   never opened needs it, and a copy cached by the first visit may not have landed yet. */
+const CONTENT_ASSETS = ['/content/routes.json', '/content/stories.json', '/content/photo-sources.json', '/routes/geo-tracks.json', '/discover/seed-tours.json'];
+
 const isContent = (url) => url.pathname.startsWith('/content/') || url.pathname.startsWith('/discover/') || url.pathname.startsWith('/routes/');
 const isMedia = (url) => url.pathname.startsWith('/Images/');
 const isTile = (url) => /tile\.openstreetmap\.org|server\.arcgisonline\.com/.test(url.host);
@@ -74,7 +78,11 @@ self.addEventListener('install', (event) => {
   event.waitUntil((async () => {
     const cache = await caches.open(SHELL);
     // One missing file must not fail the whole install.
-    await Promise.all(SHELL_ASSETS.map((asset) => cache.add(asked(asset, 'reload')).catch(() => {})));
+    const content = await caches.open(CONTENT);
+    await Promise.all([
+      ...SHELL_ASSETS.map((asset) => cache.add(asked(asset, 'reload')).catch(() => {})),
+      ...CONTENT_ASSETS.map((asset) => content.add(asked(asset, 'reload')).catch(() => {})),
+    ]);
     await self.skipWaiting();
   })());
 });
