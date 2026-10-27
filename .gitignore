@@ -29,3 +29,34 @@ e2e/playwright-report/
 
 # Python bytecode
 __pycache__/
+
+# Agent skill packs and sub-agents installed locally (npx skills add / impeccable install).
+.claude/skills/animate
+.claude/skills/animate-expo
+.claude/skills/animation-performance
+.claude/skills/animation-vocabulary
+.claude/skills/apple-design
+.claude/skills/ask-sonner
+.claude/skills/break-ui
+.claude/skills/emil-design-eng
+.claude/skills/find-animation-opportunities
+.claude/skills/impeccable
+.claude/skills/improve-animations
+.claude/skills/mobile-native
+.claude/skills/pick-ui-library
+.claude/skills/prototype
+.claude/skills/replica-architect
+.claude/skills/replica-backend
+.claude/skills/replica-brand
+.claude/skills/replica-build
+.claude/skills/replica-deploy
+.claude/skills/replica-design
+.claude/skills/replica-diff
+.claude/skills/replica-entrepreneur
+.claude/skills/replica-launch
+.claude/skills/replica-recon
+.claude/skills/replica-test
+.claude/skills/review-animations
+.claude/skills/ui-ux-pro-max
+.claude/skills/write-swift
+.claude/agents/
