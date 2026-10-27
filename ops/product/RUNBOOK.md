@@ -56,6 +56,21 @@ From `forrestchang/andrej-karpathy-skills` (MIT). They bias toward caution and t
 3. **Surgical changes.** Touch only what the item needs. Do not tidy or reformat nearby code; match the existing style. Remove only what your own change made unused; mention other dead code in the report.
 4. **Goal-driven.** Turn each item into a check that fails before and passes after (a test, a measurement or a curl), run it, and report the result. No item is `done` without it.
 
+## Skills and when to use them
+
+Installed per run if missing (`npx skills add <repo> -a claude-code -s <name> -y`); if an install is refused, the rules below still bind, because they are written out here.
+
+| Skill (source) | Use it when | Rule |
+|---|---|---|
+| `karpathy-guidelines` (forrestchang/andrej-karpathy-skills) | every coding task | The four rules above. |
+| `ponytail` (DietrichGebert/ponytail), level `full` | every coding task, with the Karpathy rules | Smallest complete change: skip what was not asked, reuse what exists (house code, platform, stdlib, installed dependency) before writing, never add a dependency for a few lines, one line if a reader gets it at a glance. Never cut validation at trust boundaries, data-loss handling, security or accessibility. New non-trivial logic gets one small test. A known limit is marked `shortcut: <limit>, <when to upgrade>`. End each reply with what was skipped or not checked. |
+| `ponytail-review` | before opening each PR | Review your own diff for correctness, safety and any line not needed. |
+| `ponytail-audit`, `ponytail-debt` | once per week of runs, report only | Repo-wide audit and the list of `shortcut:` debt; changes nothing, goes in `REPORT.md`. |
+| `playwright-cli` (microsoft/playwright-cli) | checking a page in a real browser: layout, focus order, console errors, the live site after a merge | `playwright-cli --config .playwright/cli.config.json open <url>`, then `snapshot`, `screenshot`, `close`. Use the repo's Playwright tests for anything that must stay checked. |
+| `impeccable`, `ui-ux-pro-max`, `design-taste-frontend`, Emil Kowalski's motion skills | visual or motion work only (roadmap sections 2-3) | Advice only. The owner's mockup tokens and the tests decide; `impeccable detect app` is a non-blocking check. |
+
+When two skills disagree, the order is: guardrails and honesty rules, then this runbook, then Karpathy and ponytail, then the design skills.
+
 ## Honesty rules (the site's own contract)
 
 Nothing fills a gap with a plausible-looking number. The site has no recorded narration, no accounts, no app and no paid plans until the matching feature is live and verified; copy says what is true today. Every fact shown to visitors has a source and a checked date. AI-generated text or audio is labelled and has English source text; machine translation is labelled unreviewed. Photos need a licence that allows use and visible credit.
