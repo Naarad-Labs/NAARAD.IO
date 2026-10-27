@@ -23,7 +23,7 @@ test('every roadmap item has a row and the other way round', () => {
 
 test('render round-trips and setStatus edits one row', () => {
   const doc = parse(text);
-  assert.equal(render(doc), text.replace(/\n$/, ''));
+  assert.equal(render(doc), text);
   setStatus(doc, 5, 'done', 'PR 1 | extra');
   const again = parse(render(doc));
   assert.equal(again.rows[4].status, 'done');
