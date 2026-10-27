@@ -60,3 +60,14 @@ __pycache__/
 .claude/skills/ui-ux-pro-max
 .claude/skills/write-swift
 .claude/agents/
+
+# More locally installed skills and playwright-cli output.
+.claude/skills/karpathy-guidelines
+.claude/skills/playwright-cli
+.claude/skills/ponytail
+.claude/skills/ponytail-audit
+.claude/skills/ponytail-debt
+.claude/skills/ponytail-gain
+.claude/skills/ponytail-help
+.claude/skills/ponytail-review
+.playwright-cli/
