@@ -20,20 +20,20 @@ Run lock: none
 | 10 | todo |  | Log the merge in the decision log | Merge the pending review-fix branch |  |
 | 11 | todo |  | Delete stale remote branches | Merge the pending review-fix branch |  |
 | 12 | todo |  | Write a branch naming and lifetime rule | Merge the pending review-fix branch |  |
-| 13 | todo |  | Add a CI check that features need evidence | Governance gates (ops/ decision log and  |  |
-| 14 | todo |  | Add a CI check that overrides are logged | Governance gates (ops/ decision log and  |  |
-| 15 | todo |  | Validate features.json against a JSON schema | Governance gates (ops/ decision log and  |  |
-| 16 | todo |  | Reconcile F-001 and F-002 status with reality | Governance gates (ops/ decision log and  |  |
-| 17 | todo |  | Make the register readable on a public page or keep it explicitly priv | Governance gates (ops/ decision log and  |  |
-| 18 | todo |  | Add decision-log numbering lint | Governance gates (ops/ decision log and  |  |
-| 19 | todo |  | Add an evidence-ledger staleness report | Governance gates (ops/ decision log and  |  |
-| 20 | todo |  | Require a source for every number in content/ | Governance gates (ops/ decision log and  |  |
-| 21 | todo |  | Write the cloud-spend guard | Governance gates (ops/ decision log and  |  |
-| 22 | todo |  | Log the Sarvam 403 block as a risk | Governance gates (ops/ decision log and  |  |
-| 23 | todo |  | Log the local-only LLM endpoint as non-shippable | Governance gates (ops/ decision log and  |  |
-| 24 | todo |  | Define the G1 gate in one page | Governance gates (ops/ decision log and  |  |
-| 25 | todo |  | Add a PR template with governance fields | Governance gates (ops/ decision log and  |  |
-| 26 | todo |  | Add a weekly governance review note | Governance gates (ops/ decision log and  |  |
+| 13 | todo |  | Add a CI check that features need evidence | Governance gates (ops/ decision log and |  |
+| 14 | todo |  | Add a CI check that overrides are logged | Governance gates (ops/ decision log and |  |
+| 15 | todo |  | Validate features.json against a JSON schema | Governance gates (ops/ decision log and |  |
+| 16 | todo |  | Reconcile F-001 and F-002 status with reality | Governance gates (ops/ decision log and |  |
+| 17 | todo |  | Make the register readable on a public page or keep it explicitly priv | Governance gates (ops/ decision log and |  |
+| 18 | todo |  | Add decision-log numbering lint | Governance gates (ops/ decision log and |  |
+| 19 | todo |  | Add an evidence-ledger staleness report | Governance gates (ops/ decision log and |  |
+| 20 | todo |  | Require a source for every number in content/ | Governance gates (ops/ decision log and |  |
+| 21 | todo |  | Write the cloud-spend guard | Governance gates (ops/ decision log and |  |
+| 22 | todo |  | Log the Sarvam 403 block as a risk | Governance gates (ops/ decision log and |  |
+| 23 | todo |  | Log the local-only LLM endpoint as non-shippable | Governance gates (ops/ decision log and |  |
+| 24 | todo |  | Define the G1 gate in one page | Governance gates (ops/ decision log and |  |
+| 25 | todo |  | Add a PR template with governance fields | Governance gates (ops/ decision log and |  |
+| 26 | todo |  | Add a weekly governance review note | Governance gates (ops/ decision log and |  |
 | 27 | todo |  | Document what verify.sh checks | verify.sh and CI |  |
 | 28 | todo |  | Make verify.sh fail fast with clear stage names | verify.sh and CI |  |
 | 29 | todo |  | Time every verify.sh stage | verify.sh and CI |  |
@@ -171,21 +171,21 @@ Run lock: none
 | 161 | todo |  | Add skeletons for the route map container | Page transitions, cards and hover |  |
 | 162 | todo |  | Fade photographs in on load | Page transitions, cards and hover |  |
 | 163 | todo |  | Add icon morphs for play/pause and menu | Page transitions, cards and hover |  |
-| 164 | todo |  | Define the stop-selection sync model | Stop selection, bottom sheet and listen  |  |
-| 165 | todo |  | Animate the rail-to-marker highlight | Stop selection, bottom sheet and listen  |  |
-| 166 | todo |  | Pan the map on select without competing animations | Stop selection, bottom sheet and listen  |  |
-| 167 | todo |  | Crossfade the stop panel content | Stop selection, bottom sheet and listen  |  |
-| 168 | todo |  | Respect scroll position on select | Stop selection, bottom sheet and listen  |  |
-| 169 | todo |  | Build the phone story sheet as a draggable bottom sheet | Stop selection, bottom sheet and listen  |  |
-| 170 | todo |  | Drive sheet release with velocity-aware springs | Stop selection, bottom sheet and listen  |  |
-| 171 | todo |  | Make the sheet interruptible | Stop selection, bottom sheet and listen  |  |
-| 172 | todo |  | Add sheet rubber-banding at the extremes | Stop selection, bottom sheet and listen  |  |
-| 173 | todo |  | Resolve sheet-versus-content scroll | Stop selection, bottom sheet and listen  |  |
-| 174 | todo |  | Add a sheet handle with a 44px hit area and keyboard path | Stop selection, bottom sheet and listen  |  |
-| 175 | todo |  | Dim the map behind the full sheet | Stop selection, bottom sheet and listen  |  |
-| 176 | todo |  | Animate the listen bar in and out | Stop selection, bottom sheet and listen  |  |
-| 177 | todo |  | Add a listen-bar progress indicator using transform | Stop selection, bottom sheet and listen  |  |
-| 178 | todo |  | Update the listen bar's "next stop" label with a short slide | Stop selection, bottom sheet and listen  |  |
+| 164 | todo |  | Define the stop-selection sync model | Stop selection, bottom sheet and listen |  |
+| 165 | todo |  | Animate the rail-to-marker highlight | Stop selection, bottom sheet and listen |  |
+| 166 | todo |  | Pan the map on select without competing animations | Stop selection, bottom sheet and listen |  |
+| 167 | todo |  | Crossfade the stop panel content | Stop selection, bottom sheet and listen |  |
+| 168 | todo |  | Respect scroll position on select | Stop selection, bottom sheet and listen |  |
+| 169 | todo |  | Build the phone story sheet as a draggable bottom sheet | Stop selection, bottom sheet and listen |  |
+| 170 | todo |  | Drive sheet release with velocity-aware springs | Stop selection, bottom sheet and listen |  |
+| 171 | todo |  | Make the sheet interruptible | Stop selection, bottom sheet and listen |  |
+| 172 | todo |  | Add sheet rubber-banding at the extremes | Stop selection, bottom sheet and listen |  |
+| 173 | todo |  | Resolve sheet-versus-content scroll | Stop selection, bottom sheet and listen |  |
+| 174 | todo |  | Add a sheet handle with a 44px hit area and keyboard path | Stop selection, bottom sheet and listen |  |
+| 175 | todo |  | Dim the map behind the full sheet | Stop selection, bottom sheet and listen |  |
+| 176 | todo |  | Animate the listen bar in and out | Stop selection, bottom sheet and listen |  |
+| 177 | todo |  | Add a listen-bar progress indicator using transform | Stop selection, bottom sheet and listen |  |
+| 178 | todo |  | Update the listen bar's "next stop" label with a short slide | Stop selection, bottom sheet and listen |  |
 | 179 | todo |  | Decide on the `motion` library | Animation performance and library choice |  |
 | 180 | todo |  | Prototype the sheet spring in WAAPI/linear() easing | Animation performance and library choice |  |
 | 181 | todo |  | Measure `motion` bundle cost if considered | Animation performance and library choice |  |
