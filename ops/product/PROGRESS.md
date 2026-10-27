@@ -4,22 +4,22 @@ Source of truth for the 1,000-point roadmap (`ROADMAP-1000.md`). Read and edit w
 
 Statuses: `todo` · `doing` · `done` · `blocked` (waiting on the tag in the note) · `parked` (guardrail says ask the founder) · `dropped` (with reason).
 
-Run lock: 2026-10-27T17:29:25.025Z interactive-session-aryan
+Run lock: 2026-10-27T17:39:19.427Z interactive-session-aryan
 
 | # | status | tags | title | section | note |
 |---|---|---|---|---|---|
-| 1 | doing |  | Inventory the unmerged commits | Merge the pending review-fix branch | merging review-fix branch |
-| 2 | todo |  | Dry-run the merge against main | Merge the pending review-fix branch |  |
-| 3 | todo |  | Predict the sw.js conflict | Merge the pending review-fix branch |  |
-| 4 | todo |  | Rebase review fixes onto main in small steps | Merge the pending review-fix branch |  |
-| 5 | todo |  | Re-run verify.sh after every group | Merge the pending review-fix branch |  |
-| 6 | todo |  | Re-run Playwright e2e on the merged result | Merge the pending review-fix branch |  |
-| 7 | todo |  | Regenerate pre-rendered pages after the merge | Merge the pending review-fix branch |  |
-| 8 | todo |  | Re-check the honest-data fixes against ops/ rules | Merge the pending review-fix branch |  |
-| 9 | todo |  | Open one PR with a review checklist | Merge the pending review-fix branch |  |
-| 10 | todo |  | Log the merge in the decision log | Merge the pending review-fix branch |  |
-| 11 | todo |  | Delete stale remote branches | Merge the pending review-fix branch |  |
-| 12 | todo |  | Write a branch naming and lifetime rule | Merge the pending review-fix branch |  |
+| 1 | done |  | Inventory the unmerged commits | Merge the pending review-fix branch | 10 review-fix commits plus tooling, listed in the PR |
+| 2 | done |  | Dry-run the merge against main | Merge the pending review-fix branch | dry run: 7 conflicts (main.js, route.js, route.css, sw.js, e2e spec, .gitignore, sitemap) |
+| 3 | done |  | Predict the sw.js conflict | Merge the pending review-fix branch | sw.js: main's bundle fallback kept, fresh fetch added, VERSION 16 |
+| 4 | done |  | Rebase review fixes onto main in small steps | Merge the pending review-fix branch | one merge, not a rebase: history is shared and already pushed |
+| 5 | done |  | Re-run verify.sh after every group | Merge the pending review-fix branch | verify.sh PASS on the merged tree, 4 of 4 steps |
+| 6 | done |  | Re-run Playwright e2e on the merged result | Merge the pending review-fix branch | 125 browser tests pass; one offline-bar test failed once under load, passed alone and on rerun |
+| 7 | done |  | Regenerate pre-rendered pages after the merge | Merge the pending review-fix branch | pages, sitemap, lastmod and cards rebuilt; second build identical |
+| 8 | done |  | Re-check the honest-data fixes against ops/ rules | Merge the pending review-fix branch | honest-data commits only remove or hedge claims; no new numbers |
+| 9 | done |  | Open one PR with a review checklist | Merge the pending review-fix branch | single PR with a review checklist |
+| 10 | done |  | Log the merge in the decision log | Merge the pending review-fix branch | D-0008 |
+| 11 | parked |  | Delete stale remote branches | Merge the pending review-fix branch | data_deletion: deleting remote branches waits for the founder |
+| 12 | done |  | Write a branch naming and lifetime rule | Merge the pending review-fix branch | branch rule added to the runbook |
 | 13 | todo |  | Add a CI check that features need evidence | Governance gates (ops/ decision log and |  |
 | 14 | todo |  | Add a CI check that overrides are logged | Governance gates (ops/ decision log and |  |
 | 15 | todo |  | Validate features.json against a JSON schema | Governance gates (ops/ decision log and |  |
