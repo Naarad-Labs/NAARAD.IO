@@ -263,21 +263,6 @@
       ],
       "aspect": 1.3351
     },
-    "thanjavur-temple": {
-      "id": "thanjavur-temple",
-      "role": "feature",
-      "title": "Keralaanthakan ThiruVayil @ Brihadeeswarar Temple-Thanjavur",
-      "author": "Lux@Photography",
-      "licence": "CC BY 2.0",
-      "licenceUrl": "https://creativecommons.org/licenses/by/2.0/",
-      "sourcePage": "https://www.flickr.com/photos/71663438@N08/16232975694",
-      "source": "flickr",
-      "widths": [
-        640,
-        960
-      ],
-      "aspect": 1.4649
-    },
     "thanjavur-bronze": {
       "id": "thanjavur-bronze",
       "role": "card",
@@ -478,6 +463,96 @@
         960
       ],
       "aspect": 1.6623
+    },
+    "thanjavur-temple": {
+      "id": "thanjavur-temple",
+      "role": "feature",
+      "title": "Brihadisvara Temple during Maha Shivaratri-WUS03611 (edit)",
+      "author": "Original: Rainer Halama Derivative work: UnpetitproleX",
+      "licence": "CC BY-SA 4.0",
+      "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourcePage": "https://commons.wikimedia.org/wiki/File:Brihadisvara_Temple_during_Maha_Shivaratri-WUS03611_(edit).jpg",
+      "source": "wikimedia",
+      "widths": [
+        640,
+        960,
+        1280,
+        1600,
+        1920
+      ],
+      "aspect": 1.6
+    },
+    "thanjavur-palace": {
+      "id": "thanjavur-palace",
+      "role": "card",
+      "title": "Thanjavur Palace (placeholder)",
+      "author": "Naarad",
+      "licence": "Original artwork",
+      "licenceUrl": "",
+      "sourcePage": "https://naarad.io",
+      "source": "naarad",
+      "placeholder": true,
+      "widths": [
+        640,
+        960,
+        1280,
+        1600
+      ],
+      "aspect": 1.7778
+    },
+    "thanjavur-library": {
+      "id": "thanjavur-library",
+      "role": "card",
+      "title": "Saraswathi Mahal Library (placeholder)",
+      "author": "Naarad",
+      "licence": "Original artwork",
+      "licenceUrl": "",
+      "sourcePage": "https://naarad.io",
+      "source": "naarad",
+      "placeholder": true,
+      "widths": [
+        640,
+        960,
+        1280,
+        1600
+      ],
+      "aspect": 1.7778
+    },
+    "auroville-amphitheatre": {
+      "id": "auroville-amphitheatre",
+      "role": "card",
+      "title": "Amphitheatre and Urn (placeholder)",
+      "author": "Naarad",
+      "licence": "Original artwork",
+      "licenceUrl": "",
+      "sourcePage": "https://naarad.io",
+      "source": "naarad",
+      "placeholder": true,
+      "widths": [
+        640,
+        960,
+        1280,
+        1600
+      ],
+      "aspect": 1.7778
+    },
+    "auroville-visitor-centre": {
+      "id": "auroville-visitor-centre",
+      "role": "card",
+      "title": "Auroville Visitor Centre (placeholder)",
+      "author": "Naarad",
+      "licence": "Original artwork",
+      "licenceUrl": "",
+      "sourcePage": "https://naarad.io",
+      "source": "naarad",
+      "placeholder": true,
+      "widths": [
+        640,
+        960,
+        1280,
+        1600
+      ],
+      "aspect": 1.7778
     }
   }
 }

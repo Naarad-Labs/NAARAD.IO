@@ -2,7 +2,7 @@
   "note": "Written by scripts/build-site.mjs. For each page in the sitemap: a hash of what the page says (its main content and the head tags it owns) and the date that hash was first built. The sitemap's lastmod is that date; it moves only when the hash does.",
   "pages": {
     "/": {
-      "hash": "630a5399a1d4cf7fad63da7822dae6429672a022e8fad387f9d69df6d508d9d0",
+      "hash": "b7e2812d4428140a8387da819faafeaf82d7e99f9a739d9570e8238b4a80f798",
       "date": "2026-10-27"
     },
     "/about/": {
@@ -14,19 +14,19 @@
       "date": "2026-10-27"
     },
     "/routes/": {
-      "hash": "75becad0c63e47c29090a56f2f6571b328f5f725307641af239913fb791a6212",
+      "hash": "7f4ba2531591acbac189c2dd165b2277f32ec943f0925ab48f061ed2764e81f8",
       "date": "2026-10-27"
     },
     "/routes/auroville-explorer/": {
-      "hash": "f8840d55ea4aab6108b0347956a7ce04ca84f5296cfbfd67daddf4236f47d180",
-      "date": "2026-10-26"
+      "hash": "ff9bdbddce17b07f82f17b9f4e2f2079e633ff50ee671183acb834aa97060cbf",
+      "date": "2026-10-27"
     },
     "/routes/hampi-heritage-trail/": {
-      "hash": "edab2768222eb0be88cd26ed398157aa700e6a537f90bb8c0cddaeb702180f1a",
+      "hash": "fc7307bac235bf2f7f18037cde8d6ffc2ee97ba2a9f263677be06fe92ad0602f",
       "date": "2026-10-27"
     },
     "/routes/thanjavur-living-heritage/": {
-      "hash": "1a765f5c2ddcd4c9e8f0c7f12a027a94649d1774aca2f66aa19f23a7bf6b8add",
+      "hash": "022a14b44787bd71c7e0d1eb75a89a3f41ac0dcf66a37b456172e7475ba9ea58",
       "date": "2026-10-27"
     },
     "/stories/": {
