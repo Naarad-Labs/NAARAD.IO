@@ -1,0 +1,49 @@
+{
+  "note": "Written by scripts/build-site.mjs. For each page in the sitemap: a hash of what the page says (its main content and the head tags it owns) and the date that hash was first built. The sitemap's lastmod is that date; it moves only when the hash does.",
+  "pages": {
+    "/": {
+      "hash": "4e2d6b302fc52ce45e590288bf341f64f795a9b8f2a50cedf84e933e4d3ac20e",
+      "date": "2026-10-26"
+    },
+    "/about/": {
+      "hash": "7955438d7d25e0ed5ba0e7dbd6822493443aa6bb2c9f2c6ca4a8809fc2b69e36",
+      "date": "2026-10-26"
+    },
+    "/creators/": {
+      "hash": "4ea52aa538f82452814cb6521c95768e3108a3e063894c57b04d5d8884ecd5e1",
+      "date": "2026-10-27"
+    },
+    "/routes/": {
+      "hash": "4e58815aa9205e46894a11fa2dc6a4464d4e6f2d87dc4d1f9391ff3d907a97c7",
+      "date": "2026-10-26"
+    },
+    "/routes/auroville-explorer/": {
+      "hash": "f8840d55ea4aab6108b0347956a7ce04ca84f5296cfbfd67daddf4236f47d180",
+      "date": "2026-10-26"
+    },
+    "/routes/hampi-heritage-trail/": {
+      "hash": "524d8f1dcd868f945455aa4262ae3198508cba519bc2668da78ef863c7b2a315",
+      "date": "2026-10-26"
+    },
+    "/routes/thanjavur-living-heritage/": {
+      "hash": "4589bee8a24c6392694cfa0f401265e892e799006353d2c5afa88ddbee28bf83",
+      "date": "2026-10-26"
+    },
+    "/stories/": {
+      "hash": "5a6a0a2ebe478a3bb4f1f7fb96ef2e21b98a7e40aa05510034d7c758528c0bbd",
+      "date": "2026-10-26"
+    },
+    "/stories/bazaar-that-sold-the-world/": {
+      "hash": "78cbafb36cd412e8b61a7198c9972d9476da60fd766a37e61b33a36edfa3dabc",
+      "date": "2026-10-26"
+    },
+    "/stories/stone-chariot-of-hampi/": {
+      "hash": "30b22d566d95c7534813758c564d218e00dde61ba0684c501794d947d9f0bc9e",
+      "date": "2026-10-26"
+    },
+    "/stories/water-that-built-a-capital/": {
+      "hash": "d81d6128a3d6b4ea0420e6f038a623a2a4a43a65c8b656b753fe86147b8b3753",
+      "date": "2026-10-26"
+    }
+  }
+}

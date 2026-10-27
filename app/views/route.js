@@ -16,6 +16,8 @@ import * as Seo from '../seo.js';
 
 const HERO_SIZES = '(max-width: 1023px) 100vw, 56vw';
 
+/* The bar under the header links to the sections of this one page (#section-<id>).
+   It is navigation, not a tab widget: every section is on the page at once. */
 const TABS = [
   { id: 'overview', label: 'Overview', icon: 'file' },
   { id: 'stops', label: 'Stops', icon: 'pin' },
@@ -36,11 +38,18 @@ function offlineState(route) {
     : { value: 'Download for offline', label: 'Page, text and photos. No map tiles or audio.', state: 'idle' };
 }
 
+/* A measurement a catalogue row does not have yet is said to be missing, in the
+   place it would have been, rather than left out as if the route had none. */
+function measured(name, route, raw, shown, label) {
+  if (Data.isUnmeasured(route, raw)) return { icon: name, value: Data.NOT_MEASURED, label, muted: true };
+  return { icon: name, value: shown, label: '' };
+}
+
 function factRow(route) {
   const facts = [
     { icon: 'pin', value: route.location || 'India', label: '' },
-    { icon: 'clock', value: Data.formatDuration(route.durationMin), label: '' },
-    { icon: 'walk', value: Data.formatDistance(route.distanceM), label: '' },
+    measured('clock', route, route.durationMin, Data.formatDuration(route.durationMin), 'Duration'),
+    measured('walk', route, route.distanceM, Data.formatDistance(route.distanceM), 'Distance'),
     { icon: 'flag', value: route.stopCount ? `${route.stopCount} stops` : null, label: '' },
     { icon: 'gauge', value: Data.formatDifficulty(route.difficulty), label: 'Difficulty' },
     { icon: 'terrain', value: Data.terrainLabel(route), label: 'Terrain' },
@@ -99,12 +108,12 @@ function hero(route) {
 
 function tabBar(route) {
   const saved = Journey.isSaved(route.slug);
+  // A route with no stops has no list of them to jump to.
+  const tabs = TABS.filter((tab) => tab.id !== 'stops' || route.stops.length);
   return `<div class="route-bar">
-    <div class="route-tabs" role="tablist" aria-label="Route sections">
-      ${TABS.map((tab, index) => `<button type="button" role="tab" id="tab-${tab.id}" data-tab="${tab.id}"
-        aria-selected="${index === 0}" aria-controls="panel-${tab.id}" tabindex="${index === 0 ? 0 : -1}">
-        ${icon(tab.icon)}<span>${tab.label}</span></button>`).join('')}
-    </div>
+    <nav class="route-tabs" aria-label="Route sections">
+      ${tabs.map((tab, index) => `<a href="#section-${tab.id}" data-tab="${tab.id}"${index === 0 ? ' aria-current="location"' : ''}>${icon(tab.icon)}<span>${tab.label}</span></a>`).join('')}
+    </nav>
     <div class="route-bar-actions">
       <button type="button" class="button button-sm" data-action="share">${icon('share')} Share</button>
       <button type="button" class="button button-sm${saved ? ' is-saved' : ''}" data-action="save" aria-pressed="${saved}">${icon('bookmark')} <span>${saved ? 'Saved' : 'Save'}</span></button>
@@ -115,16 +124,16 @@ function tabBar(route) {
 
 function stopPanel(route, stop) {
   if (!stop) {
-    return `<section class="stop-panel" aria-live="polite">
+    return `<section class="stop-panel" id="section-stories" aria-live="polite">
       <div class="empty-state">${icon('sparkle')}<div>
         <strong>Stops are not published for this route</strong>
-        <p>This route is in the catalogue with its distance and duration, but no one has published its ordered stops yet. Routes with stops show each one here, with its story.</p>
+        <p>This route is in the catalogue, but no one has published its ordered stops yet. Routes with stops show each one here, with its story.</p>
       </div></div>
     </section>`;
   }
 
   const minutes = Math.max(1, Math.round(stop.story.length / 900));
-  return `<section class="stop-panel" aria-live="polite" data-stop="${stop.order}">
+  return `<section class="stop-panel" id="section-stories" aria-live="polite" data-stop="${stop.order}">
     <div class="stop-panel-head">
       <p class="eyebrow eyebrow-mark">Stop ${stop.order} of ${route.stopCount}</p>
       <div class="stop-panel-meta">
@@ -173,13 +182,13 @@ function stopPanel(route, stop) {
 
 function stopRail(route, selected) {
   if (!route.stops.length) return '';
-  return `<aside class="stop-rail" aria-labelledby="stops-heading">
+  return `<aside class="stop-rail" id="section-stops" aria-labelledby="stops-heading">
     <div class="stop-rail-head">
       <h2 id="stops-heading" class="eyebrow eyebrow-mark">All stops (${route.stopCount})</h2>
       <span class="chip">In route order</span>
     </div>
     <ol class="stop-list">
-      ${route.stops.map((stop) => `<li>
+      ${route.stops.map((stop) => `<li class="stop-row">
         <button type="button" class="stop-item${stop.order === selected ? ' is-active' : ''}" data-select-stop="${stop.order}" aria-current="${stop.order === selected}">
           <span class="stop-index">${stop.order}</span>
           <span class="stop-thumb">${picture(stop.photo, { sizes: '72px', alt: '', ratio: '1 / 1' })}</span>
@@ -188,8 +197,8 @@ function stopRail(route, selected) {
             <small>${escapeHtml(stop.tagline)}</small>
             <span class="stop-item-meta">${icon('walk')}${escapeHtml(Data.formatDistance(stop.distanceM) || '')}</span>
           </span>
-          <span class="stop-item-play" data-action="listen" data-stop="${stop.order}" role="button" tabindex="0" aria-label="Listen to ${escapeHtml(stop.name)}">${icon('play')}</span>
         </button>
+        <button type="button" class="stop-item-play" data-action="listen" data-stop="${stop.order}" aria-label="Listen to ${escapeHtml(stop.name)}">${icon('play')}</button>
       </li>`).join('')}
     </ol>
     <button type="button" class="button button-sm stop-rail-all" data-action="listen-all">${icon('headphones')} Play all stops</button>
@@ -197,7 +206,7 @@ function stopRail(route, selected) {
 }
 
 function mapPanel(route) {
-  return `<section class="map-panel" id="panel-map" role="tabpanel" aria-labelledby="tab-map">
+  return `<section class="map-panel" id="section-map">
     <div class="map-frame">
       <div id="map" class="route-map" role="application" aria-label="Map of ${escapeHtml(route.name)}">
         ${routePreview(route, { width: 560, height: 620, numbered: true, className: 'map-placeholder' })}
@@ -218,18 +227,19 @@ function mapPanel(route) {
 
 function glance(route) {
   const profile = elevationProfile(route, { width: 760, height: 168 });
-  return `<section class="route-glance" id="panel-terrain" role="tabpanel" aria-labelledby="tab-terrain">
+  const gap = (value) => (Data.isUnmeasured(route, value) ? Data.NOT_MEASURED : null);
+  return `<section class="route-glance" id="section-terrain">
     <div class="glance-facts">
       <h2 class="eyebrow eyebrow-mark">Route at a glance</h2>
       <div class="metric-row">
-        ${[['walk', Data.formatDistance(route.distanceM), 'Distance'],
-    ['clock', Data.formatDuration(route.durationMin), 'Duration'],
+        ${[['walk', Data.formatDistance(route.distanceM) || gap(route.distanceM), 'Distance'],
+    ['clock', Data.formatDuration(route.durationMin) || gap(route.durationMin), 'Duration'],
     ['pin', route.stopCount ? `${route.stopCount}` : null, 'Stops'],
     ['gauge', Data.formatDifficulty(route.difficulty), 'Difficulty'],
     ['terrain', Data.terrainLabel(route), 'Terrain'],
-    ['flag', route.ascentM != null ? `${route.ascentM} m` : null, 'Ascent']]
+    ['flag', route.ascentM != null ? `${route.ascentM} m` : gap(route.ascentM), 'Ascent']]
     .filter(([, value]) => value)
-    .map(([name, value, label]) => `<div class="metric">${icon(name)}<span class="metric-text"><b>${escapeHtml(value)}</b><span>${label}</span></span></div>`).join('')}
+    .map(([name, value, label]) => `<div class="metric${value === Data.NOT_MEASURED ? ' is-muted' : ''}">${icon(name)}<span class="metric-text"><b>${escapeHtml(value)}</b><span>${label}</span></span></div>`).join('')}
       </div>
       ${route.surface ? `<p class="data-note">${escapeHtml(route.surface)}.</p>` : ''}
     </div>
@@ -246,7 +256,7 @@ function glance(route) {
 }
 
 function overview(route) {
-  return `<section class="route-overview" id="panel-overview" role="tabpanel" aria-labelledby="tab-overview">
+  return `<section class="route-overview" id="section-overview">
     <div class="overview-copy">
       <h2 class="eyebrow eyebrow-mark">About this route</h2>
       <p>${escapeHtml(route.overview || route.lede || 'This route is published with its headline facts. Its description has not been written yet.')}</p>
@@ -281,7 +291,7 @@ export async function render(context) {
     ${hero(route)}
     ${factRow(route)}
     ${tabBar(route)}
-    <div class="route-workspace" id="panel-stops" role="tabpanel" aria-labelledby="tab-stops">
+    <div class="route-workspace">
       ${mapPanel(route)}
       ${stopPanel(route, Data.getStop(route, selected))}
       ${stopRail(route, selected)}
@@ -294,11 +304,27 @@ export async function render(context) {
 
 export const stylesheet = '/app/route.css';
 
+/**
+ * Only a route with published stops has content of its own. The rest are
+ * catalogue rows and recorded tracks with a headline fact or two: their pages
+ * stay reachable and linked, but are kept out of search (see meta) until a
+ * route gets its stops and its text.
+ */
+const isStub = (route) => !route.hasStops;
+
+/**
+ * The distance a snippet or share card may state. A catalogue row has none
+ * measured (discover/seed-tours.json carries no distance for it), and a number
+ * added there that nobody measured must not reach a snippet; a recorded
+ * track's is its GPS length.
+ */
+const statedDistance = (route) => (route.source === 'catalogue' ? null : Data.formatDistance(route.distanceM));
+
 /** One line about the route that is true of it, for search results and cards. */
 function summary(route) {
   if (route.lede) return route.lede;
   const place = route.location || route.region || 'India';
-  const distance = Data.formatDistance(route.distanceM);
+  const distance = statedDistance(route);
   const length = distance ? `, ${distance} long` : '';
   if (route.source === 'track') {
     return `A route recorded on the ground in ${place}${length}. Its line is on the map; its stops and stories have not been published yet.`;
@@ -329,7 +355,7 @@ function trip(route, url) {
     image: imageUrl(stop.photo),
     geo: { '@type': 'GeoCoordinates', latitude: stop.lat, longitude: stop.lng },
   }));
-  const distance = Data.formatDistance(route.distanceM);
+  const distance = statedDistance(route);
   return Seo.compact({
     '@type': 'TouristTrip',
     '@id': `${url}#trip`,
@@ -354,17 +380,20 @@ export function meta({ route }) {
   const place = route.location || route.region || 'India';
   const photo = route.media?.photo || null;
   const facts = [
-    Data.formatDistance(route.distanceM),
+    statedDistance(route),
     route.stopCount ? `${route.stopCount} stops` : null,
     route.source === 'track' ? 'Recorded track' : null,
   ].filter(Boolean);
   let backdrop = '';
   if (photo) backdrop = ', set on a photograph from the route';
   else if (route.hasGeometry) backdrop = ', with the route line drawn on a plain map';
+  const stub = isStub(route);
   return {
     title: `${route.name} · Naarad`,
     description: summary(route),
     path,
+    // A stub stays out of search and describes no trip to it (see isStub).
+    robots: stub ? 'noindex,follow' : null,
     card: {
       name: `route-${route.slug}`,
       eyebrow: place,
@@ -377,7 +406,7 @@ export function meta({ route }) {
     preload: photo ? { photo, sizes: HERO_SIZES } : null,
     schema: [
       Seo.breadcrumbs([['Routes', sectionPath('routes')], [route.name, path]]),
-      trip(route, absoluteUrl(path)),
+      ...(stub ? [] : [trip(route, absoluteUrl(path))]),
       Seo.organization(),
     ],
   };

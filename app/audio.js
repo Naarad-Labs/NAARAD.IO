@@ -11,13 +11,18 @@
  *             creator's recording
  */
 
-import { picture, escapeHtml } from './media.js';
+import { picture } from './media.js';
 import { icon } from './icons.js';
 
 const synth = typeof window !== 'undefined' ? window.speechSynthesis : null;
 const canRead = Boolean(synth);
 
 let bar = null;
+let parts = null;       // the bar's nodes: built once, then updated in place
+let shown = null;       // what the bar's picture and toggle currently draw
+let seeking = false;    // the seek slider is being dragged
+let opener = null;      // where the keyboard was when the bar opened
+let watcher = null;     // keeps --player-h in step with the bar's height
 let queue = [];
 let index = -1;
 let mode = 'idle';      // idle | recorded | read
@@ -126,14 +131,15 @@ function playAt(next) {
     mode = 'idle';
     playing = false;
   }
-  render();
   emit();
 }
 
 /** Start a queue. Items: { id, title, subtitle, photo, text, audioUrl, lang, href } */
 export function play(items, start = 0) {
   queue = Array.isArray(items) ? items : [items];
+  const active = document.activeElement;
   mount();
+  if (active && active !== document.body && !bar.contains(active)) opener = active;
   playAt(Math.max(0, Math.min(start, queue.length - 1)));
 }
 
@@ -147,7 +153,6 @@ export function toggle() {
     playAt(index < 0 ? 0 : index);
     return;
   }
-  render();
   emit();
 }
 
@@ -172,28 +177,66 @@ export function setRate(value) {
   rate = value;
   if (element) element.playbackRate = value;
   if (mode === 'read' && playing && synth) { synth.cancel(); speakChunk(); }
-  render();
+  update();
 }
 
 export function close() {
   stopEverything();
   queue = []; index = -1; mode = 'idle';
   document.documentElement.style.setProperty('--player-h', '0px');
+  // Closing from the keyboard returns to where the bar was opened from, when that is still on the page.
+  const back = bar?.contains(document.activeElement) ? opener : null;
+  watcher?.disconnect();
+  watcher = null;
   bar?.remove();
-  bar = null;
+  bar = null; parts = null; shown = null; seeking = false; opener = null;
+  if (back?.isConnected) back.focus({ preventScroll: true });
   emit();
 }
 
 export function currentItem() { return queue[index] || null; }
 export function isPlaying() { return playing; }
 
+/* The bar is built once and updated in place. Replacing its markup on every
+   state change (a spoken word, a timeupdate) dropped keyboard focus to the page
+   and swapped the seek slider's thumb out from under a drag. */
 function mount() {
   if (bar) return;
   bar = document.createElement('div');
   bar.className = 'listen-bar';
   bar.setAttribute('role', 'region');
   bar.setAttribute('aria-label', 'Audio player');
+  bar.innerHTML = `
+    <div class="listen-art"></div>
+    <div class="listen-meta"><strong></strong><span></span></div>
+    <div class="listen-controls">
+      <button type="button" data-audio="back" class="listen-skip" aria-label="Back 15 seconds">${icon('back15')}<span>15</span></button>
+      <button type="button" data-audio="toggle" class="listen-play"></button>
+      <button type="button" data-audio="forward" class="listen-skip" aria-label="Forward 15 seconds">${icon('forward15')}<span>15</span></button>
+    </div>
+    <div class="listen-progress">
+      <input type="range" min="0" max="1000" value="0" data-audio="seek" aria-label="Seek">
+      <span class="listen-time"></span>
+    </div>
+    <div class="listen-aside">
+      <span class="listen-source"></span>
+      <button type="button" data-audio="rate" class="listen-rate"></button>
+      <span class="listen-next" hidden>${icon('list')}<span><small>Up next</small><b></b></span></span>
+      <button type="button" data-audio="close" class="icon-button listen-close" aria-label="Close player">${icon('close')}</button>
+    </div>`;
   document.body.append(bar);
+  parts = {
+    art: bar.querySelector('.listen-art'),
+    title: bar.querySelector('.listen-meta strong'),
+    subtitle: bar.querySelector('.listen-meta span'),
+    toggle: bar.querySelector('[data-audio="toggle"]'),
+    seek: bar.querySelector('[data-audio="seek"]'),
+    time: bar.querySelector('.listen-time'),
+    source: bar.querySelector('.listen-source'),
+    rate: bar.querySelector('[data-audio="rate"]'),
+    next: bar.querySelector('.listen-next'),
+    nextTitle: bar.querySelector('.listen-next b'),
+  };
   bar.addEventListener('click', (event) => {
     const action = event.target.closest('[data-audio]')?.dataset.audio;
     if (!action) return;
@@ -209,10 +252,25 @@ function mount() {
     const fraction = Number(event.target.value) / 1000;
     if (mode === 'recorded' && element?.duration) element.currentTime = fraction * element.duration;
   });
-  subscribe(render);
+  // While the slider is held, progress does not move it from under the pointer.
+  parts.seek.addEventListener('pointerdown', () => {
+    seeking = true;
+    const release = () => { seeking = false; };
+    addEventListener('pointerup', release, { once: true });
+    addEventListener('pointercancel', release, { once: true });
+  });
+  if ('ResizeObserver' in window) {
+    watcher = new ResizeObserver(() => document.documentElement.style.setProperty('--player-h', `${bar.offsetHeight || 76}px`));
+    watcher.observe(bar);
+  } else {
+    document.documentElement.style.setProperty('--player-h', `${bar.offsetHeight || 76}px`);
+  }
+  subscribe(update);
 }
 
-function render() {
+const setText = (node, text) => { if (node.textContent !== text) node.textContent = text; };
+
+function update() {
   if (!bar) return;
   const item = queue[index];
   if (!item) { close(); return; }
@@ -222,29 +280,23 @@ function render() {
   const duration = mode === 'recorded' && element?.duration ? element.duration : estimateSeconds(item.text || '');
   const upNext = queue[index + 1];
 
-  bar.innerHTML = `
-    <div class="listen-art">${item.photo ? picture(item.photo, { sizes: '56px', alt: '', ratio: '1 / 1' }) : ''}</div>
-    <div class="listen-meta">
-      <strong>${escapeHtml(item.title)}</strong>
-      <span>${escapeHtml(item.subtitle || '')}${queue.length > 1 ? ` · Stop ${index + 1} of ${queue.length}` : ''}</span>
-    </div>
-    <div class="listen-controls">
-      <button type="button" data-audio="back" class="listen-skip" aria-label="Back 15 seconds">${icon('back15')}<span>15</span></button>
-      <button type="button" data-audio="toggle" class="listen-play" aria-label="${playing ? 'Pause' : 'Play'}">${icon(playing ? 'pause' : 'play')}</button>
-      <button type="button" data-audio="forward" class="listen-skip" aria-label="Forward 15 seconds">${icon('forward15')}<span>15</span></button>
-    </div>
-    <div class="listen-progress">
-      <input type="range" min="0" max="1000" value="${Math.round(fraction * 1000)}" data-audio="seek"
-        aria-label="Seek" ${mode === 'read' ? 'disabled' : ''}>
-      <span class="listen-time">${timeLabel(elapsed)} / ${timeLabel(duration)}</span>
-    </div>
-    <div class="listen-aside">
-      <span class="listen-source">${mode === 'read' ? 'Read aloud by your device' : 'Creator recording'}</span>
-      <button type="button" data-audio="rate" class="listen-rate" aria-label="Playback speed">${rate}x</button>
-      ${upNext ? `<span class="listen-next">${icon('list')}<span><small>Up next</small><b>${escapeHtml(upNext.title)}</b></span></span>` : ''}
-      <button type="button" data-audio="close" class="icon-button listen-close" aria-label="Close player">${icon('close')}</button>
-    </div>`;
-  document.documentElement.style.setProperty('--player-h', `${bar.offsetHeight || 76}px`);
+  if (!shown || shown.photo !== item.photo) parts.art.innerHTML = item.photo ? picture(item.photo, { sizes: '56px', alt: '', ratio: '1 / 1' }) : '';
+  setText(parts.title, item.title);
+  setText(parts.subtitle, `${item.subtitle || ''}${queue.length > 1 ? ` · Stop ${index + 1} of ${queue.length}` : ''}`);
+  if (shown?.playing !== playing) {
+    parts.toggle.innerHTML = icon(playing ? 'pause' : 'play');
+    parts.toggle.setAttribute('aria-label', playing ? 'Pause' : 'Play');
+  }
+  shown = { photo: item.photo, playing };
+
+  if (!seeking) parts.seek.value = String(Math.round(fraction * 1000));
+  parts.seek.disabled = mode === 'read';
+  setText(parts.time, `${timeLabel(elapsed)} / ${timeLabel(duration)}`);
+  setText(parts.source, mode === 'read' ? 'Read aloud by your device' : 'Creator recording');
+  setText(parts.rate, `${rate}x`);
+  parts.rate.setAttribute('aria-label', `Playback speed, ${rate}x`);
+  parts.next.hidden = !upNext;
+  if (upNext) setText(parts.nextTitle, upNext.title);
 }
 
 /** Can this device read a story aloud when no recording exists? */

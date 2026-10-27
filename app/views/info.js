@@ -13,7 +13,7 @@ const PAGES = {
     eyebrow: 'About Naarad',
     title: 'Explore. Listen.<br><span class="accent">Connect.</span>',
     lede: 'Naarad is a heritage atlas for India: walking routes with the stories of the places they pass, told at the places themselves.',
-    photo: 'hampi-vittala-hall',
+    photo: 'hampi-chariot-wheel',
     actions: [{ label: 'Explore routes', view: 'routes' }],
     sections: [
       {

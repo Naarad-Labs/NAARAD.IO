@@ -15,8 +15,10 @@
 .route-hero-photo { position: absolute; inset: 0; }
 .route-hero-photo img { width: 100%; height: 100%; object-fit: cover; }
 .route-hero-note { position: absolute; top: clamp(20px, 4vw, 54px); right: clamp(20px, 3vw, 54px); max-width: 230px; text-align: right; font-size: 23px; }
-.route-hero-place { position: absolute; right: clamp(18px, 2vw, 32px); bottom: 20px; }
-.route-hero-media .photo-credit { left: 26px; right: auto; }
+/* The facts card below overlaps the hero by 34px (.route-facts), so the credit
+   (which carries the photograph's licence) and the place chip sit above it. */
+.route-hero-place { position: absolute; right: clamp(18px, 2vw, 32px); bottom: 56px; }
+.route-hero-media .photo-credit { left: 26px; right: auto; bottom: 48px; }
 
 /* ── Facts ─────────────────────────────────────────────────────── */
 .route-facts {
@@ -33,7 +35,7 @@
 .route-facts .metric-button:focus-visible { outline: 2px solid var(--focus, currentColor); outline-offset: 4px; }
 .route-facts .metric-button[disabled] { cursor: progress; opacity: .7; }
 .route-facts .metric.is-muted .ico { color: var(--ink-muted); }
-.route-facts .metric.is-muted b { color: var(--ink-soft); }
+.route-facts .metric.is-muted b { color: var(--ink-soft); font-weight: 600; }
 
 /* ── Tab bar ───────────────────────────────────────────────────── */
 .route-bar {
@@ -45,17 +47,22 @@
 }
 .route-tabs { display: flex; flex-wrap: wrap; gap: 2px; }
 .route-tabs::-webkit-scrollbar { display: none; }
-.route-tabs button {
+.route-tabs a {
   display: inline-flex; align-items: center; gap: 8px; white-space: nowrap;
   padding: 11px 16px; border-radius: 7px; font-size: 14.5px; font-weight: 600; color: var(--ink-soft);
   border-bottom: 2px solid transparent;
 }
-.route-tabs button .ico { width: 17px; height: 17px; }
-.route-tabs button:hover { background: var(--paper-deep); }
-.route-tabs button[aria-selected='true'] { color: var(--orange-text); border-bottom-color: var(--orange-text); background: var(--orange-wash); }
+.route-tabs a .ico { width: 17px; height: 17px; }
+.route-tabs a:hover { background: var(--paper-deep); }
+.route-tabs a[aria-current='location'] { color: var(--orange-text); border-bottom-color: var(--orange-text); background: var(--orange-wash); }
 .route-bar-actions { display: flex; gap: 8px; flex: none; }
 .route-bar-actions .ico { width: 16px; height: 16px; }
 .route-bar-actions .is-saved { border-color: var(--orange-text); color: var(--orange-text); background: var(--orange-wash); }
+
+/* What the section links jump to must land below the sticky header and this bar (not
+   scroll-padding-top on the page: see story.css). main.js publishes the bar's real height as
+   --route-bar-h; the number is for before it runs. */
+.route-overview, .stop-rail, .stop-panel, .route-glance, .map-panel { scroll-margin-top: calc(var(--header-h) + 16px + var(--route-bar-h, 58px)); }
 
 /* ── Workspace ─────────────────────────────────────────────────── */
 .route-workspace {
@@ -140,9 +147,10 @@
 .stop-rail-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
 .stop-rail-head h2 { margin: 0; }
 .stop-list { overflow-y: auto; flex: 1; margin: 0 -6px; padding: 0 6px; }
+.stop-row { position: relative; }
 .stop-item {
-  position: relative; display: grid; grid-template-columns: 26px 54px 1fr 32px; align-items: center; gap: 11px;
-  width: 100%; padding: 9px 8px; border-radius: 8px; text-align: left; border: 1px solid transparent;
+  position: relative; display: grid; grid-template-columns: 26px 54px 1fr; align-items: center; gap: 11px;
+  width: 100%; padding: 9px 52px 9px 8px; border-radius: 8px; text-align: left; border: 1px solid transparent;
 }
 .stop-item:hover { background: var(--paper); }
 .stop-item.is-active { background: var(--orange-wash); border-color: rgba(198, 81, 27, .3); }
@@ -154,9 +162,15 @@
 .stop-item-copy small { display: block; font-size: 13px; color: var(--ink-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .stop-item-meta { display: inline-flex; align-items: center; gap: 4px; margin-top: 3px; font-size: 13px; color: var(--ink-muted); }
 .stop-item-meta .ico { width: 12px; height: 12px; }
-.stop-item-play { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; border: 1px solid var(--orange); color: var(--orange-text); }
-.stop-item-play .ico { width: 13px; height: 13px; fill: currentColor; stroke: none; margin-left: 1px; }
-.stop-item-play:hover { background: var(--orange); color: #fff; }
+/* A second button beside the row, not inside it: 44px to hit, a 30px ring to see. */
+.stop-item-play {
+  position: absolute; right: 2px; top: 50%; transform: translateY(-50%);
+  display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; color: var(--orange-text);
+}
+.stop-item-play::before { content: ''; grid-area: 1 / 1; width: 30px; height: 30px; border-radius: 50%; border: 1px solid var(--orange); }
+.stop-item-play .ico { grid-area: 1 / 1; width: 13px; height: 13px; fill: currentColor; stroke: none; margin-left: 1px; }
+.stop-item-play:hover { color: #fff; }
+.stop-item-play:hover::before { background: var(--orange); }
 .stop-rail-all { width: 100%; margin-top: 14px; }
 
 /* ── Glance and elevation ──────────────────────────────────────── */
@@ -194,6 +208,8 @@
   .route-card-grid.is-three { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 @media (max-width: 1023px) {
+  .route-hero-place { bottom: 20px; }
+  .route-hero-media .photo-credit { bottom: 9px; }
   .route-hero { grid-template-columns: 1fr; }
   .route-hero-copy { order: 2; padding: 26px 20px 30px; }
   .route-hero-media { order: 1; min-height: 46vh; }
@@ -233,6 +249,7 @@
     border-left: 0; border-right: 0;
   }
   .map-toolbar { left: 10px; top: 10px; }
+  .map-control { min-width: 44px; height: 44px; }
   .map-controls { right: 10px; }
   .map-note { display: none; }
 
@@ -257,14 +274,16 @@
   }
   .route-facts { grid-template-columns: repeat(2, minmax(0, 1fr)); margin-top: 14px; }
 
-  /* Tabs scroll; the actions become a bar that stays in reach. */
+  /* The section links wrap to two rows and stay in view, so a jump has more to clear;
+     the actions become a bar that stays in reach. */
+  .route-overview, .stop-rail, .stop-panel, .route-glance, .map-panel { scroll-margin-top: calc(var(--header-h) + 16px + var(--route-bar-h, 106px)); }
   .route-tabs {
     position: sticky; top: var(--header-h); z-index: 500; flex-wrap: wrap; row-gap: 4px;
     width: 100%; margin: 14px 0 0; padding: 6px 14px;
     background: rgba(248, 243, 233, .96); backdrop-filter: blur(8px);
     border-block: 1px solid var(--line);
   }
-  .route-tabs button { padding: 9px 13px; font-size: 13px; }
+  .route-tabs a { min-height: 44px; padding: 0 13px; font-size: 13px; }
   .route-bar-actions {
     position: fixed; left: 0; right: 0; bottom: var(--player-h); z-index: 700;
     padding: 9px 14px calc(9px + env(safe-area-inset-bottom));
@@ -277,7 +296,8 @@
 
   .stop-panel { margin-top: 14px; padding: 18px 16px 22px; }
   .stop-tabs { gap: 16px; }
-  .stop-item { grid-template-columns: 24px 48px 1fr 30px; }
+  .stop-tabs button { min-height: 44px; }
+  .stop-item { grid-template-columns: 24px 48px 1fr; }
   .glance-elevation .elevation-svg { height: 130px; }
   .route-card-grid.is-three { grid-template-columns: 1fr; }
 }

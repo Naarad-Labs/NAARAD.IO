@@ -1,17 +1,20 @@
 {
   "route": "thanjavur-living-heritage",
   "checked": "2026-10-15",
+  "site": null,
   "gettingThere": {
     "from": [
       {
         "city": "Chennai",
         "road": {
           "km": 332,
-          "hours": "4.6 (OSRM computed, free-flow; traffic and stops add time)",
-          "source": "https://router.project-osrm.org/route/v1/driving/80.2759622,13.0824232;79.1313819,10.7825800?overview=false"
+          "hours": null,
+          "source": "https://router.project-osrm.org/route/v1/driving/80.2759622,13.0824232;79.1313819,10.7825800?overview=false",
+          "computed": true,
+          "method": "OSRM public demo server (router.project-osrm.org), driving profile: one route from a point in central Chennai (80.2759622,13.0824232) to the Brihadisvara Temple, Thanjavur (79.1313819,10.78258), on OpenStreetMap roads. The distance is that route's road distance. The engine knows no traffic, stops, tolls or closures, so its free-flow driving time is not a real journey time and is not published here. Run 2026-10-26. Road data © OpenStreetMap contributors (ODbL)."
         },
         "rail": {
-          "summary": "The daily overnight Uzhavan Express (16865/16866) runs between Chennai Egmore and Thanjavur Junction. The Cholan Express (22675/22676, Chennai Egmore to Tiruchchirappalli) also runs via Thanjavur. Check current timings on Indian Railways enquiry.",
+          "summary": "According to Wikipedia, the daily overnight Uzhavan Express (16865/16866) runs between Chennai Egmore and Thanjavur Junction. The Cholan Express (22675/22676, Chennai Egmore to Tiruchchirappalli) also runs via Thanjavur. Check current timings on Indian Railways enquiry.",
           "source": "https://en.wikipedia.org/wiki/Uzhavan_Express",
           "sources": [
             "https://en.wikipedia.org/wiki/Uzhavan_Express",
@@ -19,43 +22,47 @@
           ]
         },
         "bus": {
-          "summary": "SETC and TNSTC (Kumbakonam) run reserved buses through the day and night from Chennai's Kalaignar Centenary Bus Terminus at Kilambakkam to Thanjavur. On a sample date (5 Nov 2026) tnstc.in listed 37 services, departing between 00:05 and 23:30. Book on tnstc.in.",
-          "source": "https://www.tnstc.in/OTRSOnline/"
+          "summary": "tnstc.in lists Chennai (Kalaignar Centenary Bus Terminus, Kilambakkam) to Thanjavur among its popular reserved routes. DT Next reported in January 2024 that state buses to the south via Chengalpattu would run from Kilambakkam from 30 January 2024. Book on tnstc.in.",
+          "source": "https://www.tnstc.in/OTRSOnline/",
+          "sources": [
+            "https://www.tnstc.in/OTRSOnline/",
+            "https://www.dtnext.in/news/chennai/all-south-bound-bus-operations-to-shift-to-kilambakkam-from-today-764349"
+          ]
         }
       },
       {
         "city": "Bengaluru",
         "road": {
           "km": 371,
-          "hours": "5.0 (OSRM computed, free-flow; traffic and stops add time)",
-          "source": "https://router.project-osrm.org/route/v1/driving/77.5695603,12.9781739;79.1313819,10.7825800?overview=false"
+          "hours": null,
+          "source": "https://router.project-osrm.org/route/v1/driving/77.5695603,12.9781739;79.1313819,10.7825800?overview=false",
+          "computed": true,
+          "method": "OSRM public demo server (router.project-osrm.org), driving profile: one route from a point in central Bengaluru (77.5695603,12.9781739) to the Brihadisvara Temple, Thanjavur (79.1313819,10.78258), on OpenStreetMap roads. The distance is that route's road distance. The engine knows no traffic, stops, tolls or closures, so its free-flow driving time is not a real journey time and is not published here. Run 2026-10-26. Road data © OpenStreetMap contributors (ODbL)."
         },
         "rail": {
-          "summary": "The overnight Mysuru–Cuddalore Port Express (16231/16232, formerly the Mysuru–Mayiladuthurai Express) runs via KSR Bengaluru, Erode and Tiruchchirappalli to Thanjavur Junction.",
+          "summary": "According to Wikipedia, the overnight Mysuru–Cuddalore Port Express (16231/16232, formerly the Mysuru–Mayiladuthurai Express) runs via KSR Bengaluru, Erode and Tiruchchirappalli to Thanjavur Junction.",
           "source": "https://en.wikipedia.org/wiki/Mysuru%E2%80%93Cuddalore_Port_Express"
         },
-        "bus": {
-          "summary": "SETC runs reserved evening buses (departing 16:45 to 20:30) from Bengaluru's Shanthi Nagar bus station. They run through Thanjavur towards Velankanni and Kumbakonam. On a sample date (5 Nov 2026) tnstc.in listed 4 services. Book on tnstc.in.",
-          "source": "https://www.tnstc.in/OTRSOnline/"
-        }
+        "bus": null
       },
       {
         "city": "Tiruchirappalli",
         "road": {
           "km": 59,
-          "hours": "1.0 (OSRM computed, free-flow)",
-          "source": "https://router.project-osrm.org/route/v1/driving/78.6852944,10.7942683;79.1313819,10.7825800?overview=false"
+          "hours": "about 1 hour of free-flow driving (computed, not a real journey time)",
+          "source": "https://router.project-osrm.org/route/v1/driving/78.6852944,10.7942683;79.1313819,10.7825800?overview=false",
+          "computed": true,
+          "method": "OSRM public demo server (router.project-osrm.org), driving profile: one route from a point in central Tiruchirappalli (78.6852944,10.7942683) to the Brihadisvara Temple, Thanjavur (79.1313819,10.78258), on OpenStreetMap roads. The distance is that route's road distance. The time is the engine's free-flow driving time, with no traffic, stops, tolls or closures, so it is not a real journey time. Run 2026-10-26. Road data © OpenStreetMap contributors (ODbL)."
         },
         "rail": {
           "summary": "Thanjavur can be reached by train from Trichy, according to the district administration.",
           "source": "https://thanjavur.nic.in/tourist-place/big-brihadeeshwara-temple/"
         },
         "bus": {
-          "summary": "Thanjavur can be reached by bus from Trichy, according to the district administration. On a sample date (5 Nov 2026) tnstc.in listed no reservable services from Trichy to Thanjavur.",
+          "summary": "Thanjavur can be reached by bus from Trichy, according to the district administration.",
           "source": "https://thanjavur.nic.in/tourist-place/big-brihadeeshwara-temple/",
           "sources": [
-            "https://thanjavur.nic.in/tourist-place/big-brihadeeshwara-temple/",
-            "https://www.tnstc.in/OTRSOnline/"
+            "https://thanjavur.nic.in/tourist-place/big-brihadeeshwara-temple/"
           ]
         }
       }
@@ -63,12 +70,27 @@
     "nearestStation": {
       "name": "Thanjavur Junction (TJ)",
       "distanceKm": 2.2,
-      "source": "https://router.project-osrm.org/route/v1/driving/79.1396716,10.7781963;79.1313819,10.7825800?overview=false"
+      "source": "https://router.project-osrm.org/route/v1/driving/79.1396716,10.7781963;79.1313819,10.7825800?overview=false",
+      "sources": [
+        "https://router.project-osrm.org/route/v1/driving/79.1396716,10.7781963;79.1313819,10.7825800?overview=false",
+        "https://www.incredibleindia.gov.in/en/tamil-nadu/thanjavur/brihadeeswarar-temple",
+        "https://en.wikipedia.org/wiki/Uzhavan_Express",
+        "https://thanjavur.nic.in/tourist-place/big-brihadeeshwara-temple/"
+      ],
+      "computed": true,
+      "method": "OSRM public demo server (router.project-osrm.org), driving profile: one route from Thanjavur Junction railway station (79.1396716,10.7781963) to the Brihadisvara Temple, Thanjavur (79.1313819,10.78258), on OpenStreetMap roads. The distance is that route's road distance, from the station to the Big Temple and not to the town centre. The engine knows no traffic, stops, tolls or closures, so its free-flow driving time is not a real journey time and is not published here. Run 2026-10-26. Road data © OpenStreetMap contributors (ODbL)."
     },
     "nearestAirport": {
       "name": "Tiruchirappalli International Airport (TRZ)",
       "distanceKm": 63,
-      "source": "https://router.project-osrm.org/route/v1/driving/78.7132601,10.7631651;79.1313819,10.7825800?overview=false"
+      "source": "https://router.project-osrm.org/route/v1/driving/78.7132601,10.7631651;79.1313819,10.7825800?overview=false",
+      "sources": [
+        "https://router.project-osrm.org/route/v1/driving/78.7132601,10.7631651;79.1313819,10.7825800?overview=false",
+        "https://www.incredibleindia.gov.in/en/tamil-nadu/thanjavur/brihadeeswarar-temple",
+        "https://thanjavur.nic.in/tourist-place/big-brihadeeshwara-temple/"
+      ],
+      "computed": true,
+      "method": "OSRM public demo server (router.project-osrm.org), driving profile: one route from Tiruchirappalli airport (78.7132601,10.7631651) to the Brihadisvara Temple, Thanjavur (79.1313819,10.78258), on OpenStreetMap roads. The distance is that route's road distance, from the airport to the Big Temple and not to the town centre. The engine knows no traffic, stops, tolls or closures, so its free-flow driving time is not a real journey time and is not published here. Run 2026-10-26. Road data © OpenStreetMap contributors (ODbL)."
     },
     "timetables": [
       {
@@ -98,25 +120,24 @@
       "closed": null,
       "fees": [],
       "free": null,
-      "dress": "Dress code announced in December 2023 on a notice board put up by the HR&CE department and the Thanjavur Palace Devasthanam (DT Next report): men in a dhoti, or trousers and a shirt; women in a saree, half-saree or churidar with dupatta; children fully covered. Half trousers (shorts) and leggings are not allowed. A footwear safekeeping facility is provided in the complex.",
-      "shadeWater": "Drinking water and toilets are provided for visitors.",
-      "notes": "Working temple and UNESCO World Heritage Site. No official source on entry fees could be opened, so whether entry is free is not confirmed here. Entry to the Chola murals in the narrow passage around the sanctum is restricted. An interpretation centre runs along the south wall. Lonely Planet says official guides can be hired at the tourist information booth just outside the temple for 90-minute tours.",
+      "dress": "A notice board put up in the temple premises by the HR&CE department and the Thanjavur Palace Devasthanam, reported by DT Next on 1 December 2023, asks men to wear a dhoti, or trousers and a shirt; women to wear ethnic wear such as sarees, half-sarees or churidar with dupatta; and children to be fully covered. Half trousers (shorts) and leggings are prohibited. We did not find a current notice from the temple.",
+      "shadeWater": null,
+      "notes": "Working temple and UNESCO World Heritage Site. No official source on entry fees could be opened, so whether entry is free is not confirmed here. An interpretation centre runs along the south wall. Lonely Planet says official guides can be hired at the tourist information booth just outside the temple for 90-minute tours.",
       "sources": [
         "https://www.incredibleindia.gov.in/en/tamil-nadu/thanjavur/brihadeeswarar-temple",
         "https://www.dtnext.in/news/tamilnadu/big-temple-new-dress-code-for-visitors-announced-751802",
-        "https://people.utm.my/lylai/wp-content/uploads/sites/630/2018/06/p90.pdf",
         "https://www.lonelyplanet.com/points-of-interest/brihadishwara-temple/1151896"
       ]
     },
     "2": {
       "name": "Thanjavur Palace",
-      "hours": "9 am to 6 pm",
+      "hours": "9 am to 6 pm for the palace complex (Ministry of Tourism); the sections inside keep their own hours, see the Art Gallery and Saraswathi Mahal Library stops",
       "closed": null,
       "fees": [],
       "free": false,
       "dress": null,
       "shadeWater": null,
-      "notes": "About 1 km from the Big Temple. The Maratha royal family still lives in the palace. The main entrance is from the north, off East Main Street, where the main ticket office is. Seven sections can be visited. A 'Full' ticket covers the Art Gallery, the Saraswati Mahal Library Museum, the Maratha Durbar Hall, the bell tower and the Sarjah Madi. Other sections, such as the Royal Palace Museum and the Maharaja Serfoji Memorial Hall, need extra tickets (Lonely Planet). Current fee amounts could not be confirmed from an official source.",
+      "notes": "About 1 km from the Big Temple. The Maratha royal family still lives in the palace. The main entrance is from the north, off East Main Street, where the main ticket office is. Seven sections can be visited. A 'Full' ticket covers the Art Gallery, the Saraswati Mahal Library Museum, the Maratha Durbar Hall, the bell tower and the Sarjah Madi. Other sections, such as the Royal Palace Museum and the Maharaja Serfoji Memorial Hall, need extra tickets (Lonely Planet). Current fee amounts could not be confirmed from an official source. That the palace is not free rests on Lonely Planet alone; no official fee page was found.",
       "sources": [
         "https://www.incredibleindia.gov.in/en/tamil-nadu/thanjavur/thanjavur-palace",
         "https://thanjavur.nic.in/places-of-interest/",
@@ -131,7 +152,7 @@
       "free": null,
       "dress": null,
       "shadeWater": null,
-      "notes": "Inside the palace complex. Visitors see the library museum, which shows prints, paintings, world atlases, dictionaries and rare books; most of the books and palm-leaf manuscripts are not on display (Lonely Planet). The museum is included in the palace 'Full' ticket (Lonely Planet). An attached cinema room shows hourly audiovisual programmes, 10:30 am to 4:30 pm (Lonely Planet).",
+      "notes": "Inside the palace complex. Visitors see the library museum, which shows prints, paintings, world atlases, dictionaries and rare books; most of the books and palm-leaf manuscripts are not on display (Lonely Planet). The museum is included in the palace 'Full' ticket (Lonely Planet). An attached cinema room shows hourly audiovisual programmes, 10:30 am to 4:30 pm (Lonely Planet). The hours are from the Thanjavur district site, whose page was last updated on 6 July 2018, and the Ministry of Tourism page gives the same hours.",
       "sources": [
         "https://thanjavur.nic.in/tourist-place/saraswathi-mahal-library/",
         "https://www.incredibleindia.gov.in/en/tamil-nadu/thanjavur/saraswathi-mahal-library",
@@ -234,21 +255,22 @@
     ]
   },
   "unsourced": [
-    "Thanjavur Palace entry fees by visitor category: only undated travel-blog figures (about Rs 30 to 50 plus a camera fee) were found",
+    "Thanjavur Palace entry fees by visitor category: only undated travel-blog figures were found",
     "Art Gallery and Saraswathi Mahal Library museum fees as standalone amounts",
     "Brihadisvara 'free' flag (removed, set to null): the only source was a tour operator's marketing blog (hidmc.com, Hi Tours); the Ministry of Tourism page gives no fee information, and the ASI Chennai Circle ticketed-monuments list (asichennai.gov.in, also via the Wayback Machine) and Tamil Nadu Tourism could not be opened",
-    "Brihadisvara guide fee of Rs 500 (removed): from an undated Lonely Planet page whose other palace prices (Rs 2 and Rs 4) are clearly out of date, so the figure cannot be treated as current",
-    "Chennai to Thanjavur bus journey times (removed): tnstc.in's listed durations (7.00, 7.45 and 8.45 Hrs) contradict its own listed departure and arrival times, which are 6 to 7.25 hours apart",
+    "Brihadisvara guide fee (removed): from an undated Lonely Planet page whose palace prices are clearly out of date, so the figure cannot be treated as current",
+    "Chennai to Thanjavur bus counts, departure times and journey times (removed): tnstc.in lists the route among its popular routes, but its search results come from a booking form that cannot be reopened from a link, and its listed durations contradicted its own listed departure and arrival times",
+    "Bengaluru to Thanjavur bus (removed): tnstc.in's popular routes do not include it and no timetable could be cited",
     "'Thanjavur Junction lies on the line west to Tiruchirappalli Junction' (removed): not stated on the cited district page",
-    "'Trichy buses are regular unreserved buses' (removed): an inference from an empty tnstc.in search, not stated by any source",
+    "'Trichy buses are regular unreserved buses' and 'tnstc.in lists no reservable services from Trichy' (both removed): inferences from an empty search on a booking form, not stated by any source",
     "'Royal Palace Museum and Serfoji Memorial Hall tickets are bought at their own entrances' (removed): Lonely Planet says only that these sections need extra tickets",
     "Indian Railways train enquiry link enquiry.indianrail.gov.in (removed from timetables): the connection was reset on every attempt, so the page could not be opened",
-    "An official written footwear rule for Brihadisvara: only a conservation paper's mention of a footwear safekeeping facility",
+    "Brihadisvara footwear safekeeping facility, drinking water and toilets, and restricted access to the Chola murals (all removed): the only source was an academic paper that could not be opened, and nothing official was found",
     "Exact train timings and running days: the Indian Railways enquiry is behind a captcha, and the Railway Board Trains at a Glance PDFs and the Southern Railway site would not load",
     "Tamil Nadu Tourism (tamilnadutourism.tn.gov.in) and ASI Chennai Circle pages: connection reset, could not be opened",
     "Closed days for Thanjavur Palace and Brihadisvara Temple",
     "Shade notes for any stop",
-    "Road journey times with real traffic (OSRM gives free-flow only)",
+    "Road journey times for the legs from Chennai and Bengaluru (removed): the only figure available is a routing engine's free-flow driving time, which is not a real journey time, so only the distance is published",
     "Frequency of Tiruchirappalli to Thanjavur buses and trains",
     "Photography rules or camera fees from an official source",
     "Festival-day changes to temple timings"

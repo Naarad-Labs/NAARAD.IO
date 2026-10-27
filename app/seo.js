@@ -3,7 +3,9 @@
  * A view's meta() returns:
  *   title, description   the <title> and the description everyone reads
  *   path                 the canonical address; null for the not-found page
- *   robots               'noindex' for a page that must stay out of search
+ *   robots               'noindex' (or 'noindex,follow') for a page that must
+ *                        stay out of search; scripts/build-site.mjs also keeps
+ *                        it out of the sitemap
  *   type                 Open Graph type: 'website' (default) or 'article'
  *   published            an ISO date, only when the content records one
  *   card                 the share card: { name, alt, eyebrow, title, facts,

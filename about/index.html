@@ -23,7 +23,7 @@
   <meta name="twitter:description" content="What Naarad is, where its route and elevation data comes from, and what is still being built." data-page="">
   <meta name="twitter:image" content="https://naarad.io/Images/og/home.jpg" data-page="">
   <meta name="twitter:image:alt" content="Naarad: Walk a place. Hear its story. Set on a photograph of the boulder landscape of Hampi, Karnataka." data-page="">
-  <link rel="preload" as="image" type="image/avif" href="/Images/photos/hampi-vittala-hall-960.avif" imagesrcset="/Images/photos/hampi-vittala-hall-640.avif 640w, /Images/photos/hampi-vittala-hall-960.avif 960w" imagesizes="(max-width: 1023px) 100vw, 46vw" fetchpriority="high" data-page="">
+  <link rel="preload" as="image" type="image/avif" href="/Images/photos/hampi-chariot-wheel-1600.avif" imagesrcset="/Images/photos/hampi-chariot-wheel-640.avif 640w, /Images/photos/hampi-chariot-wheel-960.avif 960w, /Images/photos/hampi-chariot-wheel-1280.avif 1280w, /Images/photos/hampi-chariot-wheel-1600.avif 1600w" imagesizes="(max-width: 1023px) 100vw, 46vw" fetchpriority="high" data-page="">
   <script type="application/ld+json" data-page="">{"@context":"https://schema.org","@graph":[{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://naarad.io/"},{"@type":"ListItem","position":2,"name":"About","item":"https://naarad.io/about/"}]}]}</script>
   <link rel="icon" type="image/png" href="/Images/cropped_logo.png">
   <link rel="apple-touch-icon" href="/Images/naarad-icon-192.png">
@@ -39,6 +39,23 @@
       else if (/^\/(explore|routes|stories|creators|journey|about)$/.test(path)) to = path + '/';
       else if (/^\/(routes|stories)\/[^/.]+$/.test(path)) to = path + '/';
       if (to) location.replace(to + location.search + location.hash);
+    })();
+  </script>
+
+  <script>
+    /* Before pages had addresses of their own, a service worker (v10, or v11
+       in a test build) cached the old app code and serves it for every page.
+       Its copy cannot draw these pages, so once: remove it and its caches and
+       load the page again. Visitors without it never run any of this. */
+    (function () {
+      if (window.__NAARAD_PRERENDER__ || !window.caches || !navigator.serviceWorker) return;
+      caches.keys().then(function (names) {
+        if (!names.some(function (name) { return name === 'naarad-shell-v10' || name === 'naarad-shell-v11'; })) return;
+        return navigator.serviceWorker.getRegistrations()
+          .then(function (list) { return Promise.all(list.map(function (item) { return item.unregister(); })); })
+          .then(function () { return Promise.all(names.filter(function (name) { return name.indexOf('naarad-') === 0 && name !== 'naarad-bundles'; }).map(function (name) { return caches.delete(name); })); })
+          .then(function () { location.reload(); });
+      }).catch(function () {});
     })();
   </script>
 
@@ -58,7 +75,7 @@
           <span class="brand-motto">Explore. Listen. Connect.</span>
         </span>
       </a>
-      <nav class="primary-nav" aria-label="Main navigation">
+      <nav class="primary-nav" id="primary-nav" aria-label="Main navigation">
         <a id="nav-explore" href="/explore/" data-view="explore">Explore</a>
         <a id="nav-routes" href="/routes/" data-view="routes">Routes</a>
         <a id="nav-stories" href="/stories/" data-view="stories">Stories</a>
@@ -66,7 +83,7 @@
         <a id="nav-journey" href="/journey/" data-view="journey">My Journey</a>
         <a id="nav-about" href="/about/" data-view="about" class="is-current" aria-current="page">About</a>
       </nav>
-      <form class="header-search" role="search" action="/routes/">
+      <form class="header-search" role="search" aria-label="Site search" action="/routes/">
         <label class="sr-only" for="route-search">Search places, routes and stories</label>
         <input id="route-search" type="search" name="q" placeholder="Search places, routes, stories…" autocomplete="off">
         <button type="submit" aria-label="Search">
@@ -77,7 +94,7 @@
         Start Exploring
         <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 12h15"></path><path d="m13.6 6 5.9 6-5.9 6"></path></svg>
       </a>
-      <button class="menu-toggle" type="button" aria-label="Open navigation" aria-expanded="false"><span></span><span></span><span></span></button>
+      <button class="menu-toggle" type="button" aria-label="Menu" aria-controls="primary-nav" aria-expanded="false"><span></span><span></span><span></span></button>
     </header>
 
     <main id="app-content" class="view-about" data-prerendered="/about/"><div class="info-page">
@@ -92,10 +109,10 @@
       </div>
       <div class="info-hero-media">
         <picture class="photo torn-left">
-    <source type="image/avif" srcset="/Images/photos/hampi-vittala-hall-640.avif 640w, /Images/photos/hampi-vittala-hall-960.avif 960w" sizes="(max-width: 1023px) 100vw, 46vw">
-    <source type="image/webp" srcset="/Images/photos/hampi-vittala-hall-640.webp 640w, /Images/photos/hampi-vittala-hall-960.webp 960w" sizes="(max-width: 1023px) 100vw, 46vw">
-    <img src="/Images/photos/hampi-vittala-hall-960.webp" alt="" loading="eager" decoding="async" fetchpriority="high">
-    <span class="photo-credit">Photo: nevil zaveri (thank you for 20+M views:) (<a href="https://creativecommons.org/licenses/by/2.0/" target="_blank" rel="noopener noreferrer">CC BY 2.0</a>)</span>
+    <source type="image/avif" srcset="/Images/photos/hampi-chariot-wheel-640.avif 640w, /Images/photos/hampi-chariot-wheel-960.avif 960w, /Images/photos/hampi-chariot-wheel-1280.avif 1280w, /Images/photos/hampi-chariot-wheel-1600.avif 1600w" sizes="(max-width: 1023px) 100vw, 46vw">
+    <source type="image/webp" srcset="/Images/photos/hampi-chariot-wheel-640.webp 640w, /Images/photos/hampi-chariot-wheel-960.webp 960w, /Images/photos/hampi-chariot-wheel-1280.webp 1280w, /Images/photos/hampi-chariot-wheel-1600.webp 1600w" sizes="(max-width: 1023px) 100vw, 46vw">
+    <img src="/Images/photos/hampi-chariot-wheel-960.webp" alt="" loading="eager" decoding="async" fetchpriority="high" style="aspect-ratio:1.5214">
+    <span class="photo-credit">Photo: Kdas1977 (<a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener noreferrer">CC BY-SA 4.0</a>)</span>
   </picture>
       </div>
     </header>
@@ -133,6 +150,13 @@
   <script type="module" src="/app/main.js"></script>
   <script>
     if ('serviceWorker' in navigator && !window.__NAARAD_PRERENDER__) {
+      // A page that a worker already controlled holds code that worker cached;
+      // when a new worker takes over, load the page again rather than mix old
+      // and new modules. The first worker a visitor gets is no change of code.
+      var controlled = Boolean(navigator.serviceWorker.controller);
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        if (controlled) { controlled = false; location.reload(); }
+      });
       addEventListener('load', () => navigator.serviceWorker.register('/sw.js').catch(() => {}));
     }
   </script>

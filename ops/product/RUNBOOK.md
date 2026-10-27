@@ -71,6 +71,10 @@ Installed per run if missing (`npx skills add <repo> -a claude-code -s <name> -y
 
 When two skills disagree, the order is: guardrails and honesty rules, then this runbook, then Karpathy and ponytail, then the design skills.
 
+## Branches
+
+Name a branch `type/short-topic` (`product/`, `ops/`, `fix/`). Keep it short-lived: open the PR within a day, merge within two weeks. Update from `main` with a merge, never a rebase of pushed commits. Do not delete other people's or other sessions' branches (parked: data deletion).
+
 ## Honesty rules (the site's own contract)
 
 Nothing fills a gap with a plausible-looking number. The site has no recorded narration, no accounts, no app and no paid plans until the matching feature is live and verified; copy says what is true today. Every fact shown to visitors has a source and a checked date. AI-generated text or audio is labelled and has English source text; machine translation is labelled unreviewed. Photos need a licence that allows use and visible credit.

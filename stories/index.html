@@ -5,14 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#f8f3e9">
   <title>Stories · Naarad</title>
-  <meta name="description" content="Long-form heritage stories from the places on Naarad’s walking routes." data-page="">
+  <meta name="description" content="Short heritage stories from the places on Naarad’s walking routes." data-page="">
   <link rel="canonical" href="https://naarad.io/stories/" data-page="">
   <meta property="og:type" content="website" data-page="">
   <meta property="og:site_name" content="Naarad" data-page="">
   <meta property="og:locale" content="en_IN" data-page="">
   <meta property="og:url" content="https://naarad.io/stories/" data-page="">
   <meta property="og:title" content="Stories · Naarad" data-page="">
-  <meta property="og:description" content="Long-form heritage stories from the places on Naarad’s walking routes." data-page="">
+  <meta property="og:description" content="Short heritage stories from the places on Naarad’s walking routes." data-page="">
   <meta property="og:image" content="https://naarad.io/Images/og/stories.jpg" data-page="">
   <meta property="og:image:type" content="image/jpeg" data-page="">
   <meta property="og:image:width" content="1200" data-page="">
@@ -20,7 +20,7 @@
   <meta property="og:image:alt" content="Listen closer: Naarad's stories, set on the lead photograph of The Stone Chariot of Hampi." data-page="">
   <meta name="twitter:card" content="summary_large_image" data-page="">
   <meta name="twitter:title" content="Stories · Naarad" data-page="">
-  <meta name="twitter:description" content="Long-form heritage stories from the places on Naarad’s walking routes." data-page="">
+  <meta name="twitter:description" content="Short heritage stories from the places on Naarad’s walking routes." data-page="">
   <meta name="twitter:image" content="https://naarad.io/Images/og/stories.jpg" data-page="">
   <meta name="twitter:image:alt" content="Listen closer: Naarad's stories, set on the lead photograph of The Stone Chariot of Hampi." data-page="">
   <script type="application/ld+json" data-page="">{"@context":"https://schema.org","@graph":[{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://naarad.io/"},{"@type":"ListItem","position":2,"name":"Stories","item":"https://naarad.io/stories/"}]}]}</script>
@@ -41,6 +41,23 @@
     })();
   </script>
 
+  <script>
+    /* Before pages had addresses of their own, a service worker (v10, or v11
+       in a test build) cached the old app code and serves it for every page.
+       Its copy cannot draw these pages, so once: remove it and its caches and
+       load the page again. Visitors without it never run any of this. */
+    (function () {
+      if (window.__NAARAD_PRERENDER__ || !window.caches || !navigator.serviceWorker) return;
+      caches.keys().then(function (names) {
+        if (!names.some(function (name) { return name === 'naarad-shell-v10' || name === 'naarad-shell-v11'; })) return;
+        return navigator.serviceWorker.getRegistrations()
+          .then(function (list) { return Promise.all(list.map(function (item) { return item.unregister(); })); })
+          .then(function () { return Promise.all(names.filter(function (name) { return name.indexOf('naarad-') === 0 && name !== 'naarad-bundles'; }).map(function (name) { return caches.delete(name); })); })
+          .then(function () { location.reload(); });
+      }).catch(function () {});
+    })();
+  </script>
+
   <link rel="stylesheet" href="/app/base.css">
   <link rel="stylesheet" href="/app/home.css">
   <link rel="preload" as="font" type="font/woff2" href="/app/fonts/PlayfairDisplay.woff2" crossorigin="">
@@ -57,7 +74,7 @@
           <span class="brand-motto">Explore. Listen. Connect.</span>
         </span>
       </a>
-      <nav class="primary-nav" aria-label="Main navigation">
+      <nav class="primary-nav" id="primary-nav" aria-label="Main navigation">
         <a id="nav-explore" href="/explore/" data-view="explore">Explore</a>
         <a id="nav-routes" href="/routes/" data-view="routes">Routes</a>
         <a id="nav-stories" href="/stories/" data-view="stories" class="is-current" aria-current="page">Stories</a>
@@ -65,7 +82,7 @@
         <a id="nav-journey" href="/journey/" data-view="journey">My Journey</a>
         <a id="nav-about" href="/about/" data-view="about">About</a>
       </nav>
-      <form class="header-search" role="search" action="/routes/">
+      <form class="header-search" role="search" aria-label="Site search" action="/routes/">
         <label class="sr-only" for="route-search">Search places, routes and stories</label>
         <input id="route-search" type="search" name="q" placeholder="Search places, routes, stories…" autocomplete="off">
         <button type="submit" aria-label="Search">
@@ -76,14 +93,14 @@
         Start Exploring
         <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 12h15"></path><path d="m13.6 6 5.9 6-5.9 6"></path></svg>
       </a>
-      <button class="menu-toggle" type="button" aria-label="Open navigation" aria-expanded="false"><span></span><span></span><span></span></button>
+      <button class="menu-toggle" type="button" aria-label="Menu" aria-controls="primary-nav" aria-expanded="false"><span></span><span></span><span></span></button>
     </header>
 
     <main id="app-content" class="view-stories" data-prerendered="/stories/"><div class="story-index">
     <header class="story-index-hero">
       <p class="eyebrow eyebrow-mark">Stories · Field notes</p>
       <h1 class="display">Listen closer.</h1>
-      <p class="lede">Long-form writing about the places on Naarad's routes: what happened there, who built it, and what is left to see.</p>
+      <p class="lede">Short written stories about the places on Naarad's routes: what happened there, who built it, and what is left to see.</p>
     </header>
     <a class="story-lead" href="/stories/stone-chariot-of-hampi/" data-story="stone-chariot-of-hampi">
       <picture class="photo ">
@@ -150,6 +167,13 @@
   <script type="module" src="/app/main.js"></script>
   <script>
     if ('serviceWorker' in navigator && !window.__NAARAD_PRERENDER__) {
+      // A page that a worker already controlled holds code that worker cached;
+      // when a new worker takes over, load the page again rather than mix old
+      // and new modules. The first worker a visitor gets is no change of code.
+      var controlled = Boolean(navigator.serviceWorker.controller);
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        if (controlled) { controlled = false; location.reload(); }
+      });
       addEventListener('load', () => navigator.serviceWorker.register('/sw.js').catch(() => {}));
     }
   </script>
