@@ -41,7 +41,7 @@ const LANGUAGES = [
   ['te', 'తెలుగు'], ['ml', 'മലയാളം'], ['mr', 'मराठी'], ['bn', 'বাংলা'],
 ];
 
-const STATUS_LABEL = { draft: 'Draft', ready: 'Ready to submit', submitted: 'Awaiting backend' };
+const STATUS_LABEL = { draft: 'Draft', ready: 'Ready to submit', submitted: 'Sent for review' };
 
 function sidebar(active = 'create') {
   return `<nav class="studio-nav" aria-label="Creator Studio">
@@ -168,8 +168,11 @@ function builder(draft, route, stop) {
         <div><dt>Languages</dt><dd>${draft.targetLanguages.length ? draft.targetLanguages.join(', ') : 'English only'}</dd></div>
       </dl>
       <div class="empty-state">${icon('upload')}<div>
-        <strong>Publishing is not available in this build</strong>
-        <p>Submitting a story needs the Naarad backend: audio storage, transcription, translation and review. Your draft stays in this browser until then.</p>
+        ${Account.signedIn()
+    ? `<strong>Send this draft for review</strong>
+        <p>The text goes to the Naarad team to read. Audio is not uploaded yet, and nothing is published until a person approves it.</p>`
+    : `<strong>Publishing is not available in this build</strong>
+        <p>Submitting a story needs the Naarad backend: audio storage, transcription, translation and review. Your draft stays in this browser until then.</p>`}
       </div></div>
     </div>
 
@@ -178,7 +181,7 @@ function builder(draft, route, stop) {
       <button type="button" class="button button-sm" data-studio="save">${icon('check')} Save draft</button>
       ${stepIndex < STEPS.length - 1
     ? `<button type="button" class="button button-primary button-sm" data-studio="next">Next ${icon('arrow')}</button>`
-    : `<button type="button" class="button button-primary button-sm" data-studio="submit" aria-disabled="true">Submit for review</button>`}
+    : `<button type="button" class="button button-primary button-sm" data-studio="submit"${Account.signedIn() ? '' : ' aria-disabled="true"'}>Submit for review</button>`}
     </div>
   </section>`;
 }
