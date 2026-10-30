@@ -36,7 +36,7 @@ const opportunity = (over = {}) => ({
 const ledger3 = [entry(), entry({ id: 'E-0002', origin: 'Board B', source: 'INT-002' }), entry({ id: 'E-0003', origin: 'CSR C', source: 'INT-003', tier: 'T3' })];
 
 test('the committed stores validate', () => {
-  const { errors } = validateAll(loadStores(ROOT), { today: TODAY });
+  const { errors } = validateAll(loadStores(ROOT), { today: new Date().toISOString().slice(0, 10) });
   assert.deepEqual(errors, []);
 });
 
