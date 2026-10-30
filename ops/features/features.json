@@ -3,13 +3,13 @@
     "id": "F-001",
     "name": "Creator accounts and Studio submissions",
     "area": "accounts",
-    "summary": "Creators sign up, send route drafts for review and can delete their account. Database applied and tested; sign-in screen built behind a flag; submit, deletion screen and moderation not built.",
+    "summary": "Creators sign in, send route drafts for review and can delete their account. Database applied and tested; sign-in, send-for-review and delete-my-account built behind a flag (off for visitors). Waiting on G4: invite-only switch in Supabase, consent wording.",
     "status": "building",
     "flag": null,
     "origin": "built-under-override",
     "gates": {
       "G1": "override:D-0004",
-      "G2": "proposed:D-0005",
+      "G2": "approved:D-0009",
       "G3": "not-checked",
       "G4": "required"
     },
@@ -24,7 +24,8 @@
     "decisions": [
       "D-0004",
       "D-0005",
-      "D-0006"
+      "D-0006",
+      "D-0009"
     ],
     "evidence": [],
     "pr": [

@@ -63,8 +63,32 @@ export async function click(button, repaint) {
   if (button.hasAttribute('data-account-signout')) {
     await backend.signOut();
     view.reset();
+  } else if (button.hasAttribute('data-account-delete')) {
+    view.set({ confirmDelete: true, error: '' });
+  } else if (button.hasAttribute('data-account-delete-cancel')) {
+    view.set({ confirmDelete: false });
+  } else if (button.hasAttribute('data-account-delete-confirm')) {
+    try { await backend.deleteAccount(); view.reset(); } catch (error) { view.set({ confirmDelete: false, error: error.message || 'Nothing was deleted.' }); }
   } else {
     view.set({ mode: button.dataset.accountMode === 'up' ? 'up' : 'in', pending: false, error: '' });
   }
   await repaint();
+}
+
+/** Is someone signed in here (and the flag on)? */
+export const signedIn = () => isOn() && Boolean(backend.session());
+
+/** Send one Studio draft for review. Returns true when the server has it. */
+export async function send(draft, repaint) {
+  try {
+    await backend.saveSubmission({ title: String(draft.title || 'Untitled story').slice(0, 160), draft: {
+      routeSlug: draft.routeSlug, stopOrder: draft.stopOrder, language: draft.language, transcript: draft.transcript,
+      summary: draft.summary, targetLanguages: draft.targetLanguages,
+    }, send: true });
+    return true;
+  } catch (error) {
+    view.set({ error: error.message || 'Nothing was sent.' });
+    await repaint();
+    return false;
+  }
 }

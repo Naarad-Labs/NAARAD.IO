@@ -1,7 +1,7 @@
 # F-001: Creator accounts and Studio submissions
 
-Status: **proposed, waiting for gate G2** (the founder approves the spec and the kill rule).
-Built so far: database (applied, tested, reversible), browser client (off). Not built: any screen.
+Status: **G2 approved (D-0009), built behind a flag, waiting for gate G4** (production: invite-only switch and consent wording).
+Built so far: database (applied, tested, reversible), browser client (off). Screens built behind the flag: sign-in, send for review, delete my account. Moderation is the Supabase dashboard.
 Override: this feature entered build under D-0004, which skips gate G1 only. G1 is not passed: the ledger is empty.
 
 ## 1. Problem, as far as the evidence goes

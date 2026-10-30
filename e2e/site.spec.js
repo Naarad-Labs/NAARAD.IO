@@ -644,6 +644,8 @@ test.describe('accounts: the sign-in panel (behind a flag)', () => {
         return json(200, { access_token: 'at', refresh_token: 'rt', expires_in: 3600, user });
       }
       if (url.pathname === '/auth/v1/logout') return route.fulfill({ status: 204, headers: CORS });
+      if (url.pathname === '/rest/v1/creator_submissions') return json(201, [{ id: 's-1', status: 'submitted' }]);
+      if (url.pathname === '/rest/v1/rpc/delete_my_account') return route.fulfill({ status: 204, headers: CORS });
       return json(404, { message: 'not mocked' });
     });
     return seen;
@@ -730,6 +732,44 @@ test.describe('accounts: the sign-in panel (behind a flag)', () => {
     await expect(page.getByLabel('Password')).toBeVisible();
     expect(await page.evaluate(() => localStorage.getItem('naarad.auth.v1'))).toBeNull();
     expect(seen.some((entry) => entry.url.endsWith('/auth/v1/logout'))).toBe(true);
+  });
+
+  async function signedInStudio(page) {
+    const seen = await mockSupabase(page);
+    await flagOn(page);
+    await page.goto('/creators/');
+    await page.getByLabel('Email').fill('person@example.com');
+    await page.getByLabel('Password').fill('correct-horse-battery');
+    await page.getByRole('button', { name: 'Sign in' }).click();
+    await expect(panel(page)).toContainText('Signed in as person@example.com');
+    return seen;
+  }
+
+  test('signed in, a draft goes for review as "submitted" and the Studio says so', async ({ page }) => {
+    const seen = await signedInStudio(page);
+    await page.locator('[data-studio-step="metadata"]').click();
+    await page.locator('[data-studio="title"]').fill('Dawn at the temple');
+    await page.locator('[data-studio-step="review"]').click();
+    await page.locator('[data-studio="submit"]').click();
+    await expect(page.locator('.studio-table')).toContainText('Sent for review');
+    const sent = seen.find((entry) => entry.url.includes('/rest/v1/creator_submissions'));
+    expect(sent.method).toBe('POST');
+    expect(sent.body.status).toBe('submitted');
+    expect(sent.body.title).toBe('Dawn at the temple');
+  });
+
+  test('deleting the account asks twice, then erases it and signs out', async ({ page }) => {
+    const seen = await signedInStudio(page);
+    await page.getByRole('button', { name: 'Delete my account' }).click();
+    await expect(panel(page)).toContainText('erases your account');
+    expect(seen.some((entry) => entry.url.includes('delete_my_account'))).toBe(false);
+    await page.getByRole('button', { name: 'Keep my account' }).click();
+    await expect(panel(page)).toContainText('Signed in as person@example.com');
+    await page.getByRole('button', { name: 'Delete my account' }).click();
+    await page.getByRole('button', { name: 'Delete everything' }).click();
+    await expect(page.getByLabel('Password')).toBeVisible();
+    expect(seen.some((entry) => entry.url.includes('delete_my_account') && entry.method === 'POST')).toBe(true);
+    expect(await page.evaluate(() => localStorage.getItem('naarad.auth.v1'))).toBeNull();
   });
 
   test('markup in a server error is shown as text and never runs', async ({ page }) => {

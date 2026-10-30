@@ -113,3 +113,14 @@ test('the view holder merges changes, resets to signed-out defaults, and hands o
   view.reset();
   assert.deepEqual(view.get(), { mode: 'in', pending: false, email: '', error: '', busy: false });
 });
+
+test('signed in: deleting the account takes a second, explicit step that says what is erased', () => {
+  const session = { user: { email: 'person@example.com' } };
+  const first = renderPanel({ session });
+  assert.match(first, /data-account-delete(?!-)/);
+  assert.doesNotMatch(first, /data-account-delete-confirm/);
+  const second = renderPanel({ session, confirmDelete: true });
+  assert.match(second, /data-account-delete-confirm/);
+  assert.match(second, /data-account-delete-cancel/);
+  assert.match(second, /erases your account and every draft/i);
+});

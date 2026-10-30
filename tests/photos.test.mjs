@@ -31,7 +31,9 @@ test('every photograph has both encodings at every width it lists, and every fil
 test('every photograph names its author and licence, and the licence allows it to be cropped and credited', () => {
   for (const [id, photo] of Object.entries(manifest)) {
     assert.ok(photo.author, `${id}: author`);
-    assert.match(photo.licence, ADAPTABLE, `${id}: licence`);
+    // Placeholders are Naarad's own drawings, so there is no third-party licence to check.
+    if (photo.placeholder) assert.equal(photo.author, 'Naarad', `${id}: placeholder author`);
+    else assert.match(photo.licence, ADAPTABLE, `${id}: licence`);
     assert.match(photo.sourcePage, /^https:\/\//, `${id}: source page`);
   }
 });

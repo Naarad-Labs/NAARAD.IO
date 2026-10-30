@@ -58,7 +58,12 @@ export function renderPanel(view = {}) {
 
   if (view.session) {
     const email = view.session.user?.email || view.session.email || '';
-    bodyHtml = `<p>Signed in as ${escapeHtml(email)}</p><button type="button" class="button button-sm" data-account-signout>Sign out</button>`;
+    const erase = view.confirmDelete
+      ? `<p role="alert">This erases your account and every draft you sent for review. It cannot be undone.</p>` +
+        `<button type="button" class="button button-sm" data-account-delete-confirm>Delete everything</button> ` +
+        `<button type="button" class="button button-sm" data-account-delete-cancel>Keep my account</button>`
+      : `<button type="button" class="button button-sm" data-account-delete>Delete my account</button>`;
+    bodyHtml = `<p>Signed in as ${escapeHtml(email)}</p><button type="button" class="button button-sm" data-account-signout>Sign out</button> ${erase}`;
   } else if (view.pending) {
     bodyHtml = `<p>Check your inbox to confirm ${escapeHtml(view.email || '')}.</p><button type="button" class="button button-sm" data-account-mode="in">Sign in</button>`;
   } else {

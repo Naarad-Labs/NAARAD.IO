@@ -743,7 +743,11 @@ async function handleStudio(target) {
   }
   if (field === 'save') { Drafts.update({}); notify('Draft saved in this browser.'); await refreshStudio(); return; }
   if (field === 'transcribe') { notify('Automatic transcription needs the Naarad backend, which is not part of this build.'); return; }
-  if (field === 'submit') { notify('Publishing needs the Naarad backend. Your draft is kept in this browser.'); return; }
+  if (field === 'submit') {
+    if (!Account.signedIn()) { notify('Publishing needs the Naarad backend. Your draft is kept in this browser.'); return; }
+    if (await Account.send(Drafts.current(), refreshStudio)) { Drafts.update({ status: 'submitted' }); notify('Sent for review. Nothing is published until a person approves it.'); await refreshStudio(); }
+    return;
+  }
 
   const step = target.dataset.studioStep;
   if (step) { Drafts.update({ step }); await refreshStudio(); return; }
@@ -790,7 +794,7 @@ document.addEventListener('click', async (event) => {
     return;
   }
 
-  const accountButton = event.target.closest('[data-account-mode], [data-account-signout]');
+  const accountButton = event.target.closest('[data-account-mode], [data-account-signout], [data-account-delete], [data-account-delete-confirm], [data-account-delete-cancel]');
   if (accountButton) { event.preventDefault(); await Account.click(accountButton, refreshStudio); return; }
 
   const stopButton = event.target.closest('[data-select-stop]');
