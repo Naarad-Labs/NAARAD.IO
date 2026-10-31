@@ -376,24 +376,29 @@ if it exists. Its status stays 404 until you rebuild.
 bash scripts/verify.sh
 ```
 
-runs all of it, prints a PASS or FAIL line per step and exits non-zero if any
-failed:
+runs four stages, each with a banner and a PASS or FAIL line. Stops at the
+first failure and exits non-zero. At the end, prints a timing table for the
+stages that ran:
 
-1. the build is deterministic: `node scripts/build-site.mjs` twice gives the same
-   pages, cards, sitemap and `content/lastmod.json`, and what it gives is what is
-   committed (commit the generated files with the change that caused them; while
-   that is still uncommitted, `VERIFY_ALLOW_UNCOMMITTED=1 bash scripts/verify.sh`
-   skips the comparison with the commit);
+1. the build is deterministic and committed: `node scripts/build-site.mjs` twice
+   gives the same pages, cards, sitemap and `content/lastmod.json`, and what it
+   gives is what is committed (commit the generated files with the change that
+   caused them; while that is still uncommitted,
+   `VERIFY_ALLOW_UNCOMMITTED=1 bash scripts/verify.sh` skips the comparison with
+   the commit). Run alone (from the repo root):
+   `bash -c 'source scripts/verify.sh; check_build'`;
 2. `node --test tests/*.test.mjs`: unit tests with no dependencies (Node 22 or
    later): the address scheme, the sitemap dates, the service worker run in a
    sandbox, the loaders, what each page claims about itself, the accessibility
    rules of the markup the views draw, the device-local stores given storage of
    the wrong shape, the practical-facts linter on fixtures and on the committed
    files, and the build failing safely (those run the real build in a copy of
-   the site, so they need Chromium like the build does);
+   the site, so they need Chromium like the build does). Run alone (from the
+   repo root): `bash -c 'source scripts/verify.sh; check_tests'`;
 3. `node scripts/check-practical.mjs`: the sourced visitor facts in
    `content/practical` (below). Any error fails the step; so does a `checked`
-   date more than 180 days old. Warnings are allowed;
+   date more than 180 days old. Warnings are allowed. Run alone (from the repo
+   root): `bash -c 'source scripts/verify.sh; check_practical'`;
 4. the Playwright checks in `e2e`, which cover both compositions, the clean
    addresses, canonicals, the pre-rendered HTML and its structured data, the
    sitemap, what happens when a fetch fails, history, scroll and anchors, layout
@@ -402,7 +407,8 @@ failed:
    focus (the route's section links, the stop rail, the listening bar, re-draws),
    axe rules on the markup, touch targets on a phone, and the service worker.
    They need `cd e2e && npm install` once, and the generated pages to be current
-   (`verify.sh` builds first).
+   (`verify.sh` builds first). Run alone (from the repo root):
+   `bash -c 'source scripts/verify.sh; check_e2e'`.
 
 ### The service worker
 
