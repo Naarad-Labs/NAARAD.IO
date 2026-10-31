@@ -34,9 +34,9 @@ Run lock: none
 | 24 | done |  | Define the G1 gate in one page | Governance gates (ops/ decision log and | ops/GOVERNANCE.md, features.mjs, lib.mjs, tests |
 | 25 | done |  | Add a PR template with governance fields | Governance gates (ops/ decision log and | ops/GOVERNANCE.md, features.mjs, lib.mjs, tests |
 | 26 | todo |  | Add a weekly governance review note | Governance gates (ops/ decision log and | weekly note, recurring |
-| 27 | todo |  | Document what verify.sh checks | verify.sh and CI |  |
-| 28 | todo |  | Make verify.sh fail fast with clear stage names | verify.sh and CI |  |
-| 29 | todo |  | Time every verify.sh stage | verify.sh and CI |  |
+| 27 | done |  | Document what verify.sh checks | verify.sh and CI | verify.sh header and README list each stage with its run-alone command; full verify.sh passes (stream s27, written by Cline) |
+| 28 | done |  | Make verify.sh fail fast with clear stage names | verify.sh and CI | banner per stage; stops at the first failure with the stage name; full verify.sh passes (stream s27, written by Cline) |
+| 29 | done |  | Time every verify.sh stage | verify.sh and CI | per-stage timing table printed last, also on failure: 77s total on the reference run (stream s27, written by Cline) |
 | 30 | todo |  | Add an HTML validity stage | verify.sh and CI |  |
 | 31 | todo |  | Add an internal link checker | verify.sh and CI |  |
 | 32 | todo |  | Check sitemap.xml matches the built pages | verify.sh and CI |  |
