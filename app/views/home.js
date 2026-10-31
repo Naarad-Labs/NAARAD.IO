@@ -108,7 +108,7 @@ function featuredSection(routes) {
         <h2 id="featured-title" class="section-title">Iconic journeys, deeper stories.</h2>
       </div>
       <div class="section-head-aside">
-        <p>Curated walking routes with place stories, local context and real route data — at your own pace.</p>
+        <p>Curated walking routes with place stories, local context and real route data, at your own pace.</p>
         <a class="button button-sm" href="${sectionPath('routes')}" data-view="routes">View All Routes ${icon('arrow')}</a>
       </div>
     </div>
