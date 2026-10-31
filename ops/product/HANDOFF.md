@@ -5,7 +5,7 @@ Repo: https://github.com/Naarad-Labs/NAARAD.IO (live at naarad.io via GitHub Pag
 
 ## Where things stand
 
-- **Open PR waiting on you:** [#26](https://github.com/Naarad-Labs/NAARAD.IO/pull/26) "Hallmark pass 1" (CSS only: plain labels, overflow clip, 3:1 field borders, no wrapping buttons, one dash removed, service worker v19). CI is green (site, ops, db). Merge only when the founder says so.
+- **Merged (not by Claude):** [#26](https://github.com/Naarad-Labs/NAARAD.IO/pull/26) "Hallmark pass 1" (CSS only: plain labels, overflow clip, 3:1 field borders, no wrapping buttons, one dash removed, service worker v19). CI was green. No PR is open now.
 - **Merged to main this week:** #22 governance gates (roadmap 13-18, 21-25), #23 sharper photos + better read-aloud voice, #24 Thanjavur photo fixed + placeholders, #25 creator accounts (send for review, delete my account) behind a flag.
 - **Roadmap:** `ops/product/ROADMAP-1000.md`, progress in `ops/product/PROGRESS.md` (22 done, 784 todo, 193 blocked, 1 parked). Next unblocked: items 27-37 (verify.sh and CI). Run with `node ops/product/progress.mjs summary|next N|set N status "note"`.
 - **Backend (F-001):** Supabase project is live and its tables are applied. Sign-in, send-for-review and delete-my-account are built behind `naarad.flag.accounts` (off for visitors; `?accounts=on` turns it on). G2 approved (D-0009). **G4 not passed.**
@@ -50,4 +50,4 @@ Source: https://github.com/Nutlope/hallmark. Reinstall locally: `npx skills add 
 
 ## Suggested first message in the new session
 
-"Read HANDOFF.md. Merge PR 26 if I say so. Then I choose: recompose home + route in full with Hallmark, or stop. Use FreeLLMAPI only for any tool-triggered AI."
+"Read HANDOFF.md. PR 26 is already merged. I choose: recompose home + route in full with Hallmark, or stop. Use FreeLLMAPI only for any tool-triggered AI."
