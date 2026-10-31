@@ -39,7 +39,7 @@
   display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 22px;
   padding: 24px clamp(20px, 2.4vw, 42px) 0;
 }
-.studio-step-title { display: flex; align-items: center; gap: 11px; margin-bottom: 16px; font-size: 14px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; font-family: var(--sans); }
+.studio-step-title { display: flex; align-items: center; gap: 11px; margin-bottom: 16px; font-size: 14px; font-weight: 700;  font-family: var(--sans); }
 .studio-step-title span {
   display: grid; place-items: center; width: 25px; height: 25px; border-radius: 50%;
   background: var(--orange); color: #fff; font-size: 13px; letter-spacing: 0;
@@ -105,7 +105,7 @@
 /* ── Drafts table ──────────────────────────────────────────────── */
 .studio-table { width: 100%; border-collapse: collapse; font-size: 14.5px; }
 .studio-table th {
-  padding: 9px 10px; text-align: left; font-size: 13px; letter-spacing: .1em; text-transform: uppercase;
+  padding: 9px 10px; text-align: left; font-size: 13px; 
   color: var(--ink-muted); border-bottom: 1px solid var(--line);
 }
 .studio-table td { padding: 11px 10px; border-bottom: 1px solid var(--line); vertical-align: middle; }
