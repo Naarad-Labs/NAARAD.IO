@@ -77,3 +77,7 @@ __pycache__/
 .claude/skills/ponytail-help
 .claude/skills/ponytail-review
 .playwright-cli/
+
+# Hallmark design skill (installed from Nutlope/hallmark) and its audit output
+.claude/skills/hallmark
+.hallmark/
