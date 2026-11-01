@@ -107,7 +107,7 @@
     <header class="journey-hero">
       <div class="journey-hero-copy">
         <nav class="breadcrumb" aria-label="Breadcrumb"><a href="/" data-view="home">Home</a><svg class="ico " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m9 5.5 6.5 6.5L9 18.5"></path></svg><b aria-current="page">My Journey</b></nav>
-        <h1 class="display">My Journey<br><span class="accent">More than places.</span></h1>
+        <h1 class="display">My Journey <br><span class="accent">More than places.</span></h1>
         <p class="lede">Your walks, stories and notes in one place. Everything here is kept on this device — there are no accounts yet, so nothing leaves your browser.</p>
       </div>
       <div class="journey-hero-media">
@@ -117,15 +117,15 @@
     <img src="/Images/photos/india-traveller-960.webp" alt="" loading="eager" decoding="async" fetchpriority="high" style="aspect-ratio:1.0149 / 1">
     <span class="photo-credit">Photo: Abe Bingham (<a href="https://creativecommons.org/licenses/by/2.0/" target="_blank" rel="noopener noreferrer">CC BY 2.0</a>)</span>
   </picture>
-        <p class="note-plain note-over-photo journey-hero-note">Same places.<br>New stories.<br>A richer you.</p>
+        <p class="note-plain note-over-photo journey-hero-note">Same places. <br>New stories. <br>A richer you.</p>
       </div>
     </header>
 
     <div class="journey-tabs" role="tablist" aria-label="Journey sections">
-      <button type="button" role="tab" data-journey-tab="journey" aria-selected="true" tabindex="0"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="8.4"></circle><path d="m14.8 9.2-1.6 4.2-4.2 1.6 1.6-4.2Z"></path></svg><span>My Journey</span></button><button type="button" role="tab" data-journey-tab="saved" aria-selected="false" tabindex="-1"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6.4 4.4h11.2v15.4L12 15.6l-5.6 4.2Z"></path></svg><span>Saved Routes</span></button><button type="button" role="tab" data-journey-tab="journal" aria-selected="false" tabindex="-1"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 5.2c2.6-1 5.3-1 8 0v14c-2.7-1-5.4-1-8 0Z"></path><path d="M12 5.2c2.7-1 5.4-1 8 0v14c-2.6-1-5.3-1-8 0"></path></svg><span>Journal</span></button><button type="button" role="tab" data-journey-tab="downloads" aria-selected="false" tabindex="-1"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 4v10.5"></path><path d="m8 11 4 3.8 4-3.8"></path><path d="M4.6 19.4h14.8"></path></svg><span>Downloads</span></button><button type="button" role="tab" data-journey-tab="badges" aria-selected="false" tabindex="-1"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="9.2" r="5.4"></circle><path d="m8.6 13.6-1.4 6.8 4.8-2.6 4.8 2.6-1.4-6.8"></path></svg><span>Achievements</span></button>
+      <button type="button" role="tab" id="journey-tab-journey" aria-controls="journey-panel-journey" data-journey-tab="journey" aria-selected="true" tabindex="0"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="8.4"></circle><path d="m14.8 9.2-1.6 4.2-4.2 1.6 1.6-4.2Z"></path></svg><span>My Journey</span></button><button type="button" role="tab" id="journey-tab-saved" aria-controls="journey-panel-saved" data-journey-tab="saved" aria-selected="false" tabindex="-1"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6.4 4.4h11.2v15.4L12 15.6l-5.6 4.2Z"></path></svg><span>Saved Routes</span></button><button type="button" role="tab" id="journey-tab-journal" aria-controls="journey-panel-journal" data-journey-tab="journal" aria-selected="false" tabindex="-1"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 5.2c2.6-1 5.3-1 8 0v14c-2.7-1-5.4-1-8 0Z"></path><path d="M12 5.2c2.7-1 5.4-1 8 0v14c-2.6-1-5.3-1-8 0"></path></svg><span>Journal</span></button><button type="button" role="tab" id="journey-tab-downloads" aria-controls="journey-panel-downloads" data-journey-tab="downloads" aria-selected="false" tabindex="-1"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 4v10.5"></path><path d="m8 11 4 3.8 4-3.8"></path><path d="M4.6 19.4h14.8"></path></svg><span>Downloads</span></button><button type="button" role="tab" id="journey-tab-badges" aria-controls="journey-panel-badges" data-journey-tab="badges" aria-selected="false" tabindex="-1"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="9.2" r="5.4"></circle><path d="m8.6 13.6-1.4 6.8 4.8-2.6 4.8 2.6-1.4-6.8"></path></svg><span>Achievements</span></button>
     </div>
 
-    <section class="journey-panel" data-journey-panel="journey">
+    <section class="journey-panel" id="journey-panel-journey" role="tabpanel" aria-labelledby="journey-tab-journey" data-journey-panel="journey">
       <div class="journey-overview">
         <div class="journey-progress">
           <div class="journey-ring">
@@ -156,11 +156,11 @@
       
     </section>
 
-    <section class="journey-panel" data-journey-panel="saved" hidden="">
+    <section class="journey-panel" id="journey-panel-saved" role="tabpanel" aria-labelledby="journey-tab-saved" data-journey-panel="saved" hidden="">
       <div class="empty-state"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 3.6 13.8 9l5.4 1.8-5.4 1.8L12 18l-1.8-5.4L4.8 10.8 10.2 9Z"></path></svg><div><strong>No saved routes</strong><p>The bookmark on any route page keeps it here.</p></div></div>
     </section>
 
-    <section class="journey-panel" data-journey-panel="journal" hidden="">
+    <section class="journey-panel" id="journey-panel-journal" role="tabpanel" aria-labelledby="journey-tab-journal" data-journey-panel="journal" hidden="">
       <form class="journal-form" data-journal-form="">
         <h2 class="eyebrow eyebrow-mark">Write a new entry</h2>
         <label class="field"><span>Title</span><input type="text" name="title" required="" placeholder="Evening at the Stone Chariot"></label>
@@ -171,11 +171,11 @@
       <div class="empty-state"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 3.6 13.8 9l5.4 1.8-5.4 1.8L12 18l-1.8-5.4L4.8 10.8 10.2 9Z"></path></svg><div><strong>No notes yet</strong><p>Notes you write stay on this device.</p></div></div>
     </section>
 
-    <section class="journey-panel" data-journey-panel="downloads" hidden="">
+    <section class="journey-panel" id="journey-panel-downloads" role="tabpanel" aria-labelledby="journey-tab-downloads" data-journey-panel="downloads" hidden="">
       <div class="empty-state"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 3.6 13.8 9l5.4 1.8-5.4 1.8L12 18l-1.8-5.4L4.8 10.8 10.2 9Z"></path></svg><div><strong>Offline bundles are not available yet</strong><p>Downloading a route for offline use needs versioned bundles of map data, audio and transcripts. The route pages say where this stands.</p></div></div>
     </section>
 
-    <section class="journey-panel" data-journey-panel="badges" hidden="">
+    <section class="journey-panel" id="journey-panel-badges" role="tabpanel" aria-labelledby="journey-tab-badges" data-journey-panel="badges" hidden="">
       <div class="badge-grid">
         <article class="badge ">
           <svg class="ico " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 20.4c-1.5 0-2.4-.8-2.4-2.3 0-1.3.6-2 .6-3.4 0-1-.6-1.6-.6-3C4.6 9.4 5.8 8 7.4 8s2.6 1.4 2.4 3.6c-.2 2-.8 3-.8 4.6s-.5 4.2-2 4.2Z"></path><path d="M17 16.4c-1.5 0-2-2.6-2-4.2 0-1.6-.6-2.6-.8-4.6C14 5.4 15.4 4 17 4s2.8 1.4 2.8 3.7c0 1.4-.6 2-.6 3 0 1.4.6 2.1.6 3.4 0 1.5-.9 2.3-2.8 2.3Z"></path></svg>

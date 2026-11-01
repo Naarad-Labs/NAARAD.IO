@@ -97,7 +97,7 @@ function hero(route) {
       priority: true, credit: true, className: 'route-hero-photo torn-left',
     })
     : '<div class="route-hero-photo photo photo-missing"></div>'}
-      ${route.subtitle ? `<p class="note-plain note-over-photo route-hero-note">${escapeHtml(route.themes?.[0] || 'A living story')}.<br>Walk it slowly.</p>` : ''}
+      ${route.subtitle ? `<p class="note-plain note-over-photo route-hero-note">${escapeHtml(route.themes?.[0] || 'A living story')}. <br>Walk it slowly.</p>` : ''}
       <span class="pin-chip route-hero-place">${icon('pin')}${escapeHtml(route.location || 'India')}</span>
     </div>
   </header>`;
@@ -158,22 +158,22 @@ function stopPanel(route, stop) {
     </div>
 
     <div class="stop-tabs" role="tablist" aria-label="Stop detail">
-      <button type="button" role="tab" aria-selected="true" data-stop-tab="transcript">Transcript</button>
-      <button type="button" role="tab" aria-selected="false" data-stop-tab="place">About the place</button>
-      <button type="button" role="tab" aria-selected="false" data-stop-tab="related">Related stops</button>
+      <button type="button" role="tab" id="stop-tab-transcript" aria-controls="stop-panel-transcript" aria-selected="true" tabindex="0" data-stop-tab="transcript">Transcript</button>
+      <button type="button" role="tab" id="stop-tab-place" aria-controls="stop-panel-place" aria-selected="false" tabindex="-1" data-stop-tab="place">About the place</button>
+      <button type="button" role="tab" id="stop-tab-related" aria-controls="stop-panel-related" aria-selected="false" tabindex="-1" data-stop-tab="related">Related stops</button>
     </div>
-    <div class="stop-tab-panel" data-stop-panel="transcript">
+    <div class="stop-tab-panel" id="stop-panel-transcript" role="tabpanel" aria-labelledby="stop-tab-transcript" data-stop-panel="transcript">
       <blockquote class="stop-quote">${icon('quote')}<p>${escapeHtml(stop.story)}</p></blockquote>
       <p class="data-note">Text written for Naarad. Narration is read aloud by your device until a creator recording is published for this stop.</p>
     </div>
-    <div class="stop-tab-panel" data-stop-panel="place" hidden>
+    <div class="stop-tab-panel" id="stop-panel-place" role="tabpanel" aria-labelledby="stop-tab-place" data-stop-panel="place" hidden>
       <dl class="stop-facts">
         <div><dt>Distance along route</dt><dd>${escapeHtml(Data.formatDistance(stop.distanceM) || '—')}</dd></div>
         <div><dt>Elevation</dt><dd>${stop.elevationM != null ? `${stop.elevationM} m` : 'Not sampled'}</dd></div>
         <div><dt>Coordinates</dt><dd>${stop.lat.toFixed(4)}, ${stop.lng.toFixed(4)}</dd></div>
       </dl>
     </div>
-    <div class="stop-tab-panel" data-stop-panel="related" hidden>
+    <div class="stop-tab-panel" id="stop-panel-related" role="tabpanel" aria-labelledby="stop-tab-related" data-stop-panel="related" hidden>
       <ul class="stop-related">
         ${route.stops.filter((other) => other.order !== stop.order).slice(0, 3).map((other) => `<li>
           <button type="button" data-select-stop="${other.order}"><b>${other.order}. ${escapeHtml(other.name)}</b><span>${escapeHtml(other.tagline)}</span></button>

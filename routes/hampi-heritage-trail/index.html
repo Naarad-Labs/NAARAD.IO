@@ -130,7 +130,7 @@
     <img src="/Images/photos/hampi-gopuram-1200.webp" alt="Hampi Heritage Trail, Hampi, Karnataka" loading="eager" decoding="async" fetchpriority="high" style="aspect-ratio:1.7778">
     <span class="photo-credit">Photo: iMahesh (<a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener noreferrer">CC BY-SA 4.0</a>)</span>
   </picture>
-      <p class="note-plain note-over-photo route-hero-note">Temples.<br>Walk it slowly.</p>
+      <p class="note-plain note-over-photo route-hero-note">Temples. <br>Walk it slowly.</p>
       <span class="pin-chip route-hero-place"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M19 10.2c0 5-7 11.6-7 11.6S5 15.2 5 10.2a7 7 0 1 1 14 0Z"></path><circle cx="12" cy="10" r="2.4"></circle></svg>Hampi, Karnataka</span>
     </div>
   </header>
@@ -252,22 +252,22 @@
     </div>
 
     <div class="stop-tabs" role="tablist" aria-label="Stop detail">
-      <button type="button" role="tab" aria-selected="true" data-stop-tab="transcript">Transcript</button>
-      <button type="button" role="tab" aria-selected="false" data-stop-tab="place">About the place</button>
-      <button type="button" role="tab" aria-selected="false" data-stop-tab="related">Related stops</button>
+      <button type="button" role="tab" id="stop-tab-transcript" aria-controls="stop-panel-transcript" aria-selected="true" tabindex="0" data-stop-tab="transcript">Transcript</button>
+      <button type="button" role="tab" id="stop-tab-place" aria-controls="stop-panel-place" aria-selected="false" tabindex="-1" data-stop-tab="place">About the place</button>
+      <button type="button" role="tab" id="stop-tab-related" aria-controls="stop-panel-related" aria-selected="false" tabindex="-1" data-stop-tab="related">Related stops</button>
     </div>
-    <div class="stop-tab-panel" data-stop-panel="transcript">
+    <div class="stop-tab-panel" id="stop-panel-transcript" role="tabpanel" aria-labelledby="stop-tab-transcript" data-stop-panel="transcript">
       <blockquote class="stop-quote"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.4 6.2c-2.8 1.4-4.2 3.6-4.2 6.6v5h5.6v-5.6H7.2c0-1.8.9-3.2 2.8-4.2Z"></path><path d="M19 6.2c-2.8 1.4-4.2 3.6-4.2 6.6v5h5.6v-5.6h-3.6c0-1.8.9-3.2 2.8-4.2Z"></path></svg><p>The gopuram above you is the tallest thing in Hampi for a reason. Virupaksha was here before Vijayanagara, a small shrine on the Tungabhadra, and it was still here after the city fell. Kings extended it, armies passed it, ruin spread around it, and the lamps stayed lit. When you step into the courtyard you are joining a queue of worshippers that has not broken in roughly fourteen centuries. Look for the pinhole image in the inner chamber, where light through a small opening throws the main tower upside down on the wall: an accident of architecture the temple has kept as a gift.</p></blockquote>
       <p class="data-note">Text written for Naarad. Narration is read aloud by your device until a creator recording is published for this stop.</p>
     </div>
-    <div class="stop-tab-panel" data-stop-panel="place" hidden="">
+    <div class="stop-tab-panel" id="stop-panel-place" role="tabpanel" aria-labelledby="stop-tab-place" data-stop-panel="place" hidden="">
       <dl class="stop-facts">
         <div><dt>Distance along route</dt><dd>0 m</dd></div>
         <div><dt>Elevation</dt><dd>427 m</dd></div>
         <div><dt>Coordinates</dt><dd>15.3350, 76.4601</dd></div>
       </dl>
     </div>
-    <div class="stop-tab-panel" data-stop-panel="related" hidden="">
+    <div class="stop-tab-panel" id="stop-panel-related" role="tabpanel" aria-labelledby="stop-tab-related" data-stop-panel="related" hidden="">
       <ul class="stop-related">
         <li>
           <button type="button" data-select-stop="2"><b>2. Sasivekalu Ganesha</b><span>Monumental beginnings</span></button>

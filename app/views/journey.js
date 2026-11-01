@@ -143,7 +143,7 @@ export async function render() {
     <header class="journey-hero">
       <div class="journey-hero-copy">
         <nav class="breadcrumb" aria-label="Breadcrumb"><a href="/" data-view="home">Home</a>${icon('chevron')}<b aria-current="page">My Journey</b></nav>
-        <h1 class="display">My Journey<br><span class="accent">More than places.</span></h1>
+        <h1 class="display">My Journey <br><span class="accent">More than places.</span></h1>
         <p class="lede">Your walks, stories and notes in one place. Everything here is kept on this device — there are no accounts yet, so nothing leaves your browser.</p>
       </div>
       <div class="journey-hero-media">
@@ -152,16 +152,16 @@ export async function render() {
     // Reserves the photograph's height on a phone, where it sits in the flow.
     ratio: getPhoto('india-traveller')?.aspect ? `${getPhoto('india-traveller').aspect} / 1` : '',
   })}
-        <p class="note-plain note-over-photo journey-hero-note">Same places.<br>New stories.<br>A richer you.</p>
+        <p class="note-plain note-over-photo journey-hero-note">Same places. <br>New stories. <br>A richer you.</p>
       </div>
     </header>
 
     <div class="journey-tabs" role="tablist" aria-label="Journey sections">
-      ${TABS.map((tab, index) => `<button type="button" role="tab" data-journey-tab="${tab.id}"
+      ${TABS.map((tab, index) => `<button type="button" role="tab" id="journey-tab-${tab.id}" aria-controls="journey-panel-${tab.id}" data-journey-tab="${tab.id}"
         aria-selected="${index === 0}" tabindex="${index === 0 ? 0 : -1}">${icon(tab.icon)}<span>${tab.label}</span></button>`).join('')}
     </div>
 
-    <section class="journey-panel" data-journey-panel="journey">
+    <section class="journey-panel" id="journey-panel-journey" role="tabpanel" aria-labelledby="journey-tab-journey" data-journey-panel="journey">
       <div class="journey-overview">
         <div class="journey-progress">
           ${ring(totals, target)}
@@ -191,13 +191,13 @@ export async function render() {
       </div>` : ''}
     </section>
 
-    <section class="journey-panel" data-journey-panel="saved" hidden>
+    <section class="journey-panel" id="journey-panel-saved" role="tabpanel" aria-labelledby="journey-tab-saved" data-journey-panel="saved" hidden>
       ${store.saved.length
     ? `<div class="journey-grid">${store.saved.map((entry) => savedCard(entry, bySlug.get(entry.slug))).join('')}</div>`
     : emptyPanel('No saved routes', 'The bookmark on any route page keeps it here.')}
     </section>
 
-    <section class="journey-panel" data-journey-panel="journal" hidden>
+    <section class="journey-panel" id="journey-panel-journal" role="tabpanel" aria-labelledby="journey-tab-journal" data-journey-panel="journal" hidden>
       <form class="journal-form" data-journal-form>
         <h2 class="eyebrow eyebrow-mark">Write a new entry</h2>
         <label class="field"><span>Title</span><input type="text" name="title" required placeholder="Evening at the Stone Chariot"></label>
@@ -215,11 +215,11 @@ export async function render() {
       </ul>` : emptyPanel('No notes yet', 'Notes you write stay on this device.')}
     </section>
 
-    <section class="journey-panel" data-journey-panel="downloads" hidden>
+    <section class="journey-panel" id="journey-panel-downloads" role="tabpanel" aria-labelledby="journey-tab-downloads" data-journey-panel="downloads" hidden>
       ${downloadsPanel(store)}
     </section>
 
-    <section class="journey-panel" data-journey-panel="badges" hidden>
+    <section class="journey-panel" id="journey-panel-badges" role="tabpanel" aria-labelledby="journey-tab-badges" data-journey-panel="badges" hidden>
       <div class="badge-grid">
         ${badges.map((badge) => `<article class="badge ${badge.earned ? 'is-earned' : ''}">
           ${icon(badge.icon)}

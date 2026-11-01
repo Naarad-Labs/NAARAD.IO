@@ -11,7 +11,7 @@ const HERO_SIZES = '(max-width: 1023px) 100vw, 46vw';
 const PAGES = {
   about: {
     eyebrow: 'About Naarad',
-    title: 'Explore. Listen.<br><span class="accent">Connect.</span>',
+    title: 'Explore. Listen. <br><span class="accent">Connect.</span>',
     lede: 'Naarad is a heritage atlas for India: walking routes with the stories of the places they pass, told at the places themselves.',
     photo: 'hampi-chariot-wheel',
     actions: [{ label: 'Explore routes', view: 'routes' }],
@@ -33,7 +33,7 @@ const PAGES = {
   // What 404.html shows for an address that has no page.
   'not-found': {
     eyebrow: 'Page not found',
-    title: 'This page is not<br><span class="accent">on the map.</span>',
+    title: 'This page is not <br><span class="accent">on the map.</span>',
     lede: 'The address may be mistyped, or the page may have moved. Every route and story on Naarad is listed on the pages below.',
     photo: null,
     actions: [{ label: 'Browse routes', view: 'routes' }, { label: 'Read the stories', view: 'stories' }],

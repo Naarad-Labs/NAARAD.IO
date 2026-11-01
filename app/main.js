@@ -714,6 +714,16 @@ async function toggleOffline(button) {
   }
 }
 
+/* The stop's detail tabs are a real tab list: one stop in the tab order, arrows move within it. */
+function selectStopTab(id) {
+  $$('[data-stop-tab]').forEach((button) => {
+    const active = button.dataset.stopTab === id;
+    button.setAttribute('aria-selected', String(active));
+    button.tabIndex = active ? 0 : -1;
+  });
+  $$('[data-stop-panel]').forEach((panel) => { panel.hidden = panel.dataset.stopPanel !== id; });
+}
+
 function selectJourneyTab(id) {
   $$('[data-journey-tab]').forEach((button) => {
     const active = button.dataset.journeyTab === id;
@@ -872,11 +882,7 @@ document.addEventListener('click', async (event) => {
   }
 
   const stopTab = event.target.closest('[data-stop-tab]');
-  if (stopTab) {
-    $$('[data-stop-tab]').forEach((button) => button.setAttribute('aria-selected', String(button === stopTab)));
-    $$('[data-stop-panel]').forEach((panel) => { panel.hidden = panel.dataset.stopPanel !== stopTab.dataset.stopTab; });
-    return;
-  }
+  if (stopTab) { selectStopTab(stopTab.dataset.stopTab); return; }
 
   const journeyTab = event.target.closest('[data-journey-tab]');
   if (journeyTab) { selectJourneyTab(journeyTab.dataset.journeyTab); return; }
@@ -1024,6 +1030,16 @@ document.addEventListener('keydown', async (event) => {
   if (event.key === 'Escape' && $('.site-header')?.classList.contains('nav-open')) {
     closeMenu();
     $('.menu-toggle')?.focus();
+    return;
+  }
+  const stopTabKey = event.target.closest?.('[data-stop-tab]');
+  if (stopTabKey && ['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) {
+    event.preventDefault();
+    const tabs = $$('[data-stop-tab]');
+    const from = tabs.indexOf(stopTabKey);
+    const to = { Home: 0, End: tabs.length - 1 }[event.key] ?? (from + (event.key === 'ArrowRight' ? 1 : -1) + tabs.length) % tabs.length;
+    selectStopTab(tabs[to].dataset.stopTab);
+    tabs[to].focus();
     return;
   }
   // The journey's tabs are a real tab list: one stop in the tab order, arrows move within it.

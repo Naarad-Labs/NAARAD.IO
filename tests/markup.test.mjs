@@ -37,7 +37,11 @@ test('a route\'s section links are navigation to targets that exist, not a tab w
     assert.equal(links.filter((link) => link[3].includes('aria-current')).length, 1, `${route.slug}: one section is current`);
     for (const [, target] of links) assert.equal(ids(html).filter((id) => id === target).length, 1, `${route.slug}: #${target} is on the page once`);
     assert.doesNotMatch(nav[1], /role=|tabindex=|aria-selected|aria-controls/, `${route.slug}: plain links, in the tab order`);
-    assert.doesNotMatch(html, /role="tabpanel"/, `${route.slug}: the sections are not panels of a tab widget`);
+    // The page's sections are not tab panels. The one real tab widget is the stop's detail (Transcript, About the place,
+    // Related stops), whose panels are all named stop-panel-*.
+    const panels = [...html.matchAll(/<[^>]*role="tabpanel"[^>]*>/g)].map((match) => (match[0].match(/\sid="([^"]+)"/) || [])[1]);
+    assert.ok(panels.every((id) => /^stop-panel-/.test(id || '')), `${route.slug}: the sections are not panels of a tab widget (${panels.join(', ')})`);
+    assert.equal(panels.length, route.stops.length ? 3 : 0, `${route.slug}: the stop detail tabs have their three panels`);
     assert.equal((html.match(/data-tab="stops"/g) || []).length, route.stops.length ? 1 : 0, `${route.slug}: no link to a list of stops that is not there`);
   }
 });
