@@ -6,6 +6,10 @@
   color: #102444;
 }
 
+/* Pull-to-refresh: the site is static, so the browser's own refresh stays everywhere except over the map,
+   where a downward pan must move the map, not reload the page (roadmap 198). */
+.nr-map-host { overscroll-behavior-y: none; }
+
 .nr-map-host .leaflet-container {
   width: 100%;
   height: 100%;

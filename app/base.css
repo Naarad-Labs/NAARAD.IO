@@ -210,7 +210,7 @@ h1[tabindex='-1']:focus, h2[tabindex='-1']:focus, h3[tabindex='-1']:focus { outl
 .site-header {
   position: sticky; top: 0; z-index: 900; display: grid; align-items: center;
   grid-template-columns: auto 1fr auto auto auto; gap: 22px;
-  padding: 11px clamp(16px, 2.4vw, 34px); min-height: var(--header-h);
+  padding: 11px max(clamp(16px, 2.4vw, 34px), env(safe-area-inset-right)) 11px max(clamp(16px, 2.4vw, 34px), env(safe-area-inset-left)); min-height: var(--header-h);
   background: rgba(248, 243, 233, .93); backdrop-filter: blur(10px);
   border-bottom: 1px solid var(--line);
 }
@@ -308,6 +308,10 @@ h1[tabindex='-1']:focus, h2[tabindex='-1']:focus, h3[tabindex='-1']:focus { outl
   position: fixed; left: 0; right: 0; bottom: 0; z-index: 1100;
   display: grid; grid-template-columns: 56px minmax(0, 1.1fr) auto minmax(0, 1.6fr) auto;
   align-items: center; gap: 16px; padding: 10px clamp(14px, 2vw, 26px);
+  /* Clear the home indicator and the landscape notch. --player-h is this bar's offsetHeight, so it includes the inset. */
+  padding-bottom: calc(10px + env(safe-area-inset-bottom));
+  padding-left: max(clamp(14px, 2vw, 26px), env(safe-area-inset-left));
+  padding-right: max(clamp(14px, 2vw, 26px), env(safe-area-inset-right));
   background: var(--ink-deep); color: var(--paper); box-shadow: 0 -6px 24px rgba(12, 28, 51, .24);
 }
 .listen-art { width: 56px; height: 56px; border-radius: 6px; overflow: hidden; background: rgba(247, 242, 232, .1); }
@@ -341,7 +345,10 @@ h1[tabindex='-1']:focus, h2[tabindex='-1']:focus, h3[tabindex='-1']:focus { outl
 .listen-close .ico { width: 15px; height: 15px; }
 
 @media (max-width: 1023px) {
-  .listen-bar { grid-template-columns: 46px minmax(0, 1fr) auto; gap: 12px; padding: 8px 14px; }
+  .listen-bar {
+    grid-template-columns: 46px minmax(0, 1fr) auto; gap: 12px;
+    padding: 8px max(14px, env(safe-area-inset-right)) calc(8px + env(safe-area-inset-bottom)) max(14px, env(safe-area-inset-left));
+  }
   .listen-art { width: 46px; height: 46px; }
   .listen-progress, .listen-source, .listen-next, .listen-rate { display: none; }
   .listen-controls { gap: 4px; }

@@ -198,14 +198,14 @@ Run lock: none
 | 188 | todo |  | Pause hero drift and reveals when the tab is hidden | Animation performance and library choice |  |
 | 189 | done |  | Remove the tap highlight flash | Mobile-native feel | tap highlight transparent on a/button/summary/role=button/label; generic :active (opacity) on every control; checked in browser at 375px |
 | 190 | doing |  | Replace remaining 100vh uses with svh/dvh | Mobile-native feel | 100vh grep is clean (home, route, studio now 100svh); hero is 906px tall at 375x667 so it does not yet fit an iPhone SE viewport |
-| 191 | todo |  | Audit safe-area handling at every edge | Mobile-native feel |  |
-| 192 | todo |  | Pad the listen bar for the home indicator | Mobile-native feel |  |
+| 191 | doing |  | Audit safe-area handling at every edge | Mobile-native feel | left/right insets added to header, listen bar and route action bar; top inset not needed while the status bar is not overlaid. No notched screenshots yet |
+| 192 | doing |  | Pad the listen bar for the home indicator | Mobile-native feel | listen bar padding-bottom now includes env(safe-area-inset-bottom); --player-h is the bar's offsetHeight so it follows. Not yet checked with a real inset (no notched emulation here) |
 | 193 | todo |  | Enforce 44px targets on a table of controls | Mobile-native feel |  |
 | 194 | done |  | Add `touch-action: manipulation` to controls | Mobile-native feel | touch-action: manipulation on a, button, summary, inputs, labels; computed value checked on .button at 375px; .icon-button not on the pages checked, covered by the button rule |
 | 195 | done |  | Stop text selection on controls | Mobile-native feel | user-select none and -webkit-touch-callout none on buttons, summary, role=button; paragraph text stays selectable (checked). No bottom sheet handle exists yet (item 174) |
 | 196 | done |  | Prevent iOS input zoom | Mobile-native feel | all text inputs and selects 16px on coarse pointers (header search, catalogue search, filter select checked at 375px); account-panel fields inherit |
-| 197 | todo |  | Contain overscroll in the sheet and bottom bar | Mobile-native feel |  |
-| 198 | todo |  | Decide on pull-to-refresh | Mobile-native feel |  |
+| 197 | doing |  | Contain overscroll in the sheet and bottom bar | Mobile-native feel | overscroll-behavior contain on .stop-list (rail); the phone story is not a separate scroll container yet, so the sheet half waits on the sheet items 171-175 |
+| 198 | done |  | Decide on pull-to-refresh | Mobile-native feel | decision: leave the browser's native pull-to-refresh everywhere, overscroll-behavior-y none on the map host only (comment in map.css); computed value checked on a route page. Real touch pan not tested on a device |
 | 199 | todo |  | Polish the PWA icon set | Mobile-native feel |  |
 | 200 | todo |  | Add a splash and standalone status-bar treatment | Mobile-native feel |  |
 | 201 | todo |  | Support landscape on phones | Mobile-native feel |  |
