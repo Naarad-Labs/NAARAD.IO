@@ -1834,19 +1834,19 @@ test.describe('touch targets on a phone', () => {
     expect(await small(page, [
       '.menu-toggle', '.site-footer nav a', '.site-footer .footer-brand', '.breadcrumb a', '.route-tabs a', '.stop-item', '.stop-item-play',
       '.stop-tabs button', '.stop-related button', '.map-control', '.route-bar-actions .button', '.route-card',
-      '.listen-skip', '.listen-play', '.listen-close',
+      '.listen-skip', '.listen-play', '.listen-close', '.listen-rate', '.icon-button', 'a.text-link', '.button',
     ])).toEqual([]);
   });
 
   test('on the catalogue, a story, the journey and the studio', async ({ page }) => {
     await page.goto('/routes/');
-    expect(await small(page, ['.filter-chips button', '.catalogue-filters select', '.catalogue-filters .filter-check', '.route-card', '.site-footer nav a'])).toEqual([]);
+    expect(await small(page, ['.filter-chips button', '.catalogue-filters select', '.catalogue-filters .filter-check', '.route-card', '.site-footer nav a', '.icon-button', 'a.text-link', '.button'])).toEqual([]);
     await page.goto('/stories/stone-chariot-of-hampi/');
-    expect(await small(page, ['.story-actions button', '.story-actions a', '.story-toc a', '.breadcrumb a', '.story-route-cta'])).toEqual([]);
+    expect(await small(page, ['.story-actions button', '.story-actions a', '.story-toc a', '.breadcrumb a', '.story-route-cta', '.icon-button', 'a.text-link', '.button'])).toEqual([]);
     await page.goto('/journey/');
-    expect(await small(page, ['.journey-tabs button', '.breadcrumb a', '.button-sm'])).toEqual([]);
+    expect(await small(page, ['.journey-tabs button', '.breadcrumb a', '.button-sm', '.icon-button', 'a.text-link', '.button'])).toEqual([]);
     await page.goto('/creators/');
-    expect(await small(page, ['.studio-nav button', '.studio-stop-list button', '.studio-actions .button', '.button-sm'])).toEqual([]);
+    expect(await small(page, ['.studio-nav button', '.studio-stop-list button', '.studio-actions .button', '.button-sm', '.icon-button', 'a.text-link', '.button'])).toEqual([]);
   });
 });
 
