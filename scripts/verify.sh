@@ -23,7 +23,9 @@
 #      scripts/check-page-meta.mjs (every indexable page has one https canonical,
 #      a title and a meta description, and no two pages share a title or a
 #      description; a page canonical to another page is left out of the
-#      uniqueness check)
+#      uniqueness check) and scripts/check-links.mjs (every href and src on a
+#      built page that points inside the site resolves to a built file; external,
+#      mailto, tel, data and fragment-only links are ignored)
 #      Run alone (from the repo root): bash -c 'source scripts/verify.sh; check_site'
 #   3  node --test tests/: the unit tests, which need nothing but node
 #      Run alone (from the repo root): bash -c 'source scripts/verify.sh; check_tests'
@@ -135,6 +137,7 @@ check_site() {
   node scripts/check-sitemap.mjs || return 1
   node scripts/check-sw-cache.mjs || return 1
   node scripts/check-page-meta.mjs || return 1
+  node scripts/check-links.mjs || return 1
 }
 
 check_tests() {
@@ -162,7 +165,7 @@ main() {
   total_seconds=0
 
   step 1 "build is deterministic and committed  (node scripts/build-site.mjs, twice)" check_build
-  step 2 "built site: sitemap, cache, page meta (node scripts/check-sitemap.mjs, check-sw-cache.mjs, check-page-meta.mjs)" check_site
+  step 2 "built site: sitemap, cache, meta, links (node scripts/check-sitemap.mjs, check-sw-cache.mjs, check-page-meta.mjs, check-links.mjs)" check_site
   step 3 "unit tests                            (node --test tests/)" check_tests
   step 4 "practical facts                       (node scripts/check-practical.mjs)" check_practical
   step 5 "browser checks                        (cd e2e && npx playwright test)" check_e2e
