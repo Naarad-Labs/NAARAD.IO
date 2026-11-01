@@ -1850,6 +1850,52 @@ test.describe('touch targets on a phone', () => {
   });
 });
 
+/* ── The map layer is remembered; a blocked tile host is told plainly ─ */
+
+test.describe('map layer and tiles', () => {
+  const layersButton = (page) => page.locator('[data-map="layers"]');
+
+  test('satellite is the first-visit layer and the chosen layer survives a reload', async ({ page }) => {
+    await page.goto('/routes/hampi-heritage-trail/');
+    await expect(page.locator('#map')).toHaveAttribute('data-map-layer', 'satellite');
+    await layersButton(page).click();
+    await expect(page.locator('#map')).toHaveAttribute('data-map-layer', 'street');
+    await expect(layersButton(page)).toHaveAttribute('aria-pressed', 'false');
+    await expect(layersButton(page)).toContainText('Street');
+
+    await page.reload();
+    await expect(page.locator('#map')).toHaveAttribute('data-map-layer', 'street');
+    await expect(layersButton(page)).toHaveAttribute('aria-pressed', 'false');
+    await expect(layersButton(page)).toContainText('Street');
+
+    await layersButton(page).click();
+    await page.reload();
+    await expect(page.locator('#map')).toHaveAttribute('data-map-layer', 'satellite');
+    await expect(layersButton(page)).toHaveAttribute('aria-pressed', 'true');
+  });
+
+  test('with storage blocked the map still renders the default and the layer still switches for the visit', async ({ page }) => {
+    await page.addInitScript(() => {
+      const blocked = () => { throw new DOMException('blocked', 'SecurityError'); };
+      Object.defineProperty(window, 'localStorage', { get: blocked });
+    });
+    await page.goto('/routes/hampi-heritage-trail/');
+    await expect(page.locator('#map')).toHaveAttribute('data-map-layer', 'satellite');
+    await layersButton(page).click();
+    await expect(page.locator('#map')).toHaveAttribute('data-map-layer', 'street');
+  });
+
+  test('with the tile host blocked, the map says so and the stop list still works', async ({ page }) => {
+    await page.route(/tile\.openstreetmap\.org|server\.arcgisonline\.com/, (route) => route.abort());
+    await page.goto('/routes/hampi-heritage-trail/');
+    await expect(page.locator('.nr-map-status')).toContainText('Map imagery could not be loaded');
+    await expect(page.locator('.nr-map-status button')).toHaveText('Retry');
+    await expect(page.locator('.stop-item').first()).toBeVisible();
+    await page.locator('.stop-item').nth(1).click();
+    await expect(page).toHaveURL(/\/routes\/hampi-heritage-trail\/.*stop=2|\/routes\/hampi-heritage-trail\/2\/?/);
+  });
+});
+
 /* ── What the browser's storage holds is not trusted ──────────────── */
 
 test.describe('storage of the wrong shape', () => {
