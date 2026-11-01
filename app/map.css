@@ -2,8 +2,8 @@
   position: relative;
   isolation: isolate;
   overflow: hidden;
-  background: #e7e1d5;
-  color: #102444;
+  background: var(--map-ground);
+  color: var(--ink);
 }
 
 /* Pull-to-refresh: the site is static, so the browser's own refresh stays everywhere except over the map,
@@ -14,8 +14,8 @@
   width: 100%;
   height: 100%;
   min-height: 18rem;
-  background: #e7e1d5;
-  color: #102444;
+  background: var(--map-ground);
+  color: var(--ink);
   font: inherit;
   outline: 0;
 }
@@ -26,22 +26,22 @@
   max-width: min(88%, 32rem);
   padding: 2px 6px;
   border-radius: 2px 0 0;
-  background: rgb(247 242 232 / 90%);
-  color: #172942;
+  background: rgb(var(--paper-rgb) / 90%);
+  color: var(--ink);
   font-size: 10px;
   line-height: 1.4;
 }
 
 .nr-map-host .leaflet-control-attribution a {
-  color: #173d68;
+  color: var(--route-line);
   text-decoration: underline;
   text-underline-offset: 2px;
 }
 
 .nr-map-host .leaflet-control-scale-line {
-  border-color: #102444;
-  background: rgb(247 242 232 / 82%);
-  color: #102444;
+  border-color: var(--ink);
+  background: rgb(var(--paper-rgb) / 82%);
+  color: var(--ink);
   font-size: 10px;
   text-shadow: none;
 }
@@ -57,22 +57,22 @@
   width: 100%;
   height: 100%;
   place-items: center;
-  border: 2px solid #fffaf1;
+  border: 2px solid var(--paper-bright);
   border-radius: 50%;
-  background: #c95013;
-  box-shadow: 0 2px 8px rgb(16 36 68 / 35%);
+  background: var(--orange);
+  box-shadow: 0 2px 8px rgb(var(--ink-deep-rgb) / 35%);
 }
 
 .nr-map-start-marker::after {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: #fffaf1;
+  background: var(--paper-bright);
   content: '';
 }
 
 .nr-map-stop-marker {
-  color: #fffaf1;
+  color: var(--paper-bright);
   font: 700 13px/1 system-ui, sans-serif;
 }
 
@@ -86,11 +86,11 @@
   align-items: center;
   gap: 0.75rem;
   padding: 0.75rem 0.9rem;
-  border: 1px solid rgb(16 36 68 / 16%);
+  border: 1px solid rgb(var(--ink-deep-rgb) / 16%);
   border-radius: 3px;
-  background: #fffaf1;
-  box-shadow: 0 4px 18px rgb(16 36 68 / 14%);
-  color: #102444;
+  background: var(--paper-bright);
+  box-shadow: 0 4px 18px rgb(var(--ink-deep-rgb) / 14%);
+  color: var(--ink);
   font: 500 0.82rem/1.4 system-ui, sans-serif;
 }
 
@@ -101,32 +101,32 @@
 .nr-map-host .nr-map-status button {
   flex: 0 0 auto;
   padding: 0.35rem 0.55rem;
-  border: 1px solid #c95013;
+  border: 1px solid var(--orange);
   border-radius: 2px;
   background: transparent;
-  color: #87360d;
+  color: var(--orange-deep);
   cursor: pointer;
   font: inherit;
 }
 
 .nr-map-host .nr-map-status button:focus-visible {
-  background: #f5e7d9;
-  outline: 2px solid #c95013;
+  background: var(--orange-wash);
+  outline: 2px solid var(--orange);
   outline-offset: 2px;
 }
 
 @media (hover: hover) {
   .nr-map-host .nr-map-status button:hover {
-    background: #f5e7d9;
-    outline: 2px solid #c95013;
+    background: var(--orange-wash);
+    outline: 2px solid var(--orange);
     outline-offset: 2px;
   }
 }
 
 .nr-map-host .leaflet-popup-content-wrapper {
   border-radius: 3px;
-  background: #fffaf1;
-  color: #102444;
+  background: var(--paper-bright);
+  color: var(--ink);
 }
 
 .nr-map-host .leaflet-popup-content {
@@ -146,18 +146,18 @@
 /* Numbered stop markers, matched to the static previews. */
 .nr-map-stop-marker {
   display: grid; place-items: center; width: 32px; height: 32px; border-radius: 50%;
-  background: #c6511b; color: #fff; font: 700 13px/1 'DM Sans', system-ui, sans-serif;
-  border: 2.5px solid #fff; box-shadow: 0 2px 8px rgba(12, 28, 51, .35);
+  background: var(--orange); color: var(--on-accent); font: 700 13px/1 'DM Sans', system-ui, sans-serif;
+  border: 2.5px solid var(--on-accent); box-shadow: 0 2px 8px rgb(var(--ink-deep-rgb) / 35%);
   transition: transform .18s;
 }
 .nr-map-stop-marker.is-selected {
-  width: 38px; height: 38px; font-size: 15px; background: #12294a;
-  box-shadow: 0 4px 14px rgba(12, 28, 51, .45);
+  width: 38px; height: 38px; font-size: 15px; background: var(--ink);
+  box-shadow: 0 4px 14px rgb(var(--ink-deep-rgb) / 45%);
 }
 @media (hover: hover) { .nr-map-marker-shell:hover .nr-map-stop-marker { transform: scale(1.08); } }
 .nr-map-start-marker {
   display: block; width: 24px; height: 24px; border-radius: 50%;
-  background: #6f8156; border: 3px solid #fff; box-shadow: 0 2px 8px rgba(12, 28, 51, .35);
+  background: var(--sage); border: 3px solid var(--on-accent); box-shadow: 0 2px 8px rgb(var(--ink-deep-rgb) / 35%);
 }
 @media (prefers-reduced-motion: reduce) { .nr-map-stop-marker { transition: none; } }
 

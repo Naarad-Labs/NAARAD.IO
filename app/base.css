@@ -34,6 +34,11 @@
   --line: #e0d6c2;
   --line-strong: #cdbfa4;
   --field-edge: #857656;       /* the edge of an input, select or filter chip: 4.0:1 on paper, 4.3:1 on paper-bright (WCAG 1.4.11 needs 3:1) */
+  --map-ground: #e7e1d5;        /* the map's own ground colour, behind tiles */
+  --route-line: #173d68;        /* the route line on the map */
+  --on-accent: #fff;            /* text and rings on an orange fill */
+  --paper-rgb: 248 243 233;     /* --paper as three numbers, for rgb(var(--paper-rgb) / 50%) */
+  --ink-deep-rgb: 12 28 51;     /* --ink-deep as three numbers, for shadows */
 
   /* Type */
   --serif: 'Playfair Display', 'Iowan Old Style', Georgia, serif;
@@ -487,7 +492,7 @@ h1[tabindex='-1']:focus, h2[tabindex='-1']:focus, h3[tabindex='-1']:focus { outl
 }
 
 /* Offline bar and unsaved-route marks (behind the offline-bundles flag; see app/offline-ui.js). */
-.offline-bar { padding: 10px 16px; text-align: center; font-weight: 600; background: var(--navy, #172752); color: #fff; }
+.offline-bar { padding: 10px 16px; text-align: center; font-weight: 600; background: var(--ink); color: var(--on-accent); }
 a[data-unsaved-offline] { opacity: .6; cursor: not-allowed; }
 .unsaved-note { display: block; margin-top: 4px; font-size: .8125rem; font-weight: 600; }
 
