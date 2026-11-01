@@ -527,19 +527,37 @@ function unwatchRouteBar() {
 
 function destroyMap() { map?.destroy?.(); map = null; }
 
+/* The chosen map layer is remembered on this device. Blocked or full storage just means the default (satellite) shows. */
+const MAP_LAYER_KEY = 'naarad.map-layer.v1';
+function savedMapLayer() {
+  try { return localStorage.getItem(MAP_LAYER_KEY) === 'street' ? 'street' : 'satellite'; } catch { return 'satellite'; }
+}
+function saveMapLayer(layer) {
+  try { localStorage.setItem(MAP_LAYER_KEY, layer); } catch { /* the choice lasts until the page closes */ }
+}
+/* The page is prerendered with the satellite button pressed; show the layer that is really on the map. */
+function showMapLayer(layer) {
+  const button = $('[data-map="layers"]');
+  if (!button) return;
+  button.setAttribute('aria-pressed', String(layer === 'satellite'));
+  const label = button.querySelector('span');
+  if (label) label.textContent = layer === 'satellite' ? 'Satellite' : 'Street';
+}
+
 async function mountMap(route, current) {
   destroyMap();
   try {
     const { mountRouteMap } = await import('./map.js');
     const node = $('#map');
     if (!node || current !== generation) return;
+    const layer = savedMapLayer();
     const controller = await mountRouteMap(node, route, {
-      initialLayer: 'satellite',
+      initialLayer: layer,
       onSelectStop: (order) => selectStop(order),
     });
     if (current !== generation) controller.destroy();
     // Highlight the opening stop without panning, so the whole route stays framed.
-    else { map = controller; map.selectStop?.(state.stop, { pan: false }); }
+    else { map = controller; showMapLayer(layer); map.selectStop?.(state.stop, { pan: false }); }
   } catch (error) {
     console.error('Map unavailable', error);
     const node = $('#map');
@@ -888,10 +906,10 @@ document.addEventListener('click', async (event) => {
   if (mapAction === 'layers') {
     const button = event.target.closest('[data-map="layers"]');
     const satellite = button.getAttribute('aria-pressed') !== 'true';
-    map?.setLayer(satellite ? 'satellite' : 'street');
-    button.setAttribute('aria-pressed', String(satellite));
-    const label = button.querySelector('span');
-    if (label) label.textContent = satellite ? 'Satellite' : 'Street';
+    const layer = satellite ? 'satellite' : 'street';
+    map?.setLayer(layer);
+    showMapLayer(layer);
+    saveMapLayer(layer);
   }
 
   if (event.target.closest('[data-studio], [data-studio-step], [data-studio-stop], [data-studio-open], [data-studio-delete]')) {

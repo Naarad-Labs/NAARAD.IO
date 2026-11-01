@@ -221,10 +221,10 @@ Run lock: none
 | 211 | todo |  | Restyle Leaflet zoom controls | Maps UI |  |
 | 212 | todo |  | Move controls out of the thumb-blocked zone | Maps UI |  |
 | 213 | todo |  | Polish the layer switcher | Maps UI |  |
-| 214 | todo |  | Persist the chosen layer per visit | Maps UI |  |
+| 214 | done |  | Persist the chosen layer per visit | Maps UI | layer saved in localStorage (naarad.map-layer.v1) in a try/catch; first visit and blocked storage show satellite; e2e: toggle, reload keeps street/satellite and the button's aria-pressed and label, and storage-blocked still renders and switches for the visit |
 | 215 | todo |  | Keep attribution visible and compact | Maps UI |  |
 | 216 | todo |  | Style the route line for contrast | Maps UI |  |
-| 217 | todo |  | Show tile loading and error states | Maps UI |  |
+| 217 | done |  | Show tile loading and error states | Maps UI | the tile-error note with a Retry button already existed (3 failed tiles); added the missing e2e: blocking the tile hosts shows 'Map imagery could not be loaded' with Retry and the stop list still works. The loading shimmer border from the roadmap text was not added |
 | 218 | todo |  | Fit bounds with padding that respects the sheet | Maps UI |  |
 | 219 | todo |  | Make the map keyboard operable | Maps UI |  |
 | 220 | todo |  | Draw the elevation line on first view | Data visualisation |  |
