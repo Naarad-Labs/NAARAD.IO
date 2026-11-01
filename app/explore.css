@@ -31,7 +31,7 @@
   background: var(--paper-bright); font-size: 13px; font-weight: 600; color: var(--ink-soft);
 }
 @media (hover: hover) { .filter-chips button:hover { border-color: var(--ink); } }
-.filter-chips button.is-active { background: var(--orange); border-color: var(--orange-text); color: #fff; }
+.filter-chips button.is-active { background: var(--orange); border-color: var(--orange-text); color: var(--white); }
 .catalogue-filters select {
   width: 100%; padding: 10px 12px; border: 1px solid var(--field-edge); border-radius: 8px;
   background: var(--paper-bright); font-size: 14.5px;

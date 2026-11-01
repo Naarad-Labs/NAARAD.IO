@@ -111,10 +111,10 @@
 .stop-play {
   position: absolute; inset: auto 0 0 0; z-index: 1; display: flex; align-items: center; gap: 13px;
   padding: 14px 18px; background: none;
-  color: #fff; font-size: 15px; font-weight: 600; width: 100%; text-align: left;
+  color: var(--white); font-size: 15px; font-weight: 600; width: 100%; text-align: left;
 }
 .stop-play-mark { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; background: var(--orange); }
-.stop-play-mark .ico { width: 19px; height: 19px; fill: #fff; stroke: none; margin-left: 2px; }
+.stop-play-mark .ico { width: 19px; height: 19px; fill: var(--white); stroke: none; margin-left: 2px; }
 @media (hover: hover) { .stop-play:hover .stop-play-mark { background: var(--orange-deep); } }
 .stop-media-note { position: absolute; top: 10px; right: 12px; padding: 5px 9px; border-radius: 4px; background: rgba(12, 28, 51, .72); color: rgba(255, 255, 255, .95); font-size: 13px; }
 
@@ -168,7 +168,7 @@
 }
 .stop-item-play::before { content: ''; grid-area: 1 / 1; width: 30px; height: 30px; border-radius: 50%; border: 1px solid var(--orange); }
 .stop-item-play .ico { grid-area: 1 / 1; width: 13px; height: 13px; fill: currentColor; stroke: none; margin-left: 1px; }
-@media (hover: hover) { .stop-item-play:hover { color: #fff; } }
+@media (hover: hover) { .stop-item-play:hover { color: var(--white); } }
 @media (hover: hover) { .stop-item-play:hover::before { background: var(--orange); } }
 .stop-rail-all { width: 100%; margin-top: 14px; }
 
@@ -317,5 +317,5 @@
 
 /* The stop that is playing: marked with the word, not only colour, so it reads in sun and for colour-blind visitors. */
 .stop-item.is-playing { border-color: var(--ink); box-shadow: inset 3px 0 0 var(--ink); }
-.stop-playing-tag { display: inline-block; margin-top: 4px; padding: 1px 8px; border-radius: 999px; background: var(--ink-deep); color: #fff; font-size: 13px; font-weight: 600; }
+.stop-playing-tag { display: inline-block; margin-top: 4px; padding: 1px 8px; border-radius: 999px; background: var(--ink-deep); color: var(--white); font-size: 13px; font-weight: 600; }
 .stop-playing-tag[hidden] { display: none; }

@@ -7,6 +7,12 @@ let leafletPromise;
 let mapCssPromise;
 const mountedMaps = new WeakMap();
 
+/* Colours come from the site's tokens (:root in app/base.css), so the map follows the palette. The fallback is the same value, for a page whose stylesheet has not loaded. */
+function token(name, fallback) {
+  const value = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+  return value || fallback;
+}
+
 function loadMapCss() {
   if (mapCssPromise) return mapCssPromise;
   mapCssPromise = new Promise((resolve) => {
@@ -235,7 +241,7 @@ export async function mountRouteMap(container, route, options = {}) {
         state.status = null;
         state.location?.remove();
         state.location = window.L.circleMarker([coords.latitude, coords.longitude], {
-          radius: 8, color: '#fff', weight: 3, fillColor: '#c95013', fillOpacity: 1,
+          radius: 8, color: token('--white', '#fff'), weight: 3, fillColor: token('--orange', '#c6511b'), fillOpacity: 1,
         }).addTo(state.map).bindPopup('You are here');
         state.map.setView([coords.latitude, coords.longitude], 15);
       }, () => {
@@ -324,8 +330,8 @@ export async function mountRouteMap(container, route, options = {}) {
       // Keep the casing and bright center as separate vector layers for contrast.
       const routeLayers = [];
       for (const line of lines) {
-        const casing = L.polyline(line, { color: '#f7f2e8', weight: 8, opacity: 0.95, lineCap: 'round', lineJoin: 'round' });
-        const stroke = L.polyline(line, { color: '#173d68', weight: 4, opacity: 1, lineCap: 'round', lineJoin: 'round', className: 'nr-map-route-line' });
+        const casing = L.polyline(line, { color: token('--paper', '#f8f3e9'), weight: 8, opacity: 0.95, lineCap: 'round', lineJoin: 'round' });
+        const stroke = L.polyline(line, { color: token('--route-line', '#173d68'), weight: 4, opacity: 1, lineCap: 'round', lineJoin: 'round', className: 'nr-map-route-line' });
         casing.on('click', () => options.onSelectRoute?.(route));
         stroke.on('click', () => options.onSelectRoute?.(route));
         routeLayers.push(casing, stroke);

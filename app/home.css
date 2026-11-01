@@ -73,16 +73,16 @@
 .route-preview { display: block; }
 .rp-line-case { fill: none; stroke: rgba(255, 255, 255, .95); stroke-width: 5.5; stroke-linecap: round; stroke-linejoin: round; }
 .rp-line { fill: none; stroke: #2f6cb5; stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; }
-.rp-pin { fill: var(--orange); stroke: #fff; stroke-width: 1.8; }
-.rp-num { fill: #fff; font: 700 9.5px/1 var(--sans); text-anchor: middle; }
+.rp-pin { fill: var(--orange); stroke: var(--white); stroke-width: 1.8; }
+.rp-num { fill: var(--white); font: 700 9.5px/1 var(--sans); text-anchor: middle; }
 
 /* Elevation SVG (shared) */
 .elevation-svg { display: block; width: 100%; }
 .ep-area { fill: rgba(111, 129, 86, .22); }
 .ep-line { fill: none; stroke: var(--sage); stroke-width: 2; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
 .ep-stem { stroke: rgba(18, 41, 74, .22); stroke-width: 1; stroke-dasharray: 2 2; }
-.ep-pin { fill: var(--orange); stroke: #fff; stroke-width: 1.6; }
-.ep-num { fill: #fff; font: 700 9px/1 var(--sans); text-anchor: middle; }
+.ep-pin { fill: var(--orange); stroke: var(--white); stroke-width: 1.6; }
+.ep-num { fill: var(--white); font: 700 9px/1 var(--sans); text-anchor: middle; }
 .ep-axis { fill: var(--ink-muted); font: 500 9.5px/1 var(--sans); }
 .elevation-svg.is-spark { height: 34px; width: 110px; flex: none; }
 .elevation-svg.is-spark .ep-line { stroke-width: 1.8; }
