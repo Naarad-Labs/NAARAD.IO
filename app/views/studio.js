@@ -47,8 +47,8 @@ function sidebar(active = 'create') {
   return `<nav class="studio-nav" aria-label="Creator Studio">
     <p class="eyebrow eyebrow-mark studio-nav-title">Creator Studio</p>
     <ul>
-      ${NAV.map((item) => `<li><button type="button" data-studio-nav="${item.id}" class="${item.id === active ? 'is-active' : ''}" ${item.id === active ? 'aria-current="page"' : ''}>
-        ${icon(item.icon)}<span>${item.label}</span></button></li>`).join('')}
+      ${NAV.map((item) => `<li><button type="button" data-studio-nav="${item.id}" class="${item.id === active ? 'is-active' : ''}" ${item.id === active ? 'aria-current="page"' : 'disabled title="Coming later"'}>
+        ${icon(item.icon)}<span>${item.label}</span>${item.id === active ? '' : '<small>Coming later</small>'}</button></li>`).join('')}
     </ul>
     <p class="note-plain studio-nav-note">“Every place has a story.<br>You can be the one<br>who lets it speak.”</p>
   </nav>`;

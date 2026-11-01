@@ -26,10 +26,6 @@ const TABS = [
   { id: 'map', label: 'Map', icon: 'map' },
 ];
 
-const LANGUAGE_NAMES = {
-  en: 'English', hi: 'हिंदी', ta: 'தமிழ்', te: 'తెలుగు', kn: 'ಕನ್ನಡ', ml: 'മലയാളം', mr: 'मराठी', bn: 'বাংলা',
-};
-
 /* Behind the offline-bundles flag. The words say what a bundle leaves out. */
 function offlineState(route) {
   const entry = Journey.getDownloads().find((item) => item.slug === route.slug);
@@ -56,7 +52,8 @@ function factRow(route) {
     Offline.enabled()
       ? { icon: 'download', button: true, ...offlineState(route) }
       : { icon: 'download', value: 'Offline bundle', label: 'Not yet available', muted: true },
-    { icon: 'globe', value: route.languages?.length ? `${route.languages.length} languages` : 'English', label: route.languages?.length ? route.languages.map((code) => LANGUAGE_NAMES[code] || code).slice(0, 4).join(' · ') : '' },
+    /* Every story published so far is in English. The route's other language codes are plans, not available stories. */
+    { icon: 'globe', value: 'English', label: route.languages?.some((code) => code !== 'en') ? 'Other languages are planned' : '' },
   ].filter((fact) => fact.value);
 
   return `<div class="route-facts">
@@ -106,6 +103,12 @@ function hero(route) {
   </header>`;
 }
 
+/* Walking a route is something the visitor says they did; listening to it never marks it. */
+function walkedButton(route) {
+  const walked = Journey.isWalked(route.slug);
+  return `<button type="button" class="button button-sm stop-rail-all stop-rail-walked" data-action="walked" aria-pressed="${walked}">${icon('footprints')} <span>${walked ? 'Marked as walked · undo' : 'Mark as walked'}</span></button>`;
+}
+
 function tabBar(route) {
   const saved = Journey.isSaved(route.slug);
   // A route with no stops has no list of them to jump to.
@@ -117,7 +120,7 @@ function tabBar(route) {
     <div class="route-bar-actions">
       <button type="button" class="button button-sm" data-action="share">${icon('share')} Share</button>
       <button type="button" class="button button-sm${saved ? ' is-saved' : ''}" data-action="save" aria-pressed="${saved}">${icon('bookmark')} <span>${saved ? 'Saved' : 'Save'}</span></button>
-      <button type="button" class="button button-primary button-sm" data-action="start">${icon('footprints')} Start Walk</button>
+      ${route.stops.length ? `<button type="button" class="button button-primary button-sm" data-action="start" aria-label="Listen from stop 1">${icon('headphones')} Listen</button>` : ''}
     </div>
   </div>`;
 }
@@ -138,7 +141,7 @@ function stopPanel(route, stop) {
       <p class="eyebrow eyebrow-mark">Stop ${stop.order} of ${route.stopCount}</p>
       <div class="stop-panel-meta">
         <span>${minutes} min read</span>
-        <span class="stop-lang">${icon('globe')} English ${icon('chevron')}</span>
+        <span class="stop-lang">${icon('globe')} English</span>
       </div>
     </div>
     <h2 class="stop-title">${escapeHtml(stop.name)}</h2>
@@ -201,7 +204,8 @@ function stopRail(route, selected) {
         <button type="button" class="stop-item-play" data-action="listen" data-stop="${stop.order}" aria-label="Listen to ${escapeHtml(stop.name)}">${icon('play')}</button>
       </li>`).join('')}
     </ol>
-    <button type="button" class="button button-sm stop-rail-all" data-action="listen-all">${icon('headphones')} Play all stops</button>
+    <button type="button" class="button button-sm stop-rail-all" data-action="listen-all">${icon('headphones')} Listen to all stops</button>
+    ${walkedButton(route)}
   </aside>`;
 }
 

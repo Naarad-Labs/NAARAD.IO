@@ -222,7 +222,7 @@ function mount() {
   bar.setAttribute('aria-label', 'Audio player');
   bar.innerHTML = `
     <div class="listen-art"></div>
-    <div class="listen-meta"><strong></strong><span></span></div>
+    <div class="listen-meta"><strong></strong><span></span><span class="listen-source-inline"></span></div>
     <div class="listen-controls">
       <button type="button" data-audio="back" class="listen-skip" aria-label="Back 15 seconds">${icon('back15')}<span>15</span></button>
       <button type="button" data-audio="toggle" class="listen-play"></button>
@@ -247,6 +247,7 @@ function mount() {
     seek: bar.querySelector('[data-audio="seek"]'),
     time: bar.querySelector('.listen-time'),
     source: bar.querySelector('.listen-source'),
+    sourceInline: bar.querySelector('.listen-source-inline'),
     rate: bar.querySelector('[data-audio="rate"]'),
     next: bar.querySelector('.listen-next'),
     nextTitle: bar.querySelector('.listen-next b'),
@@ -306,7 +307,11 @@ function update() {
   if (!seeking) parts.seek.value = String(Math.round(fraction * 1000));
   parts.seek.disabled = mode === 'read';
   setText(parts.time, `${timeLabel(elapsed)} / ${timeLabel(duration)}`);
-  setText(parts.source, mode === 'read' ? 'Read aloud by your device' : 'Creator recording');
+  // The label says what is really speaking. It never claims a creator recording unless one is playing.
+  const sourceLabel = mode === 'read' ? 'Read aloud by your device' : mode === 'recorded' ? 'Creator recording' : 'Nothing playing';
+  setText(parts.source, sourceLabel);
+  // The phone line is narrow and ends in an ellipsis, so it uses the shorter wording.
+  setText(parts.sourceInline, mode === 'read' ? 'Read by your device' : sourceLabel);
   setText(parts.rate, `${rate}x`);
   parts.rate.setAttribute('aria-label', `Playback speed, ${rate}x`);
   parts.next.hidden = !upNext;

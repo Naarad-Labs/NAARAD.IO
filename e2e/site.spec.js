@@ -183,7 +183,7 @@ test.describe('my journey', () => {
 test.describe('phone compositions', () => {
   test.use({ viewport: PHONE, isMobile: true, hasTouch: true });
 
-  test('the route page leads with the map and keeps Start Walk in reach', async ({ page }) => {
+  test('the route page leads with the map and keeps its action bar in reach', async ({ page }) => {
     await page.goto('/routes/hampi-heritage-trail/');
     const map = page.locator('.map-frame');
     const hero = page.locator('.route-hero-copy');
@@ -1864,6 +1864,88 @@ test.describe('touch targets on a phone', () => {
     expect(await small(page, ['.journey-tabs button', '.breadcrumb a', '.button-sm', '.icon-button', 'a.text-link', '.button'])).toEqual([]);
     await page.goto('/creators/');
     expect(await small(page, ['.studio-nav button', '.studio-stop-list button', '.studio-actions .button', '.button-sm', '.icon-button', 'a.text-link', '.button'])).toEqual([]);
+  });
+});
+
+/* ── What the UI says is true (UI strategy W0) ─────────────────────── */
+
+test.describe('honest walk, listening and labels', () => {
+  test.beforeEach(async ({ page }) => { await page.addInitScript(withSpeech); });
+  const journey = (page) => page.evaluate(() => JSON.parse(localStorage.getItem('naarad.journey.v1') || '{}'));
+
+  test('listening from stop 1 plays the stop and records no walk and no listening at the tap', async ({ page }) => {
+    await page.goto('/routes/hampi-heritage-trail/');
+    const start = page.locator('[data-action="start"]');
+    await expect(start).toHaveAttribute('aria-label', 'Listen from stop 1');
+    await expect(start).toContainText('Listen');
+    await expect(page.locator('body')).not.toContainText('Start Walk');
+    await start.click();
+    await expect(page.locator('#site-notice')).toContainText('Playing stop 1 of 8');
+    await expect(page.locator('.listen-bar')).toBeVisible();
+    const stored = await journey(page);
+    expect(stored.walks ?? [], 'no walk is recorded by listening').toEqual([]);
+    expect(Object.keys(stored.listened ?? {}), 'no listening time is credited at the tap').toEqual([]);
+  });
+
+  test('listening time counts seconds that played, not the tap', async ({ page }) => {
+    await page.goto('/routes/hampi-heritage-trail/');
+    await page.locator('[data-action="start"]').click();
+    await page.waitForTimeout(2300);
+    await page.evaluate(() => dispatchEvent(new Event('pagehide')));
+    const listened = (await journey(page)).listened ?? {};
+    const seconds = Object.values(listened).reduce((sum, value) => sum + value, 0);
+    expect(seconds, 'a couple of seconds really played').toBeGreaterThanOrEqual(2);
+    expect(seconds, 'and not the whole story at once').toBeLessThan(10);
+  });
+
+  test('Mark as walked is the only way a walk is recorded, shows in My Journey, and can be undone', async ({ page }) => {
+    await page.goto('/routes/hampi-heritage-trail/');
+    const walked = page.locator('[data-action="walked"]');
+    await expect(walked).toHaveAttribute('aria-pressed', 'false');
+    await walked.click();
+    await expect(walked).toHaveAttribute('aria-pressed', 'true');
+    await expect(walked).toContainText('undo');
+    expect((await journey(page)).walks).toHaveLength(1);
+
+    await page.goto('/journey/');
+    await expect(page.locator('.journey-stats')).toContainText('Routes completed');
+    await expect(page.locator('.journey-stats li', { hasText: 'Routes completed' })).toContainText('1');
+
+    await page.goto('/routes/hampi-heritage-trail/');
+    await expect(page.locator('[data-action="walked"]')).toHaveAttribute('aria-pressed', 'true');
+    await page.locator('[data-action="walked"]').click();
+    await expect(page.locator('[data-action="walked"]')).toHaveAttribute('aria-pressed', 'false');
+    expect((await journey(page)).walks).toEqual([]);
+  });
+
+  test('a route page names the language that exists and says the rest are planned', async ({ page }) => {
+    await page.goto('/routes/hampi-heritage-trail/');
+    const facts = page.locator('.route-facts');
+    await expect(facts).toContainText('English');
+    await expect(facts).toContainText('Other languages are planned');
+    await expect(facts).not.toContainText('5 languages');
+  });
+
+  test('the player says what is speaking, also on a phone, and My Journey counts minutes', async ({ page }) => {
+    await page.goto('/routes/hampi-heritage-trail/');
+    await page.locator('[data-action="start"]').click();
+    await expect(page.locator('.listen-source')).toHaveText('Read aloud by your device');
+    await page.setViewportSize(PHONE);
+    await expect(page.locator('.listen-source-inline')).toBeVisible();
+    await expect(page.locator('.listen-source-inline')).toHaveText('Read by your device');
+    await page.goto('/journey/');
+    await expect(page.locator('.journey-stats')).toContainText('Minutes listened');
+    await expect(page.locator('.journey-stats')).not.toContainText('Hours listened');
+  });
+
+  test('Creator Studio sections that are not built are disabled and say so', async ({ page }) => {
+    await page.goto('/creators/');
+    const nav = page.locator('.studio-nav');
+    await expect(nav.locator('[aria-current="page"]')).toBeEnabled();
+    for (const id of ['stories', 'routes', 'media', 'profile', 'settings']) {
+      await expect(nav.locator(`[data-studio-nav="${id}"]`)).toBeDisabled();
+    }
+    await expect(nav.locator('[data-studio-nav="stories"]')).toContainText('Coming later');
   });
 });
 
