@@ -90,7 +90,7 @@
   border: 1px solid var(--line-strong); font-size: 13px; font-weight: 700; color: var(--ink-soft);
 }
 @media (hover: hover) { .story-route-pips a:hover { border-color: var(--orange-text); color: var(--orange-text); } }
-.story-route-pips .is-current a { background: var(--orange); border-color: var(--orange-text); color: #fff; }
+.story-route-pips .is-current a { background: var(--orange); border-color: var(--orange-text); color: var(--white); }
 .story-route-map { border-radius: 8px; overflow: hidden; margin-bottom: 14px; }
 .story-route-cta { width: 100%; }
 

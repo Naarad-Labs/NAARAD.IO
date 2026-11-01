@@ -146,8 +146,8 @@
 /* Numbered stop markers, matched to the static previews. */
 .nr-map-stop-marker {
   display: grid; place-items: center; width: 32px; height: 32px; border-radius: 50%;
-  background: var(--orange); color: var(--on-accent); font: 700 13px/1 'DM Sans', system-ui, sans-serif;
-  border: 2.5px solid var(--on-accent); box-shadow: 0 2px 8px rgb(var(--ink-deep-rgb) / 35%);
+  background: var(--orange); color: var(--white); font: 700 13px/1 'DM Sans', system-ui, sans-serif;
+  border: 2.5px solid var(--white); box-shadow: 0 2px 8px rgb(var(--ink-deep-rgb) / 35%);
   transition: transform .18s;
 }
 .nr-map-stop-marker.is-selected {
@@ -157,7 +157,7 @@
 @media (hover: hover) { .nr-map-marker-shell:hover .nr-map-stop-marker { transform: scale(1.08); } }
 .nr-map-start-marker {
   display: block; width: 24px; height: 24px; border-radius: 50%;
-  background: var(--sage); border: 3px solid var(--on-accent); box-shadow: 0 2px 8px rgb(var(--ink-deep-rgb) / 35%);
+  background: var(--sage); border: 3px solid var(--white); box-shadow: 0 2px 8px rgb(var(--ink-deep-rgb) / 35%);
 }
 @media (prefers-reduced-motion: reduce) { .nr-map-stop-marker { transition: none; } }
 

@@ -46,7 +46,7 @@
 .studio-step-title { display: flex; align-items: center; gap: 11px; margin-bottom: 16px; font-size: 14px; font-weight: 700;  font-family: var(--sans); }
 .studio-step-title span {
   display: grid; place-items: center; width: 25px; height: 25px; border-radius: 50%;
-  background: var(--orange); color: #fff; font-size: 13px; letter-spacing: 0;
+  background: var(--orange); color: var(--white); font-size: 13px; letter-spacing: 0;
 }
 
 .studio-picker, .studio-builder, .studio-drafts {
@@ -79,8 +79,8 @@
 }
 .studio-step-dot .ico { width: 14px; height: 14px; }
 .studio-steps .is-active button { color: var(--orange-text); }
-.studio-steps .is-active .studio-step-dot { background: var(--orange); border-color: var(--orange-text); color: #fff; }
-.studio-steps .is-done .studio-step-dot { background: var(--sage); border-color: var(--sage); color: #fff; }
+.studio-steps .is-active .studio-step-dot { background: var(--orange); border-color: var(--orange-text); color: var(--white); }
+.studio-steps .is-done .studio-step-dot { background: var(--sage); border-color: var(--sage); color: var(--white); }
 
 .studio-panel { display: grid; gap: 14px; }
 .studio-panel[hidden] { display: none; }
