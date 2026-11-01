@@ -7,7 +7,7 @@
   display: grid;
   grid-template-columns: minmax(400px, 40%) 1fr;
   align-items: center;
-  min-height: min(calc(100vh - var(--header-h)), 860px);
+  min-height: min(calc(100svh - var(--header-h)), 860px);
 }
 .home-hero-copy { padding: 40px clamp(28px, 3vw, 56px) 40px clamp(24px, 4vw, 72px); max-width: 640px; }
 .home-hero-copy .eyebrow { margin-bottom: 18px; }

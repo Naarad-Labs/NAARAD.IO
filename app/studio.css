@@ -5,7 +5,7 @@
 /* ── Sidebar ───────────────────────────────────────────────────── */
 .studio-nav {
   position: sticky; top: var(--header-h); align-self: start;
-  display: flex; flex-direction: column; gap: 22px; min-height: calc(100vh - var(--header-h));
+  display: flex; flex-direction: column; gap: 22px; min-height: calc(100svh - var(--header-h));
   padding: 26px 18px 28px; background: var(--paper-bright); border-right: 1px solid var(--line);
 }
 .studio-nav-title { margin-bottom: 2px; }
