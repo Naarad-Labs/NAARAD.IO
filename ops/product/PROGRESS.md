@@ -26,7 +26,7 @@ Run lock: none
 | 16 | done |  | Reconcile F-001 and F-002 status with reality | Governance gates (ops/ decision log and | ops/GOVERNANCE.md, features.mjs, lib.mjs, tests |
 | 17 | done |  | Make the register readable on a public page or keep it explicitly priv | Governance gates (ops/ decision log and | ops/GOVERNANCE.md, features.mjs, lib.mjs, tests |
 | 18 | done |  | Add decision-log numbering lint | Governance gates (ops/ decision log and | ops/GOVERNANCE.md, features.mjs, lib.mjs, tests |
-| 19 | todo |  | Add an evidence-ledger staleness report | Governance gates (ops/ decision log and | staleness report: ledger is empty, nothing to go stale |
+| 19 | done |  | Add an evidence-ledger staleness report | Governance gates (ops/ decision log and | staleness report prints a warning in verify.sh, never fails it; script and 6 unit tests; full verify.sh passes (stream s19, written by Cline) |
 | 20 | todo |  | Require a source for every number in content/ | Governance gates (ops/ decision log and | needs a numbers scan of content/ |
 | 21 | done |  | Write the cloud-spend guard | Governance gates (ops/ decision log and | ops/GOVERNANCE.md, features.mjs, lib.mjs, tests |
 | 22 | done |  | Log the Sarvam 403 block as a risk | Governance gates (ops/ decision log and | ops/GOVERNANCE.md, features.mjs, lib.mjs, tests |
