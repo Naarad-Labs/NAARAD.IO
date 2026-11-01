@@ -30,7 +30,7 @@
   border-radius: 7px; font-size: 14.5px; font-weight: 600; color: var(--ink-soft);
 }
 .journey-tabs .ico { width: 17px; height: 17px; }
-.journey-tabs button:hover { background: var(--paper-deep); }
+@media (hover: hover) { .journey-tabs button:hover { background: var(--paper-deep); } }
 .journey-tabs button[aria-selected='true'] { background: var(--orange-wash); color: var(--orange-text); }
 
 .journey-panel { width: min(100% - 48px, var(--wrap)); margin: 26px auto 0; }
@@ -111,7 +111,8 @@
 .journal-note > small { display: block; margin-top: 3px; font-size: 13px; color: var(--orange-text); }
 .journal-note p { margin-top: 9px; font-family: var(--script); font-size: 19px; line-height: 1.35; color: var(--ink-soft); }
 .journal-note .icon-button { position: absolute; right: 10px; bottom: 10px; width: 30px; height: 30px; opacity: 0; }
-.journal-note:hover .icon-button, .journal-note:focus-within .icon-button { opacity: 1; }
+.journal-note:focus-within .icon-button { opacity: 1; }
+@media (hover: hover) { .journal-note:hover .icon-button { opacity: 1; } }
 /* With no hover (a phone) the delete button would never appear, so it stays shown. */
 @media (hover: none) { .journal-note .icon-button { opacity: 1; } }
 .journal-note .ico { width: 14px; height: 14px; }

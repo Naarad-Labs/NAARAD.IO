@@ -212,7 +212,7 @@ Run lock: none
 | 202 | todo |  | Place primary actions in thumb reach | Mobile-native feel |  |
 | 203 | todo |  | Add edge-swipe-safe layouts | Mobile-native feel |  |
 | 204 | todo |  | Add sensible gestures only where discoverable | Mobile-native feel |  |
-| 205 | todo |  | Fix sticky hover on touch globally | Mobile-native feel |  |
+| 205 | done |  | Fix sticky hover on touch globally | Mobile-native feel | all 40 :hover rules in base, explore, home, journey, map, route, story and studio CSS are inside @media (hover: hover); checked by walking the parsed stylesheets in the browser (zero bare :hover rules; the one other block is the narrow-screen reset). Not seen on a physical iOS device |
 | 206 | todo |  | Redesign the stop marker | Maps UI |  |
 | 207 | todo |  | Give markers a 44px touch hit area | Maps UI |  |
 | 208 | todo |  | Add marker selection and entry motion | Maps UI |  |

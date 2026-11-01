@@ -29,7 +29,7 @@
   padding: 7px 14px; border-radius: 999px; border: 1px solid var(--line-strong);
   background: var(--paper-bright); font-size: 13px; font-weight: 600; color: var(--ink-soft);
 }
-.filter-chips button:hover { border-color: var(--ink); }
+@media (hover: hover) { .filter-chips button:hover { border-color: var(--ink); } }
 .filter-chips button.is-active { background: var(--orange); border-color: var(--orange-text); color: #fff; }
 .catalogue-filters select {
   width: 100%; padding: 10px 12px; border: 1px solid var(--line-strong); border-radius: 8px;

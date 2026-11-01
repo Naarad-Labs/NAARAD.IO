@@ -109,11 +109,18 @@
   font: inherit;
 }
 
-.nr-map-host .nr-map-status button:hover,
 .nr-map-host .nr-map-status button:focus-visible {
   background: #f5e7d9;
   outline: 2px solid #c95013;
   outline-offset: 2px;
+}
+
+@media (hover: hover) {
+  .nr-map-host .nr-map-status button:hover {
+    background: #f5e7d9;
+    outline: 2px solid #c95013;
+    outline-offset: 2px;
+  }
 }
 
 .nr-map-host .leaflet-popup-content-wrapper {
@@ -147,7 +154,7 @@
   width: 38px; height: 38px; font-size: 15px; background: #12294a;
   box-shadow: 0 4px 14px rgba(12, 28, 51, .45);
 }
-.nr-map-marker-shell:hover .nr-map-stop-marker { transform: scale(1.08); }
+@media (hover: hover) { .nr-map-marker-shell:hover .nr-map-stop-marker { transform: scale(1.08); } }
 .nr-map-start-marker {
   display: block; width: 24px; height: 24px; border-radius: 50%;
   background: #6f8156; border: 3px solid #fff; box-shadow: 0 2px 8px rgba(12, 28, 51, .35);

@@ -10,7 +10,7 @@
 .story-hero-copy { padding: 40px clamp(24px, 2.6vw, 48px) 44px clamp(24px, 4vw, 64px); }
 .story-hero .breadcrumb { color: rgba(247, 242, 232, .8); }
 .story-hero .breadcrumb b { color: var(--paper); }
-.story-hero .breadcrumb a:hover { color: var(--orange-on-dark); }
+@media (hover: hover) { .story-hero .breadcrumb a:hover { color: var(--orange-on-dark); } }
 .story-hero h1 { font-size: clamp(40px, 4.6vw, 68px); letter-spacing: -.025em; color: var(--paper); }
 .story-hero h1 .accent { color: var(--gold); }
 .story-standfirst { margin-top: 20px; max-width: 46ch; font-size: 17px; line-height: 1.6; color: rgba(247, 242, 232, .9); }
@@ -43,7 +43,7 @@
   display: block; padding: 8px 0 8px 15px; margin-left: -2px; font-size: 13px; line-height: 1.4;
   color: var(--ink-muted); border-left: 2px solid transparent;
 }
-.story-toc a:hover { color: var(--ink); }
+@media (hover: hover) { .story-toc a:hover { color: var(--ink); } }
 .story-toc a.is-current { color: var(--orange-text); font-weight: 600; border-left-color: var(--orange-text); }
 .story-actions { display: grid; gap: 2px; margin-top: 28px; padding-top: 22px; border-top: 1px solid var(--line); }
 .story-actions button, .story-actions a {
@@ -51,7 +51,7 @@
   font-size: 13px; font-weight: 600; color: var(--ink-soft); text-align: left;
 }
 .story-actions .ico { width: 17px; height: 17px; color: var(--orange-text); }
-.story-actions button:hover, .story-actions a:hover { color: var(--orange-text); }
+@media (hover: hover) { .story-actions button:hover, .story-actions a:hover { color: var(--orange-text); } }
 
 .story-content { max-width: 70ch; }
 .story-section + .story-section { margin-top: 44px; }
@@ -89,7 +89,7 @@
   display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%;
   border: 1px solid var(--line-strong); font-size: 13px; font-weight: 700; color: var(--ink-soft);
 }
-.story-route-pips a:hover { border-color: var(--orange-text); color: var(--orange-text); }
+@media (hover: hover) { .story-route-pips a:hover { border-color: var(--orange-text); color: var(--orange-text); } }
 .story-route-pips .is-current a { background: var(--orange); border-color: var(--orange-text); color: #fff; }
 .story-route-map { border-radius: 8px; overflow: hidden; margin-bottom: 14px; }
 .story-route-cta { width: 100%; }
@@ -105,7 +105,7 @@
 .story-related b { display: block; font-size: 13px; line-height: 1.3; }
 .story-related small { display: flex; align-items: center; gap: 5px; margin-top: 5px; font-size: 13px; color: var(--ink-muted); }
 .story-related small .ico { width: 12px; height: 12px; }
-.story-related a:hover b { color: var(--orange-text); }
+@media (hover: hover) { .story-related a:hover b { color: var(--orange-text); } }
 
 /* ── Story index ───────────────────────────────────────────────── */
 .story-index { width: min(100% - 48px, var(--wrap)); margin: 0 auto; padding: clamp(34px, 4vw, 64px) 0 70px; }
@@ -118,7 +118,7 @@
 .story-lead p { font-size: 16.5px; line-height: 1.65; color: var(--ink); margin-bottom: 18px; }
 .story-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 22px; margin-top: 24px; }
 .story-card { display: flex; flex-direction: column; background: var(--paper-bright); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; transition: transform .2s, box-shadow .2s; }
-.story-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
+@media (hover: hover) { .story-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); } }
 .story-card-copy { display: grid; gap: 7px; padding: 16px 17px 18px; }
 .story-card-copy strong { font-family: var(--serif); font-size: 19px; line-height: 1.2; }
 .story-card-copy small { font-size: 14px; line-height: 1.55; color: var(--ink-soft); }

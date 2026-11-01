@@ -20,7 +20,7 @@
 .quick-links .ico { width: 26px; height: 26px; stroke-width: 1.45; }
 .quick-links b { display: block; font-size: 13px; font-weight: 700; }
 .quick-links small { display: block; font-size: 13px; color: var(--ink-muted); }
-.quick-links a:hover b { color: var(--orange-text); }
+@media (hover: hover) { .quick-links a:hover b { color: var(--orange-text); } }
 
 .home-hero-media { position: relative; align-self: stretch; min-height: 420px; }
 .home-hero-photo { position: absolute; inset: 0; }
@@ -48,7 +48,7 @@
   background: var(--paper-bright); border: 1px solid var(--line); border-radius: var(--radius);
   box-shadow: var(--shadow-sm); transition: transform .2s, box-shadow .2s, border-color .2s;
 }
-.route-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); border-color: var(--line-strong); }
+@media (hover: hover) { .route-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); border-color: var(--line-strong); } }
 .route-card-media { display: grid; grid-template-columns: 1fr 0.78fr; gap: 1px; background: var(--line); }
 .route-card-photo { display: block; height: 100%; min-height: 150px; }
 .route-card-photo img { height: 100%; }
@@ -138,7 +138,7 @@
   transform: rotate(calc((var(--index) - 1.5) * .9deg)) translateY(calc(var(--index) * -4px));
   transition: transform .25s;
 }
-.magazine-page:hover { transform: rotate(0deg) translateY(-10px); z-index: 2; }
+@media (hover: hover) { .magazine-page:hover { transform: rotate(0deg) translateY(-10px); z-index: 2; } }
 .magazine-page .photo img { aspect-ratio: 3 / 4; }
 .magazine-page-copy { padding: 12px 13px 15px; }
 .magazine-index { font-size: 13px; font-weight: 700; letter-spacing: .1em; color: var(--orange-text); }
