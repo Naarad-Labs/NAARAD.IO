@@ -4,6 +4,12 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#f8f3e9">
+  <!-- Added to the home screen, the app opens standalone with a light status bar over the paper colour (no overlay,
+       so no extra top inset). The paper background is also the manifest's background_color: no white flash on launch. -->
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Naarad">
   <title>Naarad · Walk a place. Hear its story.</title>
   <meta name="description" content="Heritage walking routes across India with real route data and a written story for each stop, which your phone can read aloud as you walk." data-page="">
   <link rel="canonical" href="https://naarad.io/" data-page="">
@@ -26,7 +32,7 @@
   <link rel="preload" as="image" type="image/avif" href="/Images/photos/hampi-landscape-1920.avif" imagesrcset="/Images/photos/hampi-landscape-800.avif 800w, /Images/photos/hampi-landscape-1200.avif 1200w, /Images/photos/hampi-landscape-1600.avif 1600w, /Images/photos/hampi-landscape-1920.avif 1920w" imagesizes="(max-width: 1023px) 100vw, 62vw" fetchpriority="high" data-page="">
   <script type="application/ld+json" data-page="">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://naarad.io/#website","url":"https://naarad.io/","name":"Naarad","description":"Heritage walking routes across India with real route data and a written story for each stop, which your phone can read aloud as you walk.","inLanguage":"en-IN","publisher":{"@id":"https://naarad.io/#organization"},"potentialAction":{"@type":"SearchAction","target":{"@type":"EntryPoint","urlTemplate":"https://naarad.io/routes/?q={search_term_string}"},"query-input":"required name=search_term_string"}},{"@type":"Organization","@id":"https://naarad.io/#organization","name":"Naarad","url":"https://naarad.io/","logo":{"@type":"ImageObject","url":"https://naarad.io/Images/naarad-icon-512.png","width":512,"height":512}}]}</script>
   <link rel="icon" type="image/png" href="/Images/cropped_logo.png">
-  <link rel="apple-touch-icon" href="/Images/naarad-icon-192.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/Images/naarad-icon-180.png">
   <link rel="manifest" href="/manifest.json">
   <script>
     /* Old paths (/route/x, /story/x, /about) have no file, so GitHub Pages

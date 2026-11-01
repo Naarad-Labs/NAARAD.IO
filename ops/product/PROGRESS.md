@@ -206,8 +206,8 @@ Run lock: none
 | 196 | done |  | Prevent iOS input zoom | Mobile-native feel | all text inputs and selects 16px on coarse pointers (header search, catalogue search, filter select checked at 375px); account-panel fields inherit |
 | 197 | doing |  | Contain overscroll in the sheet and bottom bar | Mobile-native feel | overscroll-behavior contain on .stop-list (rail); the phone story is not a separate scroll container yet, so the sheet half waits on the sheet items 171-175 |
 | 198 | done |  | Decide on pull-to-refresh | Mobile-native feel | decision: leave the browser's native pull-to-refresh everywhere, overscroll-behavior-y none on the map host only (comment in map.css); computed value checked on a route page. Real touch pan not tested on a device |
-| 199 | todo |  | Polish the PWA icon set | Mobile-native feel |  |
-| 200 | todo |  | Add a splash and standalone status-bar treatment | Mobile-native feel |  |
+| 199 | done |  | Polish the PWA icon set | Mobile-native feel | dedicated maskable icon (mark scaled into the 80% safe-zone circle on the paper colour) and a 180px Apple touch icon; checked by viewing the old and new icons through a circular mask: old one clips the veena base and the leaf, new one shows the whole mark. Only a circle mask was tried, not every launcher shape |
+| 200 | doing |  | Add a splash and standalone status-bar treatment | Mobile-native feel | added mobile-web-app-capable, apple-mobile-web-app-capable, status-bar-style default (no overlay, so no top inset) and app title; paper background already set as manifest background_color. Not done: iOS apple-touch-startup-image splash images, and no standalone iOS launch seen here, so the no-white-flash check is open |
 | 201 | todo |  | Support landscape on phones | Mobile-native feel |  |
 | 202 | todo |  | Place primary actions in thumb reach | Mobile-native feel |  |
 | 203 | todo |  | Add edge-swipe-safe layouts | Mobile-native feel |  |
