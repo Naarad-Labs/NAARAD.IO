@@ -7,7 +7,7 @@ import { mkdtempSync, writeFileSync, rmSync, existsSync, mkdirSync } from 'node:
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { check, parseSitemap, findBuiltPages, isNoindex } from '../scripts/check-sitemap.mjs';
+import { check, parseSitemap, findBuiltPages, isNoindex, canonicalElsewhere } from '../scripts/check-sitemap.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const SCRIPT = path.join(ROOT, 'scripts', 'check-sitemap.mjs');
@@ -243,6 +243,74 @@ test('findBuiltPages function works correctly', () => {
     assert.ok(nestedPage, 'Nested page not found');
     // normalPath only folds index.html into a folder address; any other file keeps its name.
     assert.equal(nestedPage.address, '/nested/deep/page.html');
+  } finally {
+    rmSync(tempDir, { recursive: true });
+  }
+});
+
+test('page with canonical pointing elsewhere needs no sitemap line', () => {
+  const tempDir = createTempDir();
+  try {
+    // Create sitemap with only home page
+    createSitemap(tempDir, ['https://example.com/']);
+    
+    // Create HTML files, about page has canonical pointing to home
+    createHtmlFile(tempDir, 'index.html');
+    createHtmlFile(tempDir, 'about/index.html', '<link rel="canonical" href="https://example.com/">');
+    
+    const result = runScript([], tempDir);
+    assert.equal(result.status, 0, result.stdout + result.stderr);
+    assert.match(result.stdout, /No problems found/);
+  } finally {
+    rmSync(tempDir, { recursive: true });
+  }
+});
+
+test('page with canonical pointing to itself still needs sitemap line', () => {
+  const tempDir = createTempDir();
+  try {
+    // Create sitemap with only home page
+    createSitemap(tempDir, ['https://example.com/']);
+    
+    // Create HTML files, about page has canonical pointing to itself
+    createHtmlFile(tempDir, 'index.html');
+    createHtmlFile(tempDir, 'about/index.html', '<link rel="canonical" href="https://example.com/about/">');
+    
+    const result = runScript([], tempDir);
+    assert.equal(result.status, 1, result.stdout + result.stderr);
+    assert.match(result.stdout, /\[missing-from-sitemap\] /);
+    assert.match(result.stdout, /built page not in sitemap: \/about/);
+  } finally {
+    rmSync(tempDir, { recursive: true });
+  }
+});
+
+test('canonical-elsewhere page listed in sitemap is reported as sitemap-orphan', () => {
+  const tempDir = createTempDir();
+  try {
+    // Create sitemap with both pages
+    createSitemap(tempDir, ['https://example.com/', 'https://example.com/about']);
+    
+    // Create HTML files, about page has canonical pointing to home
+    createHtmlFile(tempDir, 'index.html');
+    createHtmlFile(tempDir, 'about/index.html', '<link rel="canonical" href="https://example.com/">');
+    
+    const result = runScript([], tempDir);
+    assert.equal(result.status, 1, result.stdout + result.stderr);
+    assert.match(result.stdout, /\[sitemap-orphan\] /);
+  } finally {
+    rmSync(tempDir, { recursive: true });
+  }
+});
+
+test('canonicalElsewhere returns false for file with no canonical tag', () => {
+  const tempDir = createTempDir();
+  try {
+    // Create HTML file without canonical tag
+    createHtmlFile(tempDir, 'page.html');
+    
+    const result = canonicalElsewhere(path.join(tempDir, 'page.html'), '/page');
+    assert.equal(result, false);
   } finally {
     rmSync(tempDir, { recursive: true });
   }
