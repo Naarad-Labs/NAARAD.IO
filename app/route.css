@@ -301,3 +301,10 @@
   .glance-elevation .elevation-svg { height: 130px; }
   .route-card-grid.is-three { grid-template-columns: 1fr; }
 }
+
+/* ── Phone in landscape (roadmap 201) ─────────────────────────────
+   The screen is wide but only about 390px tall. The map fits one screen instead of a 16:9 block taller than it,
+   and the header scrolls away instead of taking a sixth of the height. The page is not locked to portrait. */
+@media (orientation: landscape) and (max-height: 500px) {
+  .map-frame { aspect-ratio: auto; height: calc(100svh - 32px); min-height: 240px; }
+}
