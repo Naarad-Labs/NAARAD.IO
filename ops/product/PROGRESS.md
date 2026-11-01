@@ -40,7 +40,7 @@ Run lock: none
 | 30 | todo |  | Add an HTML validity stage | verify.sh and CI |  |
 | 31 | todo |  | Add an internal link checker | verify.sh and CI |  |
 | 32 | done |  | Check sitemap.xml matches the built pages | verify.sh and CI | check-sitemap.mjs in verify.sh stage 2; a deleted sitemap line fails it |
-| 33 | todo |  | Check canonical, title and description on every built page | verify.sh and CI |  |
+| 33 | done |  | Check canonical, title and description on every built page | verify.sh and CI | check-page-meta.mjs in verify.sh stage 2; a duplicate title fails it |
 | 34 | done |  | Check the service worker cache list against built files | verify.sh and CI | check-sw-cache.mjs in verify.sh stage 2; a changed precached file with the same VERSION fails it |
 | 35 | todo |  | Add a pre-render determinism check | verify.sh and CI |  |
 | 36 | todo |  | Cache npm and Playwright browsers in CI | verify.sh and CI |  |
