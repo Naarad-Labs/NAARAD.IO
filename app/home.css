@@ -174,7 +174,9 @@
 
 /* ── Phone: the pocket guide composition ───────────────────────── */
 @media (max-width: 639px) {
-  .home-hero-media { min-height: 62vh; }
+  /* The photo no longer pushes the headline and the main button below the first screen. */
+  .home-hero-media { height: 36svh; min-height: 240px; overflow: hidden; }
+  .home-hero-photo { height: 100%; }
   .home-hero-copy { padding: 28px 20px 34px; }
   .home-hero-copy h1 { font-size: clamp(40px, 12vw, 58px); }
   .home-hero-copy .lede { font-size: 16px; margin: 16px 0 22px; }
