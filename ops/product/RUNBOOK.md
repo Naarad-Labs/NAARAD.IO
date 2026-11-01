@@ -81,7 +81,7 @@ Nothing fills a gap with a plausible-looking number. The site has no recorded na
 
 ## Tools
 
-- Free-model drafts go through the FreeLLMAPI gateway first (D-0002); everything it writes is read and verified before use; facts are never taken from it.
+- Free-model drafts go through the FreeLLMAPI gateway first (D-0002) where `ops/GATEWAY.md` says it fits; everything it writes is read and verified before use; facts are never taken from it.
 - Sarvam: `https://api.sarvam.ai`, credential injected by the environment, no Authorization header. Keep inside D-0003 and log spend in the report.
 - Installed skills (Impeccable, taste, UI UX Pro Max, Emil Kowalski's motion skills) advise; the owner's mockup tokens and the tests decide. Playwright and Figma MCP are in `.mcp.json`.
 - Sub-agents are fine for independent review or isolated files: one writer per file, and review everything they produce.
