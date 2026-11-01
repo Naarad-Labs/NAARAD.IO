@@ -409,6 +409,7 @@ stages that ran:
    They need `cd e2e && npm install` once, and the generated pages to be current
    (`verify.sh` builds first). Run alone (from the repo root):
    `bash -c 'source scripts/verify.sh; check_e2e'`.
+After the four stages pass, a ledger staleness report prints as a warning (it never fails the run); run it alone with `node scripts/check-ledger-staleness.mjs`, optionally with `--days N`.
 
 ### The service worker
 
