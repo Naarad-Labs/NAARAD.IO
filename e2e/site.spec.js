@@ -2151,6 +2151,71 @@ test.describe('phone chrome budget', () => {
   });
 });
 
+/* ── Tabs, headings and language marks (UI strategy W3) ──────────────── */
+
+test.describe('tabs, heading names and language marks', () => {
+  test('the stop detail tabs are a real tab list: one tab stop, arrows, Home and End, linked panels', async ({ page }) => {
+    await page.goto('/routes/hampi-heritage-trail/');
+    const tabs = page.locator('.stop-tabs [role="tab"]');
+    await expect(tabs).toHaveCount(3);
+    for (let i = 0; i < 3; i += 1) {
+      const id = await tabs.nth(i).getAttribute('aria-controls');
+      const panel = page.locator(`#${id}`);
+      await expect(panel).toHaveAttribute('role', 'tabpanel');
+      await expect(panel).toHaveAttribute('aria-labelledby', (await tabs.nth(i).getAttribute('id')) || '');
+    }
+    // Only the selected tab is in the tab order.
+    expect(await tabs.evaluateAll((nodes) => nodes.map((node) => node.tabIndex))).toEqual([0, -1, -1]);
+
+    await tabs.nth(0).focus();
+    await page.keyboard.press('ArrowRight');
+    await expect(tabs.nth(1)).toHaveAttribute('aria-selected', 'true');
+    await expect(tabs.nth(1)).toBeFocused();
+    await expect(page.locator('#stop-panel-place')).toBeVisible();
+    await expect(page.locator('#stop-panel-transcript')).toBeHidden();
+    expect(await tabs.evaluateAll((nodes) => nodes.map((node) => node.tabIndex))).toEqual([-1, 0, -1]);
+
+    await page.keyboard.press('End');
+    await expect(tabs.nth(2)).toBeFocused();
+    await expect(tabs.nth(2)).toHaveAttribute('aria-selected', 'true');
+    await page.keyboard.press('ArrowRight');                 // wraps to the first
+    await expect(tabs.nth(0)).toBeFocused();
+    await page.keyboard.press('ArrowLeft');                  // and back to the last
+    await expect(tabs.nth(2)).toBeFocused();
+    await page.keyboard.press('Home');
+    await expect(tabs.nth(0)).toHaveAttribute('aria-selected', 'true');
+    await expect(page.locator('#stop-panel-transcript')).toBeVisible();
+  });
+
+  test('the Journey tabs are linked to their panels', async ({ page }) => {
+    await page.goto('/journey/');
+    const tabs = page.locator('.journey-tabs [role="tab"]');
+    const count = await tabs.count();
+    expect(count).toBe(5);
+    for (let i = 0; i < count; i += 1) {
+      const id = await tabs.nth(i).getAttribute('aria-controls');
+      const panel = page.locator(`#${id}`);
+      await expect(panel).toHaveAttribute('role', 'tabpanel');
+      await expect(panel).toHaveAttribute('aria-labelledby', (await tabs.nth(i).getAttribute('id')) || '');
+    }
+  });
+
+  test('a heading broken over two lines reads as separate sentences, not run together', async ({ page }) => {
+    await page.goto('/');
+    await expect(page.getByRole('heading', { level: 1 })).toHaveAccessibleName('Walk a place. Hear its story.');
+    await page.goto('/journey/');
+    await expect(page.getByRole('heading', { level: 1 })).toHaveAccessibleName('My Journey More than places.');
+  });
+
+  test('Creator Studio language names carry their language, so a screen reader pronounces them', async ({ page }) => {
+    await page.goto('/creators/');
+    const hindi = page.locator('select option[value="hi"]').first();
+    await expect(hindi).toHaveAttribute('lang', 'hi');
+    await expect(page.locator('select option[value="ta"]').first()).toHaveAttribute('lang', 'ta');
+    await expect(page.locator('[data-studio-language="kn"] + span')).toHaveAttribute('lang', 'kn');
+  });
+});
+
 /* ── A phone held sideways (roadmap 201) ──────────────────────────── */
 
 test.describe('phone in landscape', () => {

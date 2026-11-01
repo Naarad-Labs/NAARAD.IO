@@ -130,7 +130,7 @@
     <img src="/Images/photos/auroville-matrimandir-960.webp" alt="Auroville Explorer, Auroville, Tamil Nadu" loading="eager" decoding="async" fetchpriority="high" style="aspect-ratio:1.5037">
     <span class="photo-credit">Photo: devaiah pa (<a href="https://creativecommons.org/licenses/by-sa/2.0/" target="_blank" rel="noopener noreferrer">CC BY-SA 2.0</a>)</span>
   </picture>
-      <p class="note-plain note-over-photo route-hero-note">Community.<br>Walk it slowly.</p>
+      <p class="note-plain note-over-photo route-hero-note">Community. <br>Walk it slowly.</p>
       <span class="pin-chip route-hero-place"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M19 10.2c0 5-7 11.6-7 11.6S5 15.2 5 10.2a7 7 0 1 1 14 0Z"></path><circle cx="12" cy="10" r="2.4"></circle></svg>Auroville, Tamil Nadu</span>
     </div>
   </header>
@@ -237,22 +237,22 @@
     </div>
 
     <div class="stop-tabs" role="tablist" aria-label="Stop detail">
-      <button type="button" role="tab" aria-selected="true" data-stop-tab="transcript">Transcript</button>
-      <button type="button" role="tab" aria-selected="false" data-stop-tab="place">About the place</button>
-      <button type="button" role="tab" aria-selected="false" data-stop-tab="related">Related stops</button>
+      <button type="button" role="tab" id="stop-tab-transcript" aria-controls="stop-panel-transcript" aria-selected="true" tabindex="0" data-stop-tab="transcript">Transcript</button>
+      <button type="button" role="tab" id="stop-tab-place" aria-controls="stop-panel-place" aria-selected="false" tabindex="-1" data-stop-tab="place">About the place</button>
+      <button type="button" role="tab" id="stop-tab-related" aria-controls="stop-panel-related" aria-selected="false" tabindex="-1" data-stop-tab="related">Related stops</button>
     </div>
-    <div class="stop-tab-panel" data-stop-panel="transcript">
+    <div class="stop-tab-panel" id="stop-panel-transcript" role="tabpanel" aria-labelledby="stop-tab-transcript" data-stop-panel="transcript">
       <blockquote class="stop-quote"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.4 6.2c-2.8 1.4-4.2 3.6-4.2 6.6v5h5.6v-5.6H7.2c0-1.8.9-3.2 2.8-4.2Z"></path><path d="M19 6.2c-2.8 1.4-4.2 3.6-4.2 6.6v5h5.6v-5.6h-3.6c0-1.8.9-3.2 2.8-4.2Z"></path></svg><p>Construction began in 1971 and took decades. Inside is a white marble chamber with a single crystal lit by a shaft of sunlight, intended for silent concentration rather than worship. From the viewpoint you see the whole sphere and the gardens radiating out, each named for a quality its designers thought a person might cultivate.</p></blockquote>
       <p class="data-note">Text written for Naarad. Narration is read aloud by your device until a creator recording is published for this stop.</p>
     </div>
-    <div class="stop-tab-panel" data-stop-panel="place" hidden="">
+    <div class="stop-tab-panel" id="stop-panel-place" role="tabpanel" aria-labelledby="stop-tab-place" data-stop-panel="place" hidden="">
       <dl class="stop-facts">
         <div><dt>Distance along route</dt><dd>0 m</dd></div>
         <div><dt>Elevation</dt><dd>54 m</dd></div>
         <div><dt>Coordinates</dt><dd>12.0085, 79.8107</dd></div>
       </dl>
     </div>
-    <div class="stop-tab-panel" data-stop-panel="related" hidden="">
+    <div class="stop-tab-panel" id="stop-panel-related" role="tabpanel" aria-labelledby="stop-tab-related" data-stop-panel="related" hidden="">
       <ul class="stop-related">
         <li>
           <button type="button" data-select-stop="2"><b>2. The Amphitheatre and Urn</b><span>Soil from 124 nations</span></button>

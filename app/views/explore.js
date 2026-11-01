@@ -74,7 +74,7 @@ export async function render(context = {}) {
     <header class="catalogue-hero">
       <div>
         <p class="eyebrow eyebrow-mark">The Naarad atlas · ${routes.length} routes</p>
-        <h1 class="display">Go where<br>stories live.</h1>
+        <h1 class="display">Go where <br>stories live.</h1>
         <p class="lede">Search places and browse published routes across India. ${withStops} ${withStops === 1 ? 'route has' : 'routes have'} ordered stops with stories; the rest carry their route facts while stops are written.</p>
       </div>
       <form class="catalogue-search" role="search" aria-label="Search routes" onsubmit="return false">

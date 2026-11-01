@@ -50,7 +50,7 @@ function sidebar(active = 'create') {
       ${NAV.map((item) => `<li><button type="button" data-studio-nav="${item.id}" class="${item.id === active ? 'is-active' : ''}" ${item.id === active ? 'aria-current="page"' : 'disabled title="Coming later"'}>
         ${icon(item.icon)}<span>${item.label}</span>${item.id === active ? '' : '<small>Coming later</small>'}</button></li>`).join('')}
     </ul>
-    <p class="note-plain studio-nav-note">“Every place has a story.<br>You can be the one<br>who lets it speak.”</p>
+    <p class="note-plain studio-nav-note">“Every place has a story. <br>You can be the one <br>who lets it speak.”</p>
   </nav>`;
 }
 
@@ -123,7 +123,7 @@ function builder(draft, route, stop) {
       <div class="studio-row">
         <label class="field"><span>Spoken language</span>
           <select data-studio="language">
-            ${LANGUAGES.map(([code, label]) => `<option value="${code}" ${code === draft.language ? 'selected' : ''}>${label}</option>`).join('')}
+            ${LANGUAGES.map(([code, label]) => `<option value="${code}" lang="${code}" ${code === draft.language ? 'selected' : ''}>${label}</option>`).join('')}
           </select>
         </label>
         <button type="button" class="button button-sm" data-studio="transcribe" aria-disabled="true">${icon('sparkle')} Transcribe audio</button>
@@ -140,7 +140,7 @@ function builder(draft, route, stop) {
       <div class="studio-languages" role="group" aria-label="Languages to publish in">
         ${LANGUAGES.map(([code, label]) => `<label class="filter-check">
           <input type="checkbox" data-studio-language="${code}" ${draft.targetLanguages.includes(code) ? 'checked' : ''}>
-          <span>${label}</span></label>`).join('')}
+          <span lang="${code}">${label}</span></label>`).join('')}
       </div>
       <p class="data-note">Machine translation is a server step. Choosing languages here records what this story should be published in.</p>
     </div>
@@ -222,12 +222,12 @@ export async function render() {
       <header class="studio-hero">
         <div class="studio-hero-copy">
           <p class="eyebrow eyebrow-mark">Creator Studio</p>
-          <h1 class="display">Real places.<br><span class="accent">Your voice.</span></h1>
+          <h1 class="display">Real places. <br><span class="accent">Your voice.</span></h1>
           <p class="lede">A drafting space for narrators: pick a stop on one of Naarad's routes, write the story you would tell there and note the languages it should come in. Your drafts stay in this browser, and publishing is not open yet.</p>
         </div>
         <div class="studio-hero-media">
           ${picture('india-storyteller', { sizes: '(max-width: 1023px) 100vw, 40vw', alt: '', credit: true, className: 'torn-left' })}
-          <p class="note-plain note-over-photo studio-hero-note">Places speak differently<br>when locals tell the story.</p>
+          <p class="note-plain note-over-photo studio-hero-note">Places speak differently <br>when locals tell the story.</p>
         </div>
       </header>
       <div class="studio-grid">

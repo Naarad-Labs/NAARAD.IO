@@ -74,7 +74,7 @@ function hero(featured) {
   return `<section class="home-hero" aria-labelledby="home-title">
     <div class="home-hero-copy">
       <p class="eyebrow">A living heritage, a shared human story</p>
-      <h1 id="home-title" class="display">Walk a place.<br><span class="accent">Hear its story.</span></h1>
+      <h1 id="home-title" class="display">Walk a place. <br><span class="accent">Hear its story.</span></h1>
       <p class="lede">Heritage walks across India, told at the places where the stories happened: real routes, local history, and stories your phone can read aloud as you walk.</p>
       <a class="button button-primary home-hero-cta" href="${sectionPath('explore')}" data-view="explore">Start Exploring ${icon('arrow')}</a>
       <ul class="quick-links">
@@ -93,7 +93,7 @@ function hero(featured) {
     className: 'home-hero-photo torn-left',
   })}
       <div class="note-card home-hero-note">
-        <p class="script">Every stone has a story.<br>All you have to do is listen.</p>
+        <p class="script">Every stone has a story. <br>All you have to do is listen.</p>
       </div>
       ${first ? `<span class="pin-chip home-hero-place">${icon('pin')}${escapeHtml(first.location || 'India')}</span>` : ''}
     </div>
@@ -120,7 +120,7 @@ function voicesSection() {
   return `<section class="home-voices" aria-labelledby="voices-title">
     <div class="voices-copy">
       <p class="eyebrow eyebrow-mark">Voices of Naarad</p>
-      <h2 id="voices-title" class="section-title">Real people.<br>Richer stories.</h2>
+      <h2 id="voices-title" class="section-title">Real people. <br>Richer stories.</h2>
       <p>Naarad is built to carry the voices of the people who know a place best: historians, guides, artists and residents, telling it in their own language.</p>
       <a class="button button-ghost" href="${sectionPath('creators')}" data-view="creators">Meet Our Creators ${icon('arrow')}</a>
     </div>
@@ -139,13 +139,13 @@ function voicesSection() {
     </div>
     <div class="voices-languages">
       <p class="eyebrow eyebrow-mark">Multilingual audio</p>
-      <h2>India's stories,<br>in your language.</h2>
+      <h2>India's stories, <br>in your language.</h2>
       <p>Naarad is built for stories in the languages people actually use, not only in English. Every story published so far is in English.</p>
       <ul class="language-list">
         ${LANGUAGES.map((language) => `<li lang="${language.code}">${language.label}</li>`).join('')}
         <li class="is-more">+ more</li>
       </ul>
-      <p class="note-plain">Different languages.<br>The same wonder.</p>
+      <p class="note-plain">Different languages. <br>The same wonder.</p>
     </div>
   </section>`;
 }
@@ -155,7 +155,7 @@ function experienceSection(routes) {
   return `<section class="home-experience" aria-labelledby="experience-title">
     <div class="experience-copy">
       <p class="eyebrow eyebrow-mark">The Naarad experience</p>
-      <h2 id="experience-title" class="section-title">Like a magazine.<br>Made for real places.</h2>
+      <h2 id="experience-title" class="section-title">Like a magazine. <br>Made for real places.</h2>
       <p>Stories, photography and interactive routes in one piece, so reading about a place and walking it are the same experience.</p>
       <a class="button button-sm" href="${routePath('hampi-heritage-trail')}" data-route="hampi-heritage-trail">Take a Look Inside ${icon('arrow')}</a>
     </div>
