@@ -38,7 +38,7 @@ Run lock: none
 | 28 | done |  | Make verify.sh fail fast with clear stage names | verify.sh and CI | banner per stage; stops at the first failure with the stage name; full verify.sh passes (stream s27, written by Cline) |
 | 29 | done |  | Time every verify.sh stage | verify.sh and CI | per-stage timing table printed last, also on failure: 77s total on the reference run (stream s27, written by Cline) |
 | 30 | todo |  | Add an HTML validity stage | verify.sh and CI |  |
-| 31 | todo |  | Add an internal link checker | verify.sh and CI |  |
+| 31 | done |  | Add an internal link checker | verify.sh and CI | check-links.mjs in verify.sh stage 2; renaming routes/hampi-heritage-trail failed it on the real repo with a [broken-link] line per page that linked to it |
 | 32 | done |  | Check sitemap.xml matches the built pages | verify.sh and CI | check-sitemap.mjs in verify.sh stage 2; a deleted sitemap line fails it |
 | 33 | done |  | Check canonical, title and description on every built page | verify.sh and CI | check-page-meta.mjs in verify.sh stage 2; a duplicate title fails it |
 | 34 | done |  | Check the service worker cache list against built files | verify.sh and CI | check-sw-cache.mjs in verify.sh stage 2; a changed precached file with the same VERSION fails it |
