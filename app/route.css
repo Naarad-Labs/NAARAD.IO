@@ -116,7 +116,7 @@
 .stop-play-mark { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; background: var(--orange); }
 .stop-play-mark .ico { width: 19px; height: 19px; fill: var(--white); stroke: none; margin-left: 2px; }
 @media (hover: hover) { .stop-play:hover .stop-play-mark { background: var(--orange-deep); } }
-.stop-media-note { position: absolute; top: 10px; right: 12px; padding: 5px 9px; border-radius: 4px; background: rgba(12, 28, 51, .72); color: rgba(255, 255, 255, .95); font-size: 13px; }
+.stop-media-note { position: absolute; top: 10px; right: 12px; padding: 5px 9px; border-radius: 4px; background: rgba(12, 28, 51, .72); color: rgb(var(--white-rgb) / 95%); font-size: 13px; }
 
 .stop-tabs { display: flex; flex-wrap: wrap; gap: 22px; margin: 22px 0 0; border-bottom: 1px solid var(--line); }
 .stop-tabs button { padding: 10px 0; font-size: 13px; font-weight: 600; color: var(--ink-muted); border-bottom: 2px solid transparent; margin-bottom: -1px; }

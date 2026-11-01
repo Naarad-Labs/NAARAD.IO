@@ -71,8 +71,10 @@
 
 /* Route preview SVG (shared with other pages) */
 .route-preview { display: block; }
-.rp-line-case { fill: none; stroke: rgba(255, 255, 255, .95); stroke-width: 5.5; stroke-linecap: round; stroke-linejoin: round; }
+.rp-line-case { fill: none; stroke: rgb(var(--white-rgb) / 95%); stroke-width: 5.5; stroke-linecap: round; stroke-linejoin: round; }
 .rp-line { fill: none; stroke: #2f6cb5; stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; }
+.rp-ground { fill: var(--preview-ground); }
+.rp-grid { stroke: rgb(var(--ink-rgb) / 7%); }
 .rp-pin { fill: var(--orange); stroke: var(--white); stroke-width: 1.8; }
 .rp-num { fill: var(--white); font: 700 9.5px/1 var(--sans); text-anchor: middle; }
 
