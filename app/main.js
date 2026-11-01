@@ -818,7 +818,13 @@ document.addEventListener('click', async (event) => {
 
   const stopButton = event.target.closest('[data-select-stop]');
   const listenTarget = event.target.closest('[data-action="listen"]');
-  if (listenTarget) { event.preventDefault(); event.stopPropagation(); listen(Number(listenTarget.dataset.stop)); return; }
+  if (listenTarget) {
+    event.preventDefault(); event.stopPropagation();
+    // The button of the stop that is playing says Pause, so pressing it pauses.
+    if (Audio.isPlaying() && Audio.currentItem()?.id === stopItemId(listenTarget.dataset.stop)) Audio.toggle();
+    else listen(Number(listenTarget.dataset.stop));
+    return;
+  }
   if (stopButton) { await selectStop(Number(stopButton.dataset.selectStop)); return; }
 
   const action = event.target.closest('[data-action]')?.dataset.action;
@@ -1086,11 +1092,22 @@ const listenTracker = createListenTracker({
 });
 addEventListener('pagehide', () => listenTracker.flush());
 
+/* The stop that is playing is marked in words as well as colour, and its Listen button becomes Pause. */
+function stopItemId(order) { return `${state.route?.slug}-${String(order).padStart(2, '0')}`; }
 Audio.subscribe((player) => {
   listenTracker.update(player);
   $$('[data-action="listen"]').forEach((button) => {
-    button.classList.toggle('is-playing', player.playing && button.dataset.stop
-      && `${state.route?.slug}-${String(button.dataset.stop).padStart(2, '0')}` === player.item?.id);
+    if (!button.dataset.stop) return;
+    const playingThis = Boolean(player.playing && stopItemId(button.dataset.stop) === player.item?.id);
+    button.dataset.listenLabel ??= button.getAttribute('aria-label') || '';
+    button.classList.toggle('is-playing', playingThis);
+    button.setAttribute('aria-label', playingThis ? button.dataset.listenLabel.replace(/^Listen to /, 'Pause ') : button.dataset.listenLabel);
+  });
+  $$('.stop-item[data-select-stop]').forEach((row) => {
+    const playingThis = Boolean(player.playing && stopItemId(row.dataset.selectStop) === player.item?.id);
+    row.classList.toggle('is-playing', playingThis);
+    const tag = row.querySelector('.stop-playing-tag');
+    if (tag) tag.hidden = !playingThis;
   });
 });
 

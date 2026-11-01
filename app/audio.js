@@ -223,6 +223,7 @@ function mount() {
   bar.innerHTML = `
     <div class="listen-art"></div>
     <div class="listen-meta"><strong></strong><span></span><span class="listen-source-inline"></span></div>
+    <span class="sr-only" role="status" data-audio="status"></span>
     <div class="listen-controls">
       <button type="button" data-audio="back" class="listen-skip" aria-label="Back 15 seconds">${icon('back15')}<span>15</span></button>
       <button type="button" data-audio="toggle" class="listen-play"></button>
@@ -248,6 +249,7 @@ function mount() {
     time: bar.querySelector('.listen-time'),
     source: bar.querySelector('.listen-source'),
     sourceInline: bar.querySelector('.listen-source-inline'),
+    status: bar.querySelector('[data-audio="status"]'),
     rate: bar.querySelector('[data-audio="rate"]'),
     next: bar.querySelector('.listen-next'),
     nextTitle: bar.querySelector('.listen-next b'),
@@ -297,12 +299,18 @@ function update() {
 
   if (!shown || shown.photo !== item.photo) parts.art.innerHTML = item.photo ? picture(item.photo, { sizes: '56px', alt: '', ratio: '1 / 1' }) : '';
   setText(parts.title, item.title);
-  setText(parts.subtitle, `${item.subtitle || ''}${queue.length > 1 ? ` · Stop ${index + 1} of ${queue.length}` : ''}`);
+  // The stop number comes first so it survives the ellipsis on a narrow screen.
+  setText(parts.subtitle, [queue.length > 1 ? `Stop ${index + 1} of ${queue.length}` : '', item.subtitle || ''].filter(Boolean).join(' · '));
   if (shown?.playing !== playing) {
     parts.toggle.innerHTML = icon(playing ? 'pause' : 'play');
     parts.toggle.setAttribute('aria-label', playing ? 'Pause' : 'Play');
   }
-  shown = { photo: item.photo, playing };
+  // Said aloud by screen readers only when the stop or the playing state changes, never on progress ticks.
+  if (shown?.id !== item.id || shown?.playing !== playing) {
+    const where = queue.length > 1 ? `, stop ${index + 1} of ${queue.length}` : '';
+    setText(parts.status, playing ? `Playing ${item.title}${where}.` : `Paused: ${item.title}${where}.`);
+  }
+  shown = { photo: item.photo, playing, id: item.id };
 
   if (!seeking) parts.seek.value = String(Math.round(fraction * 1000));
   parts.seek.disabled = mode === 'read';

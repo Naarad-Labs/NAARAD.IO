@@ -1949,6 +1949,56 @@ test.describe('honest walk, listening and labels', () => {
   });
 });
 
+/* ── The player while walking (UI strategy W1, first slice) ────────── */
+
+test.describe('the player while walking', () => {
+  test.beforeEach(async ({ page }) => { await page.addInitScript(withSpeech); });
+
+  test('on a phone the player is one row, keeps the stop number in view and is not taller than it needs to be', async ({ page }) => {
+    await page.setViewportSize(PHONE);
+    await page.goto('/routes/hampi-heritage-trail/');
+    await page.locator('[data-action="start"]').click();
+    const bar = page.locator('.listen-bar');
+    await expect(bar).toBeVisible();
+    const height = (await bar.boundingBox()).height;
+    expect(height, 'player bar height (it was 118px when the close button wrapped)').toBeLessThanOrEqual(84);
+    await expect(bar.locator('.listen-meta span').first()).toHaveText(/^Stop 1 of 8/);
+    for (const control of ['[data-audio="back"]', '[data-audio="toggle"]', '[data-audio="forward"]', '[data-audio="close"]']) {
+      const box = await bar.locator(control).boundingBox();
+      expect(box.y, `${control} is on the bar's single row`).toBeLessThan((await bar.boundingBox()).y + height - 20);
+    }
+  });
+
+  test('the player announces the stop and its playing state', async ({ page }) => {
+    await page.goto('/routes/hampi-heritage-trail/');
+    await page.locator('[data-action="start"]').click();
+    const status = page.locator('.listen-bar [role="status"]');
+    await expect(status).toHaveText(/^Playing .+, stop 1 of 8\.$/);
+    await page.locator('.listen-bar [data-audio="toggle"]').click();
+    await expect(status).toHaveText(/^Paused: .+, stop 1 of 8\.$/);
+  });
+
+  test('the playing stop says Playing in words, its Listen button says Pause, and pressing it pauses', async ({ page }) => {
+    await page.goto('/routes/hampi-heritage-trail/');
+    const first = page.locator('.stop-row').first();
+    const listen = first.locator('[data-action="listen"]');
+    await expect(listen).toHaveAttribute('aria-label', /^Listen to /);
+    await expect(first.locator('.stop-playing-tag')).toBeHidden();
+
+    await listen.click();
+    await expect(listen).toHaveAttribute('aria-label', /^Pause /);
+    await expect(first.locator('.stop-playing-tag')).toBeVisible();
+    await expect(first.locator('.stop-playing-tag')).toHaveText('Playing');
+    // Only the playing stop is marked.
+    await expect(page.locator('.stop-playing-tag:visible')).toHaveCount(1);
+
+    await listen.click();
+    await expect(listen).toHaveAttribute('aria-label', /^Listen to /);
+    await expect(first.locator('.stop-playing-tag')).toBeHidden();
+    await expect(page.locator('.listen-bar [role="status"]')).toHaveText(/^Paused:/);
+  });
+});
+
 /* ── A phone held sideways (roadmap 201) ──────────────────────────── */
 
 test.describe('phone in landscape', () => {
