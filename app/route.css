@@ -274,16 +274,19 @@
   }
   .route-facts { grid-template-columns: repeat(2, minmax(0, 1fr)); margin-top: 14px; }
 
-  /* The section links wrap to two rows and stay in view, so a jump has more to clear;
-     the actions become a bar that stays in reach. */
-  .route-overview, .stop-rail, .stop-panel, .route-glance, .map-panel { scroll-margin-top: calc(var(--header-h) + 16px + var(--route-bar-h, 106px)); }
+  /* The section links are one row that scrolls sideways (they wrapped to two rows, 106px of a phone screen), and the
+     actions become a bar that stays in reach. The right edge fades where the row continues. */
+  .route-overview, .stop-rail, .stop-panel, .route-glance, .map-panel { scroll-margin-top: calc(var(--header-h) + 16px + var(--route-bar-h, 54px)); }
   .route-tabs {
-    position: sticky; top: var(--header-h); z-index: 500; flex-wrap: wrap; row-gap: 4px;
-    width: 100%; margin: 14px 0 0; padding: 6px 14px;
+    position: sticky; top: var(--header-h); z-index: 500; flex-wrap: nowrap; overflow-x: auto; overscroll-behavior-x: contain;
+    scrollbar-width: none; -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 28px), transparent);
+    mask-image: linear-gradient(to right, #000 calc(100% - 28px), transparent);
+    width: 100%; margin: 14px 0 0; padding: 4px 14px;
     background: rgba(248, 243, 233, .96); backdrop-filter: blur(8px);
     border-block: 1px solid var(--line);
   }
-  .route-tabs a { min-height: 44px; padding: 0 13px; font-size: 13px; }
+  .route-tabs::-webkit-scrollbar { display: none; }
+  .route-tabs a { flex: 0 0 auto; min-height: 44px; padding: 0 13px; font-size: 13px; }
   .route-bar-actions {
     position: fixed; left: 0; right: 0; bottom: var(--player-h); z-index: 700;
     padding: 9px max(14px, env(safe-area-inset-right)) calc(9px + env(safe-area-inset-bottom)) max(14px, env(safe-area-inset-left));
@@ -293,6 +296,10 @@
   .route-bar-actions .button { flex: 1; min-height: 44px; }
   .route-bar-actions .button-primary { flex: 1.4; }
   body[data-view='route'] { padding-bottom: calc(var(--player-h) + 72px); }
+  /* While the player is open it is the one bar at the bottom: the action bar steps aside instead of stacking above it.
+     Share and Save come back when the player is closed. */
+  body:has(.listen-bar) .route-bar-actions { display: none; }
+  body[data-view='route']:has(.listen-bar) { padding-bottom: var(--player-h); }
 
   .stop-panel { margin-top: 14px; padding: 18px 16px 22px; }
   .stop-tabs { gap: 16px; }

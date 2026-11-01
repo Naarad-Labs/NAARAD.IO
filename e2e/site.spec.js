@@ -1999,6 +1999,67 @@ test.describe('the player while walking', () => {
   });
 });
 
+/* ── The phone's screen is not eaten by bars (UI strategy W2) ───────── */
+
+test.describe('phone chrome budget', () => {
+  test.use({ viewport: PHONE, isMobile: true, hasTouch: true });
+  test.beforeEach(async ({ page }) => { await page.addInitScript(withSpeech); });
+
+  /* Height taken by everything that stays on screen while scrolling: sticky and fixed elements, measured where they sit. */
+  const stuck = (page) => page.evaluate(() => {
+    const out = [];
+    for (const node of document.querySelectorAll('body *')) {
+      const style = getComputedStyle(node);
+      if (!['sticky', 'fixed'].includes(style.position) || style.display === 'none' || style.visibility === 'hidden') continue;
+      const box = node.getBoundingClientRect();
+      // Only bars that span the screen count; map controls and the toast do not.
+      if (box.width < innerWidth * 0.9 || box.height < 20 || box.height > innerHeight * 0.5) continue;
+      if (box.bottom < 0 || box.top > innerHeight) continue;
+      out.push({ name: `${node.tagName.toLowerCase()}.${String(node.className).split(' ')[0]}`, height: Math.round(box.height) });
+    }
+    return out;
+  });
+
+  test('the route section tabs are one row, not two', async ({ page }) => {
+    await page.goto('/routes/hampi-heritage-trail/');
+    const tabs = page.locator('.route-tabs');
+    const box = await tabs.boundingBox();
+    expect(box.height, 'tab row height (it wrapped to 106px)').toBeLessThanOrEqual(60);
+    const row = await tabs.evaluate((node) => ({ scrolls: node.scrollWidth > node.clientWidth, wraps: getComputedStyle(node).flexWrap }));
+    expect(row.wraps).toBe('nowrap');
+    // The links still all exist and the row can be scrolled to reach the last one.
+    await tabs.locator('a').last().scrollIntoViewIfNeeded();
+    await expect(tabs.locator('a').last()).toBeVisible();
+  });
+
+  test('with the player open, the action bar steps aside and the bars use a quarter of the screen or less', async ({ page }) => {
+    await page.goto('/routes/hampi-heritage-trail/');
+    await page.evaluate(() => scrollTo(0, 700));
+    const before = await stuck(page);
+    expect(before.some((bar) => bar.name.includes('route-bar-actions')), 'the action bar is there before playing').toBe(true);
+
+    await page.locator('[data-action="start"]').click();
+    await expect(page.locator('.listen-bar')).toBeVisible();
+    await expect(page.locator('.route-bar-actions')).toBeHidden();
+    const bars = await stuck(page);
+    const total = bars.reduce((sum, bar) => sum + bar.height, 0);
+    expect(total, `sticky and fixed bars (${JSON.stringify(bars)}) against ${PHONE.height}px`).toBeLessThanOrEqual(PHONE.height * 0.25);
+
+    // Closing the player brings the actions back.
+    await page.locator('.listen-bar [data-audio="close"]').click();
+    await expect(page.locator('.route-bar-actions')).toBeVisible();
+  });
+
+  test('the home page headline and main button are on the first screen of a small phone', async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 667 });
+    await page.goto('/');
+    const heading = await page.locator('.home-hero-copy h1').boundingBox();
+    const cta = await page.locator('.home-hero-cta').boundingBox();
+    expect(heading.y, 'headline starts on the first screen').toBeLessThan(667 * 0.75);
+    expect(cta.y + cta.height, 'the main button ends within the first screen').toBeLessThanOrEqual(667);
+  });
+});
+
 /* ── A phone held sideways (roadmap 201) ──────────────────────────── */
 
 test.describe('phone in landscape', () => {
