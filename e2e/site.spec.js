@@ -1867,6 +1867,31 @@ test.describe('touch targets on a phone', () => {
   });
 });
 
+/* ── A phone held sideways (roadmap 201) ──────────────────────────── */
+
+test.describe('phone in landscape', () => {
+  test.use({ viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true });
+
+  test('the route map fits one screen, its controls are inside it, the header scrolls away and nothing overflows', async ({ page }) => {
+    await page.goto('/routes/hampi-heritage-trail/');
+    await expect(page.locator('#map .leaflet-container, #map.leaflet-container').first()).toBeVisible();
+    const found = await page.evaluate(() => {
+      const frame = document.querySelector('.map-frame').getBoundingClientRect();
+      const controls = document.querySelector('.map-controls').getBoundingClientRect();
+      return {
+        frameHeight: Math.round(frame.height), viewport: innerHeight,
+        controlsInside: controls.top >= frame.top && controls.bottom <= frame.bottom,
+        header: getComputedStyle(document.querySelector('.site-header')).position,
+        overflow: document.documentElement.scrollWidth > innerWidth,
+      };
+    });
+    expect(found.frameHeight, 'map height against a 390px-tall screen').toBeLessThanOrEqual(found.viewport);
+    expect(found.controlsInside, 'map controls inside the map').toBe(true);
+    expect(found.header).toBe('static');
+    expect(found.overflow, 'horizontal overflow').toBe(false);
+  });
+});
+
 /* ── The map layer is remembered; a blocked tile host is told plainly ─ */
 
 test.describe('map layer and tiles', () => {

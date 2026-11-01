@@ -35,6 +35,10 @@ test('the maskable icon is a dedicated file, not the plain icon reused', () => {
   }
 });
 
+test('the manifest does not lock the screen to portrait (roadmap 201: a walking guide works held either way)', () => {
+  assert.ok(!/^portrait/.test(manifest.orientation || ''), `orientation is ${manifest.orientation}`);
+});
+
 test('the home page links a 180px Apple touch icon that exists', () => {
   const link = /<link rel="apple-touch-icon" sizes="180x180" href="([^"]+)">/.exec(home);
   assert.ok(link, 'apple-touch-icon with sizes 180x180');
