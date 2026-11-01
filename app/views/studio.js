@@ -109,7 +109,7 @@ function builder(draft, route, stop) {
       <label class="studio-drop" for="studio-audio">
         ${icon('upload')}
         <span><b>Choose an audio file from this device</b><small>MP3, M4A or WAV. Nothing is uploaded.</small></span>
-        <input id="studio-audio" type="file" accept="audio/*" data-studio="audio" hidden>
+        <input id="studio-audio" class="sr-only" type="file" accept="audio/*" data-studio="audio">
       </label>
       <div class="studio-audio-preview" data-studio-audio-preview>
         ${draft.audioName

@@ -127,7 +127,7 @@ function tabBar(route) {
 
 function stopPanel(route, stop) {
   if (!stop) {
-    return `<section class="stop-panel" id="section-stories" aria-live="polite">
+    return `<section class="stop-panel" id="section-stories">
       <div class="empty-state">${icon('sparkle')}<div>
         <strong>Stops are not published for this route</strong>
         <p>This route is in the catalogue, but no one has published its ordered stops yet. Routes with stops show each one here, with its story.</p>
@@ -136,7 +136,7 @@ function stopPanel(route, stop) {
   }
 
   const minutes = Math.max(1, Math.round(stop.story.length / 900));
-  return `<section class="stop-panel" id="section-stories" aria-live="polite" data-stop="${stop.order}">
+  return `<section class="stop-panel" id="section-stories" data-stop="${stop.order}">
     <div class="stop-panel-head">
       <p class="eyebrow eyebrow-mark">Stop ${stop.order} of ${route.stopCount}</p>
       <div class="stop-panel-meta">
@@ -298,6 +298,7 @@ export async function render(context) {
     ${tabBar(route)}
     <div class="route-workspace">
       ${mapPanel(route)}
+      ${route.stops.length ? '<p class="sr-only" role="status" data-stop-status></p>' : ''}
       ${stopPanel(route, Data.getStop(route, selected))}
       ${stopRail(route, selected)}
     </div>

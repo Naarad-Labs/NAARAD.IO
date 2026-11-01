@@ -33,6 +33,7 @@
   --gold: #c9a227;
   --line: #e0d6c2;
   --line-strong: #cdbfa4;
+  --field-edge: #857656;       /* the edge of an input, select or filter chip: 4.0:1 on paper, 4.3:1 on paper-bright (WCAG 1.4.11 needs 3:1) */
 
   /* Type */
   --serif: 'Playfair Display', 'Iowan Old Style', Georgia, serif;
