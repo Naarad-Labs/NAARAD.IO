@@ -19,6 +19,7 @@ import { loadMedia, escapeHtml, preloadHint } from './media.js';
 import * as Data from './data.js';
 import * as Audio from './audio.js';
 import * as Journey from './journey-store.js';
+import { createListenTracker } from './listen-tracker.js';
 import * as Offline from './offline-bundles.js';
 import * as Account from './account.js';
 import * as OfflineUI from './offline-ui.js';
@@ -612,17 +613,17 @@ function stopQueue(route, from = 1) {
     }));
 }
 
+/* Starts a stop playing; true when playback was asked for. Listening time is counted by the tracker below, from playback that really happens. */
 function listen(order) {
-  if (!state.route?.stops?.length) return;
+  if (!state.route?.stops?.length) return false;
   if (!Audio.readAloudAvailable && !state.route.stops.some((stop) => stop.audio)) {
-    notify('No narration is published for this route, and this browser cannot read it aloud.');
-    return;
+    notify('This browser cannot read stories aloud. You can still read each stop below.');
+    return false;
   }
   const queue = stopQueue(state.route);
   const index = Math.max(0, queue.findIndex((item) => item.id === `${state.route.slug}-${String(order).padStart(2, '0')}`));
   Audio.play(queue, index);
-  const stop = Data.getStop(state.route, order);
-  if (stop) Journey.recordListening(stop.slug, Math.round(stop.story.length / 15));
+  return true;
 }
 
 async function listenStory() {
@@ -827,9 +828,19 @@ document.addEventListener('click', async (event) => {
   if (action === 'save') { toggleSave(event.target.closest('[data-action="save"]')); return; }
   if (action === 'offline') { await toggleOffline(event.target.closest('[data-action="offline"]')); return; }
   if (action === 'start' && state.route) {
-    Journey.completeWalk(state.route);
-    notify(`${state.route.name} added to My Journey. Open the first stop to start listening.`);
-    listen(state.route.stops[0]?.order || 1);
+    // Listening is not walking: this plays the first stop and records nothing in My Journey.
+    const first = state.route.stops[0];
+    if (first && listen(first.order)) notify(`Playing stop 1 of ${state.route.stops.length}. Save the route to find it in My Journey.`);
+    return;
+  }
+  if (action === 'walked' && state.route) {
+    const button = event.target.closest('[data-action="walked"]');
+    const walked = !Journey.isWalked(state.route.slug);
+    if (walked) Journey.completeWalk(state.route); else Journey.removeWalk(state.route.slug);
+    button.setAttribute('aria-pressed', String(walked));
+    const label = button.querySelector('span');
+    if (label) label.textContent = walked ? 'Marked as walked · undo' : 'Mark as walked';
+    notify(walked ? `${state.route.name} marked as walked. It is in My Journey.` : `${state.route.name} is no longer marked as walked.`);
     return;
   }
   if (action === 'journal') {
@@ -1069,7 +1080,14 @@ started = boot().catch((error) => {
 });
 await started;
 
+/* Listening time in My Journey counts only seconds of a route's stop that really played (stories are not stops). */
+const listenTracker = createListenTracker({
+  record: (id, seconds) => { if (state.route?.stops?.some((stop) => stop.slug === id)) Journey.addListening(id, seconds); },
+});
+addEventListener('pagehide', () => listenTracker.flush());
+
 Audio.subscribe((player) => {
+  listenTracker.update(player);
   $$('[data-action="listen"]').forEach((button) => {
     button.classList.toggle('is-playing', player.playing && button.dataset.stop
       && `${state.route?.slug}-${String(button.dataset.stop).padStart(2, '0')}` === player.item?.id);

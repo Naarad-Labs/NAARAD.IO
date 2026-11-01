@@ -94,3 +94,37 @@ test('a stored draft keeps the fields that are right and takes the blank draft\'
   assert.equal(draft.transcript, '');
   assert.equal(store.current().id, 'a', 'the stored draft is still the current one');
 });
+
+test('a walk is only recorded when the visitor marks it, and the mark can be undone', async () => {
+  const { store } = await load('journey-store');
+  assert.equal(store.isWalked('x-trail'), false, 'a fresh journey has no walks');
+  assert.equal(store.stats().walksCompleted, 0);
+  store.completeWalk(route);
+  assert.equal(store.isWalked('x-trail'), true);
+  assert.equal(store.stats().walksCompleted, 1);
+  assert.equal(store.removeWalk('x-trail'), true, 'removing a walk reports that it did');
+  assert.equal(store.isWalked('x-trail'), false);
+  assert.equal(store.stats().walksCompleted, 0);
+  assert.equal(store.removeWalk('x-trail'), false, 'removing a walk that is not there changes nothing');
+});
+
+test('listening time adds up from seconds that played, and a stop counts as heard only after ten seconds', async () => {
+  const { store } = await load('journey-store');
+  assert.equal(store.stats().listenedMinutes, 0);
+  assert.equal(store.stats().stopsHeard, 0);
+  store.addListening('x-01', 4);
+  assert.equal(store.stats().stopsHeard, 0, 'four seconds is not a stop heard');
+  store.addListening('x-01', 8);
+  assert.equal(store.stats().stopsHeard, 1, 'twelve seconds is');
+  store.addListening('x-02', 120);
+  const totals = store.stats();
+  assert.equal(totals.stopsHeard, 2);
+  assert.equal(totals.listenedMinutes, 2, '132 seconds is two minutes');
+});
+
+test('addListening ignores zero, negative and non-number seconds', async () => {
+  const { store } = await load('journey-store');
+  for (const bad of [0, -5, NaN, undefined, 'x', null]) store.addListening('x-01', bad);
+  assert.equal(store.stats().listenedMinutes, 0);
+  assert.equal(store.stats().stopsHeard, 0);
+});

@@ -133,6 +133,16 @@ export function completeWalk(route) {
   return true;
 }
 
+/** Undo for completeWalk: a walk marked by mistake can be taken back. */
+export function removeWalk(slug) {
+  const current = read();
+  const before = current.walks.length;
+  current.walks = current.walks.filter((entry) => entry.slug !== slug);
+  if (current.walks.length === before) return false;
+  write();
+  return true;
+}
+
 export function addJournalEntry(entry) {
   const current = read();
   current.journal.unshift({
@@ -159,6 +169,18 @@ export function recordListening(stopSlug, seconds) {
   write();
 }
 
+/** Add seconds of playback that really happened to a stop's listening time. */
+export function addListening(stopSlug, seconds) {
+  const add = Math.round(Number(seconds));
+  if (!(add > 0)) return;
+  const current = read();
+  current.listened[stopSlug] = (current.listened[stopSlug] || 0) + add;
+  write();
+}
+
+/** A stop counts as heard once this many seconds of it have really played. */
+export const HEARD_MIN_SECONDS = 10;
+
 /** Totals for the journey dashboard, all derived from what is stored. */
 export function stats() {
   const current = read();
@@ -171,9 +193,10 @@ export function stats() {
     kilometres: metres / 1000,
     placesExplored: places,
     listenedHours: listenedSeconds / 3600,
+    listenedMinutes: Math.round(listenedSeconds / 60),
     journalCount: current.journal.length,
     downloadCount: current.downloads.length,
-    stopsHeard: Object.keys(current.listened).length,
+    stopsHeard: Object.values(current.listened).filter((seconds) => seconds >= HEARD_MIN_SECONDS).length,
   };
 }
 

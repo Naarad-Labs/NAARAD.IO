@@ -320,6 +320,8 @@ h1[tabindex='-1']:focus, h2[tabindex='-1']:focus, h3[tabindex='-1']:focus { outl
 .listen-meta strong { display: block; font-size: 14.5px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .listen-meta span { display: block; font-size: 13px; color: rgba(247, 242, 232, .62); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .listen-controls { display: flex; align-items: center; gap: 10px; }
+/* On phones the source label sits under the title, because the aside that holds the full label is hidden there. */
+.listen-meta .listen-source-inline { display: none; font-size: 12px; color: rgba(247, 242, 232, .75); }
 .listen-bar [hidden] { display: none; }
 .listen-skip { position: relative; display: grid; place-items: center; width: 44px; height: 44px; color: rgba(247, 242, 232, .85); }
 .listen-skip .ico { width: 23px; height: 23px; }
@@ -351,6 +353,7 @@ h1[tabindex='-1']:focus, h2[tabindex='-1']:focus, h3[tabindex='-1']:focus { outl
   }
   .listen-art { width: 46px; height: 46px; }
   .listen-progress, .listen-source, .listen-next, .listen-rate { display: none; }
+  .listen-meta .listen-source-inline { display: block; }
   .listen-controls { gap: 4px; }
 }
 

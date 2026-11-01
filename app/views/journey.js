@@ -49,7 +49,7 @@ function statList(totals) {
   const stats = [
     ['temple', totals.placesExplored, 'Places explored'],
     ['walk', totals.kilometres >= 10 ? totals.kilometres.toFixed(0) : totals.kilometres.toFixed(1), 'Kilometres walked'],
-    ['clock', totals.listenedHours >= 1 ? totals.listenedHours.toFixed(1) : totals.listenedHours.toFixed(2), 'Hours listened'],
+    ['clock', totals.listenedMinutes, 'Minutes listened'],
     ['book', totals.journalCount, 'Notes in journal'],
     ['leaf', totals.walksCompleted, 'Routes completed'],
   ];
@@ -169,7 +169,7 @@ export async function render() {
             <h2>${totals.walksCompleted ? 'Routes completed' : 'No routes walked yet'}</h2>
             <p class="data-note">${totals.walksCompleted
     ? 'Every place adds a new chapter to your story.'
-    : 'Open a route and mark it complete when you have walked it. It will appear here.'}</p>
+    : 'Open a route and tap Mark as walked when you have walked it. It will appear here.'}</p>
           </div>
         </div>
         ${statList(totals)}

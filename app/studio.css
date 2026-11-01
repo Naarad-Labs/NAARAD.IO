@@ -15,8 +15,12 @@
   border-radius: 8px; font-size: 14.5px; font-weight: 600; color: var(--ink-soft); text-align: left;
 }
 .studio-nav button .ico { width: 18px; height: 18px; }
-@media (hover: hover) { .studio-nav button:hover { background: var(--paper-deep); } }
+@media (hover: hover) { .studio-nav button:not(:disabled):hover { background: var(--paper-deep); } }
 .studio-nav button.is-active { background: var(--orange-wash); color: var(--orange-text); }
+/* Sections that are not built yet say so instead of looking like they work. */
+.studio-nav button:disabled { opacity: .62; cursor: default; }
+.studio-nav button small { margin-left: auto; font-size: 13px; font-weight: 500; color: var(--ink-muted); }
+@media (max-width: 639px) { .studio-nav button small { display: none; } }
 .studio-nav-note { margin-top: auto; font-size: 20px; line-height: 1.3; color: var(--ink-muted); }
 
 .studio-main { min-width: 0; padding-bottom: 50px; }
