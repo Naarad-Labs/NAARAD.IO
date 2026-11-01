@@ -199,6 +199,7 @@ function stopRail(route, selected) {
             <b>${escapeHtml(stop.name)}</b>
             <small>${escapeHtml(stop.tagline)}</small>
             <span class="stop-item-meta">${icon('walk')}${escapeHtml(Data.formatDistance(stop.distanceM) || '')}</span>
+            <span class="stop-playing-tag" hidden>Playing</span>
           </span>
         </button>
         <button type="button" class="stop-item-play" data-action="listen" data-stop="${stop.order}" aria-label="Listen to ${escapeHtml(stop.name)}">${icon('play')}</button>

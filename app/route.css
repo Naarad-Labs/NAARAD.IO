@@ -308,3 +308,8 @@
 @media (orientation: landscape) and (max-height: 500px) {
   .map-frame { aspect-ratio: auto; height: calc(100svh - 32px); min-height: 240px; }
 }
+
+/* The stop that is playing: marked with the word, not only colour, so it reads in sun and for colour-blind visitors. */
+.stop-item.is-playing { border-color: var(--ink); box-shadow: inset 3px 0 0 var(--ink); }
+.stop-playing-tag { display: inline-block; margin-top: 4px; padding: 1px 8px; border-radius: 999px; background: var(--ink-deep); color: #fff; font-size: 13px; font-weight: 600; }
+.stop-playing-tag[hidden] { display: none; }

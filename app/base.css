@@ -348,13 +348,20 @@ h1[tabindex='-1']:focus, h2[tabindex='-1']:focus, h3[tabindex='-1']:focus { outl
 
 @media (max-width: 1023px) {
   .listen-bar {
-    grid-template-columns: 46px minmax(0, 1fr) auto; gap: 12px;
+    /* One row: art, title block, the three controls, and the close button as its own column. It used to wrap onto a
+       second row, which made the bar 118px tall. */
+    grid-template-columns: 46px minmax(0, 1fr) auto auto; gap: 12px;
     padding: 8px max(14px, env(safe-area-inset-right)) calc(8px + env(safe-area-inset-bottom)) max(14px, env(safe-area-inset-left));
   }
   .listen-art { width: 46px; height: 46px; }
   .listen-progress, .listen-source, .listen-next, .listen-rate { display: none; }
   .listen-meta .listen-source-inline { display: block; }
   .listen-controls { gap: 4px; }
+}
+/* Narrow phones have no room for the thumbnail beside a readable title; the stop's photo is on the page. */
+@media (max-width: 429px) {
+  .listen-bar { grid-template-columns: minmax(0, 1fr) auto auto; gap: 8px; }
+  .listen-art { display: none; }
 }
 
 /* Map fallback text */
