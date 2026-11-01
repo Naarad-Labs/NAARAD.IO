@@ -1838,6 +1838,23 @@ test.describe('touch targets on a phone', () => {
     ])).toEqual([]);
   });
 
+  /* Thumb reach: the primary actions sit below 55% of the viewport height (the lower, easy-to-reach part of the screen). */
+  test('the primary actions on a route page are in thumb reach', async ({ page }) => {
+    await page.goto('/routes/hampi-heritage-trail/');
+    const line = PHONE.height * 0.55;
+    const tooHigh = async (selector) => {
+      const tops = await page.evaluate((sel) => [...document.querySelectorAll(sel)]
+        .filter((node) => node.offsetParent !== null || getComputedStyle(node).position === 'fixed')
+        .map((node) => Math.round(node.getBoundingClientRect().top)), selector);
+      expect(tops.length, `${selector} was found on the page`).toBeGreaterThan(0);
+      return tops.filter((top) => top < line).map((top) => `${selector} at ${top}px`);
+    };
+    expect(await tooHigh('.route-bar-actions .button'), 'the walk actions bar').toEqual([]);
+    await page.locator('.stop-play').click();
+    expect(await tooHigh('.listen-play'), 'the listen toggle').toEqual([]);
+    expect(await tooHigh('.listen-skip'), 'the listen skip buttons').toEqual([]);
+  });
+
   test('on the catalogue, a story, the journey and the studio', async ({ page }) => {
     await page.goto('/routes/');
     expect(await small(page, ['.filter-chips button', '.catalogue-filters select', '.catalogue-filters .filter-check', '.route-card', '.site-footer nav a', '.icon-button', 'a.text-link', '.button'])).toEqual([]);
