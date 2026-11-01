@@ -37,6 +37,9 @@
   --map-ground: #e7e1d5;        /* the map's own ground colour, behind tiles */
   --route-line: #173d68;        /* the route line on the map */
   --white: #fff;            /* pure white: text, fills and rings on saturated or dark grounds */
+  --white-rgb: 255 255 255;   /* --white as three numbers, for rgb(var(--white-rgb) / 45%) */
+  --ink-rgb: 18 41 74;        /* --ink as three numbers */
+  --preview-ground: #eef2e6;  /* the ground of the route preview drawings */
   --paper-rgb: 248 243 233;     /* --paper as three numbers, for rgb(var(--paper-rgb) / 50%) */
   --ink-deep-rgb: 12 28 51;     /* --ink-deep as three numbers, for shadows */
 
@@ -125,8 +128,8 @@ h1[tabindex='-1']:focus, h2[tabindex='-1']:focus, h3[tabindex='-1']:focus { outl
 @media (hover: hover) { .button:hover { border-color: var(--ink); transform: translateY(-1px); } }
 .button-primary { background: var(--orange); border-color: var(--orange-text); color: var(--white); }
 @media (hover: hover) { .button-primary:hover { background: var(--orange-deep); border-color: var(--orange-deep); color: var(--white); } }
-.button-ghost { background: transparent; border-color: rgba(255, 255, 255, .45); color: var(--white); }
-@media (hover: hover) { .button-ghost:hover { background: rgba(255, 255, 255, .12); border-color: var(--white); } }
+.button-ghost { background: transparent; border-color: rgb(var(--white-rgb) / 45%); color: var(--white); }
+@media (hover: hover) { .button-ghost:hover { background: rgb(var(--white-rgb) / 12%); border-color: var(--white); } }
 .button-sm { min-height: 38px; padding: 0 16px; font-size: 13px; }
 .button[disabled], .button[aria-disabled='true'] { opacity: .5; cursor: not-allowed; transform: none; }
 .icon-button {
@@ -191,7 +194,7 @@ h1[tabindex='-1']:focus, h2[tabindex='-1']:focus, h3[tabindex='-1']:focus { outl
 .photo img { width: 100%; height: 100%; object-fit: cover; }
 .photo-credit {
   position: absolute; right: 10px; bottom: 9px; z-index: 2; display: inline-flex; align-items: center; gap: 6px;
-  padding: 5px 9px; border-radius: 4px; background: rgba(12, 28, 51, .62); color: rgba(255, 255, 255, .93);
+  padding: 5px 9px; border-radius: 4px; background: rgba(12, 28, 51, .62); color: rgb(var(--white-rgb) / 93%);
   font-size: 13px; line-height: 1.35; max-width: min(90%, 380px);
 }
 .photo-credit a { text-decoration: underline; text-underline-offset: 2px; }

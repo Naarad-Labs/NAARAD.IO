@@ -66,10 +66,10 @@ export function routePreview(route, options = {}) {
     aria-label="Map preview of ${escapeHtml(route.name)}${numbered && route.stops?.length ? ` with ${route.stops.length} numbered stops` : ''}" preserveAspectRatio="xMidYMid slice">
     <defs>
       <pattern id="${id}" width="26" height="26" patternUnits="userSpaceOnUse">
-        <path d="M26 0H0v26" fill="none" stroke="rgba(18,41,74,.07)" stroke-width="1"></path>
+        <path d="M26 0H0v26" class="rp-grid" fill="none" stroke-width="1"></path>
       </pattern>
     </defs>
-    <rect width="${width}" height="${height}" fill="#eef2e6"></rect>
+    <rect width="${width}" height="${height}" class="rp-ground"></rect>
     <rect width="${width}" height="${height}" fill="url(#${id})"></rect>
     <path d="${line}" class="rp-line-case"></path>
     <path d="${line}" class="rp-line"></path>
