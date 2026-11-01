@@ -141,7 +141,7 @@
 .stop-rail {
   position: sticky; top: calc(var(--header-h) + 76px);
   padding: 18px 16px 20px; background: var(--paper-bright); border: 1px solid var(--line);
-  border-radius: var(--radius); box-shadow: var(--shadow-sm); max-height: calc(100vh - var(--header-h) - 110px);
+  border-radius: var(--radius); box-shadow: var(--shadow-sm); max-height: calc(100svh - var(--header-h) - 110px);
   display: flex; flex-direction: column;
 }
 .stop-rail-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; }

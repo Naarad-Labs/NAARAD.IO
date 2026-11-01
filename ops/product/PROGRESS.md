@@ -196,14 +196,14 @@ Run lock: none
 | 186 | todo |  | Avoid large blur and backdrop-filter on animated layers | Animation performance and library choice |  |
 | 187 | todo |  | Keep the IntersectionObserver reveal cheap | Animation performance and library choice |  |
 | 188 | todo |  | Pause hero drift and reveals when the tab is hidden | Animation performance and library choice |  |
-| 189 | todo |  | Remove the tap highlight flash | Mobile-native feel |  |
-| 190 | todo |  | Replace remaining 100vh uses with svh/dvh | Mobile-native feel |  |
+| 189 | done |  | Remove the tap highlight flash | Mobile-native feel | tap highlight transparent on a/button/summary/role=button/label; generic :active (opacity) on every control; checked in browser at 375px |
+| 190 | doing |  | Replace remaining 100vh uses with svh/dvh | Mobile-native feel | 100vh grep is clean (home, route, studio now 100svh); hero is 906px tall at 375x667 so it does not yet fit an iPhone SE viewport |
 | 191 | todo |  | Audit safe-area handling at every edge | Mobile-native feel |  |
 | 192 | todo |  | Pad the listen bar for the home indicator | Mobile-native feel |  |
 | 193 | todo |  | Enforce 44px targets on a table of controls | Mobile-native feel |  |
-| 194 | todo |  | Add `touch-action: manipulation` to controls | Mobile-native feel |  |
-| 195 | todo |  | Stop text selection on controls | Mobile-native feel |  |
-| 196 | todo |  | Prevent iOS input zoom | Mobile-native feel |  |
+| 194 | done |  | Add `touch-action: manipulation` to controls | Mobile-native feel | touch-action: manipulation on a, button, summary, inputs, labels; computed value checked on .button at 375px; .icon-button not on the pages checked, covered by the button rule |
+| 195 | done |  | Stop text selection on controls | Mobile-native feel | user-select none and -webkit-touch-callout none on buttons, summary, role=button; paragraph text stays selectable (checked). No bottom sheet handle exists yet (item 174) |
+| 196 | done |  | Prevent iOS input zoom | Mobile-native feel | all text inputs and selects 16px on coarse pointers (header search, catalogue search, filter select checked at 375px); account-panel fields inherit |
 | 197 | todo |  | Contain overscroll in the sheet and bottom bar | Mobile-native feel |  |
 | 198 | todo |  | Decide on pull-to-refresh | Mobile-native feel |  |
 | 199 | todo |  | Polish the PWA icon set | Mobile-native feel |  |

@@ -14,6 +14,7 @@
 }
 .catalogue-search .ico { color: var(--ink-muted); }
 .catalogue-search input { flex: 1; min-width: 0; border: 0; background: none; font-size: 15px; }
+@media (pointer: coarse) { .catalogue-search input { font-size: 16px; } }
 /* The ring is on the pill, not the bare input inside it. */
 .catalogue-search input:focus { outline: none; }
 .catalogue-search:focus-within { outline: 3px solid var(--orange-bright); outline-offset: 3px; }
@@ -34,6 +35,7 @@
   width: 100%; padding: 10px 12px; border: 1px solid var(--line-strong); border-radius: 8px;
   background: var(--paper-bright); font-size: 14.5px;
 }
+@media (pointer: coarse) { .catalogue-filters select { font-size: 16px; } }
 .catalogue-filters .filter-check { display: flex; align-items: center; gap: 9px; font-size: 13px; }
 .catalogue-filters .filter-check input { width: 17px; height: 17px; accent-color: var(--orange-text); }
 
