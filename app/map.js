@@ -156,6 +156,22 @@ function markerIcon(L, number, selected = false) {
   });
 }
 
+/* Stop markers are div role=button. Name each with its number and stop, say which one is selected, and let Enter and Space
+   choose it. Leaflet makes a new element whenever the icon changes, so this is applied again after every setIcon. */
+function decorateStopMarker(marker, stop, selected, choose) {
+  const element = marker.getElement?.();
+  if (!element) return;
+  element.setAttribute('aria-label', `Stop ${stop.order}: ${stop.title}`);
+  element.setAttribute('aria-pressed', String(selected));
+  if (element.dataset.keys) return;
+  element.dataset.keys = '1';
+  element.addEventListener('keydown', (event) => {
+    if (event.key !== 'Enter' && event.key !== ' ') return;
+    event.preventDefault();
+    choose();
+  });
+}
+
 /** Mount an interactive route map. Returns map controls and a destroy method. */
 export async function mountRouteMap(container, route, options = {}) {
   if (!(container instanceof HTMLElement)) throw new TypeError('mountRouteMap requires a map container element.');
@@ -195,6 +211,7 @@ export async function mountRouteMap(container, route, options = {}) {
       const L = window.L;
       for (const [key, entry] of state.stopMarkers) {
         entry.marker.setIcon(markerIcon(L, key, key === Number(order)));
+        decorateStopMarker(entry.marker, entry.stop, key === Number(order), () => options.onSelectStop?.(entry.stop.order, entry.stop.data, route));
         if (key === Number(order)) {
           entry.marker.setZIndexOffset(600);
           if (pan) state.map.panTo(entry.stop.latlng, { animate: true, duration: 0.5 });
@@ -328,6 +345,7 @@ export async function mountRouteMap(container, route, options = {}) {
       const marker = L.marker(stop.latlng, { icon: markerIcon(L, stop.order), title: stop.title, alt: `Story stop ${stop.order}: ${stop.title}` }).addTo(state.map);
       marker.bindPopup(`<strong>${stop.order}. ${escapeHtml(stop.title)}</strong>`);
       marker.on('click', () => options.onSelectStop?.(stop.order, stop.data, route));
+      decorateStopMarker(marker, stop, false, () => options.onSelectStop?.(stop.order, stop.data, route));
       state.stopMarkers.set(stop.order, { marker, stop });
     });
 

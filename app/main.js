@@ -594,6 +594,9 @@ async function selectStop(order) {
     item.setAttribute('aria-current', String(active));
   });
   map?.selectStop?.(stop.order);
+  // One short line for screen readers; the whole story is not re-read. This region stays in the page when the panel is replaced.
+  const status = $('[data-stop-status]');
+  if (status) status.textContent = `Stop ${stop.order} of ${state.route.stops.length}: ${stop.name}`;
   replaceAddress(state.page.address({ route: state.route, stop: stop.order }));
 }
 

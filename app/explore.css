@@ -10,9 +10,10 @@
 .catalogue-hero .lede { max-width: 56ch; }
 .catalogue-search {
   display: flex; align-items: center; gap: 11px; padding: 0 18px; height: 54px;
-  border: 1px solid var(--line-strong); border-radius: 999px; background: var(--paper-bright);
+  border: 1px solid var(--field-edge); border-radius: 999px; background: var(--paper-bright);
 }
 .catalogue-search .ico { color: var(--ink-muted); }
+.catalogue-search input::placeholder { color: var(--ink-muted); }
 .catalogue-search input { flex: 1; min-width: 0; border: 0; background: none; font-size: 15px; }
 @media (pointer: coarse) { .catalogue-search input { font-size: 16px; } }
 /* The ring is on the pill, not the bare input inside it. */
@@ -26,13 +27,13 @@
 .catalogue-filters legend { padding: 0 0 10px; font-size: 13px; font-weight: 700;  color: var(--ink-muted); }
 .filter-chips { display: flex; flex-wrap: wrap; gap: 7px; }
 .filter-chips button {
-  padding: 7px 14px; border-radius: 999px; border: 1px solid var(--line-strong);
+  padding: 7px 14px; border-radius: 999px; border: 1px solid var(--field-edge);
   background: var(--paper-bright); font-size: 13px; font-weight: 600; color: var(--ink-soft);
 }
 @media (hover: hover) { .filter-chips button:hover { border-color: var(--ink); } }
 .filter-chips button.is-active { background: var(--orange); border-color: var(--orange-text); color: #fff; }
 .catalogue-filters select {
-  width: 100%; padding: 10px 12px; border: 1px solid var(--line-strong); border-radius: 8px;
+  width: 100%; padding: 10px 12px; border: 1px solid var(--field-edge); border-radius: 8px;
   background: var(--paper-bright); font-size: 14.5px;
 }
 @media (pointer: coarse) { .catalogue-filters select { font-size: 16px; } }

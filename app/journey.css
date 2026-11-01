@@ -90,7 +90,7 @@
   background: var(--paper-bright); border: 1px solid var(--line); border-radius: var(--radius);
 }
 .journal-form .field input, .journal-form .field textarea {
-  width: 100%; padding: 10px 12px; border: 1px solid var(--line-strong); border-radius: 8px;
+  width: 100%; padding: 10px 12px; border: 1px solid var(--field-edge); border-radius: 8px;
   background: var(--paper); font-size: 14.5px; font-family: var(--sans);
 }
 .journal-form button { justify-self: start; }

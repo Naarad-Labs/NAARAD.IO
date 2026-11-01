@@ -1999,6 +1999,97 @@ test.describe('the player while walking', () => {
   });
 });
 
+/* ── Reachable and announced without a mouse (UI strategy W3) ──────── */
+
+test.describe('keyboard and screen reader basics', () => {
+  test.beforeEach(async ({ page }) => { await page.addInitScript(withSpeech); });
+
+  test('Creator Studio: the audio file input can be reached with the keyboard and opens the file chooser', async ({ page }) => {
+    await page.goto('/creators/');
+    await page.locator('[data-studio-step="upload"]').click();
+    const input = page.locator('#studio-audio');
+    await input.focus();
+    expect(await page.evaluate(() => document.activeElement?.id), 'the input takes focus').toBe('studio-audio');
+    const ring = await page.locator('.studio-drop').evaluate((node) => getComputedStyle(node).outlineStyle);
+    expect(ring, 'the drop zone shows a focus ring').not.toBe('none');
+    const [chooser] = await Promise.all([page.waitForEvent('filechooser'), page.keyboard.press('Space')]);
+    expect(chooser.isMultiple()).toBe(false);
+  });
+
+  test('the edges of the catalogue search, filter select and filter chips, and the search placeholder, meet WCAG contrast', async ({ page }) => {
+    await page.goto('/routes/');
+    const result = await page.evaluate(() => {
+      const parse = (css) => css.match(/[\d.]+/g).slice(0, 3).map(Number);
+      const lum = ([r, g, b]) => { const f = (c) => { c /= 255; return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4; }; return 0.2126 * f(r) + 0.7152 * f(g) + 0.0722 * f(b); };
+      const ratio = (a, b) => { const [hi, lo] = [lum(parse(a)), lum(parse(b))].sort((x, y) => y - x); return (hi + 0.05) / (lo + 0.05); };
+      const ground = getComputedStyle(document.body).backgroundColor;
+      const edge = (node) => ratio(getComputedStyle(node).borderTopColor, ground);
+      const search = document.querySelector('.catalogue-search');
+      const input = search.querySelector('input');
+      return {
+        search: edge(search),
+        select: edge(document.querySelector('.catalogue-filters select')),
+        chip: edge(document.querySelector('.filter-chips button:not(.is-active)')),
+        placeholder: ratio(getComputedStyle(input, '::placeholder').color, getComputedStyle(search).backgroundColor),
+      };
+    });
+    expect(result.search, 'search box edge, non-text contrast').toBeGreaterThanOrEqual(3);
+    expect(result.select, 'filter select edge').toBeGreaterThanOrEqual(3);
+    expect(result.chip, 'inactive filter chip edge').toBeGreaterThanOrEqual(3);
+    expect(result.placeholder, 'search placeholder text').toBeGreaterThanOrEqual(4.5);
+  });
+
+  test('changing the stop updates one short status line instead of re-reading the story', async ({ page }) => {
+    await page.goto('/routes/hampi-heritage-trail/');
+    const status = page.locator('[data-stop-status]');
+    await expect(status).toHaveAttribute('role', 'status');
+    await expect(page.locator('.stop-panel')).not.toHaveAttribute('aria-live', /./);
+    await page.locator('.stop-item').nth(2).click();
+    await expect(status).toHaveText(/^Stop 3 of 8: .+/);
+    await page.locator('.stop-item').nth(4).click();
+    await expect(status).toHaveText(/^Stop 5 of 8: .+/);
+  });
+
+  test('the player sits before the footer in the page, and Escape closes it and returns focus to the Listen button', async ({ page }) => {
+    await page.goto('/routes/hampi-heritage-trail/');
+    const listen = page.locator('.stop-row').first().locator('[data-action="listen"]');
+    await listen.focus();
+    await page.keyboard.press('Enter');
+    const bar = page.locator('.listen-bar');
+    await expect(bar).toBeVisible();
+    const before = await page.evaluate(() => {
+      const player = document.querySelector('.listen-bar');
+      const footer = document.querySelector('.site-footer');
+      return Boolean(player.compareDocumentPosition(footer) & Node.DOCUMENT_POSITION_FOLLOWING);
+    });
+    expect(before, 'the player comes before the footer in document order').toBe(true);
+
+    await bar.locator('[data-audio="toggle"]').focus();
+    await page.keyboard.press('Escape');
+    await expect(bar).toHaveCount(0);
+    expect(await page.evaluate(() => document.activeElement?.getAttribute('data-action')), 'focus returns to the Listen button').toBe('listen');
+  });
+
+  test('map markers: each stop marker is named with its number and is selected by the keyboard', async ({ page }) => {
+    await page.goto('/routes/hampi-heritage-trail/');
+    const markers = page.locator('.leaflet-marker-icon:has(.nr-map-stop-marker)');
+    await expect(markers).toHaveCount(8);
+    await expect(markers.nth(2)).toHaveAttribute('aria-label', /^Stop 3: /);
+    const name = ((await markers.nth(2).getAttribute('aria-label')) || '').replace(/^Stop 3: /, '');
+
+    await markers.nth(2).focus();
+    await page.keyboard.press('Enter');
+    await expect(page.locator('.stop-item.is-active')).toContainText(name);
+    await expect(markers.nth(2)).toHaveAttribute('aria-pressed', 'true');
+    await expect(markers.nth(0)).toHaveAttribute('aria-pressed', 'false');
+
+    await markers.nth(4).focus();
+    await page.keyboard.press('Space');
+    await expect(markers.nth(4)).toHaveAttribute('aria-pressed', 'true');
+    await expect(markers.nth(2)).toHaveAttribute('aria-pressed', 'false');
+  });
+});
+
 /* ── The phone's screen is not eaten by bars (UI strategy W2) ───────── */
 
 test.describe('phone chrome budget', () => {

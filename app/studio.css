@@ -88,9 +88,11 @@
 .studio-row { display: flex; flex-wrap: wrap; align-items: end; gap: 12px; }
 .studio-row .field { flex: 1 1 180px; }
 .studio-drop {
-  display: flex; align-items: center; gap: 14px; padding: 22px; cursor: pointer;
+  position: relative; display: flex; align-items: center; gap: 14px; padding: 22px; cursor: pointer;
   border: 1px dashed var(--line-strong); border-radius: var(--radius); background: var(--paper);
 }
+/* The file input is visually hidden, not removed, so the keyboard can reach it; the ring shows on the whole drop zone. */
+.studio-drop:focus-within { outline: 3px solid var(--orange-bright); outline-offset: 3px; }
 @media (hover: hover) { .studio-drop:hover { border-color: var(--orange-text); background: var(--orange-wash); } }
 .studio-drop .ico { width: 28px; height: 28px; color: var(--orange-text); }
 .studio-drop b { display: block; font-size: 16px; }

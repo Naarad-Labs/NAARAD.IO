@@ -239,7 +239,10 @@ function mount() {
       <span class="listen-next" hidden>${icon('list')}<span><small>Up next</small><b></b></span></span>
       <button type="button" data-audio="close" class="icon-button listen-close" aria-label="Close player">${icon('close')}</button>
     </div>`;
-  document.body.append(bar);
+  // Before the footer in the document, so a keyboard or screen-reader visitor meets the player right after the page
+  // content instead of after every footer link. It is fixed to the screen, so where it sits in the markup changes nothing visually.
+  const footer = document.querySelector('.site-footer');
+  if (footer) footer.before(bar); else document.body.append(bar);
   parts = {
     art: bar.querySelector('.listen-art'),
     title: bar.querySelector('.listen-meta strong'),
@@ -264,6 +267,8 @@ function mount() {
     if (action === 'close') close();
     if (action === 'rate') setRate(rate === 1 ? 1.25 : rate === 1.25 ? 1.5 : rate === 1.5 ? 0.75 : 1);
   });
+  // Escape closes the player when the keyboard is in it, and focus goes back to where it was opened from.
+  bar.addEventListener('keydown', (event) => { if (event.key === 'Escape') close(); });
   bar.addEventListener('input', (event) => {
     if (event.target.dataset.audio !== 'seek') return;
     const fraction = Number(event.target.value) / 1000;
