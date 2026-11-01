@@ -104,6 +104,29 @@ export function isNoindex(pagePath) {
 }
 
 /**
+ * Check if a page has a canonical link pointing to a different address.
+ */
+export function canonicalElsewhere(pagePath, address) {
+  try {
+    const content = fs.readFileSync(pagePath, 'utf8');
+    const canonicalMatch = content.match(/<link[^>]*rel=["']canonical["'][^>]*href=["']([^"']+)["'][^>]*>/i) ||
+                           content.match(/<link[^>]*href=["']([^"']+)["'][^>]*rel=["']canonical["'][^>]*>/i);
+    if (!canonicalMatch) {
+      return false;
+    }
+    const href = canonicalMatch[1];
+    try {
+      const canonicalPath = normalPath(new URL(href).pathname);
+      return canonicalPath !== address;
+    } catch {
+      return false;
+    }
+  } catch {
+    return false;
+  }
+}
+
+/**
  * Main check function: compare sitemap with built pages.
  */
 export function check(rootDir, options = {}) {
@@ -141,8 +164,8 @@ export function check(rootDir, options = {}) {
   
   // Process built pages
   for (const page of builtPages) {
-    // Skip noindex pages
-    if (isNoindex(page.path)) {
+    // Skip noindex pages and pages with canonical elsewhere
+    if (isNoindex(page.path) || canonicalElsewhere(page.path, page.address)) {
       continue;
     }
     

@@ -3,7 +3,7 @@
 #
 #   bash scripts/verify.sh
 #
-# Four stages, each with a banner and a PASS or FAIL line. Stops at the first
+# Five stages, each with a banner and a PASS or FAIL line. Stops at the first
 # failure and exits non-zero. At the end, prints a timing table for the stages
 # that ran.
 #
@@ -14,19 +14,26 @@
 #      uncommitted, run with VERIFY_ALLOW_UNCOMMITTED=1 to skip the comparison
 #      with the commit.)
 #      Run alone (from the repo root): bash -c 'source scripts/verify.sh; check_build'
-#   2  node --test tests/: the unit tests, which need nothing but node
+#   2  the built site agrees with itself: scripts/check-sitemap.mjs (every
+#      indexable built page has a sitemap.xml line and every line has a page;
+#      noindex pages and pages canonical to another page need no line) and
+#      scripts/check-sw-cache.mjs (every sw.js precache entry is a file, and
+#      VERSION moves when a precached file changed since origin/main; that part
+#      is skipped with a warning when git cannot read origin/main)
+#      Run alone (from the repo root): bash -c 'source scripts/verify.sh; check_site'
+#   3  node --test tests/: the unit tests, which need nothing but node
 #      Run alone (from the repo root): bash -c 'source scripts/verify.sh; check_tests'
-#   3  node scripts/check-practical.mjs: the sourced visitor facts in
+#   4  node scripts/check-practical.mjs: the sourced visitor facts in
 #      content/practical. Any error fails the step (a value with no source, an
 #      API endpoint cited without its method, a figure in the gap notes, stops
 #      that are not the route's stops, or a `checked` date more than 180 days
 #      old); warnings are allowed
 #      Run alone (from the repo root): bash -c 'source scripts/verify.sh; check_practical'
-#   4  cd e2e && npx playwright test: the browser checks (needs e2e/node_modules
+#   5  cd e2e && npx playwright test: the browser checks (needs e2e/node_modules
 #      and Chromium)
 #      Run alone (from the repo root): bash -c 'source scripts/verify.sh; check_e2e'
 #
-# After the four stages pass, a ledger staleness report prints as a warning (it
+# After the five stages pass, a ledger staleness report prints as a warning (it
 # never fails the run). Run it alone (from the repo root): node scripts/check-ledger-staleness.mjs
 # optionally with --days N.
 
@@ -58,7 +65,7 @@ step() {
   local log start elapsed
   log=$(mktemp)
 
-  echo "=== stage $num of 4: $name ==="
+  echo "=== stage $num of 5: $name ==="
 
   start=$SECONDS
   if "$@" >"$log" 2>&1; then
@@ -120,6 +127,11 @@ check_build() {
   fi
 }
 
+check_site() {
+  node scripts/check-sitemap.mjs || return 1
+  node scripts/check-sw-cache.mjs || return 1
+}
+
 check_tests() {
   node --test --test-reporter=spec tests/*.test.mjs || return 1
 }
@@ -145,9 +157,10 @@ main() {
   total_seconds=0
 
   step 1 "build is deterministic and committed  (node scripts/build-site.mjs, twice)" check_build
-  step 2 "unit tests                            (node --test tests/)" check_tests
-  step 3 "practical facts                       (node scripts/check-practical.mjs)" check_practical
-  step 4 "browser checks                        (cd e2e && npx playwright test)" check_e2e
+  step 2 "sitemap and service worker cache      (node scripts/check-sitemap.mjs, check-sw-cache.mjs)" check_site
+  step 3 "unit tests                            (node --test tests/)" check_tests
+  step 4 "practical facts                       (node scripts/check-practical.mjs)" check_practical
+  step 5 "browser checks                        (cd e2e && npx playwright test)" check_e2e
 
   # All stages passed.
 
