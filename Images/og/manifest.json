@@ -2,6 +2,118 @@
   "note": "Share cards drawn by scripts/build-site.mjs from scripts/og-card.html. Each photograph is used under the licence recorded in content/photo-sources.json, which allows adaptation; the credit is printed on the card and repeated here.",
   "cards": [
     {
+      "file": "collection-cities-of-the-north.jpg",
+      "pages": [
+        "/collections/cities-of-the-north/"
+      ],
+      "alt": "Cities of the north: a Naarad collection of 3 routes.",
+      "width": 1200,
+      "height": 630,
+      "quality": 82,
+      "photo": null,
+      "licence": "Naarad: text, logo and route line only"
+    },
+    {
+      "file": "collection-open-air-routes.jpg",
+      "pages": [
+        "/collections/open-air-routes/"
+      ],
+      "alt": "Open-air routes: a Naarad collection of 4 routes.",
+      "width": 1200,
+      "height": 630,
+      "quality": 82,
+      "photo": {
+        "id": "chennai-iitm",
+        "title": "Ramp Bridge Hostels East IIT Madras Jun23 A7C 05194",
+        "author": "Timothy A. Gonsalves",
+        "licence": "CC BY-SA 4.0",
+        "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+        "sourcePage": "https://commons.wikimedia.org/w/index.php?curid=133560811",
+        "changes": "Cropped to 1200 x 630, with the page title, the Naarad wordmark and this credit set over it."
+      },
+      "licence": "CC BY-SA 4.0"
+    },
+    {
+      "file": "collection-royal-cities-of-the-south.jpg",
+      "pages": [
+        "/collections/royal-cities-of-the-south/"
+      ],
+      "alt": "Royal heritage of the south: a Naarad collection of 4 routes.",
+      "width": 1200,
+      "height": 630,
+      "quality": 82,
+      "photo": {
+        "id": "hampi-virupaksha",
+        "title": "Virupaksha Temple,Hampi",
+        "author": "Vedamurthy J",
+        "licence": "CC BY-SA 3.0",
+        "licenceUrl": "https://creativecommons.org/licenses/by-sa/3.0/",
+        "sourcePage": "https://commons.wikimedia.org/w/index.php?curid=12001400",
+        "changes": "Cropped to 1200 x 630, with the page title, the Naarad wordmark and this credit set over it."
+      },
+      "licence": "CC BY-SA 3.0"
+    },
+    {
+      "file": "collection-temples-across-india.jpg",
+      "pages": [
+        "/collections/temples-across-india/"
+      ],
+      "alt": "Temples across India: a Naarad collection of 5 routes.",
+      "width": 1200,
+      "height": 630,
+      "quality": 82,
+      "photo": {
+        "id": "thanjavur-temple",
+        "title": "Brihadisvara Temple during Maha Shivaratri-WUS03611 (edit)",
+        "author": "Original: Rainer Halama Derivative work: UnpetitproleX",
+        "licence": "CC BY-SA 4.0",
+        "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+        "sourcePage": "https://commons.wikimedia.org/wiki/File:Brihadisvara_Temple_during_Maha_Shivaratri-WUS03611_(edit).jpg",
+        "changes": "Cropped to 1200 x 630, with the page title, the Naarad wordmark and this credit set over it."
+      },
+      "licence": "CC BY-SA 4.0"
+    },
+    {
+      "file": "collection-walks-around-chennai.jpg",
+      "pages": [
+        "/collections/walks-around-chennai/"
+      ],
+      "alt": "Walks around Chennai: a Naarad collection of 8 routes.",
+      "width": 1200,
+      "height": 630,
+      "quality": 82,
+      "photo": {
+        "id": "chennai-marina",
+        "title": "Marina Beach, Chennai",
+        "author": "VinothChandar",
+        "licence": "CC BY 2.0",
+        "licenceUrl": "https://creativecommons.org/licenses/by/2.0/",
+        "sourcePage": "https://www.flickr.com/photos/44345361@N06/4315265333",
+        "changes": "Cropped to 1200 x 630, with the page title, the Naarad wordmark and this credit set over it."
+      },
+      "licence": "CC BY 2.0"
+    },
+    {
+      "file": "collections.jpg",
+      "pages": [
+        "/collections/"
+      ],
+      "alt": "Routes, grouped: the Naarad collections.",
+      "width": 1200,
+      "height": 630,
+      "quality": 82,
+      "photo": {
+        "id": "thanjavur-temple",
+        "title": "Brihadisvara Temple during Maha Shivaratri-WUS03611 (edit)",
+        "author": "Original: Rainer Halama Derivative work: UnpetitproleX",
+        "licence": "CC BY-SA 4.0",
+        "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+        "sourcePage": "https://commons.wikimedia.org/wiki/File:Brihadisvara_Temple_during_Maha_Shivaratri-WUS03611_(edit).jpg",
+        "changes": "Cropped to 1200 x 630, with the page title, the Naarad wordmark and this credit set over it."
+      },
+      "licence": "CC BY-SA 4.0"
+    },
+    {
       "file": "home.jpg",
       "pages": [
         "/",
