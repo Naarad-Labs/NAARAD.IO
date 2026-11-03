@@ -1,6 +1,6 @@
 /* Explore: filters beside a grid on desktop, a scrolling filter row on a phone. */
 
-.catalogue { width: min(100% - 48px, var(--wrap)); margin: 0 auto; padding: clamp(30px, 3.4vw, 54px) 0 70px; }
+.catalogue, .collection-page, .collection-index { width: min(100% - 48px, var(--wrap)); margin: 0 auto; padding: clamp(30px, 3.4vw, 54px) 0 70px; }
 
 .catalogue-hero {
   display: grid; grid-template-columns: minmax(0, 1fr) minmax(280px, 34%); gap: 26px 40px;
@@ -59,7 +59,7 @@
   .catalogue-filters fieldset { min-width: max-content; }
 }
 @media (max-width: 639px) {
-  .catalogue { width: calc(100% - 28px); }
+  .catalogue, .collection-page, .collection-index { width: calc(100% - 28px); }
   .filter-chips button { min-height: 44px; }
   .catalogue-filters select { min-height: 44px; }
   .catalogue-filters .filter-check { min-height: 44px; }
@@ -98,3 +98,16 @@
 @media (max-width: 639px) {
   .filter-pill, button.text-link, .catalogue-results .section-head select { min-height: 44px; }
 }
+
+.collection-strip { margin: 26px 0 8px; }
+.collection-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 18px; }
+.collection-card { display: flex; flex-direction: column; overflow: hidden; background: var(--paper-bright); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow-sm); transition: transform .2s, box-shadow .2s; }
+@media (hover: hover) { .collection-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); } }
+.collection-card .photo, .collection-card img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.collection-card-copy { display: grid; gap: 7px; padding: 16px 17px 18px; }
+.collection-card-copy strong { font-family: var(--serif); font-size: 19.5px; line-height: 1.15; }
+.collection-card-copy small { font-size: var(--text-xs); line-height: 1.4; color: var(--ink-muted); }
+.collection-intro { max-width: 68ch; margin: 18px 0 26px; }
+.collection-intro summary { cursor: pointer; display: inline-block; min-height: 44px; }
+.collection-page .route-card-grid, .collection-index .collection-grid { margin-bottom: 40px; }
+.route-collections { margin-top: 24px; }

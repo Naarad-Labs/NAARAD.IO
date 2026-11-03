@@ -265,6 +265,7 @@ export async function render(context = {}) {
   const shown = routes.filter(matches);
   const regions = [...new Set(routes.map((route) => route.region).filter(Boolean))].sort();
   const withStops = routes.filter((route) => route.hasStops).length;
+  const collections = await (await import('./collection.js')).strip();
 
   return `<div class="catalogue">
     <header class="catalogue-hero">
@@ -291,6 +292,8 @@ export async function render(context = {}) {
       </button>
     </section>
     <p id="near-note" class="data-note">Near me asks for your location only when you tap it, and keeps it on this device.</p>
+
+    ${collections}
 
     <div class="catalogue-body">
       <aside class="catalogue-filters" aria-label="Filters">

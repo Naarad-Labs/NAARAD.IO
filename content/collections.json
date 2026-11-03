@@ -1,0 +1,61 @@
+{
+  "collections": [
+    {
+      "slug": "temples-across-india",
+      "title": "Temples across India",
+      "standfirst": "Five routes that lead to temples, from Hampi and Thanjavur in the south to Konark and Khajuraho further north.",
+      "intro": [
+        "These routes each end at, or pass through, a temple that is part of how the place is understood today. Some have ordered stops with a written story at each; others carry the route line and facts so far, with stories still to be written.",
+        "Pick the one nearest you, or treat the five as a way to compare how different regions built and used their temples."
+      ],
+      "category": "Heritage",
+      "routes": ["hampi-heritage-trail", "thanjavur-living-heritage", "mahabalipuram-shore-temple", "konark-sun-temple-circuit", "khajuraho-temple-corridor"],
+      "curator": "Naarad editorial"
+    },
+    {
+      "slug": "royal-cities-of-the-south",
+      "title": "Royal cities of the south",
+      "standfirst": "Hampi, Thanjavur, Mahabalipuram and Mysore: four places where rulers and builders left a mark on the landscape.",
+      "intro": [
+        "Each of these routes is a walk through a place with a royal past. Hampi and Thanjavur have the fullest stories on Naarad so far; Mysore and Mahabalipuram are listed with their route facts."
+      ],
+      "category": "Heritage",
+      "routes": ["hampi-heritage-trail", "thanjavur-living-heritage", "mahabalipuram-shore-temple", "mysore-palace-heritage-walk"],
+      "curator": "Naarad editorial"
+    },
+    {
+      "slug": "walks-around-chennai",
+      "title": "Walks around Chennai",
+      "standfirst": "Eight recorded walks and hikes across Chennai: the Marina, the lighthouse, Velachery, Thiruvanmiyur, IIT Madras and more.",
+      "intro": [
+        "These are recorded tracks around the city, so they show where people have actually walked rather than a planned itinerary. Distances and times are listed where they were measured.",
+        "Stops and stories for these routes are still being written."
+      ],
+      "category": "City walks",
+      "routes": ["marina-beach-trail", "marina-lighthouse-trail", "east-coast-beach-route", "velachcheri-to-mylapore", "velacherry-neighbourhood", "thiruvanmayur-heritage-trail", "iit-madras-wildlife-walk", "airport-hidden-lake-trail"],
+      "curator": "Naarad editorial"
+    },
+    {
+      "slug": "cities-of-the-north",
+      "title": "Cities of the north",
+      "standfirst": "Jaipur by bicycle, the lakes of Udaipur and the ghats of Varanasi at dawn.",
+      "intro": [
+        "Three routes through northern cities, each suited to a different way of moving: cycling in Jaipur, a circuit in Udaipur, a walk at first light in Varanasi."
+      ],
+      "category": "City walks",
+      "routes": ["jaipur-pink-city-cycling", "udaipur-lake-palace-circuit", "varanasi-ghats-dawn-walk"],
+      "curator": "Naarad editorial"
+    },
+    {
+      "slug": "open-air-routes",
+      "title": "Open-air routes",
+      "standfirst": "Coorg's plantations, the IIT Madras campus, a hidden lake near the Chennai airport and Auroville.",
+      "intro": [
+        "Routes where the place is mostly green and open: plantations, a campus, a lake and a township. Wear shoes for uneven ground and carry water."
+      ],
+      "category": "Nature",
+      "routes": ["coorg-plantation-hike", "iit-madras-wildlife-walk", "airport-hidden-lake-trail", "auroville-explorer"],
+      "curator": "Naarad editorial"
+    }
+  ]
+}

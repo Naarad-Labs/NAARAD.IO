@@ -154,6 +154,20 @@ const PAGES = [
     },
     after: () => watchStoryScroll(),
   },
+  {
+    name: 'collections', path: '/collections/', view: 'collection', nav: 'routes',
+    context: () => ({ indexOnly: true }),
+  },
+  {
+    name: 'collection', prefix: '/collections/', view: 'collection', nav: 'routes', body: 'collection',
+    async load(slug, url, view) {
+      const collection = await view.getCollection(slug);
+      return collection ? { collection } : null;
+    },
+    async list(view) {
+      return (await view.loadCollections()).map((collection) => Urls.collectionPath(collection.slug));
+    },
+  },
   { name: 'creators', path: '/creators/', view: 'studio', nav: 'creators' },
   { name: 'journey', path: '/journey/', view: 'journey', nav: 'journey' },
   {
@@ -318,6 +332,7 @@ async function moduleFor(name) {
     explore: () => import('./views/explore.js'),
     route: () => import('./views/route.js'),
     story: () => import('./views/story.js'),
+    collection: () => import('./views/collection.js'),
     studio: () => import('./views/studio.js'),
     journey: () => import('./views/journey.js'),
     info: () => import('./views/info.js'),

@@ -303,6 +303,17 @@ function photoStrip(route) {
   </section>`;
 }
 
+/** Collections this route belongs to, as links. Nothing when it is in none. */
+async function inCollections(route) {
+  const { collectionsWith } = await import('./collection.js');
+  const found = await collectionsWith(route.slug);
+  if (!found.length) return '';
+  return `<section class="route-collections" aria-labelledby="in-collections">
+    <h2 class="eyebrow eyebrow-mark" id="in-collections">In collections</h2>
+    <ul class="chip-list">${found.map((collection) => `<li><a class="chip" href="/collections/${encodeURIComponent(collection.slug)}/" data-view="collections">${escapeHtml(collection.title)}</a></li>`).join('')}</ul>
+  </section>`;
+}
+
 async function relatedSection(route) {
   const related = await Data.relatedRoutes(route, 3);
   if (!related.length) return '';
@@ -320,6 +331,7 @@ export async function render(context) {
   const route = context.route;
   const selected = context.stop || route.stops[0]?.order || 0;
   const related = await relatedSection(route);
+  const collected = await inCollections(route);
 
   return `<article class="route-page" data-route="${escapeHtml(route.slug)}">
     ${hero(route)}
@@ -334,6 +346,7 @@ export async function render(context) {
     ${glance(route)}
     ${overview(route)}
     ${photoStrip(route)}
+    ${collected}
     ${related}
   </article>`;
 }
