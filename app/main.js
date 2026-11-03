@@ -927,6 +927,32 @@ document.addEventListener('click', async (event) => {
     return;
   }
 
+  const themeTile = event.target.closest('[data-explore-theme]');
+  const nearTile = event.target.closest('[data-explore-near]');
+  if (themeTile || nearTile) {
+    const explore = await moduleFor('explore');
+    if (themeTile) {
+      const theme = themeTile.dataset.exploreTheme;
+      const input = document.querySelector('#catalogue-query');
+      if (input) input.value = theme;
+      explore.setQuery(theme);
+      explore.rememberSearch(theme);
+      if (state.page?.address) replaceAddress(state.page.address({ query: theme }));
+    } else if (nearTile.getAttribute('aria-pressed') === 'true') {
+      nearTile.setAttribute('aria-pressed', 'false');
+      explore.setOrigin(null);
+    } else if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition((position) => {
+        nearTile.setAttribute('aria-pressed', 'true');
+        explore.setOrigin([position.coords.longitude, position.coords.latitude]);
+      }, () => {
+        const note = document.querySelector('#near-note');
+        if (note) note.textContent = 'Location is off, so routes are not sorted by distance. You can still search by place.';
+      }, { maximumAge: 300000, timeout: 10000 });
+    }
+    return;
+  }
+
   const photoButton = event.target.closest('[data-photo-open]');
   if (photoButton) { Lightbox.open(photoButton); return; }
 
@@ -979,7 +1005,7 @@ document.addEventListener('input', async (event) => {
     const explore = await moduleFor('explore');
     // The grid redraws once typing pauses, so a screen reader is not read the whole list for every letter.
     clearTimeout(filterTimer);
-    filterTimer = setTimeout(() => explore.setQuery(target.value), 150);
+    filterTimer = setTimeout(() => { explore.setQuery(target.value); explore.rememberSearch(target.value); }, 400);
     // The search is part of the address, so a filtered catalogue can be shared.
     if (state.page?.address) replaceAddress(state.page.address({ query: target.value.trim() }));
   }

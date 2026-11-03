@@ -112,9 +112,46 @@
       <form class="catalogue-search" role="search" aria-label="Search routes" onsubmit="return false">
         <label class="sr-only" for="catalogue-query">Search routes and places</label>
         <svg class="ico " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="10.8" cy="10.8" r="6.6"></circle><path d="m15.8 15.8 4.4 4.4"></path></svg>
-        <input id="catalogue-query" type="search" placeholder="Search a place, route or theme" autocomplete="off" value="">
+        <input id="catalogue-query" type="search" placeholder="Search a place, route or theme" autocomplete="off" list="catalogue-suggestions" value="">
+        <datalist id="catalogue-suggestions"><option value="Hampi Heritage Trail"></option><option value="Hampi, Karnataka"></option><option value="Temples"></option><option value="History"></option><option value="Living Culture"></option><option value="Thanjavur Living Heritage"></option><option value="Thanjavur, Tamil Nadu"></option><option value="Chola Heritage"></option><option value="Art &amp; Music"></option><option value="Auroville Explorer"></option><option value="Auroville, Tamil Nadu"></option><option value="Community"></option><option value="Architecture"></option><option value="Nature"></option><option value="Airport Hidden Lake Trail"></option><option value="Chennai, Tamil Nadu"></option><option value="Recorded track"></option><option value="East Coast Beach Route"></option><option value="Marina Beach Trail"></option><option value="IIT Madras Wildlife Walk"></option><option value="Thiruvanmayur Heritage Trail"></option><option value="Velacherry Neighbourhood"></option><option value="Velachcheri to Mylapore"></option><option value="Marina Lighthouse Trail"></option><option value="Mysore Palace Heritage Walk"></option><option value="Mysore, Karnataka"></option><option value="Heritage-Walk"></option><option value="Varanasi Ghats Dawn Walk"></option><option value="Varanasi, Uttar Pradesh"></option><option value="Cultural-Tour"></option><option value="Jaipur Pink City Cycling"></option><option value="Jaipur, Rajasthan"></option><option value="Konark Sun Temple Circuit"></option><option value="Konark, Odisha"></option><option value="Mahabalipuram Shore Temple"></option><option value="Mahabalipuram, Tamil Nadu"></option><option value="Temple-Trail"></option><option value="Khajuraho Temple Corridor"></option><option value="Khajuraho, Madhya Pradesh"></option><option value="Pondicherry French Quarter"></option><option value="Puducherry"></option><option value="Coorg Plantation Hike"></option><option value="Coorg, Karnataka"></option><option value="Nature-Hike"></option><option value="Udaipur Lake Palace Circuit"></option><option value="Udaipur, Rajasthan"></option><option value="Photography"></option></datalist>
       </form>
     </header>
+
+    <section class="explore-tiles" aria-label="Start from a theme">
+      <button type="button" class="explore-tile" data-explore-theme="Recorded track">
+        
+        <span class="explore-tile-label">Recorded track<small>8 routes</small></span>
+      </button><button type="button" class="explore-tile" data-explore-theme="Cultural-Tour">
+        
+        <span class="explore-tile-label">Cultural-Tour<small>2 routes</small></span>
+      </button><button type="button" class="explore-tile" data-explore-theme="Heritage-Walk">
+        
+        <span class="explore-tile-label">Heritage-Walk<small>2 routes</small></span>
+      </button><button type="button" class="explore-tile" data-explore-theme="Temple-Trail">
+        
+        <span class="explore-tile-label">Temple-Trail<small>2 routes</small></span>
+      </button><button type="button" class="explore-tile" data-explore-theme="Temples">
+        <picture class="photo ">
+    <source type="image/avif" srcset="/Images/photos/hampi-virupaksha-640.avif 640w, /Images/photos/hampi-virupaksha-960.avif 960w, /Images/photos/hampi-virupaksha-1280.avif 1280w, /Images/photos/hampi-virupaksha-1600.avif 1600w, /Images/photos/hampi-virupaksha-1920.avif 1920w" sizes="(max-width: 760px) 45vw, 190px">
+    <source type="image/webp" srcset="/Images/photos/hampi-virupaksha-640.webp 640w, /Images/photos/hampi-virupaksha-960.webp 960w, /Images/photos/hampi-virupaksha-1280.webp 1280w, /Images/photos/hampi-virupaksha-1600.webp 1600w, /Images/photos/hampi-virupaksha-1920.webp 1920w" sizes="(max-width: 760px) 45vw, 190px">
+    <img src="/Images/photos/hampi-virupaksha-960.webp" alt="" loading="lazy" decoding="async" fetchpriority="auto" style="aspect-ratio:4 / 3">
+    
+  </picture>
+        <span class="explore-tile-label">Temples<small>2 routes</small></span>
+      </button><button type="button" class="explore-tile" data-explore-theme="Architecture">
+        <picture class="photo ">
+    <source type="image/avif" srcset="/Images/photos/auroville-matrimandir-640.avif 640w, /Images/photos/auroville-matrimandir-960.avif 960w" sizes="(max-width: 760px) 45vw, 190px">
+    <source type="image/webp" srcset="/Images/photos/auroville-matrimandir-640.webp 640w, /Images/photos/auroville-matrimandir-960.webp 960w" sizes="(max-width: 760px) 45vw, 190px">
+    <img src="/Images/photos/auroville-matrimandir-960.webp" alt="" loading="lazy" decoding="async" fetchpriority="auto" style="aspect-ratio:4 / 3">
+    
+  </picture>
+        <span class="explore-tile-label">Architecture<small>1 route</small></span>
+      </button>
+      <button type="button" class="explore-tile is-near" data-explore-near="" aria-pressed="false">
+        <span class="explore-tile-label"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="3.2"></circle><circle cx="12" cy="12" r="7.6"></circle><path d="M12 1.8v3"></path><path d="M12 19.2v3"></path><path d="M22.2 12h-3"></path><path d="M4.8 12h-3"></path></svg> Near me<small>Asks for your location only when tapped</small></span>
+      </button>
+    </section>
+    <p id="near-note" class="data-note"></p>
 
     <div class="catalogue-body">
       <aside class="catalogue-filters" aria-label="Filters">

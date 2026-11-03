@@ -3,7 +3,7 @@
    them into a scrolling row and a sheet (explore.css). The search is read from
    the address (?q=), so a filtered catalogue can be linked to. */
 
-import { escapeHtml } from '../media.js';
+import { escapeHtml, picture } from '../media.js';
 import { icon } from '../icons.js';
 import * as Data from '../data.js';
 import { routeCard } from './home.js';
@@ -22,6 +22,49 @@ let query = '';
 let sport = 'all';
 let withStories = false;
 let region = 'all';
+let origin = null;          // the visitor's position, kept in this tab only and never sent anywhere
+const RECENT_KEY = 'naarad:recent-searches';
+
+const rad = (degrees) => (degrees * Math.PI) / 180;
+/** Kilometres between two [lng, lat] points (haversine). */
+export function distanceKm(a, b) {
+  const dLat = rad(b[1] - a[1]); const dLng = rad(b[0] - a[0]);
+  const h = Math.sin(dLat / 2) ** 2 + Math.cos(rad(a[1])) * Math.cos(rad(b[1])) * Math.sin(dLng / 2) ** 2;
+  return 6371 * 2 * Math.asin(Math.sqrt(h));
+}
+const startOf = (route) => route.geometry?.coordinates?.[0] || null;
+
+/** The most common themes, each with a photograph from the first route that has it. */
+export function themeTiles(list, count = 6) {
+  const tally = new Map();
+  for (const route of list) {
+    for (const theme of route.themes || []) {
+      const entry = tally.get(theme) || { theme, n: 0, photo: null };
+      entry.n += 1;
+      entry.photo ||= route.cardPhoto || route.photo || null;
+      tally.set(theme, entry);
+    }
+  }
+  return [...tally.values()].sort((a, b) => b.n - a.n || a.theme.localeCompare(b.theme)).slice(0, count);
+}
+
+function recentSearches() {
+  try { return JSON.parse(localStorage.getItem(RECENT_KEY) || '[]').filter((item) => typeof item === 'string').slice(0, 5); } catch { return []; }
+}
+export function rememberSearch(value) {
+  const text = String(value || '').trim();
+  if (text.length < 2) return;
+  try { localStorage.setItem(RECENT_KEY, JSON.stringify([text, ...recentSearches().filter((item) => item !== text)].slice(0, 5))); } catch { /* private mode: no history */ }
+}
+function suggestions() {
+  const names = new Set(recentSearches());
+  for (const route of routes) {
+    names.add(route.name);
+    if (route.location) names.add(route.location);
+    for (const theme of route.themes || []) names.add(theme);
+  }
+  return [...names].slice(0, 60);
+}
 
 function matches(route) {
   if (sport !== 'all' && route.sport !== sport) return false;
@@ -44,13 +87,21 @@ export function applyFilters() {
   // catalogue while the script arrives) there is nothing to filter yet.
   if (!routes.length) return;
   const list = routes.filter(matches);
+  if (origin) list.sort((a, b) => (startOf(a) ? distanceKm(origin, startOf(a)) : 1e9) - (startOf(b) ? distanceKm(origin, startOf(b)) : 1e9));
   const target = document.querySelector('#catalogue-grid');
   if (target) { target.innerHTML = grid(list); loadPreviewTiles(target); }
   const count = document.querySelector('#catalogue-count');
-  if (count) count.textContent = `${list.length} ${list.length === 1 ? 'route' : 'routes'}`;
+  if (count) count.textContent = `${list.length} ${list.length === 1 ? 'route' : 'routes'}${origin ? ' · nearest first' : ''}`;
 }
 
 export function setQuery(value) { query = value; applyFilters(); }
+/** Sort by distance from a position ([lng, lat]) or, with null, back to the catalogue order. */
+export function setOrigin(value) {
+  origin = value;
+  applyFilters();
+  const note = document.querySelector('#near-note');
+  if (note) note.textContent = value ? 'Sorted by distance from you. Your position stays on this phone.' : '';
+}
 export function setSport(value) { sport = value; applyFilters(); }
 export function setRegion(value) { region = value; applyFilters(); }
 export function setWithStories(value) { withStories = value; applyFilters(); }
@@ -81,9 +132,21 @@ export async function render(context = {}) {
       <form class="catalogue-search" role="search" aria-label="Search routes" onsubmit="return false">
         <label class="sr-only" for="catalogue-query">Search routes and places</label>
         ${icon('search')}
-        <input id="catalogue-query" type="search" placeholder="Search a place, route or theme" autocomplete="off" value="${escapeHtml(query)}">
+        <input id="catalogue-query" type="search" placeholder="Search a place, route or theme" autocomplete="off" list="catalogue-suggestions" value="${escapeHtml(query)}">
+        <datalist id="catalogue-suggestions">${suggestions().map((name) => `<option value="${escapeHtml(name)}"></option>`).join('')}</datalist>
       </form>
     </header>
+
+    <section class="explore-tiles" aria-label="Start from a theme">
+      ${themeTiles(routes).map((tile) => `<button type="button" class="explore-tile" data-explore-theme="${escapeHtml(tile.theme)}">
+        ${tile.photo ? picture(tile.photo, { sizes: '(max-width: 760px) 45vw, 190px', alt: '', ratio: '4 / 3' }) : ''}
+        <span class="explore-tile-label">${escapeHtml(tile.theme)}<small>${tile.n} ${tile.n === 1 ? 'route' : 'routes'}</small></span>
+      </button>`).join('')}
+      <button type="button" class="explore-tile is-near" data-explore-near aria-pressed="false">
+        <span class="explore-tile-label">${icon('locate')} Near me<small>Asks for your location only when tapped</small></span>
+      </button>
+    </section>
+    <p id="near-note" class="data-note"></p>
 
     <div class="catalogue-body">
       <aside class="catalogue-filters" aria-label="Filters">
