@@ -1,9 +1,18 @@
 /* A cursor for the elevation profile: move the pointer along it, or focus it and use the arrow keys, and a
    readout says how far along the walk you are and how high. Reads the samples from data-elevation on
-   .elevation-wrap, so the profile itself stays a plain SVG. */
+   .elevation-wrap, so the profile itself stays a plain SVG. The cursor line is positioned inside
+   .elevation-plot, which holds only the SVG, so it lines up with the curve at any width. */
+
+const IDLE = 'Hover, touch or use the arrow keys to read the height at any point.';
+const parsed = new WeakMap();
 
 function samplesOf(wrap) {
-  try { return JSON.parse(wrap.dataset.elevation || '[]'); } catch { return []; }
+  if (!parsed.has(wrap)) {
+    let samples = [];
+    try { samples = JSON.parse(wrap.dataset.elevation || '[]'); } catch { /* no cursor without data */ }
+    parsed.set(wrap, samples);
+  }
+  return parsed.get(wrap);
 }
 
 function show(wrap, fraction) {
@@ -19,18 +28,39 @@ function show(wrap, fraction) {
   wrap.dataset.cursor = String(sample[0] / total);
 }
 
+function reset(wrap) {
+  wrap.querySelector('.elevation-cursor')?.setAttribute('hidden', '');
+  const readout = wrap.querySelector('.elevation-readout');
+  if (readout) readout.textContent = IDLE;
+  delete wrap.dataset.cursor;
+}
+
 document.addEventListener('pointermove', (event) => {
   const wrap = event.target.closest?.('.elevation-wrap');
-  if (!wrap) return;
-  const box = wrap.getBoundingClientRect();
+  const plot = wrap?.querySelector('.elevation-plot');
+  if (!plot) return;
+  // Pointer updates are not announced: a screen reader would be flooded. Keys are (below).
+  wrap.querySelector('.elevation-readout')?.removeAttribute('aria-live');
+  const box = plot.getBoundingClientRect();
   show(wrap, (event.clientX - box.left) / box.width);
+});
+
+document.addEventListener('pointerout', (event) => {
+  const wrap = event.target.closest?.('.elevation-wrap');
+  if (wrap && !wrap.contains(event.relatedTarget) && document.activeElement !== wrap) reset(wrap);
+});
+
+document.addEventListener('focusin', (event) => {
+  const wrap = event.target.closest?.('.elevation-wrap');
+  if (wrap && event.target === wrap && wrap.dataset.cursor == null) show(wrap, 0);
 });
 
 document.addEventListener('keydown', (event) => {
   const wrap = event.target.closest?.('.elevation-wrap');
-  if (!wrap || !['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
+  if (!wrap || !['ArrowLeft', 'ArrowRight', 'Home', 'End', 'PageUp', 'PageDown'].includes(event.key)) return;
   event.preventDefault();
+  wrap.querySelector('.elevation-readout')?.setAttribute('aria-live', 'polite');
   const now = Number(wrap.dataset.cursor ?? 0);
-  const step = event.key === 'ArrowRight' ? 0.05 : event.key === 'ArrowLeft' ? -0.05 : event.key === 'Home' ? -1 : 1;
-  show(wrap, event.key === 'Home' ? 0 : event.key === 'End' ? 1 : now + step);
+  const move = { ArrowRight: 0.05, ArrowLeft: -0.05, PageDown: 0.25, PageUp: -0.25 }[event.key];
+  show(wrap, event.key === 'Home' ? 0 : event.key === 'End' ? 1 : now + move);
 });

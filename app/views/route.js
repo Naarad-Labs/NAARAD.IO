@@ -235,9 +235,8 @@ function mapPanel(route) {
 function elevationCursor(route, profile) {
   const samples = (route.elevation?.samples || []).map((sample) => [Math.round(sample.d), Math.round(sample.e * 10) / 10]);
   return `<div class="elevation-wrap" tabindex="0" role="group" aria-label="Elevation profile. Use the left and right arrow keys to move along the walk." data-elevation="${escapeHtml(JSON.stringify(samples))}">
-    ${profile}
-    <span class="elevation-cursor" hidden></span>
-    <p class="elevation-readout data-note" aria-live="polite">Move along the profile to read the height at each point.</p>
+    <div class="elevation-plot">${profile}<span class="elevation-cursor" hidden></span></div>
+    <p class="elevation-readout data-note">Hover, touch or use the arrow keys to read the height at any point.</p>
   </div>`;
 }
 
@@ -258,8 +257,8 @@ function glance(route) {
     .map(([name, value, label]) => `<div class="metric${value === Data.NOT_MEASURED ? ' is-muted' : ''}">${icon(name)}<span class="metric-text"><b>${escapeHtml(value)}</b><span>${label}</span></span></div>`).join('')}
       </div>
       ${route.surface ? `<p class="data-note">${escapeHtml(route.surface)}.</p>` : ''}
-      ${route.geometry?.coordinates?.length ? `<p class="glance-actions"><button type="button" class="button button-sm" data-action="gpx">${icon('download')} Download GPX</button>
-        <button type="button" class="button button-sm" data-action="print">${icon('file')} Print this route</button></p>` : ''}
+      ${route.geometry?.coordinates?.length ? `<p class="glance-actions"><button type="button" class="button button-sm" data-action="gpx">${icon('download')} Download GPX file</button>
+        <button type="button" class="text-link" data-action="print">Print this route</button></p>` : ''}
     </div>
     <div class="glance-elevation">
       <div class="glance-elevation-head">

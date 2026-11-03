@@ -10,7 +10,7 @@ export function routeGpx(route) {
   const coordinates = route?.geometry?.coordinates;
   if (!coordinates?.length) return '';
   const points = coordinates.map(([lng, lat]) => `      <trkpt lat="${Number(lat).toFixed(6)}" lon="${Number(lng).toFixed(6)}"></trkpt>`).join('\n');
-  const waypoints = (route.stops || []).map((stop) => `  <wpt lat="${Number(stop.lat).toFixed(6)}" lon="${Number(stop.lng).toFixed(6)}">
+  const waypoints = (route.stops || []).filter((stop) => Number.isFinite(Number(stop.lat)) && Number.isFinite(Number(stop.lng))).map((stop) => `  <wpt lat="${Number(stop.lat).toFixed(6)}" lon="${Number(stop.lng).toFixed(6)}">
     <name>${escapeXml(`${stop.order}. ${stop.name}`)}</name>
   </wpt>`).join('\n');
   return `<?xml version="1.0" encoding="UTF-8"?>
@@ -38,6 +38,6 @@ export function downloadGpx(route) {
   document.body.append(link);
   link.click();
   link.remove();
-  setTimeout(() => URL.revokeObjectURL(url), 1000);
+  setTimeout(() => URL.revokeObjectURL(url), 30000);   // Safari can start the download late
   return true;
 }
