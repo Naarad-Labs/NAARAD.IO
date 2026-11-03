@@ -7,6 +7,7 @@ import { escapeHtml, picture } from '../media.js';
 import { icon } from '../icons.js';
 import * as Data from '../data.js';
 import { routeCard } from './home.js';
+import { strip as collectionStrip } from './collection.js';
 import { loadPreviewTiles } from '../previews.js';
 import * as Seo from '../seo.js';
 
@@ -265,7 +266,7 @@ export async function render(context = {}) {
   const shown = routes.filter(matches);
   const regions = [...new Set(routes.map((route) => route.region).filter(Boolean))].sort();
   const withStops = routes.filter((route) => route.hasStops).length;
-  const collections = await (await import('./collection.js')).strip();
+  const collections = await collectionStrip();
 
   return `<div class="catalogue">
     <header class="catalogue-hero">

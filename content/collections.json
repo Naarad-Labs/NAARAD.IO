@@ -9,31 +9,34 @@
         "Pick the one nearest you, or treat the five as a way to compare how different regions built and used their temples."
       ],
       "category": "Heritage",
+      "cover": "thanjavur-living-heritage",
       "routes": ["hampi-heritage-trail", "thanjavur-living-heritage", "mahabalipuram-shore-temple", "konark-sun-temple-circuit", "khajuraho-temple-corridor"],
-      "curator": "Naarad editorial"
+      "curator": "the Naarad editorial team"
     },
     {
       "slug": "royal-cities-of-the-south",
-      "title": "Royal cities of the south",
-      "standfirst": "Hampi, Thanjavur, Mahabalipuram and Mysore: four places where rulers and builders left a mark on the landscape.",
+      "title": "Royal heritage of the south",
+      "standfirst": "Hampi, Thanjavur, Mahabalipuram and Mysore: four places with a royal past, and the routes that walk through them.",
       "intro": [
-        "Each of these routes is a walk through a place with a royal past. Hampi and Thanjavur have the fullest stories on Naarad so far; Mysore and Mahabalipuram are listed with their route facts."
+        "Hampi and Thanjavur have the fullest stories on Naarad so far, with ordered stops. Mysore and Mahabalipuram are listed with their route facts while their stops are written."
       ],
       "category": "Heritage",
+      "cover": "hampi-heritage-trail",
       "routes": ["hampi-heritage-trail", "thanjavur-living-heritage", "mahabalipuram-shore-temple", "mysore-palace-heritage-walk"],
-      "curator": "Naarad editorial"
+      "curator": "the Naarad editorial team"
     },
     {
       "slug": "walks-around-chennai",
       "title": "Walks around Chennai",
-      "standfirst": "Eight recorded walks and hikes across Chennai: the Marina, the lighthouse, Velachery, Thiruvanmiyur, IIT Madras and more.",
+      "standfirst": "Eight recorded tracks across Chennai: the Marina, the lighthouse, Velachery, Thiruvanmiyur, IIT Madras and more.",
       "intro": [
-        "These are recorded tracks around the city, so they show where people have actually walked rather than a planned itinerary. Distances and times are listed where they were measured.",
+        "These are recorded tracks around the city, so they show where people have actually walked rather than a planned itinerary. Distances are listed where they were measured, and some are long: check the distance on each route before you set out.",
         "Stops and stories for these routes are still being written."
       ],
       "category": "City walks",
+      "cover": "marina-beach-trail",
       "routes": ["marina-beach-trail", "marina-lighthouse-trail", "east-coast-beach-route", "velachcheri-to-mylapore", "velacherry-neighbourhood", "thiruvanmayur-heritage-trail", "iit-madras-wildlife-walk", "airport-hidden-lake-trail"],
-      "curator": "Naarad editorial"
+      "curator": "the Naarad editorial team"
     },
     {
       "slug": "cities-of-the-north",
@@ -44,18 +47,19 @@
       ],
       "category": "City walks",
       "routes": ["jaipur-pink-city-cycling", "udaipur-lake-palace-circuit", "varanasi-ghats-dawn-walk"],
-      "curator": "Naarad editorial"
+      "curator": "the Naarad editorial team"
     },
     {
       "slug": "open-air-routes",
       "title": "Open-air routes",
-      "standfirst": "Coorg's plantations, the IIT Madras campus, a hidden lake near the Chennai airport and Auroville.",
+      "standfirst": "Coorg's plantations, the IIT Madras campus, a lake near the Chennai airport and Auroville.",
       "intro": [
-        "Routes where the place is mostly green and open: plantations, a campus, a lake and a township. Wear shoes for uneven ground and carry water."
+        "Four routes chosen for time outdoors: a plantation hike, a campus walk, a lake and a township."
       ],
       "category": "Nature",
+      "cover": "iit-madras-wildlife-walk",
       "routes": ["coorg-plantation-hike", "iit-madras-wildlife-walk", "airport-hidden-lake-trail", "auroville-explorer"],
-      "curator": "Naarad editorial"
+      "curator": "the Naarad editorial team"
     }
   ]
 }
