@@ -25,6 +25,8 @@ import * as Account from './account.js';
 import * as OfflineUI from './offline-ui.js';
 import * as Drafts from './studio-store.js';
 import * as Motion from './motion.js';
+import { loadPreviewTiles } from './previews.js';
+import * as Lightbox from './lightbox.js';
 import * as Urls from './urls.js';
 import { SITE_NAME, CARD_WIDTH, CARD_HEIGHT, cardPath } from './seo.js';
 
@@ -362,6 +364,7 @@ async function prepare(view, context = {}) {
  * where the new page opens (null leaves the scroll position alone).
  */
 function commit({ markup, meta }, { keep = false, scrollY = 0 } = {}) {
+  document.documentElement.classList.remove('has-map-expanded');   // a navigation ends full screen
   if (!(keep && drawn(markup))) {
     destroyMap();
     unwatchRouteBar();
@@ -372,6 +375,7 @@ function commit({ markup, meta }, { keep = false, scrollY = 0 } = {}) {
   }
   setMeta(meta);
   Motion.scan(shell);
+  if (!PRERENDER) loadPreviewTiles(shell);   // a saved page must keep data-src, not the fetched state
   OfflineUI.start();
   OfflineUI.refresh();
 }
@@ -924,11 +928,44 @@ document.addEventListener('click', async (event) => {
     return;
   }
 
+  const themeTile = event.target.closest('[data-explore-theme]');
+  const nearTile = event.target.closest('[data-explore-near]');
+  if (themeTile || nearTile) {
+    const explore = await moduleFor('explore');
+    if (themeTile) {
+      const theme = themeTile.dataset.exploreTheme;
+      const input = document.querySelector('#catalogue-query');
+      if (input) input.value = theme;
+      explore.setQuery(theme);
+      explore.rememberSearch(theme);
+      if (state.page?.address) replaceAddress(state.page.address({ query: theme }));
+    } else if (nearTile.getAttribute('aria-pressed') === 'true') {
+      nearTile.setAttribute('aria-pressed', 'false');
+      explore.setOrigin(null);
+    } else if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition((position) => {
+        nearTile.setAttribute('aria-pressed', 'true');
+        explore.setOrigin([position.coords.longitude, position.coords.latitude]);
+      }, () => {
+        const count = document.querySelector('#catalogue-count');
+        if (count) count.textContent = 'We could not get your location, so routes are not sorted by distance.';
+      }, { maximumAge: 300000, timeout: 10000 });
+    } else {
+      const count = document.querySelector('#catalogue-count');
+      if (count) count.textContent = 'This browser cannot share a location, so routes are not sorted by distance.';
+    }
+    return;
+  }
+
+  const photoButton = event.target.closest('[data-photo-open]');
+  if (photoButton) { Lightbox.open(photoButton); return; }
+
   const mapAction = event.target.closest('[data-map]')?.dataset.map;
   if (mapAction === 'in') map?.zoomIn();
   if (mapAction === 'out') map?.zoomOut();
   if (mapAction === 'locate') map?.locate();
   if (mapAction === 'fit') map?.fit();
+  if (mapAction === 'expand') setMapExpanded(!document.querySelector('.map-frame')?.classList.contains('is-expanded'));
   if (mapAction === 'layers') {
     const button = event.target.closest('[data-map="layers"]');
     const satellite = button.getAttribute('aria-pressed') !== 'true';
@@ -941,6 +978,31 @@ document.addEventListener('click', async (event) => {
   if (event.target.closest('[data-studio], [data-studio-step], [data-studio-stop], [data-studio-open], [data-studio-delete]')) {
     await handleStudio(event.target.closest('[data-studio], [data-studio-step], [data-studio-stop], [data-studio-open], [data-studio-delete]'));
   }
+});
+
+/* A full-screen map by CSS rather than the Fullscreen API, so it also works where that API does not (iPhone Safari).
+   The map resizes itself; Escape closes it. */
+function setMapExpanded(on) {
+  const frame = document.querySelector('.map-frame');
+  if (!frame) return;
+  frame.classList.toggle('is-expanded', on);
+  document.documentElement.classList.toggle('has-map-expanded', on);
+  const button = frame.querySelector('[data-map="expand"]');
+  const label = button?.querySelector('span');
+  if (label) label.textContent = on ? 'Exit full screen' : 'Full screen';
+  if (!on) button?.focus({ preventScroll: true });
+}
+
+document.addEventListener('keydown', (event) => {
+  if (event.key === 'Escape' && document.querySelector('.map-frame.is-expanded')) setMapExpanded(false);
+});
+
+/* Recent searches: offered when the box is focused, saved when a search is finished (Enter or leaving the box), not on every pause. */
+document.addEventListener('focusin', async (event) => {
+  if (event.target.id === 'catalogue-query') (await moduleFor('explore')).addRecentSuggestions();
+});
+document.addEventListener('change', async (event) => {
+  if (event.target.id === 'catalogue-query') (await moduleFor('explore')).rememberSearch(event.target.value);
 });
 
 let filterTimer = null;
