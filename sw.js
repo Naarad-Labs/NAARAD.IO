@@ -47,6 +47,7 @@ const SHELL_ASSETS = [
   '/app/media.js',
   '/app/icons.js',
   '/app/previews.js',
+  '/app/lightbox.js',
   '/app/audio.js',
   '/app/journey-store.js',
   '/app/listen-tracker.js',

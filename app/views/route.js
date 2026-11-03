@@ -5,7 +5,7 @@
    (route.css) turns the same state into a map with a bottom sheet. Both read
    one route object and one selected stop; there is only ever one map. */
 
-import { picture, creditText, escapeHtml, photoPath } from '../media.js';
+import { picture, creditText, escapeHtml, photoPath, getPhoto } from '../media.js';
 import { icon } from '../icons.js';
 import * as Data from '../data.js';
 import { routePreview, elevationProfile } from '../previews.js';
@@ -275,6 +275,34 @@ function overview(route) {
   </section>`;
 }
 
+/** Every licensed photograph the route has: its own, then each stop's. Two or more make a strip. */
+export function routePhotos(route) {
+  const seen = new Set();
+  const out = [];
+  const add = (id, caption) => {
+    if (!id || seen.has(id) || !getPhoto(id)) return;
+    seen.add(id);
+    out.push({ id, caption });
+  };
+  add(route.photo, route.name);
+  add(route.cardPhoto, route.name);
+  for (const stop of route.stops || []) add(stop.photo, stop.name);
+  return out;
+}
+
+function photoStrip(route) {
+  const photos = routePhotos(route);
+  if (photos.length < 2) return '';
+  return `<section class="route-photos" id="section-photos" aria-labelledby="photos-title">
+    <div class="section-head"><div><p class="eyebrow eyebrow-mark">Photographs</p><h2 class="section-title" id="photos-title">${photos.length} photographs along the way</h2></div></div>
+    <ul class="photo-strip" data-photo-set>
+      ${photos.map((photo, number) => `<li><button type="button" class="photo-strip-item" data-photo-open="${escapeHtml(photo.id)}" data-photo-caption="${escapeHtml(photo.caption)}" data-photo-alt="${escapeHtml(photo.caption)}" aria-label="Open photograph ${number + 1} of ${photos.length}: ${escapeHtml(photo.caption)}">
+        ${picture(photo.id, { sizes: '(max-width: 760px) 60vw, 220px', alt: photo.caption, ratio: '4 / 3' })}
+      </button></li>`).join('')}
+    </ul>
+  </section>`;
+}
+
 async function relatedSection(route) {
   const related = await Data.relatedRoutes(route, 3);
   if (!related.length) return '';
@@ -305,6 +333,7 @@ export async function render(context) {
     </div>
     ${glance(route)}
     ${overview(route)}
+    ${photoStrip(route)}
     ${related}
   </article>`;
 }

@@ -26,6 +26,7 @@ import * as OfflineUI from './offline-ui.js';
 import * as Drafts from './studio-store.js';
 import * as Motion from './motion.js';
 import { loadPreviewTiles } from './previews.js';
+import * as Lightbox from './lightbox.js';
 import * as Urls from './urls.js';
 import { SITE_NAME, CARD_WIDTH, CARD_HEIGHT, cardPath } from './seo.js';
 
@@ -925,6 +926,9 @@ document.addEventListener('click', async (event) => {
     explore.setSport(filterSport.dataset.filterSport);
     return;
   }
+
+  const photoButton = event.target.closest('[data-photo-open]');
+  if (photoButton) { Lightbox.open(photoButton); return; }
 
   const mapAction = event.target.closest('[data-map]')?.dataset.map;
   if (mapAction === 'in') map?.zoomIn();
