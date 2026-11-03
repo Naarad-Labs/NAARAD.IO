@@ -9,24 +9,48 @@
       "hash": "01a0c51eebe314f4f56c45bd9a4849fe2954eeb1fddb02ee39e24f8ef3969edc",
       "date": "2026-11-01"
     },
+    "/collections/": {
+      "hash": "749b65d3351bc3362a94a3b2f34835e7db68d63ad74b6795faaf3387be8decf6",
+      "date": "2026-11-03"
+    },
+    "/collections/cities-of-the-north/": {
+      "hash": "068cc5f4a6aef2064e67243742907c7abf05909fb9ef8515c9fd45d5bd36c89b",
+      "date": "2026-11-03"
+    },
+    "/collections/open-air-routes/": {
+      "hash": "a44bb63854dd91da1893e8a9a0b207348f56067bca62ec4314fb1e43de4a944d",
+      "date": "2026-11-03"
+    },
+    "/collections/royal-cities-of-the-south/": {
+      "hash": "c8186f3d261b74a671ae5262343d8f13a31bb484aa5c7900c6645f59a6a4669d",
+      "date": "2026-11-03"
+    },
+    "/collections/temples-across-india/": {
+      "hash": "a802f8396f82d99d3a36b322e78ba0933aa3da5332da8af9396a05c7042d7bd4",
+      "date": "2026-11-03"
+    },
+    "/collections/walks-around-chennai/": {
+      "hash": "9c4b58840f8326d382af6c43e80db200ddf51f6b9cfe6dd0fe30234e9aa01279",
+      "date": "2026-11-03"
+    },
     "/creators/": {
       "hash": "50e65c7b655b684a1b9f6efeba87c4d014c0bcc6c71f7955bc6ddd6452bae7d3",
       "date": "2026-11-03"
     },
     "/routes/": {
-      "hash": "48f53c2bc132ef05c681a36fc53778632967a5b01d483aed55147adea75cc45d",
+      "hash": "96aaabc6716410660eceb592b931a3bf521826364d68b0d96db616ec6e8a6ae8",
       "date": "2026-11-03"
     },
     "/routes/auroville-explorer/": {
-      "hash": "1d2b0a099c648f5f64c5e5b1dadcabb592c7600934be06bea168752b2932d8ac",
+      "hash": "72f6c0545f86ddb350c20884a269f7b5d8423e3fbef147453718a774ced081a0",
       "date": "2026-11-03"
     },
     "/routes/hampi-heritage-trail/": {
-      "hash": "02a27959446d47eb587aa65b2ac8f186cdc07dfb1784ed15eeb7c64c658f24d9",
+      "hash": "cbcfe7bca380464bf1a9928571108d142c9048ec86729e362a3d77769975e9f4",
       "date": "2026-11-03"
     },
     "/routes/thanjavur-living-heritage/": {
-      "hash": "4c61847506b3c10d39b4044acb738dd57a3f108d15fcf81f669d3eb94658806a",
+      "hash": "ca0e1c42ef956df6ec87cb625c1dc20ed8f20bff88dd9110fe17bae6a753caa8",
       "date": "2026-11-03"
     },
     "/stories/": {

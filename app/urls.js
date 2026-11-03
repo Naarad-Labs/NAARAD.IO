@@ -39,6 +39,7 @@ export function routePath(slug, stop = null) {
 }
 
 export const storyPath = (slug) => `/stories/${segment(slug)}/`;
+export const collectionPath = (slug) => `/collections/${segment(slug)}/`;
 
 export const absoluteUrl = (path) => new URL(path, ORIGIN).href;
 

@@ -480,11 +480,11 @@ h1[tabindex='-1']:focus, h2[tabindex='-1']:focus, h3[tabindex='-1']:focus { outl
 
 /* Feedback on the things you press. */
 .button, .icon-button, .chip, .map-control, .stop-item, .route-card, .journey-card,
-.story-card, .magazine-page, .language-list li, .filter-chips button, .quick-links a {
+.story-card, .collection-card, .magazine-page, .language-list li, .filter-chips button, .quick-links a {
   transition: transform .18s var(--ease-out), background-color .18s, border-color .18s, color .18s, box-shadow .18s;
 }
 .button:active, .icon-button:active, .map-control:active, .filter-chips button:active { transform: translateY(1px) scale(.985); }
-.stop-item:active, .route-card:active, .journey-card:active, .story-card:active { transform: scale(.994); }
+.stop-item:active, .route-card:active, .journey-card:active, .story-card:active, .collection-card:active { transform: scale(.994); }
 @media (hover: hover) { .language-list li:hover { background: var(--paper-deep); border-color: var(--line-strong); } }
 @media (hover: hover) { .quick-links a:hover .ico { transform: translateY(-2px); } }
 .quick-links .ico { transition: transform .2s var(--ease-out); }
@@ -495,7 +495,7 @@ h1[tabindex='-1']:focus, h2[tabindex='-1']:focus, h3[tabindex='-1']:focus { outl
   [data-motion='on'] .home-hero-photo img,
   [data-motion='on'] .story-hero-photo img { animation: none; }
   .button, .icon-button, .chip, .map-control, .stop-item, .route-card, .journey-card,
-  .story-card, .magazine-page, .language-list li, .filter-chips button, .quick-links a { transition: none; }
+  .story-card, .collection-card, .magazine-page, .language-list li, .filter-chips button, .quick-links a { transition: none; }
 }
 
 /* Offline bar and unsaved-route marks (behind the offline-bundles flag; see app/offline-ui.js). */
