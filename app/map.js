@@ -8,12 +8,12 @@ let mapCssPromise;
 const mountedMaps = new WeakMap();
 
 /* Colours come from the site's tokens (:root in app/base.css), so the map follows the palette. The fallback is the same value, for a page whose stylesheet has not loaded. */
-function token(name, fallback) {
+export function token(name, fallback) {
   const value = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
   return value || fallback;
 }
 
-function loadMapCss() {
+export function loadMapCss() {
   if (mapCssPromise) return mapCssPromise;
   mapCssPromise = new Promise((resolve) => {
     if (document.querySelector('link[data-naarad-map-css]')) return resolve();
@@ -28,7 +28,7 @@ function loadMapCss() {
   return mapCssPromise;
 }
 
-function loadLeaflet() {
+export function loadLeaflet() {
   let stylesheet = document.querySelector('link[data-naarad-leaflet]');
   if (!stylesheet) {
     stylesheet = document.createElement('link');

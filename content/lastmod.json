@@ -37,8 +37,12 @@
       "hash": "50e65c7b655b684a1b9f6efeba87c4d014c0bcc6c71f7955bc6ddd6452bae7d3",
       "date": "2026-11-03"
     },
+    "/explore/": {
+      "hash": "85d274cbfb39b666e55f665d033786e7df7ffb3ab27281e47246233b7386f424",
+      "date": "2026-11-03"
+    },
     "/routes/": {
-      "hash": "96aaabc6716410660eceb592b931a3bf521826364d68b0d96db616ec6e8a6ae8",
+      "hash": "7c80c09281ac0e9ed34206b03cce2f88aa50444dafdb2c91c997e2bef02ba399",
       "date": "2026-11-03"
     },
     "/routes/auroville-explorer/": {

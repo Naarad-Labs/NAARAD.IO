@@ -82,7 +82,7 @@ test('removing one route leaves files another downloaded route still needs', asy
 
 test('every bundle carries the offline kit, so My Journey and the catalogue open with no network', () => {
   const urls = selectUrls({ origin, slug: 'x', resources: [], srcsets: [], images: [] });
-  for (const path of ['/journey/', '/app/views/journey.js', '/app/journey.css', '/routes/', '/app/views/explore.js', '/app/explore.css']) assert.ok(urls.includes(path), path);
+  for (const path of ['/journey/', '/app/views/journey.js', '/app/journey.css', '/routes/', '/app/views/explore.js', '/app/atlas.js', '/app/explore.css']) assert.ok(urls.includes(path), path);
 });
 
 function spaceEnv({ estimate, failPutAt = null, putError = null } = {}) {

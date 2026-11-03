@@ -249,7 +249,7 @@ const ORIGIN = 'https://naarad.io';
 const PAGE_TYPES = [
   { path: '/', canonical: '/', h1: 'Walk a place.', text: 'Iconic journeys, deeper stories.', types: ['WebSite', 'Organization'] },
   { path: '/routes/', canonical: '/routes/', h1: 'Go where', text: 'Hampi Heritage Trail', types: ['BreadcrumbList'] },
-  { path: '/explore/', canonical: '/routes/', h1: 'Go where', text: 'Hampi Heritage Trail', types: ['BreadcrumbList'] },
+  { path: '/explore/', canonical: '/explore/', h1: 'Find your', text: 'Hampi Heritage Trail', types: ['BreadcrumbList'] },
   { path: '/routes/hampi-heritage-trail/', canonical: '/routes/hampi-heritage-trail/', h1: 'Hampi Heritage Trail', text: 'Virupaksha Temple', types: ['BreadcrumbList', 'TouristTrip'] },
   // A route with no published stops is a stub: reachable, but out of search and describing no trip.
   { path: '/routes/marina-beach-trail/', canonical: '/routes/marina-beach-trail/', h1: 'Marina Beach Trail', text: 'Stops are not published', types: ['BreadcrumbList'], robots: 'noindex,follow' },
@@ -498,7 +498,8 @@ test.describe('sitemap, robots and links', () => {
     expect(locs).toContain(`${ORIGIN}/`);
     expect(locs).toContain(`${ORIGIN}/routes/hampi-heritage-trail/`);
     expect(locs).toContain(`${ORIGIN}/stories/stone-chariot-of-hampi/`);
-    expect(locs).not.toContain(`${ORIGIN}/explore/`);       // canonical to /routes/
+    expect(locs).toContain(`${ORIGIN}/explore/`);           // its own page now, not an alias of /routes/
+    expect(locs).toContain(`${ORIGIN}/routes/`);
     // Routes with no stops are reachable but not offered to search engines.
     expect(locs).not.toContain(`${ORIGIN}/routes/mysore-palace-heritage-walk/`);
     expect(locs).not.toContain(`${ORIGIN}/routes/marina-beach-trail/`);
@@ -1051,7 +1052,7 @@ test.describe('what the pages claim', () => {
     expect(await description('/creators/')).toMatch(/publishing is not open/i);
     // Only three routes have stops and terrain; the catalogue does not say all of them do.
     expect(await description('/routes/')).not.toMatch(/every published route|terrain/i);
-    expect(await description('/explore/')).toBe(await description('/routes/'));
+    expect(await description('/explore/')).not.toBe(await description('/routes/'));   // two different pages
     expect(await description('/stories/')).not.toMatch(/long-form/i);
   });
 });

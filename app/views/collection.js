@@ -6,6 +6,7 @@ import { picture, escapeHtml } from '../media.js';
 import { icon } from '../icons.js';
 import * as Data from '../data.js';
 import { routeCard } from './home.js';
+import { routePreview } from '../previews.js';
 import { collectionPath } from '../urls.js';
 import * as Seo from '../seo.js';
 
@@ -45,10 +46,18 @@ const photoOf = (route) => route?.media?.card || route?.media?.photo || null;
 const coverOf = (collection, routes) => routes.find((route) => route.slug === collection.cover && photoOf(route)) || routes.find((route) => photoOf(route)) || null;
 const count = (n) => `${n} ${n === 1 ? 'route' : 'routes'}`;
 
+/** With no photograph, the first mapped route's line is a better picture than a blank. */
+function fallbackPicture(routes) {
+  const mapped = routes.find((route) => route.geometry?.coordinates?.length);
+  return mapped
+    ? `<span class="collection-card-map">${routePreview(mapped, { width: 360, height: 240, numbered: false })}</span>`
+    : '<span class="photo photo-missing" aria-hidden="true"></span>';
+}
+
 function card(collection, routes) {
   const lead = coverOf(collection, routes);
   return `<a class="collection-card" href="${collectionPath(collection.slug)}" data-collection="${escapeHtml(collection.slug)}" aria-labelledby="cc-${escapeHtml(collection.slug)}" aria-describedby="cd-${escapeHtml(collection.slug)}">
-    ${lead ? picture(photoOf(lead), { sizes: '(max-width: 760px) 100vw, 360px', alt: '', ratio: '3 / 2' }) : '<span class="photo photo-missing" aria-hidden="true"></span>'}
+    ${lead ? picture(photoOf(lead), { sizes: '(max-width: 760px) 100vw, 360px', alt: '', ratio: '3 / 2' }) : fallbackPicture(routes)}
     <span class="collection-card-copy">
       <span class="eyebrow eyebrow-mark">${escapeHtml(collection.category)} · ${count(routes.length)}</span>
       <strong id="cc-${escapeHtml(collection.slug)}">${escapeHtml(collection.title)}</strong>
