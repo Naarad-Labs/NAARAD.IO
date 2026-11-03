@@ -21,7 +21,7 @@
  * a page that was already controlled reload once when the worker changes.
  */
 
-const VERSION = 'v39';
+const VERSION = 'v40';
 const SHELL = `naarad-shell-${VERSION}`;
 const PAGES = `naarad-pages-${VERSION}`;
 const CONTENT = `naarad-content-${VERSION}`;
