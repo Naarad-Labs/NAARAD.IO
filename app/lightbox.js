@@ -20,7 +20,7 @@ function ensure() {
   box.setAttribute('aria-label', 'Photographs');
   box.innerHTML = `<button type="button" class="lightbox-close" data-lightbox="close" aria-label="Close photographs">×</button>
     <button type="button" class="lightbox-step is-prev" data-lightbox="prev" aria-label="Previous photograph">‹</button>
-    <figure class="lightbox-figure"><img class="lightbox-image" alt=""><figcaption class="lightbox-caption"></figcaption></figure>
+    <figure class="lightbox-figure"><img class="lightbox-image" alt=""><figcaption class="lightbox-caption" aria-live="polite"></figcaption></figure>
     <button type="button" class="lightbox-step is-next" data-lightbox="next" aria-label="Next photograph">›</button>`;
   document.body.append(box);
   box.addEventListener('click', (event) => {
@@ -38,7 +38,7 @@ function show(next) {
   const frame = ensure();
   const image = frame.querySelector('.lightbox-image');
   image.src = photoPath(item.id) || '';
-  image.alt = item.alt;
+  image.alt = item.caption ? '' : item.alt;   // the caption below names the photograph
   frame.querySelector('.lightbox-caption').innerHTML =
     `${item.caption ? `<strong>${escapeHtml(item.caption)}</strong> ` : ''}<span>${escapeHtml(creditText(item.id))}</span> · ${index + 1} of ${items.length}`;
   const single = items.length < 2;
@@ -70,6 +70,13 @@ export function isOpen() { return Boolean(box && !box.hidden); }
 document.addEventListener('keydown', (event) => {
   if (!isOpen()) return;
   if (event.key === 'Escape') { event.preventDefault(); close(); }
+  if (event.key === 'Tab') {
+    const focusable = [...box.querySelectorAll('button')].filter((button) => !button.hidden);
+    const first = focusable[0]; const last = focusable[focusable.length - 1];
+    if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+    else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+    else if (!box.contains(document.activeElement)) { event.preventDefault(); first.focus(); }
+  }
   if (event.key === 'ArrowLeft') show(index - 1);
   if (event.key === 'ArrowRight') show(index + 1);
 });

@@ -2,7 +2,7 @@
   "note": "Written by scripts/build-site.mjs. For each page in the sitemap: a hash of what the page says (its main content and the head tags it owns) and the date that hash was first built. The sitemap's lastmod is that date; it moves only when the hash does.",
   "pages": {
     "/": {
-      "hash": "fd9bf7638802e5e8a1b7516b46d4975d23724973a0bba52a266101a1194d165c",
+      "hash": "4d00eba933187ea2a4f416f3015d36accebe07ff48a394646c007614972442c1",
       "date": "2026-11-03"
     },
     "/about/": {
@@ -10,23 +10,23 @@
       "date": "2026-11-01"
     },
     "/creators/": {
-      "hash": "b3321096475e8da2108605cb5c70367eda374bfec44cb98b64a6277f97322c5d",
+      "hash": "50e65c7b655b684a1b9f6efeba87c4d014c0bcc6c71f7955bc6ddd6452bae7d3",
       "date": "2026-11-03"
     },
     "/routes/": {
-      "hash": "64e74620b864af65a914ee65bab6fd1790db8df880231c24e9bc0016487e290c",
+      "hash": "6b972dfd7c926dcafaf1dc075ec274d08dc3f52e4bb05ce49ab8e5b3cbb7629a",
       "date": "2026-11-03"
     },
     "/routes/auroville-explorer/": {
-      "hash": "6231f1eb2db9199bbb5bc26d437433ab79601436f2d77f742253f59fb235a064",
+      "hash": "37b0ae069beb3f6bbed33740a0fc6e07aed4f6722112dc5ab10c621874f8e577",
       "date": "2026-11-03"
     },
     "/routes/hampi-heritage-trail/": {
-      "hash": "b32940010eb6e6fe3de8c6eb35d8fe750395f03346cb6f16ad0238eca4f33b7e",
+      "hash": "cee7a59ff9ee5dff8b5ecdd3208ea163386a049e69038d300a66fb7429262cf4",
       "date": "2026-11-03"
     },
     "/routes/thanjavur-living-heritage/": {
-      "hash": "92fed7706604d6415f992e24497c95ba2af7d22c9507c9d3d94fee97ef3b03a7",
+      "hash": "7fa96f3cbd157243967df63aeee508ec88fd6bd90a8206f0171b60753645614f",
       "date": "2026-11-03"
     },
     "/stories/": {
@@ -34,15 +34,15 @@
       "date": "2026-10-27"
     },
     "/stories/bazaar-that-sold-the-world/": {
-      "hash": "eb75b966facd3474ca341cd310800e1a91f86ff94b2042dd2844e6a8384f26c6",
+      "hash": "800598656a03072ad5b265ff1aa33d5e1277553840c9d3f349fb30f47a54be1f",
       "date": "2026-11-03"
     },
     "/stories/stone-chariot-of-hampi/": {
-      "hash": "dd047755efa367044442d3317c40eaf9e9b6b385408ab7cf423e45d933a3fd70",
+      "hash": "16752f8569df586980bd2b0b6faa86bee7eb810a827b156d180aa1c6dc6685b5",
       "date": "2026-11-03"
     },
     "/stories/water-that-built-a-capital/": {
-      "hash": "37684e1f0e28aa7bef45e2f17fe47f767c25de78e7e2977f84407603c0b046bd",
+      "hash": "8ee8c249606f5776a9badf8463369aeffacc6d5a0fcdb456a72b564e88f08c1c",
       "date": "2026-11-03"
     }
   }

@@ -224,7 +224,7 @@ function mapPanel(route) {
       <div class="map-toolbar">
         <button type="button" class="map-control" data-map="layers" aria-pressed="true">${icon('layers')}<span>Satellite</span></button>
         <button type="button" class="map-control" data-map="fit">${icon('compass')}<span>Fit route</span></button>
-        <button type="button" class="map-control" data-map="expand" aria-pressed="false">${icon('map')}<span>Full screen</span></button>
+        <button type="button" class="map-control" data-map="expand">${icon('map')}<span>Full screen</span></button>
       </div>
       <p class="map-note script">Stories at every stop</p>
     </div>
@@ -275,7 +275,7 @@ function overview(route) {
   </section>`;
 }
 
-/** Every licensed photograph the route has: its own, then each stop's. Two or more make a strip. */
+/** Every licensed photograph the route has: its own, then each stop's. Three or more make a strip. */
 export function routePhotos(route) {
   const seen = new Set();
   const out = [];
@@ -292,7 +292,7 @@ export function routePhotos(route) {
 
 function photoStrip(route) {
   const photos = routePhotos(route);
-  if (photos.length < 2) return '';
+  if (photos.length < 3) return '';
   return `<section class="route-photos" id="section-photos" aria-labelledby="photos-title">
     <div class="section-head"><div><p class="eyebrow eyebrow-mark">Photographs</p><h2 class="section-title" id="photos-title">${photos.length} photographs along the way</h2></div></div>
     <ul class="photo-strip" data-photo-set>

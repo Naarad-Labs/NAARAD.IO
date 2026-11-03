@@ -56,11 +56,24 @@ function recentSearches() {
 }
 export function rememberSearch(value) {
   const text = String(value || '').trim();
-  if (text.length < 2) return;
+  if (text.length < 3) return;
   try { localStorage.setItem(RECENT_KEY, JSON.stringify([text, ...recentSearches().filter((item) => item !== text)].slice(0, 5))); } catch { /* private mode: no history */ }
 }
+/** Recent searches are added when the box is focused, not in render(), so a pre-rendered page matches what boot would draw. */
+export function addRecentSuggestions() {
+  const list = document.querySelector('#catalogue-suggestions');
+  if (!list) return;
+  const known = new Set([...list.querySelectorAll('option')].map((option) => option.value));
+  for (const text of recentSearches()) {
+    if (known.has(text)) continue;
+    const option = document.createElement('option');
+    option.value = text;
+    list.prepend(option);
+  }
+}
+
 function suggestions() {
-  const names = new Set(recentSearches());
+  const names = new Set();
   for (const route of routes) {
     names.add(route.name);
     if (route.location) names.add(route.location);
@@ -103,7 +116,7 @@ export function setOrigin(value) {
   origin = value;
   applyFilters();
   const note = document.querySelector('#near-note');
-  if (note) note.textContent = value ? 'Sorted by distance from you. Your position stays on this phone.' : '';
+  if (note) note.textContent = 'Near me asks for your location only when you tap it, and keeps it on this device.';
 }
 export function setSport(value) { sport = value; applyFilters(); }
 export function setRegion(value) { region = value; applyFilters(); }
@@ -121,6 +134,7 @@ export function setFilters(next) {
 export async function render(context = {}) {
   routes = await Data.loadRoutes();
   query = context.query || '';
+  origin = null;      // a fresh page starts with the Near me button off
   const shown = routes.filter(matches);
   const regions = [...new Set(routes.map((route) => route.region).filter(Boolean))].sort();
   const withStops = routes.filter((route) => route.hasStops).length;
@@ -145,11 +159,11 @@ export async function render(context = {}) {
         ${tile.photo ? picture(tile.photo, { sizes: '(max-width: 760px) 45vw, 190px', alt: '', ratio: '4 / 3' }) : ''}
         <span class="explore-tile-label">${escapeHtml(tile.theme)}<small>${tile.n} ${tile.n === 1 ? 'route' : 'routes'}</small></span>
       </button>`).join('')}
-      <button type="button" class="explore-tile is-near" data-explore-near aria-pressed="false">
-        <span class="explore-tile-label">${icon('locate')} Near me<small>Asks for your location only when tapped</small></span>
+      <button type="button" class="explore-tile is-near" data-explore-near aria-pressed="false" aria-label="Near me" aria-describedby="near-hint">
+        <span class="explore-tile-label"><span>${icon('locate')} Near me</span><small id="near-hint">Nearest first</small></span>
       </button>
     </section>
-    <p id="near-note" class="data-note"></p>
+    <p id="near-note" class="data-note">Near me asks for your location only when you tap it, and keeps it on this device.</p>
 
     <div class="catalogue-body">
       <aside class="catalogue-filters" aria-label="Filters">

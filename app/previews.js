@@ -43,8 +43,8 @@ function fit(points, width, height, pad) {
 }
 
 const TILE_URL = 'https://tile.openstreetmap.org';
-const MAX_TILES = 20;
-const MIN_TILE_PX = 140;
+const MAX_TILES = 9;
+const MIN_TILE_PX = 200;
 
 /**
  * Map tiles under the line. They are named here but not fetched: each <image>
@@ -55,7 +55,7 @@ const MIN_TILE_PX = 140;
 function tileLayer(place, width, height) {
   const { scale, offsetX, offsetY } = place;
   let zoom = Math.min(17, Math.max(2, Math.floor(Math.log2(scale / MIN_TILE_PX))));
-  const marginX = width * 0.25; const marginY = height * 0.25;
+  const marginX = width * 0.1; const marginY = height * 0.1;
   const west = (-marginX - offsetX) / scale; const east = (width + marginX - offsetX) / scale;
   const north = (-marginY - offsetY) / scale; const south = (height + marginY - offsetY) / scale;
   let range;

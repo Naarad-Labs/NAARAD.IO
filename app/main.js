@@ -364,6 +364,7 @@ async function prepare(view, context = {}) {
  * where the new page opens (null leaves the scroll position alone).
  */
 function commit({ markup, meta }, { keep = false, scrollY = 0 } = {}) {
+  document.documentElement.classList.remove('has-map-expanded');   // a navigation ends full screen
   if (!(keep && drawn(markup))) {
     destroyMap();
     unwatchRouteBar();
@@ -946,9 +947,12 @@ document.addEventListener('click', async (event) => {
         nearTile.setAttribute('aria-pressed', 'true');
         explore.setOrigin([position.coords.longitude, position.coords.latitude]);
       }, () => {
-        const note = document.querySelector('#near-note');
-        if (note) note.textContent = 'Location is off, so routes are not sorted by distance. You can still search by place.';
+        const count = document.querySelector('#catalogue-count');
+        if (count) count.textContent = 'We could not get your location, so routes are not sorted by distance.';
       }, { maximumAge: 300000, timeout: 10000 });
+    } else {
+      const count = document.querySelector('#catalogue-count');
+      if (count) count.textContent = 'This browser cannot share a location, so routes are not sorted by distance.';
     }
     return;
   }
@@ -984,16 +988,21 @@ function setMapExpanded(on) {
   frame.classList.toggle('is-expanded', on);
   document.documentElement.classList.toggle('has-map-expanded', on);
   const button = frame.querySelector('[data-map="expand"]');
-  if (button) {
-    button.setAttribute('aria-pressed', String(on));
-    const label = button.querySelector('span');
-    if (label) label.textContent = on ? 'Close map' : 'Full screen';
-  }
+  const label = button?.querySelector('span');
+  if (label) label.textContent = on ? 'Exit full screen' : 'Full screen';
   if (!on) button?.focus({ preventScroll: true });
 }
 
 document.addEventListener('keydown', (event) => {
   if (event.key === 'Escape' && document.querySelector('.map-frame.is-expanded')) setMapExpanded(false);
+});
+
+/* Recent searches: offered when the box is focused, saved when a search is finished (Enter or leaving the box), not on every pause. */
+document.addEventListener('focusin', async (event) => {
+  if (event.target.id === 'catalogue-query') (await moduleFor('explore')).addRecentSuggestions();
+});
+document.addEventListener('change', async (event) => {
+  if (event.target.id === 'catalogue-query') (await moduleFor('explore')).rememberSearch(event.target.value);
 });
 
 let filterTimer = null;
@@ -1005,7 +1014,7 @@ document.addEventListener('input', async (event) => {
     const explore = await moduleFor('explore');
     // The grid redraws once typing pauses, so a screen reader is not read the whole list for every letter.
     clearTimeout(filterTimer);
-    filterTimer = setTimeout(() => { explore.setQuery(target.value); explore.rememberSearch(target.value); }, 400);
+    filterTimer = setTimeout(() => explore.setQuery(target.value), 150);
     // The search is part of the address, so a filtered catalogue can be shared.
     if (state.page?.address) replaceAddress(state.page.address({ query: target.value.trim() }));
   }
