@@ -51,7 +51,7 @@ const modules = {};
 
 /* ── Pages ──────────────────────────────────────────────────────── */
 
-const catalogueContext = (url) => ({ query: url.searchParams.get('q') || '' });
+const catalogueContext = (url) => ({ query: url.searchParams.get('q') || '', params: url.searchParams });
 
 /* An entry remembers how far it was scrolled (in history.state), so Back and
    Forward land where the visitor was, not at the top. It is kept current while
@@ -86,6 +86,7 @@ async function syncCatalogue() {
     withStories: Boolean($('[data-filter-stories]')?.checked),
   });
   explore.onChange(() => {
+    if (!['routes', 'explore'].includes(state.page?.name)) return;   // a late redraw must not rewrite another page's address
     if (state.page?.address) replaceAddress(state.page.address({ query: explore.currentQuery().trim() }));
   });
   if (input?.value && state.page?.address) replaceAddress(state.page.address({ query: input.value.trim() }));
@@ -935,9 +936,16 @@ document.addEventListener('click', async (event) => {
   const clearButton = event.target.closest('[data-clear-filter], [data-clear-all]');
   if (levelButton || clearButton) {
     const explore = await moduleFor('explore');
+    const bar = document.querySelector('#active-filters');
+    const position = clearButton && bar?.contains(clearButton) ? [...bar.querySelectorAll('button')].indexOf(clearButton) : -1;
     if (levelButton) explore.setFilter('level', levelButton.dataset.filterLevel);
     else if (clearButton.hasAttribute('data-clear-all')) explore.clearAll();
     else explore.clearFilter(clearButton.dataset.clearFilter);
+    if (clearButton) {
+      // The bar was redrawn, so the pressed button is gone: put focus on a neighbour, or on the search box.
+      const rest = [...document.querySelectorAll('#active-filters [data-clear-filter]')];
+      (rest[Math.min(Math.max(position, 0), rest.length - 1)] || document.querySelector('#catalogue-query'))?.focus();
+    }
     return;
   }
 

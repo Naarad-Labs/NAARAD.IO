@@ -106,7 +106,7 @@ export function activeFilters() {
   const out = [];
   if (query) out.push(['query', `Search: ${query}`]);
   if (sport !== 'all') out.push(['sport', SPORTS.find((item) => item.id === sport)?.label || sport]);
-  if (region !== 'all') out.push(['region', region]);
+  if (region !== 'all') out.push(['region', `Region: ${region}`]);
   if (withStories) out.push(['stories', 'Has story stops']);
   if (distance !== 'any') out.push(['distance', DISTANCES[distance][0]]);
   if (time !== 'any') out.push(['time', TIMES[time][0]]);
@@ -186,22 +186,22 @@ function syncControls() {
   if (bar) {
     const chips = activeFilters();
     bar.hidden = !chips.length;
-    bar.innerHTML = chips.map(([key, label]) => `<button type="button" class="filter-pill" data-clear-filter="${escapeHtml(key)}" aria-label="Remove filter: ${escapeHtml(label)}">${escapeHtml(label)} <span aria-hidden="true">×</span></button>`).join('')
-      + (chips.length > 1 ? '<button type="button" class="text-link" data-clear-all>Clear all</button>' : '');
+    bar.innerHTML = chips.map(([key, label]) => `<button type="button" class="filter-pill" data-clear-filter="${escapeHtml(key)}" aria-label="Remove ${escapeHtml(label)}">${escapeHtml(label)} <span aria-hidden="true">×</span></button>`).join('')
+      + (chips.length ? '<button type="button" class="text-link" data-clear-all>Clear all filters</button>' : '');
   }
 }
 
 /** Set one of the range, level, language or sort filters by name. */
 export function setFilter(name, value) {
-  if (name === 'distance') distance = value in DISTANCES ? value : 'any';
-  if (name === 'time') time = value in TIMES ? value : 'any';
-  if (name === 'level') level = value in LEVELS && value !== level ? value : 'any';
+  if (name === 'distance') distance = Object.hasOwn(DISTANCES, value) ? value : 'any';
+  if (name === 'time') time = Object.hasOwn(TIMES, value) ? value : 'any';
+  if (name === 'level') level = Object.hasOwn(LEVELS, value) && value !== level ? value : 'any';
   if (name === 'lang') lang = value === 'any' || (LANGUAGE_NAMES[value] && routes.some((route) => (route.languages || []).includes(value))) ? value : 'any';
-  if (name === 'sort') sort = value in SORTS ? value : 'default';
+  if (name === 'sort') sort = Object.hasOwn(SORTS, value) ? value : 'default';
   applyFilters();
 }
 
-export function clearFilter(name) {
+function reset(name) {
   if (name === 'query') { query = ''; const input = document.querySelector('#catalogue-query'); if (input) input.value = ''; }
   if (name === 'sport') sport = 'all';
   if (name === 'region') region = 'all';
@@ -210,11 +210,13 @@ export function clearFilter(name) {
   if (name === 'time') time = 'any';
   if (name === 'level') level = 'any';
   if (name === 'lang') lang = 'any';
-  applyFilters();
 }
 
+export function clearFilter(name) { reset(name); applyFilters(); }
+
 export function clearAll() {
-  for (const [key] of activeFilters()) clearFilter(key);
+  for (const [key] of activeFilters()) reset(key);
+  applyFilters();
 }
 
 /** main.js passes a function to call after every change (it rewrites the address). */
@@ -248,8 +250,8 @@ export async function render(context = {}) {
   origin = null;      // a fresh page starts with the Near me button off
   distance = 'any'; time = 'any'; level = 'any'; lang = 'any'; sort = 'default';
   sport = 'all'; region = 'all'; withStories = false;
-  if (typeof location !== 'undefined' && !globalThis.__NAARAD_PRERENDER__) {
-    const params = new URLSearchParams(location.search);
+  if (context.params) {
+    const params = context.params;
     const pick = (key, allowed) => (allowed.includes(params.get(key)) ? params.get(key) : null);
     sport = pick('sport', SPORTS.map((item) => item.id)) || 'all';
     distance = pick('d', Object.keys(DISTANCES)) || 'any';
@@ -257,8 +259,8 @@ export async function render(context = {}) {
     level = pick('lv', Object.keys(LEVELS)) || 'any';
     sort = pick('sort', Object.keys(SORTS)) || 'default';
     withStories = params.get('stories') === '1';
-    region = params.get('region') || 'all';
-    lang = params.get('lang') || 'any';
+    region = routes.some((route) => route.region === params.get('region')) ? params.get('region') : 'all';
+    lang = audioLanguages().includes(params.get('lang')) ? params.get('lang') : 'any';
   }
   const shown = routes.filter(matches);
   const regions = [...new Set(routes.map((route) => route.region).filter(Boolean))].sort();
@@ -325,7 +327,7 @@ export async function render(context = {}) {
         </fieldset>
         <fieldset>
           <legend>Difficulty</legend>
-          <div class="filter-chips" role="group">
+          <div class="filter-chips">
             ${Object.entries(LEVELS).map(([key, label]) => `<button type="button" data-filter-level="${key}" class="${key === level ? 'is-active' : ''}" aria-pressed="${key === level}">${label}</button>`).join('')}
           </div>
         </fieldset>
@@ -360,7 +362,7 @@ export async function render(context = {}) {
             </select>
           </div>
         </div>
-        <div id="active-filters" class="active-filters" aria-label="Active filters" ${activeFilters().length ? '' : 'hidden'}>${activeFilters().map(([key, label]) => `<button type="button" class="filter-pill" data-clear-filter="${escapeHtml(key)}" aria-label="Remove filter: ${escapeHtml(label)}">${escapeHtml(label)} <span aria-hidden="true">×</span></button>`).join('')}${activeFilters().length > 1 ? '<button type="button" class="text-link" data-clear-all>Clear all</button>' : ''}</div>
+        <div id="active-filters" class="active-filters" aria-label="Active filters" ${activeFilters().length ? '' : 'hidden'}>${activeFilters().map(([key, label]) => `<button type="button" class="filter-pill" data-clear-filter="${escapeHtml(key)}" aria-label="Remove ${escapeHtml(label)}">${escapeHtml(label)} <span aria-hidden="true">×</span></button>`).join('')}${activeFilters().length ? '<button type="button" class="text-link" data-clear-all>Clear all filters</button>' : ''}</div>
         <div id="catalogue-grid" class="route-card-grid">${grid(shown)}</div>
       </section>
     </div>

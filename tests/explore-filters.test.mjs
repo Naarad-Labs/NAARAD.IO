@@ -51,6 +51,13 @@ test('an unknown value is ignored rather than stored', () => {
   assert.deepEqual(Explore.filterParams(), {});
 });
 
+test('render() takes its filters from the navigation, ignoring unknown values', async () => {
+  await Explore.render({ params: new URLSearchParams('d=short&lv=easy&lang=xx&region=Nowhere&sort=nonsense') });
+  assert.deepEqual(Explore.filterParams(), { d: 'short', lv: 'easy' });
+  await Explore.render({ params: new URLSearchParams('') });
+  assert.deepEqual(Explore.filterParams(), {}, 'a plain address starts clean');
+});
+
 test('choosing the same difficulty again turns it off', () => {
   Explore.setFilter('level', 'moderate');
   assert.equal(Explore.filterParams().lv, 'moderate');
