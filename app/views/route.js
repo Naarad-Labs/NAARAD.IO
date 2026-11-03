@@ -224,6 +224,7 @@ function mapPanel(route) {
       <div class="map-toolbar">
         <button type="button" class="map-control" data-map="layers" aria-pressed="true">${icon('layers')}<span>Satellite</span></button>
         <button type="button" class="map-control" data-map="fit">${icon('compass')}<span>Fit route</span></button>
+        <button type="button" class="map-control" data-map="expand" aria-pressed="false">${icon('map')}<span>Full screen</span></button>
       </div>
       <p class="map-note script">Stories at every stop</p>
     </div>

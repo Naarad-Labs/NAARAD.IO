@@ -7,6 +7,7 @@ import { escapeHtml } from '../media.js';
 import { icon } from '../icons.js';
 import * as Data from '../data.js';
 import { routeCard } from './home.js';
+import { loadPreviewTiles } from '../previews.js';
 import * as Seo from '../seo.js';
 
 const SPORTS = [
@@ -44,7 +45,7 @@ export function applyFilters() {
   if (!routes.length) return;
   const list = routes.filter(matches);
   const target = document.querySelector('#catalogue-grid');
-  if (target) target.innerHTML = grid(list);
+  if (target) { target.innerHTML = grid(list); loadPreviewTiles(target); }
   const count = document.querySelector('#catalogue-count');
   if (count) count.textContent = `${list.length} ${list.length === 1 ? 'route' : 'routes'}`;
 }

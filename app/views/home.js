@@ -48,7 +48,7 @@ export function routeCard(route, options = {}) {
     <span class="route-card-media">
       ${photo ? picture(photo, { sizes: '(max-width: 760px) 100vw, 300px', alt: `${route.name}, ${route.location || ''}`, ratio: '4 / 5', className: 'route-card-photo' })
         : '<span class="route-card-photo photo photo-missing"></span>'}
-      ${preview ? `<span class="route-card-map">${preview}</span>` : '<span class="route-card-map is-empty"><span>No mapped line yet</span></span>'}
+      ${preview ? `<span class="route-card-map">${preview}${route.difficulty ? `<span class="route-card-level">${escapeHtml(Data.formatDifficulty(route.difficulty))}</span>` : ''}</span>` : '<span class="route-card-map is-empty"><span>No mapped line yet</span></span>'}
     </span>
     <span class="route-card-body">
       <strong class="route-card-title">${escapeHtml(route.name)}</strong>

@@ -25,6 +25,7 @@ import * as Account from './account.js';
 import * as OfflineUI from './offline-ui.js';
 import * as Drafts from './studio-store.js';
 import * as Motion from './motion.js';
+import { loadPreviewTiles } from './previews.js';
 import * as Urls from './urls.js';
 import { SITE_NAME, CARD_WIDTH, CARD_HEIGHT, cardPath } from './seo.js';
 
@@ -372,6 +373,7 @@ function commit({ markup, meta }, { keep = false, scrollY = 0 } = {}) {
   }
   setMeta(meta);
   Motion.scan(shell);
+  if (!PRERENDER) loadPreviewTiles(shell);   // a saved page must keep data-src, not the fetched state
   OfflineUI.start();
   OfflineUI.refresh();
 }
@@ -929,6 +931,7 @@ document.addEventListener('click', async (event) => {
   if (mapAction === 'out') map?.zoomOut();
   if (mapAction === 'locate') map?.locate();
   if (mapAction === 'fit') map?.fit();
+  if (mapAction === 'expand') setMapExpanded(!document.querySelector('.map-frame')?.classList.contains('is-expanded'));
   if (mapAction === 'layers') {
     const button = event.target.closest('[data-map="layers"]');
     const satellite = button.getAttribute('aria-pressed') !== 'true';
@@ -941,6 +944,26 @@ document.addEventListener('click', async (event) => {
   if (event.target.closest('[data-studio], [data-studio-step], [data-studio-stop], [data-studio-open], [data-studio-delete]')) {
     await handleStudio(event.target.closest('[data-studio], [data-studio-step], [data-studio-stop], [data-studio-open], [data-studio-delete]'));
   }
+});
+
+/* A full-screen map by CSS rather than the Fullscreen API, so it also works where that API does not (iPhone Safari).
+   The map resizes itself; Escape closes it. */
+function setMapExpanded(on) {
+  const frame = document.querySelector('.map-frame');
+  if (!frame) return;
+  frame.classList.toggle('is-expanded', on);
+  document.documentElement.classList.toggle('has-map-expanded', on);
+  const button = frame.querySelector('[data-map="expand"]');
+  if (button) {
+    button.setAttribute('aria-pressed', String(on));
+    const label = button.querySelector('span');
+    if (label) label.textContent = on ? 'Close map' : 'Full screen';
+  }
+  if (!on) button?.focus({ preventScroll: true });
+}
+
+document.addEventListener('keydown', (event) => {
+  if (event.key === 'Escape' && document.querySelector('.map-frame.is-expanded')) setMapExpanded(false);
 });
 
 let filterTimer = null;
