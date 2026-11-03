@@ -29,8 +29,11 @@ const segment = (slug) => encodeURIComponent(String(slug));
 export const sectionPath = (name) => (name === 'home' ? '/' : `/${segment(name)}/`);
 
 /** The catalogue, with its search filled in when there is a query. */
-export function cataloguePath(query = '', base = '/routes/') {
-  return query ? `${base}?${new URLSearchParams({ q: query })}` : base;
+export function cataloguePath(query = '', base = '/routes/', extra = {}) {
+  const params = new URLSearchParams(query ? { q: query } : {});
+  for (const [key, value] of Object.entries(extra || {})) params.set(key, value);
+  const text = params.toString();
+  return text ? `${base}?${text}` : base;
 }
 
 /** A route page. The first stop is the page itself, so it carries no query. */

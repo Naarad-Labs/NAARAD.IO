@@ -85,6 +85,9 @@ async function syncCatalogue() {
     region: $('[data-filter-region]')?.value || 'all',
     withStories: Boolean($('[data-filter-stories]')?.checked),
   });
+  explore.onChange(() => {
+    if (state.page?.address) replaceAddress(state.page.address({ query: explore.currentQuery().trim() }));
+  });
   if (input?.value && state.page?.address) replaceAddress(state.page.address({ query: input.value.trim() }));
 }
 
@@ -107,14 +110,14 @@ const PAGES = [
   {
     name: 'routes', path: '/routes/', view: 'explore', nav: 'routes',
     context: catalogueContext,
-    address: ({ query }) => Urls.cataloguePath(query, '/routes/'),
+    address: ({ query }) => Urls.cataloguePath(query, '/routes/', modules.explore?.filterParams?.()),
     after: () => syncCatalogue(),
   },
   {
     // The same catalogue under its other name; its canonical is /routes/.
     name: 'explore', path: '/explore/', view: 'explore', nav: 'explore',
     context: catalogueContext,
-    address: ({ query }) => Urls.cataloguePath(query, '/explore/'),
+    address: ({ query }) => Urls.cataloguePath(query, '/explore/', modules.explore?.filterParams?.()),
     after: () => syncCatalogue(),
   },
   {
@@ -928,6 +931,16 @@ document.addEventListener('click', async (event) => {
     return;
   }
 
+  const levelButton = event.target.closest('[data-filter-level]');
+  const clearButton = event.target.closest('[data-clear-filter], [data-clear-all]');
+  if (levelButton || clearButton) {
+    const explore = await moduleFor('explore');
+    if (levelButton) explore.setFilter('level', levelButton.dataset.filterLevel);
+    else if (clearButton.hasAttribute('data-clear-all')) explore.clearAll();
+    else explore.clearFilter(clearButton.dataset.clearFilter);
+    return;
+  }
+
   const themeTile = event.target.closest('[data-explore-theme]');
   const nearTile = event.target.closest('[data-explore-near]');
   if (themeTile || nearTile) {
@@ -1002,6 +1015,8 @@ document.addEventListener('focusin', async (event) => {
   if (event.target.id === 'catalogue-query') (await moduleFor('explore')).addRecentSuggestions();
 });
 document.addEventListener('change', async (event) => {
+  const filter = event.target.dataset?.filter;
+  if (filter) (await moduleFor('explore')).setFilter(filter, event.target.value);
   if (event.target.id === 'catalogue-query') (await moduleFor('explore')).rememberSearch(event.target.value);
 });
 

@@ -22,6 +22,12 @@ let query = '';
 let sport = 'all';
 let withStories = false;
 let region = 'all';
+let distance = 'any';
+let time = 'any';
+let level = 'any';
+let lang = 'any';
+let sort = 'default';
+let notify = null;          // main.js asks to hear about every change, to keep the address current
 let origin = null;          // the visitor's position, kept in this tab only and never sent anywhere
 const RECENT_KEY = 'naarad:recent-searches';
 
@@ -72,6 +78,12 @@ export function addRecentSuggestions() {
   }
 }
 
+/** Languages at least one route has audio in, in a stable order. */
+function audioLanguages() {
+  const present = new Set(routes.flatMap((route) => route.languages || []));
+  return Object.keys(LANGUAGE_NAMES).filter((code) => present.has(code));
+}
+
 function suggestions() {
   const names = new Set();
   for (const route of routes) {
@@ -82,7 +94,46 @@ function suggestions() {
   return [...names].slice(0, 60);
 }
 
+const DISTANCES = { short: ['Under 3 km', 0, 3000], mid: ['3 to 10 km', 3000, 10000], long: ['Over 10 km', 10000, Infinity] };
+const TIMES = { short: ['Under 1 hour', 0, 60], mid: ['1 to 3 hours', 60, 180], long: ['Over 3 hours', 180, Infinity] };
+const LEVELS = { easy: 'Easy', moderate: 'Moderate', hard: 'Hard' };
+const SORTS = { default: 'Suggested', short: 'Shortest first', long: 'Longest first', stories: 'Most stories' };
+const LANGUAGE_NAMES = { en: 'English', hi: 'Hindi', ta: 'Tamil', te: 'Telugu', kn: 'Kannada', ml: 'Malayalam', mr: 'Marathi', bn: 'Bengali', gu: 'Gujarati' };
+const inBand = (value, [, low, high]) => value != null && value >= low && value < high;
+
+/** Filters the visitor has set, as labelled chips: [key, label]. */
+export function activeFilters() {
+  const out = [];
+  if (query) out.push(['query', `Search: ${query}`]);
+  if (sport !== 'all') out.push(['sport', SPORTS.find((item) => item.id === sport)?.label || sport]);
+  if (region !== 'all') out.push(['region', region]);
+  if (withStories) out.push(['stories', 'Has story stops']);
+  if (distance !== 'any') out.push(['distance', DISTANCES[distance][0]]);
+  if (time !== 'any') out.push(['time', TIMES[time][0]]);
+  if (level !== 'any') out.push(['level', LEVELS[level]]);
+  if (lang !== 'any') out.push(['lang', `Audio in ${LANGUAGE_NAMES[lang] || lang}`]);
+  return out;
+}
+
+/** The new filters as address parameters, so a filtered view can be shared. */
+export function filterParams() {
+  const params = {};
+  if (sport !== 'all') params.sport = sport;
+  if (region !== 'all') params.region = region;
+  if (withStories) params.stories = '1';
+  if (distance !== 'any') params.d = distance;
+  if (time !== 'any') params.t = time;
+  if (level !== 'any') params.lv = level;
+  if (lang !== 'any') params.lang = lang;
+  if (sort !== 'default') params.sort = sort;
+  return params;
+}
+
 function matches(route) {
+  if (distance !== 'any' && !inBand(route.distanceM, DISTANCES[distance])) return false;
+  if (time !== 'any' && !inBand(route.durationMin, TIMES[time])) return false;
+  if (level !== 'any' && route.difficulty !== level) return false;
+  if (lang !== 'any' && !(route.languages || []).includes(lang)) return false;
   if (sport !== 'all' && route.sport !== sport) return false;
   if (withStories && !route.hasStops) return false;
   if (region !== 'all' && route.region !== region) return false;
@@ -93,7 +144,7 @@ function matches(route) {
 
 function grid(list) {
   if (!list.length) {
-    return `<p class="catalogue-empty">No routes match that search yet. Try another place, or clear the filters.</p>`;
+    return `<p class="catalogue-empty">No routes match yet. ${activeFilters().length ? '<button type="button" class="text-link" data-clear-all>Clear all filters</button> to see every route, or try' : 'Try'} another place.</p>`;
   }
   return list.map((route) => routeCard(route)).join('');
 }
@@ -103,12 +154,72 @@ export function applyFilters() {
   // catalogue while the script arrives) there is nothing to filter yet.
   if (!routes.length) return;
   const list = routes.filter(matches);
-  if (origin) list.sort((a, b) => (startOf(a) ? distanceKm(origin, startOf(a)) : 1e9) - (startOf(b) ? distanceKm(origin, startOf(b)) : 1e9));
+  if (sort === 'short') list.sort((a, b) => (a.distanceM ?? Infinity) - (b.distanceM ?? Infinity));
+  else if (sort === 'long') list.sort((a, b) => (b.distanceM ?? -1) - (a.distanceM ?? -1));
+  else if (sort === 'stories') list.sort((a, b) => (b.stopCount || 0) - (a.stopCount || 0));
+  else if (origin) list.sort((a, b) => (startOf(a) ? distanceKm(origin, startOf(a)) : 1e9) - (startOf(b) ? distanceKm(origin, startOf(b)) : 1e9));
+  if (typeof document === 'undefined') return;   // pre-render and unit tests have no page to redraw
   const target = document.querySelector('#catalogue-grid');
   if (target) { target.innerHTML = grid(list); loadPreviewTiles(target); }
   const count = document.querySelector('#catalogue-count');
-  if (count) count.textContent = `${list.length} ${list.length === 1 ? 'route' : 'routes'}${origin ? ' · nearest first' : ''}`;
+  if (count) count.textContent = `${list.length} ${list.length === 1 ? 'route' : 'routes'}${origin && sort === 'default' ? ' · nearest first' : ''}`;
+  syncControls();
+  notify?.();
 }
+
+/** Keep the controls and the chip bar in step with the filters, whichever way they were changed. */
+function syncControls() {
+  const set = (selector, value) => { const node = document.querySelector(selector); if (node && node.value !== value) node.value = value; };
+  set('[data-filter="distance"]', distance); set('[data-filter="time"]', time); set('[data-filter="lang"]', lang);
+  set('[data-filter="sort"]', sort); set('[data-filter-region]', region);
+  document.querySelectorAll('[data-filter-level]').forEach((button) => {
+    const on = button.dataset.filterLevel === level;
+    button.classList.toggle('is-active', on); button.setAttribute('aria-pressed', String(on));
+  });
+  document.querySelectorAll('[data-filter-sport]').forEach((button) => {
+    const on = button.dataset.filterSport === sport;
+    button.classList.toggle('is-active', on); button.setAttribute('aria-pressed', String(on));
+  });
+  const stories = document.querySelector('[data-filter-stories]');
+  if (stories) stories.checked = withStories;
+  const bar = document.querySelector('#active-filters');
+  if (bar) {
+    const chips = activeFilters();
+    bar.hidden = !chips.length;
+    bar.innerHTML = chips.map(([key, label]) => `<button type="button" class="filter-pill" data-clear-filter="${escapeHtml(key)}" aria-label="Remove filter: ${escapeHtml(label)}">${escapeHtml(label)} <span aria-hidden="true">×</span></button>`).join('')
+      + (chips.length > 1 ? '<button type="button" class="text-link" data-clear-all>Clear all</button>' : '');
+  }
+}
+
+/** Set one of the range, level, language or sort filters by name. */
+export function setFilter(name, value) {
+  if (name === 'distance') distance = value in DISTANCES ? value : 'any';
+  if (name === 'time') time = value in TIMES ? value : 'any';
+  if (name === 'level') level = value in LEVELS && value !== level ? value : 'any';
+  if (name === 'lang') lang = value === 'any' || (LANGUAGE_NAMES[value] && routes.some((route) => (route.languages || []).includes(value))) ? value : 'any';
+  if (name === 'sort') sort = value in SORTS ? value : 'default';
+  applyFilters();
+}
+
+export function clearFilter(name) {
+  if (name === 'query') { query = ''; const input = document.querySelector('#catalogue-query'); if (input) input.value = ''; }
+  if (name === 'sport') sport = 'all';
+  if (name === 'region') region = 'all';
+  if (name === 'stories') withStories = false;
+  if (name === 'distance') distance = 'any';
+  if (name === 'time') time = 'any';
+  if (name === 'level') level = 'any';
+  if (name === 'lang') lang = 'any';
+  applyFilters();
+}
+
+export function clearAll() {
+  for (const [key] of activeFilters()) clearFilter(key);
+}
+
+/** main.js passes a function to call after every change (it rewrites the address). */
+export function onChange(fn) { notify = fn; }
+export const currentQuery = () => query;
 
 export function setQuery(value) { query = value; applyFilters(); }
 /** Sort by distance from a position ([lng, lat]) or, with null, back to the catalogue order. */
@@ -135,6 +246,20 @@ export async function render(context = {}) {
   routes = await Data.loadRoutes();
   query = context.query || '';
   origin = null;      // a fresh page starts with the Near me button off
+  distance = 'any'; time = 'any'; level = 'any'; lang = 'any'; sort = 'default';
+  sport = 'all'; region = 'all'; withStories = false;
+  if (typeof location !== 'undefined' && !globalThis.__NAARAD_PRERENDER__) {
+    const params = new URLSearchParams(location.search);
+    const pick = (key, allowed) => (allowed.includes(params.get(key)) ? params.get(key) : null);
+    sport = pick('sport', SPORTS.map((item) => item.id)) || 'all';
+    distance = pick('d', Object.keys(DISTANCES)) || 'any';
+    time = pick('t', Object.keys(TIMES)) || 'any';
+    level = pick('lv', Object.keys(LEVELS)) || 'any';
+    sort = pick('sort', Object.keys(SORTS)) || 'default';
+    withStories = params.get('stories') === '1';
+    region = params.get('region') || 'all';
+    lang = params.get('lang') || 'any';
+  }
   const shown = routes.filter(matches);
   const regions = [...new Set(routes.map((route) => route.region).filter(Boolean))].sort();
   const withStops = routes.filter((route) => route.hasStops).length;
@@ -183,6 +308,36 @@ export async function render(context = {}) {
           </select>
         </fieldset>
         <fieldset>
+          <legend>Distance</legend>
+          <label class="sr-only" for="filter-distance">Distance</label>
+          <select id="filter-distance" data-filter="distance">
+            <option value="any">Any distance</option>
+            ${Object.entries(DISTANCES).map(([key, band]) => `<option value="${key}" ${key === distance ? 'selected' : ''}>${band[0]}</option>`).join('')}
+          </select>
+        </fieldset>
+        <fieldset>
+          <legend>Time</legend>
+          <label class="sr-only" for="filter-time">Time</label>
+          <select id="filter-time" data-filter="time">
+            <option value="any">Any time</option>
+            ${Object.entries(TIMES).map(([key, band]) => `<option value="${key}" ${key === time ? 'selected' : ''}>${band[0]}</option>`).join('')}
+          </select>
+        </fieldset>
+        <fieldset>
+          <legend>Difficulty</legend>
+          <div class="filter-chips" role="group">
+            ${Object.entries(LEVELS).map(([key, label]) => `<button type="button" data-filter-level="${key}" class="${key === level ? 'is-active' : ''}" aria-pressed="${key === level}">${label}</button>`).join('')}
+          </div>
+        </fieldset>
+        ${audioLanguages().length ? `<fieldset>
+          <legend>Audio language</legend>
+          <label class="sr-only" for="filter-lang">Audio language</label>
+          <select id="filter-lang" data-filter="lang">
+            <option value="any">Any language</option>
+            ${audioLanguages().map((code) => `<option value="${code}" ${code === lang ? 'selected' : ''}>${LANGUAGE_NAMES[code]}</option>`).join('')}
+          </select>
+        </fieldset>` : ''}
+        <fieldset>
           <legend>Content</legend>
           <label class="filter-check">
             <input type="checkbox" data-filter-stories ${withStories ? 'checked' : ''}>
@@ -198,7 +353,14 @@ export async function render(context = {}) {
             <p class="eyebrow eyebrow-mark">Curated and community routes</p>
             <h2 class="section-title"><span id="catalogue-count" role="status">${shown.length} ${shown.length === 1 ? 'route' : 'routes'}</span></h2>
           </div>
+          <div class="section-head-aside">
+            <label class="sr-only" for="filter-sort">Sort routes</label>
+            <select id="filter-sort" data-filter="sort">
+              ${Object.entries(SORTS).map(([key, label]) => `<option value="${key}" ${key === sort ? 'selected' : ''}>${label}</option>`).join('')}
+            </select>
+          </div>
         </div>
+        <div id="active-filters" class="active-filters" aria-label="Active filters" ${activeFilters().length ? '' : 'hidden'}>${activeFilters().map(([key, label]) => `<button type="button" class="filter-pill" data-clear-filter="${escapeHtml(key)}" aria-label="Remove filter: ${escapeHtml(label)}">${escapeHtml(label)} <span aria-hidden="true">×</span></button>`).join('')}${activeFilters().length > 1 ? '<button type="button" class="text-link" data-clear-all>Clear all</button>' : ''}</div>
         <div id="catalogue-grid" class="route-card-grid">${grid(shown)}</div>
       </section>
     </div>
