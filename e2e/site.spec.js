@@ -2366,3 +2366,18 @@ test.describe('service worker', () => {
     expect(await page.evaluate(() => window.__sameDocument)).toBeUndefined();
   });
 });
+
+test('catalogue map keeps filtered route cards available', async ({ page }) => {
+  await page.setViewportSize(PHONE);
+  await page.goto('/routes/');
+  await page.getByRole('button', { name: 'Map and list' }).click();
+  await expect(page.locator('#catalogue-map .leaflet-marker-icon').first()).toBeVisible();
+  await expect(page.locator('.catalogue-map-note')).toContainText('matching routes have a published start location');
+  await page.locator('#catalogue-query').fill('Hampi');
+  await expect(page.locator('#catalogue-count')).toHaveText('1 route');
+  await expect(page.locator('#catalogue-grid .route-card')).toHaveCount(1);
+  await expect(page.locator('#catalogue-map .leaflet-marker-icon')).toHaveCount(1);
+  await expect(page.locator('#catalogue-grid')).toContainText('Hampi');
+  await page.getByRole('button', { name: 'List', exact: true }).click();
+  await expect(page.locator('#catalogue-map-panel')).toBeHidden();
+});
