@@ -21,7 +21,7 @@
  * a page that was already controlled reload once when the worker changes.
  */
 
-const VERSION = 'v39';
+const VERSION = 'v41';
 const SHELL = `naarad-shell-${VERSION}`;
 const PAGES = `naarad-pages-${VERSION}`;
 const CONTENT = `naarad-content-${VERSION}`;
@@ -78,6 +78,7 @@ const SHELL_ASSETS = [
   '/app/views/journey.js',
   '/app/views/route.js',
   '/app/views/story.js',
+  '/app/views/collection.js',
   '/app/views/studio.js',
   '/app/fonts/DMSans.woff2',
   '/app/fonts/PlayfairDisplay.woff2',
@@ -87,7 +88,7 @@ const SHELL_ASSETS = [
 
 /* The data every page is drawn from, kept at install: offline, a page the visitor
    never opened needs it, and a copy cached by the first visit may not have landed yet. */
-const CONTENT_ASSETS = ['/content/routes.json', '/content/stories.json', '/content/photo-sources.json', '/routes/geo-tracks.json', '/discover/seed-tours.json'];
+const CONTENT_ASSETS = ['/content/routes.json', '/content/stories.json', '/content/collections.json', '/content/photo-sources.json', '/routes/geo-tracks.json', '/discover/seed-tours.json'];
 
 const isContent = (url) => url.pathname.startsWith('/content/') || url.pathname.startsWith('/discover/') || url.pathname.startsWith('/routes/');
 const isMedia = (url) => url.pathname.startsWith('/Images/');
