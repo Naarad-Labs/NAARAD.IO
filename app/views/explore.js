@@ -46,16 +46,23 @@ export function themeTiles(list, count = 6) {
   const tally = new Map();
   for (const route of list) {
     for (const theme of route.themes || []) {
-      const entry = tally.get(theme) || { theme, n: 0, photo: null };
+      const entry = tally.get(theme) || { theme, n: 0, photos: [] };
       entry.n += 1;
-      entry.photo ||= route.cardPhoto || route.photo || null;
+      const photo = route.cardPhoto || route.photo || null;
+      if (photo && !entry.photos.includes(photo)) entry.photos.push(photo);
       tally.set(theme, entry);
     }
   }
   // A tile without a photograph, or a bookkeeping tag such as "Recorded track", is not an invitation to explore.
-  const ranked = [...tally.values()].filter((entry) => entry.photo && !/^recorded/i.test(entry.theme))
+  const ranked = [...tally.values()].filter((entry) => entry.photos.length && !/^recorded/i.test(entry.theme))
     .sort((a, b) => b.n - a.n || a.theme.localeCompare(b.theme));
-  return ranked.slice(0, count);
+  // Two tiles should not show the same photograph when another is available.
+  const used = new Set();
+  return ranked.slice(0, count).map((entry) => {
+    const photo = entry.photos.find((candidate) => !used.has(candidate)) || entry.photos[0];
+    used.add(photo);
+    return { theme: entry.theme, n: entry.n, photo };
+  });
 }
 
 function recentSearches() {
@@ -230,8 +237,6 @@ export function setQuery(value) { query = value; applyFilters(); }
 export function setOrigin(value) {
   origin = value;
   applyFilters();
-  const note = document.querySelector('#near-note');
-  if (note) note.textContent = 'Nearest first asks for your location only when you tap it, and keeps it on this device.';
 }
 export function setSport(value) { sport = value; applyFilters(); }
 export function setRegion(value) { region = value; applyFilters(); }
@@ -282,11 +287,6 @@ export async function render(context = {}) {
         <datalist id="catalogue-suggestions">${suggestions().map((name) => `<option value="${escapeHtml(name)}"></option>`).join('')}</datalist>
       </form>
     </header>
-
-    <p class="explore-near">
-      <button type="button" class="button button-sm" data-explore-near aria-pressed="false" aria-describedby="near-note">${icon('locate')} Nearest first</button>
-    </p>
-    <p id="near-note" class="data-note">Nearest first asks for your location only when you tap it, and keeps it on this device.</p>
 
     ${atlasMarkup(routes)}
 
@@ -375,7 +375,7 @@ export function meta() {
   const lead = routes[0];
   const withStops = routes.filter((route) => route.hasStops).length;
   return {
-    title: 'Explore routes · Naarad',
+    title: 'All routes · Naarad',
     description: `Search ${routes.length} heritage walking routes across India. ${withStops} ${withStops === 1 ? 'has' : 'have'} ordered stops with a written story at each; the rest are listed with the facts known so far.`,
     path: '/routes/',
     card: {

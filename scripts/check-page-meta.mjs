@@ -165,7 +165,7 @@ export function check(rootDir, options = {}) {
       });
     }
 
-    // A page whose canonical is another page (such as /explore/, canonical to /routes/) repeats that page's
+    // A page whose canonical is another page (a page that names another as its canonical) repeats that page's
     // title and description on purpose, so it is left out of the uniqueness checks.
     if (canonicals.length === 1 && canonicalIsElsewhere(canonicals[0], page.relative)) continue;
 

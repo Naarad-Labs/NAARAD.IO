@@ -25,3 +25,11 @@ test('themeTiles caps the count and ignores routes without themes', () => {
   assert.equal(themeTiles(many, 4).length, 4);
   assert.deepEqual(themeTiles([{}, { themes: [] }]), []);
 });
+
+test('themeTiles gives each tile its own photograph when another is available', () => {
+  const tiles = themeTiles([
+    { themes: ['Temples', 'History'], photo: 'a' },
+    { themes: ['Temples', 'History'], photo: 'b' },
+  ]);
+  assert.equal(new Set(tiles.map((tile) => tile.photo)).size, 2);
+});

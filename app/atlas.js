@@ -51,9 +51,10 @@ export function formatKm(km) {
 const SECTION = `<section class="atlas" id="atlas" aria-labelledby="atlas-title">
   <div class="atlas-head">
     <h2 id="atlas-title" class="eyebrow eyebrow-mark">Every route on the map</h2>
+    <a class="text-link" href="#catalogue-grid">Skip the map</a>
     <button type="button" class="button button-sm" data-atlas-near>Routes near me</button>
   </div>
-  <div class="atlas-map nr-map-host" data-atlas-map role="region" aria-label="Map of all routes"></div>
+  <div class="atlas-map nr-map-host" data-atlas-map role="region" aria-label="Map of all routes. The same routes are listed below."></div>
   <p class="atlas-status" data-atlas-status></p>
   <ol class="atlas-near" data-atlas-list hidden></ol>
   <p class="data-note">Your position is used on this device to sort the routes. It is not sent or kept.</p>
@@ -115,9 +116,12 @@ export async function mountAtlas(routes, { before = '.catalogue-body', isCurrent
       near.disabled = false;
       if (state.destroyed) return;
       const from = { lat: coords.latitude, lng: coords.longitude };
+      document.dispatchEvent(new CustomEvent('catalogue:near', { detail: { lng: from.lng, lat: from.lat } }));   // the catalogue sorts nearest first
       const pool = routes.filter((route) => !state.visible || state.visible.has(route.slug));
       const closest = nearest(pool, from, 3);
-      status.textContent = closest.length ? 'Nearest routes to you:' : 'No routes with a start point match the filters.';
+      status.textContent = closest.length
+        ? `Nearest to you: ${closest[0].route.name}, ${formatKm(closest[0].km)} away. ${closest.length} routes are listed below, and the catalogue is sorted nearest first.`
+        : 'No routes with a start point match the filters.';
       list.hidden = !closest.length;
       list.innerHTML = closest.map(({ route, km }) => `<li><a href="${routePath(route.slug)}">
         <strong>${escapeHtml(route.name)}</strong><span>${escapeHtml(route.location || route.region || 'India')} · ${formatKm(km)} away</span></a></li>`).join('');
@@ -159,13 +163,14 @@ export async function mountAtlas(routes, { before = '.catalogue-body', isCurrent
       });
       marker.bindPopup(`<strong>${escapeHtml(route.name)}</strong><br>${escapeHtml(route.location || route.region || 'India')}`
         + `<br><a href="${routePath(route.slug)}">View route</a>`);
+      marker.on('add', () => marker.getElement()?.setAttribute('aria-label', route.name));
       state.markers.set(route.slug, { marker, latlng });
     }
     controller.update(state.visible || routes.map((route) => route.slug));
     state.resizeObserver = new ResizeObserver(() => { if (!state.destroyed) state.map?.invalidateSize({ pan: false }); });
     state.resizeObserver.observe(container);
   } catch {
-    if (!state.destroyed) container.innerHTML = '<p class="map-unavailable">The map could not load. The routes are listed below.</p>';
+    if (!state.destroyed) container.innerHTML = '<p class="map-unavailable" role="status">The map could not load. The routes are listed below.</p>';
   }
   return controller;
 }

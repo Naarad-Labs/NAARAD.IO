@@ -75,11 +75,6 @@
 .explore-tile::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to top, rgb(var(--ink-rgb) / 82%), rgb(var(--ink-rgb) / 55%) 45%, rgb(var(--ink-rgb) / 6%) 85%); }
 .explore-tile-label { position: absolute; left: 10px; right: 10px; bottom: 8px; z-index: 1; color: var(--white); font-weight: 700; font-size: var(--text-sm); display: grid; gap: 1px; text-shadow: 0 1px 2px rgb(var(--ink-rgb) / 60%); }
 .explore-tile-label small { font-weight: 500; font-size: var(--text-xs); opacity: .9; }
-.explore-tile.is-near { background: var(--paper-bright); }
-.explore-tile.is-near::after { display: none; }
-.explore-tile.is-near .explore-tile-label { color: var(--ink); text-shadow: none; top: 8px; align-content: end; }
-.explore-tile.is-near .ico { width: 18px; height: 18px; }
-.explore-tile.is-near[aria-pressed='true'] { outline: 3px solid var(--orange-bright); outline-offset: 2px; }
 
 .active-filters { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 0 0 14px; }
 .active-filters[hidden] { display: none; }
@@ -119,15 +114,17 @@
 .collection-page .route-card-grid, .collection-index .collection-grid { margin-bottom: 40px; }
 .route-collections { margin-top: 24px; }
 
-.explore-near { margin: 14px 0 0; }
 .discover-actions { display: flex; flex-wrap: wrap; gap: 10px; align-self: end; margin: 0; }
 .discover-featured { margin: 30px 0 10px; }
 
 /* The atlas above the catalogue (app/atlas.js). */
 .atlas { display: grid; gap: 12px; margin-top: 30px; }
 .atlas-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; }
-.atlas-map { position: relative; height: clamp(300px, 46vh, 460px); border: 1px solid var(--line); border-radius: var(--radius-lg); overflow: hidden; background: var(--map-ground); }
+.atlas-map { position: relative; height: clamp(240px, 38vh, 380px); border: 1px solid var(--line); border-radius: var(--radius-lg); overflow: hidden; background: var(--map-ground); }
 .atlas-status { margin: 0; min-height: 1.4em; font-size: var(--text-sm); color: var(--ink-soft); }
 .atlas-near { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; margin: 0; padding: 0; list-style: none; }
 .atlas-near a { display: grid; gap: 4px; padding: 14px 16px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--paper-bright); }
 .atlas-near span { font-size: var(--text-xs); color: var(--ink-muted); }
+@media (hover: hover) { .atlas-near a:hover { border-color: var(--ink); } }
+.collection-card-map { display: block; aspect-ratio: 3 / 2; background: var(--preview-ground); }
+.collection-card-map .route-preview { display: block; width: 100%; height: 100%; }

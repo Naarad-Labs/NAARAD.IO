@@ -168,5 +168,6 @@
 .nr-map-host .leaflet-pane { z-index: 1; }
 
 /* The atlas: one dot per route, orange where the route has stories. */
-.atlas-dot { display: block; width: 20px; height: 20px; border-radius: 50%; background: var(--ink); border: 3px solid var(--white); box-shadow: 0 2px 8px rgb(var(--ink-deep-rgb) / 35%); }
+.atlas-dot { display: block; width: 20px; height: 20px; transition: transform .18s; border-radius: 50%; background: var(--ink); border: 3px solid var(--white); box-shadow: 0 2px 8px rgb(var(--ink-deep-rgb) / 35%); }
 .atlas-dot.has-stories { background: var(--orange); }
+@media (hover: hover) { .nr-map-marker-shell:hover .atlas-dot { transform: scale(1.12); } }

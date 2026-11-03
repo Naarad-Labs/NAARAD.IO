@@ -44,7 +44,7 @@ export async function render() {
 
     <section class="discover-featured" aria-labelledby="featured-title">
       <div class="section-head"><div><p class="eyebrow eyebrow-mark">Begin here</p><h2 class="section-title" id="featured-title">Routes with a story.</h2></div>
-      <div class="section-head-aside"><a class="text-link" href="/routes/" data-view="routes">All routes ${icon('arrow')}</a></div></div>
+      </div>
       <div class="route-card-grid is-three">${featured(routes).map((route) => routeCard(route)).join('')}</div>
     </section>
   </div>`;

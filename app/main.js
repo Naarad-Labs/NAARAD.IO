@@ -489,9 +489,12 @@ async function show(url, { push = true, boot = false, scrollY = 0 } = {}) {
     if (push) pushAddress(address + url.hash, leftAt);
     else replaceAddress(address + url.hash);
   }
-  if (url.hash && !boot) document.getElementById(anchorId(url.hash))?.scrollIntoView();
-  // A page drawn in place is a new page: the keyboard and screen readers start at its heading.
-  if (!boot && !PRERENDER) focusHeading();
+  const target = url.hash ? document.getElementById(anchorId(url.hash)) : null;
+  if (target && !boot) target.scrollIntoView();
+  // A page drawn in place is a new page: the keyboard and screen readers start at its heading, or at the part the address names.
+  if (!boot && !PRERENDER) {
+    if (target) { target.setAttribute('tabindex', '-1'); target.focus({ preventScroll: true }); } else focusHeading();
+  }
 
   if (PRERENDER) {
     shell.dataset.prerendered = key;
@@ -563,8 +566,10 @@ async function mountAtlasMap(current) {
     const atlas = await mountAtlas(routes, { isCurrent: () => current === generation });
     if (current !== generation) { atlas.destroy(); return; }
     const follow = (event) => atlas.update(event.detail.slugs);
+    const near = async (event) => (await moduleFor('explore')).setOrigin([event.detail.lng, event.detail.lat]);
     document.addEventListener('catalogue:filtered', follow);
-    map = { destroy() { document.removeEventListener('catalogue:filtered', follow); atlas.destroy(); } };
+    document.addEventListener('catalogue:near', near);
+    map = { destroy() { document.removeEventListener('catalogue:filtered', follow); document.removeEventListener('catalogue:near', near); atlas.destroy(); } };
     await syncCatalogue();
   } catch (error) {
     console.error('Atlas unavailable', error);
@@ -982,35 +987,6 @@ document.addEventListener('click', async (event) => {
       // The bar was redrawn, so the pressed button is gone: put focus on a neighbour, or on the search box.
       const rest = [...document.querySelectorAll('#active-filters [data-clear-filter]')];
       (rest[Math.min(Math.max(position, 0), rest.length - 1)] || document.querySelector('#catalogue-query'))?.focus();
-    }
-    return;
-  }
-
-  const themeTile = event.target.closest('[data-explore-theme]');
-  const nearTile = event.target.closest('[data-explore-near]');
-  if (themeTile || nearTile) {
-    const explore = await moduleFor('explore');
-    if (themeTile) {
-      const theme = themeTile.dataset.exploreTheme;
-      const input = document.querySelector('#catalogue-query');
-      if (input) input.value = theme;
-      explore.setQuery(theme);
-      explore.rememberSearch(theme);
-      if (state.page?.address) replaceAddress(state.page.address({ query: theme }));
-    } else if (nearTile.getAttribute('aria-pressed') === 'true') {
-      nearTile.setAttribute('aria-pressed', 'false');
-      explore.setOrigin(null);
-    } else if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition((position) => {
-        nearTile.setAttribute('aria-pressed', 'true');
-        explore.setOrigin([position.coords.longitude, position.coords.latitude]);
-      }, () => {
-        const count = document.querySelector('#catalogue-count');
-        if (count) count.textContent = 'We could not get your location, so routes are not sorted by distance.';
-      }, { maximumAge: 300000, timeout: 10000 });
-    } else {
-      const count = document.querySelector('#catalogue-count');
-      if (count) count.textContent = 'This browser cannot share a location, so routes are not sorted by distance.';
     }
     return;
   }
