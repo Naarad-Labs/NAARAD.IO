@@ -1,6 +1,6 @@
 /* Explore: filters beside a grid on desktop, a scrolling filter row on a phone. */
 
-.catalogue, .collection-page, .collection-index { width: min(100% - 48px, var(--wrap)); margin: 0 auto; padding: clamp(30px, 3.4vw, 54px) 0 70px; }
+.catalogue, .collection-page, .collection-index, .discover { width: min(100% - 48px, var(--wrap)); margin: 0 auto; padding: clamp(30px, 3.4vw, 54px) 0 70px; }
 
 .catalogue-hero {
   display: grid; grid-template-columns: minmax(0, 1fr) minmax(280px, 34%); gap: 26px 40px;
@@ -59,7 +59,7 @@
   .catalogue-filters fieldset { min-width: max-content; }
 }
 @media (max-width: 639px) {
-  .catalogue, .collection-page, .collection-index { width: calc(100% - 28px); }
+  .catalogue, .collection-page, .collection-index, .discover { width: calc(100% - 28px); }
   .filter-chips button { min-height: 44px; }
   .catalogue-filters select { min-height: 44px; }
   .catalogue-filters .filter-check { min-height: 44px; }
@@ -118,3 +118,16 @@
 @media (max-width: 639px) { .collection-intro summary { min-height: 44px; } }
 .collection-page .route-card-grid, .collection-index .collection-grid { margin-bottom: 40px; }
 .route-collections { margin-top: 24px; }
+
+.explore-near { margin: 14px 0 0; }
+.discover-actions { display: flex; flex-wrap: wrap; gap: 10px; align-self: end; margin: 0; }
+.discover-featured { margin: 30px 0 10px; }
+
+/* The atlas above the catalogue (app/atlas.js). */
+.atlas { display: grid; gap: 12px; margin-top: 30px; }
+.atlas-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; }
+.atlas-map { position: relative; height: clamp(300px, 46vh, 460px); border: 1px solid var(--line); border-radius: var(--radius-lg); overflow: hidden; background: var(--map-ground); }
+.atlas-status { margin: 0; min-height: 1.4em; font-size: var(--text-sm); color: var(--ink-soft); }
+.atlas-near { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; margin: 0; padding: 0; list-style: none; }
+.atlas-near a { display: grid; gap: 4px; padding: 14px 16px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--paper-bright); }
+.atlas-near span { font-size: var(--text-xs); color: var(--ink-muted); }

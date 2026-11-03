@@ -7,7 +7,7 @@ import { escapeHtml, picture } from '../media.js';
 import { icon } from '../icons.js';
 import * as Data from '../data.js';
 import { routeCard } from './home.js';
-import { strip as collectionStrip } from './collection.js';
+import { atlasMarkup } from '../atlas.js';
 import { loadPreviewTiles } from '../previews.js';
 import * as Seo from '../seo.js';
 
@@ -162,6 +162,7 @@ export function applyFilters() {
   if (typeof document === 'undefined') return;   // pre-render and unit tests have no page to redraw
   const target = document.querySelector('#catalogue-grid');
   if (target) { target.innerHTML = grid(list); loadPreviewTiles(target); }
+  document.dispatchEvent(new CustomEvent('catalogue:filtered', { detail: { slugs: list.map((route) => route.slug) } }));
   const count = document.querySelector('#catalogue-count');
   if (count) count.textContent = `${list.length} ${list.length === 1 ? 'route' : 'routes'}${origin && sort === 'default' ? ' · nearest first' : ''}`;
   syncControls();
@@ -230,7 +231,7 @@ export function setOrigin(value) {
   origin = value;
   applyFilters();
   const note = document.querySelector('#near-note');
-  if (note) note.textContent = 'Near me asks for your location only when you tap it, and keeps it on this device.';
+  if (note) note.textContent = 'Nearest first asks for your location only when you tap it, and keeps it on this device.';
 }
 export function setSport(value) { sport = value; applyFilters(); }
 export function setRegion(value) { region = value; applyFilters(); }
@@ -266,7 +267,6 @@ export async function render(context = {}) {
   const shown = routes.filter(matches);
   const regions = [...new Set(routes.map((route) => route.region).filter(Boolean))].sort();
   const withStops = routes.filter((route) => route.hasStops).length;
-  const collections = await collectionStrip();
 
   return `<div class="catalogue">
     <header class="catalogue-hero">
@@ -283,18 +283,12 @@ export async function render(context = {}) {
       </form>
     </header>
 
-    <section class="explore-tiles" aria-label="Start from a theme">
-      ${themeTiles(routes).map((tile) => `<button type="button" class="explore-tile" data-explore-theme="${escapeHtml(tile.theme)}">
-        ${tile.photo ? picture(tile.photo, { sizes: '(max-width: 760px) 45vw, 190px', alt: '', ratio: '4 / 3' }) : ''}
-        <span class="explore-tile-label">${escapeHtml(tile.theme)}<small>${tile.n} ${tile.n === 1 ? 'route' : 'routes'}</small></span>
-      </button>`).join('')}
-      <button type="button" class="explore-tile is-near" data-explore-near aria-pressed="false" aria-label="Near me" aria-describedby="near-hint">
-        <span class="explore-tile-label"><span>${icon('locate')} Near me</span><small id="near-hint">Nearest first</small></span>
-      </button>
-    </section>
-    <p id="near-note" class="data-note">Near me asks for your location only when you tap it, and keeps it on this device.</p>
+    <p class="explore-near">
+      <button type="button" class="button button-sm" data-explore-near aria-pressed="false" aria-describedby="near-note">${icon('locate')} Nearest first</button>
+    </p>
+    <p id="near-note" class="data-note">Nearest first asks for your location only when you tap it, and keeps it on this device.</p>
 
-    ${collections}
+    ${atlasMarkup(routes)}
 
     <div class="catalogue-body">
       <aside class="catalogue-filters" aria-label="Filters">

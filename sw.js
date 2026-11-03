@@ -21,7 +21,7 @@
  * a page that was already controlled reload once when the worker changes.
  */
 
-const VERSION = 'v42';
+const VERSION = 'v43';
 const SHELL = `naarad-shell-${VERSION}`;
 const PAGES = `naarad-pages-${VERSION}`;
 const CONTENT = `naarad-content-${VERSION}`;
@@ -78,6 +78,8 @@ const SHELL_ASSETS = [
   '/app/views/journey.js',
   '/app/views/route.js',
   '/app/views/story.js',
+  '/app/views/discover.js',
+  '/app/atlas.js',
   '/app/views/collection.js',
   '/app/views/studio.js',
   '/app/fonts/DMSans.woff2',

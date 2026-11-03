@@ -114,6 +114,26 @@
       "licence": "CC BY-SA 4.0"
     },
     {
+      "file": "explore.jpg",
+      "pages": [
+        "/explore/"
+      ],
+      "alt": "Find your next walk: Naarad's Explore page, set on a photograph from the Hampi Heritage Trail.",
+      "width": 1200,
+      "height": 630,
+      "quality": 82,
+      "photo": {
+        "id": "hampi-virupaksha",
+        "title": "Virupaksha Temple,Hampi",
+        "author": "Vedamurthy J",
+        "licence": "CC BY-SA 3.0",
+        "licenceUrl": "https://creativecommons.org/licenses/by-sa/3.0/",
+        "sourcePage": "https://commons.wikimedia.org/w/index.php?curid=12001400",
+        "changes": "Cropped to 1200 x 630, with the page title, the Naarad wordmark and this credit set over it."
+      },
+      "licence": "CC BY-SA 3.0"
+    },
+    {
       "file": "home.jpg",
       "pages": [
         "/",
@@ -435,8 +455,7 @@
     {
       "file": "routes.jpg",
       "pages": [
-        "/routes/",
-        "/explore/"
+        "/routes/"
       ],
       "alt": "Go where stories live: the Naarad route catalogue, set on a photograph from the Hampi Heritage Trail.",
       "width": 1200,

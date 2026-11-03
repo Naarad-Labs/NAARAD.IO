@@ -88,7 +88,7 @@ async function syncCatalogue() {
     withStories: Boolean($('[data-filter-stories]')?.checked),
   });
   explore.onChange(() => {
-    if (!['routes', 'explore'].includes(state.page?.name)) return;   // a late redraw must not rewrite another page's address
+    if (state.page?.name !== 'routes') return;   // a late redraw must not rewrite another page's address
     if (state.page?.address) replaceAddress(state.page.address({ query: explore.currentQuery().trim() }));
   });
   if (input?.value && state.page?.address) replaceAddress(state.page.address({ query: input.value.trim() }));
@@ -114,14 +114,11 @@ const PAGES = [
     name: 'routes', path: '/routes/', view: 'explore', nav: 'routes',
     context: catalogueContext,
     address: ({ query }) => Urls.cataloguePath(query, '/routes/', modules.explore?.filterParams?.()),
-    after: () => syncCatalogue(),
+    after: (context, current) => { syncCatalogue(); mountAtlasMap(current); },
   },
   {
-    // The same catalogue under its other name; its canonical is /routes/.
-    name: 'explore', path: '/explore/', view: 'explore', nav: 'explore',
-    context: catalogueContext,
-    address: ({ query }) => Urls.cataloguePath(query, '/explore/', modules.explore?.filterParams?.()),
-    after: () => syncCatalogue(),
+    // Where a visitor starts: themes, collections and a few routes. The catalogue is /routes/.
+    name: 'explore', path: '/explore/', view: 'discover', nav: 'explore',
   },
   {
     name: 'route', prefix: '/routes/', view: 'route', nav: 'routes', body: 'route',
@@ -332,6 +329,7 @@ async function moduleFor(name) {
   const loaders = {
     home: () => import('./views/home.js'),
     explore: () => import('./views/explore.js'),
+    discover: () => import('./views/discover.js'),
     route: () => import('./views/route.js'),
     story: () => import('./views/story.js'),
     collection: () => import('./views/collection.js'),
@@ -552,6 +550,26 @@ function unwatchRouteBar() {
 /* ── Map ────────────────────────────────────────────────────────── */
 
 function destroyMap() { map?.destroy?.(); map = null; }
+
+/* The all-routes map above the catalogue. It follows the filters through the catalogue:filtered event. Not drawn
+   while pre-rendering: the saved page keeps the empty frame, so it matches what boot draws. */
+async function mountAtlasMap(current) {
+  if (PRERENDER) return;
+  destroyMap();
+  try {
+    const { mountAtlas } = await import('./atlas.js');
+    const routes = await Data.loadRoutes();
+    if (current !== generation) return;
+    const atlas = await mountAtlas(routes, { isCurrent: () => current === generation });
+    if (current !== generation) { atlas.destroy(); return; }
+    const follow = (event) => atlas.update(event.detail.slugs);
+    document.addEventListener('catalogue:filtered', follow);
+    map = { destroy() { document.removeEventListener('catalogue:filtered', follow); atlas.destroy(); } };
+    await syncCatalogue();
+  } catch (error) {
+    console.error('Atlas unavailable', error);
+  }
+}
 
 /* The chosen map layer is remembered on this device. Blocked or full storage just means the default (satellite) shows. */
 const MAP_LAYER_KEY = 'naarad.map-layer.v1';

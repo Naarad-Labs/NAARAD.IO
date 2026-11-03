@@ -30,7 +30,7 @@ export const BUNDLE_VERSION = 1;
    unavailable. Every bundle lists these files, so the first
    download stores them once and the last removal deletes them (remove() keeps
    any file another bundle still lists). */
-export const KIT = ['/journey/', '/app/views/journey.js', '/app/journey.css', '/routes/', '/app/views/explore.js', '/app/explore.css'];
+export const KIT = ['/journey/', '/app/views/journey.js', '/app/journey.css', '/routes/', '/app/views/explore.js', '/app/atlas.js', '/app/explore.css'];
 
 /* The widths a phone asks for. Larger ones are left out to keep a bundle small. */
 export const MAX_PHOTO_WIDTH = 960;

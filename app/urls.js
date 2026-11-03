@@ -2,7 +2,7 @@
  *
  *   /                       home
  *   /routes/                the route catalogue; ?q= fills its search
- *   /explore/               the same catalogue, canonical to /routes/
+ *   /explore/               where to start: themes, collections, a few routes (the catalogue is /routes/)
  *   /routes/<slug>/         a route; the open stop is a query, ?stop=3
  *   /stories/               the story index
  *   /stories/<slug>/        a story
