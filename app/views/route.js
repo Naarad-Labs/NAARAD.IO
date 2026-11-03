@@ -231,6 +231,15 @@ function mapPanel(route) {
   </section>`;
 }
 
+/** The profile with a cursor and a readout: pointer or arrow keys move along the walk (app/elevation-cursor.js). */
+function elevationCursor(route, profile) {
+  const samples = (route.elevation?.samples || []).map((sample) => [Math.round(sample.d), Math.round(sample.e * 10) / 10]);
+  return `<div class="elevation-wrap" tabindex="0" role="group" aria-label="Elevation profile. Use the left and right arrow keys to move along the walk." data-elevation="${escapeHtml(JSON.stringify(samples))}">
+    <div class="elevation-plot">${profile}<span class="elevation-cursor" hidden></span></div>
+    <p class="elevation-readout data-note">Hover, touch or use the arrow keys to read the height at any point.</p>
+  </div>`;
+}
+
 function glance(route) {
   const profile = elevationProfile(route, { width: 760, height: 168 });
   const gap = (value) => (Data.isUnmeasured(route, value) ? Data.NOT_MEASURED : null);
@@ -248,13 +257,15 @@ function glance(route) {
     .map(([name, value, label]) => `<div class="metric${value === Data.NOT_MEASURED ? ' is-muted' : ''}">${icon(name)}<span class="metric-text"><b>${escapeHtml(value)}</b><span>${label}</span></span></div>`).join('')}
       </div>
       ${route.surface ? `<p class="data-note">${escapeHtml(route.surface)}.</p>` : ''}
+      ${route.geometry?.coordinates?.length ? `<p class="glance-actions"><button type="button" class="button button-sm" data-action="gpx">${icon('download')} Download GPX file</button>
+        <button type="button" class="text-link" data-action="print">Print this route</button></p>` : ''}
     </div>
     <div class="glance-elevation">
       <div class="glance-elevation-head">
         <h3 class="eyebrow eyebrow-mark">Elevation profile</h3>
         ${route.elevation ? `<span class="chip">${escapeHtml(route.elevation.source)}</span>` : ''}
       </div>
-      ${profile || `<div class="empty-state">${icon('terrain')}<div>
+      ${profile ? elevationCursor(route, profile) : `<div class="empty-state">${icon('terrain')}<div>
         <strong>No elevation profile yet</strong>
         <p>This route has no sampled heights, so no profile is drawn.</p></div></div>`}
     </div>
