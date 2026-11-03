@@ -377,3 +377,47 @@ export async function mountRouteMap(container, route, options = {}) {
 function escapeHtml(value) {
   return String(value).replace(/[&<>"']/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[character]);
 }
+
+/** A published start coordinate, never a guessed location. */
+export function routeStart(route) {
+  const lat = route?.startLat;
+  const lng = route?.startLng;
+  if (lat == null || lng == null || lat === '' || lng === '') return null;
+  const point = [Number(lat), Number(lng)];
+  return point.every(Number.isFinite) && Math.abs(point[0]) <= 90 && Math.abs(point[1]) <= 180 ? point : null;
+}
+
+/** Mount a catalogue map. Returns a destroy function even if loading fails. */
+export async function mountCatalogueMap(container, routes) {
+  let map;
+  container.classList.add('nr-map-host');
+  makeStatus(container, 'Loading map…', null, null, 'loading');
+  try {
+    await loadMapCss();
+    const L = await loadLeaflet();
+    if (!container.isConnected) return () => {};
+    container.querySelector('.nr-map-status')?.remove();
+    map = L.map(container, { scrollWheelZoom: false });
+    const tiles = L.tileLayer(STREET_URL, { maxZoom: 19, attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>' });
+    let loaded = false;
+    let errors = 0;
+    tiles.on('tileload', () => { loaded = true; container.querySelector('.nr-map-status[data-kind="tile"]')?.remove(); });
+    tiles.on('tileerror', () => {
+      if (!loaded && ++errors >= 3) makeStatus(container, 'Map imagery could not be loaded. Check your connection.', 'Retry', () => { errors = 0; tiles.redraw(); }, 'tile');
+    });
+    tiles.addTo(map);
+    const markers = routes.flatMap((route) => {
+      const point = routeStart(route);
+      if (!point) return [];
+      const marker = L.marker(point, { icon: markerIcon(L, null), title: route.name, alt: route.name }).addTo(map);
+      marker.bindPopup(`<strong>${escapeHtml(route.name)}</strong><br><a href="/routes/${encodeURIComponent(route.slug)}/">View route</a>`);
+      return [marker];
+    });
+    if (markers.length) map.fitBounds(L.featureGroup(markers).getBounds(), { padding: [32, 32], maxZoom: 13 });
+    else { map.setView([20.5937, 78.9629], 4); makeStatus(container, 'No matching routes have a published start location.', null, null, 'notice'); }
+    requestAnimationFrame(() => map?.invalidateSize());
+  } catch (error) {
+    if (container.isConnected) makeStatus(container, 'The interactive map could not start. Use the route list below.', null, null, 'error');
+  }
+  return () => { map?.remove(); };
+}

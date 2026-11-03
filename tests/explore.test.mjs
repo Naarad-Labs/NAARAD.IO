@@ -30,3 +30,17 @@ test('exactly one route with stops: "1 route has", in the lede and in the descri
   assert.match(html.match(/<p class="lede">([\s\S]*?)<\/p>/)[1], /\b1 route has ordered stops/);
   assert.match(ExploreView.meta().description, /\b1 has ordered stops/);
 });
+
+test('catalogue offers a map while retaining its route list', async () => {
+  const html = await ExploreView.render();
+  assert.match(html, /data-catalogue-view="map"/);
+  assert.match(html, /id="catalogue-map"/);
+  assert.match(html, /id="catalogue-grid"/);
+});
+
+test('map coordinates reject missing and out-of-range starts', async () => {
+  const { routeStart } = await import('../app/map.js');
+  assert.deepEqual(routeStart({ startLat: 13.1, startLng: 80.2 }), [13.1, 80.2]);
+  assert.equal(routeStart({ startLat: null, startLng: null }), null);
+  assert.equal(routeStart({ startLat: 91, startLng: 80 }), null);
+});

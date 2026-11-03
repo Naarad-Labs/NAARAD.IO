@@ -150,6 +150,14 @@
             <h2 class="section-title"><span id="catalogue-count" role="status">20 routes</span></h2>
           </div>
         </div>
+        <div class="catalogue-view-switch" role="group" aria-label="Catalogue view">
+          <button type="button" data-catalogue-view="list" aria-pressed="true">List</button>
+          <button type="button" data-catalogue-view="map" aria-pressed="false">Map and list</button>
+        </div>
+        <div id="catalogue-map-panel" hidden="">
+          <p class="catalogue-map-note">Loading map…</p>
+          <div id="catalogue-map" class="catalogue-map" role="region" aria-label="Map of route starting points"></div>
+        </div>
         <div id="catalogue-grid" class="route-card-grid"><a class="route-card " href="/routes/hampi-heritage-trail/" data-route="hampi-heritage-trail">
     <span class="route-card-media">
       <picture class="photo route-card-photo">

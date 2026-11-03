@@ -321,6 +321,7 @@ async function moduleFor(name) {
 }
 
 function showError(message) {
+  modules.explore?.destroyMap();
   shell.innerHTML = `<section class="load-error">
     <p class="eyebrow eyebrow-mark">The atlas is resting</p>
     <h1 class="display">${escapeHtml(message)}</h1>
@@ -364,6 +365,7 @@ async function prepare(view, context = {}) {
 function commit({ markup, meta }, { keep = false, scrollY = 0 } = {}) {
   if (!(keep && drawn(markup))) {
     destroyMap();
+    modules.explore?.destroyMap();
     unwatchRouteBar();
     shell.innerHTML = markup;
     delete shell.dataset.prerendered;
@@ -909,6 +911,13 @@ document.addEventListener('click', async (event) => {
     const at = $$('[data-journal-delete]').indexOf(deleteNote);
     Journey.removeJournalEntry(deleteNote.dataset.journalDelete);
     await repaintJourney({ selector: '[data-journal-delete]', at });
+    return;
+  }
+
+  const catalogueView = event.target.closest('[data-catalogue-view]');
+  if (catalogueView) {
+    const explore = await moduleFor('explore');
+    explore.setCatalogueView(catalogueView.dataset.catalogueView);
     return;
   }
 

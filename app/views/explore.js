@@ -21,6 +21,48 @@ let query = '';
 let sport = 'all';
 let withStories = false;
 let region = 'all';
+let mapGeneration = 0;
+let destroyCatalogueMap;
+let mapTimer;
+
+export function destroyMap() {
+  clearTimeout(mapTimer);
+  mapGeneration++;
+  destroyCatalogueMap?.();
+  destroyCatalogueMap = null;
+}
+
+async function updateMap(list) {
+  const panel = document.querySelector('#catalogue-map-panel');
+  if (!panel || panel.hidden) return;
+  const generation = ++mapGeneration;
+  destroyCatalogueMap?.();
+  const old = document.querySelector('#catalogue-map');
+  const node = old.cloneNode(false);
+  old.replaceWith(node);
+  let mapModule;
+  try { mapModule = await import('../map.js'); }
+  catch {
+    if (generation === mapGeneration && node.isConnected) panel.querySelector('.catalogue-map-note').textContent = 'The interactive map could not start. Use the route list below.';
+    return;
+  }
+  const { mountCatalogueMap, routeStart } = mapModule;
+  if (generation !== mapGeneration || !node.isConnected) return;
+  const count = list.filter(routeStart).length;
+  panel.querySelector('.catalogue-map-note').textContent = `${count} of ${list.length} matching routes have a published start location. All matching routes are listed below.`;
+  const destroy = await mountCatalogueMap(node, list);
+  if (generation !== mapGeneration || !node.isConnected) destroy();
+  else destroyCatalogueMap = destroy;
+}
+
+export function setCatalogueView(view) {
+  const panel = document.querySelector('#catalogue-map-panel');
+  if (!panel) return;
+  panel.hidden = view !== 'map';
+  document.querySelectorAll('[data-catalogue-view]').forEach((button) => button.setAttribute('aria-pressed', String(button.dataset.catalogueView === view)));
+  if (panel.hidden) destroyMap();
+  else void updateMap(routes.filter(matches));
+}
 
 function matches(route) {
   if (sport !== 'all' && route.sport !== sport) return false;
@@ -47,6 +89,8 @@ export function applyFilters() {
   if (target) target.innerHTML = grid(list);
   const count = document.querySelector('#catalogue-count');
   if (count) count.textContent = `${list.length} ${list.length === 1 ? 'route' : 'routes'}`;
+  clearTimeout(mapTimer);
+  mapTimer = setTimeout(() => void updateMap(list), 200);
 }
 
 export function setQuery(value) { query = value; applyFilters(); }
@@ -117,6 +161,14 @@ export async function render(context = {}) {
             <p class="eyebrow eyebrow-mark">Curated and community routes</p>
             <h2 class="section-title"><span id="catalogue-count" role="status">${shown.length} ${shown.length === 1 ? 'route' : 'routes'}</span></h2>
           </div>
+        </div>
+        <div class="catalogue-view-switch" role="group" aria-label="Catalogue view">
+          <button type="button" data-catalogue-view="list" aria-pressed="true">List</button>
+          <button type="button" data-catalogue-view="map" aria-pressed="false">Map and list</button>
+        </div>
+        <div id="catalogue-map-panel" hidden>
+          <p class="catalogue-map-note">Loading map…</p>
+          <div id="catalogue-map" class="catalogue-map" role="region" aria-label="Map of route starting points"></div>
         </div>
         <div id="catalogue-grid" class="route-card-grid">${grid(shown)}</div>
       </section>
