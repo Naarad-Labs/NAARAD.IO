@@ -335,3 +335,16 @@
 .stop-item.is-playing { border-color: var(--ink); box-shadow: inset 3px 0 0 var(--ink); }
 .stop-playing-tag { display: inline-block; margin-top: 4px; padding: 1px 8px; border-radius: 999px; background: var(--ink-deep); color: var(--white); font-size: var(--text-xs); font-weight: 600; }
 .stop-playing-tag[hidden] { display: none; }
+
+.glance-actions { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0 0; }
+.elevation-wrap { position: relative; border-radius: var(--radius); outline-offset: 4px; touch-action: pan-y; cursor: crosshair; }
+.elevation-cursor { position: absolute; top: 0; bottom: 34px; width: 2px; margin-left: -1px; background: var(--orange); pointer-events: none; }
+.elevation-cursor[hidden] { display: none; }
+.elevation-readout { margin: 6px 0 0; }
+
+@media print {
+  .site-header, .site-footer, .route-bar-actions, .route-tabs, .map-panel, .listen-bar, .stop-rail-all, .photo-strip, .route-related, .glance-actions, .toast, .consent-bar { display: none !important; }
+  .route-page { width: 100% !important; max-width: none !important; }
+  .route-hero, .route-glance, .route-overview, .stop-rail { break-inside: avoid; }
+  a[href^='http']::after { content: ' (' attr(href) ')'; font-size: 11px; }
+}

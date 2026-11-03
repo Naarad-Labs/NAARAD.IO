@@ -27,6 +27,8 @@ import * as Drafts from './studio-store.js';
 import * as Motion from './motion.js';
 import { loadPreviewTiles } from './previews.js';
 import * as Lightbox from './lightbox.js';
+import { downloadGpx } from './gpx.js';
+import './elevation-cursor.js';
 import * as Urls from './urls.js';
 import { SITE_NAME, CARD_WIDTH, CARD_HEIGHT, cardPath } from './seo.js';
 
@@ -851,6 +853,8 @@ document.addEventListener('click', async (event) => {
   const action = event.target.closest('[data-action]')?.dataset.action;
   if (action === 'listen-all' && state.route) { Audio.play(stopQueue(state.route), 0); return; }
   if (action === 'listen-story') { await listenStory(); return; }
+  if (action === 'gpx') { if (!downloadGpx(state.route)) notify('This route has no line to export yet.'); return; }
+  if (action === 'print') { window.print(); return; }
   if (action === 'share') { await share(state.route?.name || state.story?.title || 'Naarad'); return; }
   if (action === 'save') { toggleSave(event.target.closest('[data-action="save"]')); return; }
   if (action === 'offline') { await toggleOffline(event.target.closest('[data-action="offline"]')); return; }
