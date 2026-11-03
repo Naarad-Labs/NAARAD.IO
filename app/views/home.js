@@ -8,13 +8,13 @@ import { picture, escapeHtml } from '../media.js';
 import { icon } from '../icons.js';
 import * as Data from '../data.js';
 import { routePreview, terrainSparkline } from '../previews.js';
-import { APP_URL, routePath, sectionPath } from '../urls.js';
+import { routePath, sectionPath } from '../urls.js';
 import * as Seo from '../seo.js';
 
 const HERO_SIZES = '(max-width: 1023px) 100vw, 62vw';
 
 const QUICK_LINKS = [
-  { icon: 'temple', title: 'Explore', sub: 'Places', href: APP_URL },
+  { icon: 'temple', title: 'Explore', sub: 'Places', view: 'explore' },
   { icon: 'headphones', title: 'Listen', sub: 'Stories', view: 'stories' },
   { icon: 'footprints', title: 'Walk', sub: 'Routes', view: 'routes' },
   { icon: 'users', title: 'Connect', sub: 'People', view: 'creators' },
@@ -77,9 +77,9 @@ function hero(featured) {
       <p class="eyebrow">A living heritage, a shared human story</p>
       <h1 id="home-title" class="display">Walk a place. <br><span class="accent">Hear its story.</span></h1>
       <p class="lede">Heritage walks across India, told at the places where the stories happened: real routes, local history, and stories your phone can read aloud as you walk.</p>
-      <a class="button button-primary home-hero-cta" href="${APP_URL}">Start Exploring ${icon('arrow')}</a>
+      <a class="button button-primary home-hero-cta" href="${sectionPath('explore')}" data-view="explore">Start Exploring ${icon('arrow')}</a>
       <ul class="quick-links">
-        ${QUICK_LINKS.map((link) => `<li><a href="${link.href || sectionPath(link.view)}"${link.href ? '' : ` data-view="${link.view}"`}>
+        ${QUICK_LINKS.map((link) => `<li><a href="${sectionPath(link.view)}" data-view="${link.view}">
           ${icon(link.icon, { className: 'ico-orange' })}
           <span><b>${link.title}</b><small>${link.sub}</small></span>
         </a></li>`).join('')}

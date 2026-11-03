@@ -18,9 +18,6 @@
 
 export const ORIGIN = 'https://naarad.io';
 
-/** Where "Explore" leads: the app. Every Explore entry point links here; /explore/ stays only as a fallback page. */
-export const APP_URL = 'https://app.naarad.io';
-
 /** Sections with one page each, under /<name>/. */
 export const SECTIONS = ['explore', 'routes', 'stories', 'creators', 'journey', 'about'];
 
