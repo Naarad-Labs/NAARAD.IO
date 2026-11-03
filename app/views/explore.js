@@ -45,7 +45,10 @@ export function themeTiles(list, count = 6) {
       tally.set(theme, entry);
     }
   }
-  return [...tally.values()].sort((a, b) => b.n - a.n || a.theme.localeCompare(b.theme)).slice(0, count);
+  // A tile without a photograph, or a bookkeeping tag such as "Recorded track", is not an invitation to explore.
+  const ranked = [...tally.values()].filter((entry) => entry.photo && !/^recorded/i.test(entry.theme))
+    .sort((a, b) => b.n - a.n || a.theme.localeCompare(b.theme));
+  return ranked.slice(0, count);
 }
 
 function recentSearches() {

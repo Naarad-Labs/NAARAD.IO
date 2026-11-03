@@ -16,12 +16,12 @@ test('themeTiles ranks themes by how many routes have them, then by name', () =>
     { themes: ['Temples'], cardPhoto: 'b' },
     { themes: ['Coast'] },
   ]);
-  assert.deepEqual(tiles.map((tile) => [tile.theme, tile.n]), [['Temples', 2], ['Coast', 1], ['History', 1]]);
+  assert.deepEqual(tiles.map((tile) => [tile.theme, tile.n]), [['Temples', 2], ['History', 1]]);
   assert.equal(tiles[0].photo, 'a', 'the tile uses the first route\'s photograph');
 });
 
 test('themeTiles caps the count and ignores routes without themes', () => {
-  const many = Array.from({ length: 10 }, (_, i) => ({ themes: [`T${i}`] }));
+  const many = Array.from({ length: 10 }, (_, i) => ({ themes: [`T${i}`], photo: 'p' }));
   assert.equal(themeTiles(many, 4).length, 4);
   assert.deepEqual(themeTiles([{}, { themes: [] }]), []);
 });
