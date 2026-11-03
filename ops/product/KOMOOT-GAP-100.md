@@ -128,3 +128,20 @@ Where we already match (not repeated below): distance, duration, stop count, dif
 
 ## The starred eight (★), in order
 1 map tiles on cards, 13 photo strip, 23 Explore picker, 35 Collections, 45 range filters, 55 elevation profile, 77 walk mode, 95 Terraform and DNS. Items 1, 13, 23, 35, 45 and 55 need no backend and can start now; 77 needs only the app repo; 95 is yours.
+
+## Status, 2026-11-03
+
+Worked in list order on branch `product/komoot-gap` (one PR, not yet merged: the four UI review passes have not run). `verify.sh` passes at every commit.
+
+**Done (16):** 1 map tiles on cards, 2 fit and padding (already fitted, kept), 5 numbers drop above 14 stops, 6 grid-and-line fallback, 7 credit once tiles load, 8 difficulty ribbon, 11 full-screen map, 13 photo strip, 15 viewer with caption and credit, 16 lazy photos in the strip, 17 hero photo (it rendered blank only on a plain file server; the real server shows it), 23 and 24 theme tiles, 25 near me, 26 suggestions, 27 recent searches.
+
+**Already there (checked):** 9 sticky map, 10 zoom and fit, 29 and 28 nearby routes, 30 breadcrumbs, 33 header search.
+
+**Deferred, no blocker (site work still to do):** 3, 4, 12, 18, 19, 21, 22, 34, 35, 37-43, 45-53, 55-66, 77-94, 98-100.
+
+### Backend and founder blockers, queued for one sitting
+1. **Terraform and DNS (95).** Run Terraform, point `app.naarad.io` at our app, set the three GitHub variables. Until then `app.naarad.io` answers 401 and Explore links (PR #54, already merged) lead there.
+2. **Database (needs 95):** ratings 67, walked counts 68, tips and photos 69, report button 70, creator profiles 72 and 76, follow 73, recently walked 74, account sync 96, delete-account wiring 97.
+3. **Sign-in live (needs 95):** header sign-in button 32, and persistent app prompt 31 only once the app exists.
+4. **Founder decisions:** moderation staffing 71; whether testimonials are wanted at all 75.
+5. **Content (people, not code):** five licensed photos per route 14, a photo for every stop 20, the first ten Collections 36, seasonal Collections 44, accessibility data for twenty routes 54.
