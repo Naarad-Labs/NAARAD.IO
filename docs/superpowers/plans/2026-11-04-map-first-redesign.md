@@ -20,7 +20,7 @@
 - [x] Catalogue slice: side-by-side results/map and native Map/List buttons; root owns app/views/explore.js, app/atlas.js and main.js. Views remain prerendered and usable when map fails.
 - [x] Integration: root owns app/shell.html, root package scripts, CI/build/service worker. Root loads map-first.css after incumbent styles and coordinates module lifecycle. Build enhancements before prerender, precache local output and bump worker version.
 - [x] Verification: focused lifecycle/toggle/reduced-motion/load-failure tests; all existing five verify stages. Phone390/430, tablet768, desktop1440 captures. No tests disabled merely for design changes; update only obsolete visual-specific expectations with recorded reason.
-- [ ] Independent source/UI/finish reviews, Impeccable detector once, DESIGN.md from shipped artifact and evidence report; prepare reviewable branch/PR without deploying.
+- [x] Independent source/UI/finish reviews, Impeccable detector once, DESIGN.md from shipped artifact and evidence report; prepare reviewable branch/PR without deploying.
 
 ## Review focus
 Repeated navigation/late async loads must not leak roots, triggers or tickers. Modal/anchor/Back focus and scroll must remain native. Map/List switching must preserve one map and current filters. Failed library/map loads must expose functional content. User motion-preference changes must restore settled content.
@@ -43,3 +43,9 @@ Repeated navigation/late async loads must not leak roots, triggers or tickers. M
 - No DNS, AWS, sign-in configuration, production merge or deployment in this redesign.
 
 - Final documentation: root `DESIGN.md` and `.impeccable/design.json` derived from the active CSS/component cascade. Source review corrected inherited motion timing and removed non-source tonal ramps before acceptance. Runtime dependency audit reports zero vulnerabilities.
+
+## Review branch
+
+Draft PR: https://github.com/Naarad-Labs/NAARAD.IO/pull/63. Implementation commit: `cc2692f`. A post-commit rebuild wrote zero files; all 73 generated outputs matched. Live deployment remains unchanged.
+
+The final finish reviewer cleared the stop-label placement fix. The formal QUALITY BAR/seed limitation above remains a historical process limitation rather than an asserted approval. The intermittent mobile overview anchor miss remains open for review: one focused repetition failed, while two complete final browser runs and a further 10 instrumented test repetitions plus 15 sequential diagnostic attempts passed. Steady-state header/tabs/margin are correct (64px header, tabs ending at 118px, 134px scroll margin); no cause was proven, so no speculative source patch or weaker assertion was accepted. The PR remains draft and is not a release-readiness claim.
