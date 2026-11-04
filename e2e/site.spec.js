@@ -2471,3 +2471,18 @@ test.describe('service worker', () => {
 
 
 });
+
+test('linked elevation retains the inspected distance after pointer exit and keyboard refocus', async ({ page }) => {
+  await page.goto('/routes/hampi-heritage-trail/');
+  await expect(page.locator('[data-elevation-output]')).toContainText('km ·');
+  const profile = page.locator('.glance-elevation .elevation-svg');
+  await profile.hover();
+  const wrap = page.locator('.elevation-wrap');
+  const selected = await wrap.getAttribute('data-cursor');
+  expect(Number(selected)).toBeGreaterThan(0);
+  await page.mouse.move(0, 0);
+  await expect(wrap).toHaveAttribute('data-cursor', selected);
+  await wrap.focus();
+  await expect(wrap).toHaveAttribute('data-cursor', selected);
+  await expect(page.locator('.elevation-cursor')).toBeVisible();
+});

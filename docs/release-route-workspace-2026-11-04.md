@@ -6,11 +6,12 @@ Baseline: origin/main d76f49f. Original feature branch remains intact at cc0c148
 
 ## Verification before merge
 
-- `VERIFY_ALLOW_UNCOMMITTED=1 bash scripts/verify.sh`: all five stages passed; deterministic rebuild, sitemap/cache/meta/links, 208 unit tests passed (12 skipped), practical facts, 159 browser tests passed, no flaky tests.
+- `VERIFY_ALLOW_UNCOMMITTED=1 bash scripts/verify.sh`: all five stages passed; deterministic rebuild, sitemap/cache/meta/links, 208 unit tests passed (12 skipped), practical facts, 160 browser tests passed, no flaky tests.
 - Operations validation, secret scan, interview lint and 145 operations tests passed.
 - Database migration/RLS suite: 14 tests passed against local PGlite; no deployed database changed.
 - `git diff --check`: passed.
 - Independent source review: preserved main features and exported map loaders. Fixed the reviewer’s stale profile-cursor finding; the new regression failed before the fix and passed after it. The assertion compares the cursor with the slider’s actual stepped value.
+- Final two-axis review: no documented-standards violations; spec review found pointer-exit/refocus selection loss, reproduced in a failing browser regression and fixed by retaining the inspected distance. The full five-stage gate passed again with the added regression.
 - Service-worker cache moves from v44 to v45 and precaches both new modules.
 
 The original branch remains available. Its alternative catalogue, preview and gallery implementations are not wholesale merged over the newer released implementations; additional multi-select/offline catalogue behavior remains outside this scoped release.
