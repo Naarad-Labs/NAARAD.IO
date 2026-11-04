@@ -207,10 +207,19 @@
       <div class="map-toolbar">
         <button type="button" class="map-control" data-map="layers" aria-pressed="true"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m12 3.6 8.4 4.2-8.4 4.2-8.4-4.2Z"></path><path d="m3.6 12.4 8.4 4.2 8.4-4.2"></path></svg><span>Satellite</span></button>
         <button type="button" class="map-control" data-map="fit"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="8.4"></circle><path d="m14.8 9.2-1.6 4.2-4.2 1.6 1.6-4.2Z"></path></svg><span>Fit route</span></button>
-        <button type="button" class="map-control" data-map="expand"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 4.3 3.8 6.6v13l5.2-2.3 6 2.4 5.2-2.3v-13l-5.2 2.3Z"></path><path d="M9 4.3v13.4"></path><path d="M15 6.7v13"></path></svg><span>Full screen</span></button>
+        <button type="button" class="map-control" data-map="fullscreen" disabled="" title="Map controls are loading"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 4.3 3.8 6.6v13l5.2-2.3 6 2.4 5.2-2.3v-13l-5.2 2.3Z"></path><path d="M9 4.3v13.4"></path><path d="M15 6.7v13"></path></svg><span>Full screen</span></button>
       </div>
       <p class="map-note script">Stories at every stop</p>
     </div>
+    <dialog class="route-map-dialog" data-route-map-dialog="" aria-labelledby="route-map-dialog-title">
+      <header class="route-map-dialog-head">
+        <h2 id="route-map-dialog-title">Auroville Explorer map and stops</h2>
+        <button type="button" class="button button-sm" data-map-dialog-close="">Close map</button>
+      </header>
+      <div class="route-map-dialog-content" data-map-dialog-content="">
+        <p class="data-note" data-map-dialog-empty="" hidden="">Stops are not published for this route.</p>
+      </div>
+    </dialog>
   </section>
       <p class="sr-only" role="status" data-stop-status=""></p>
       <section class="stop-panel" id="section-stories" data-stop="1">
@@ -343,7 +352,11 @@
         <h3 class="eyebrow eyebrow-mark">Elevation profile</h3>
         <span class="chip">NASA SRTM 30 m via OpenTopoData</span>
       </div>
-      <div class="elevation-wrap" tabindex="0" role="group" aria-label="Elevation profile. Use the left and right arrow keys to move along the walk." data-elevation="[[0,54],[95,53],[178,57],[261,57],[343,54],[426,55],[509,57],[595,54],[682,53],[768,56],[855,55],[941,52],[984,54]]">
+      <label class="elevation-control">
+        <span>Distance along route</span>
+        <input type="range" data-elevation-range="" min="0" max="984" step="1" value="0" aria-describedby="elevation-range-readout">
+        <output id="elevation-range-readout" data-elevation-output="" aria-live="polite"></output>
+      </label><div class="elevation-wrap" tabindex="0" role="group" aria-label="Elevation profile. Use the left and right arrow keys to move along the walk." data-elevation="[[0,54],[95,53],[178,57],[261,57],[343,54],[426,55],[509,57],[595,54],[682,53],[768,56],[855,55],[941,52],[984,54]]">
     <div class="elevation-plot"><svg class="elevation-svg " viewBox="0 0 760 168" role="img" preserveAspectRatio="none" aria-label="Elevation profile: 52 to 57 metres over 1.0 kilometres">
     <path d="M2.0 87.4L75.0 102.3L138.8 42.8L202.5 42.8L265.5 87.4L329.3 72.6L393.1 42.8L459.1 87.4L526.0 102.3L592.0 57.7L658.9 72.6L725.0 117.2L758.0 87.4L758.0 144.0L2.0 144.0Z" class="ep-area"></path>
     <path d="M2.0 87.4L75.0 102.3L138.8 42.8L202.5 42.8L265.5 87.4L329.3 72.6L393.1 42.8L459.1 87.4L526.0 102.3L592.0 57.7L658.9 72.6L725.0 117.2L758.0 87.4" class="ep-line"></path>

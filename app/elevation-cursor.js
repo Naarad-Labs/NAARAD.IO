@@ -3,7 +3,6 @@
    .elevation-wrap, so the profile itself stays a plain SVG. The cursor line is positioned inside
    .elevation-plot, which holds only the SVG, so it lines up with the curve at any width. */
 
-const IDLE = 'Hover, touch or use the arrow keys to read the height at any point.';
 const parsed = new WeakMap();
 
 function samplesOf(wrap) {
@@ -26,16 +25,10 @@ function show(wrap, fraction) {
   if (line) { line.hidden = false; line.style.left = `${(sample[0] / total) * 100}%`; }
   if (readout) readout.textContent = `${(sample[0] / 1000).toFixed(1)} km along the walk · ${Math.round(sample[1])} m above sea level`;
   wrap.dataset.cursor = String(sample[0] / total);
+  wrap.dispatchEvent(new CustomEvent("elevation:change", { bubbles: true, detail: { distanceM: sample[0] } }));
 }
 
-function reset(wrap) {
-  wrap.querySelector('.elevation-cursor')?.setAttribute('hidden', '');
-  const readout = wrap.querySelector('.elevation-readout');
-  if (readout) readout.textContent = IDLE;
-  delete wrap.dataset.cursor;
-}
-
-document.addEventListener('pointermove', (event) => {
+function pointer(event) {
   const wrap = event.target.closest?.('.elevation-wrap');
   const plot = wrap?.querySelector('.elevation-plot');
   if (!plot) return;
@@ -43,13 +36,11 @@ document.addEventListener('pointermove', (event) => {
   wrap.querySelector('.elevation-readout')?.removeAttribute('aria-live');
   const box = plot.getBoundingClientRect();
   show(wrap, (event.clientX - box.left) / box.width);
-});
+}
+document.addEventListener('pointermove', pointer);
+document.addEventListener('pointerdown', pointer);
 
-document.addEventListener('pointerout', (event) => {
-  const wrap = event.target.closest?.('.elevation-wrap');
-  if (wrap && !wrap.contains(event.relatedTarget) && document.activeElement !== wrap) reset(wrap);
-});
-
+// Keep the inspected distance when the pointer leaves, so refocusing resumes the same selection.
 document.addEventListener('focusin', (event) => {
   const wrap = event.target.closest?.('.elevation-wrap');
   if (wrap && event.target === wrap && wrap.dataset.cursor == null) show(wrap, 0);
