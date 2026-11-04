@@ -3,7 +3,7 @@
 <html lang="en"><head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#f8f3e9">
+  <meta name="theme-color" content="#f5f6f2">
   <!-- Added to the home screen, the app opens standalone with a light status bar over the paper colour (no overlay,
        so no extra top inset). The paper background is also the manifest's background_color: no white flash on launch. -->
   <meta name="mobile-web-app-capable" content="yes">
@@ -66,9 +66,10 @@
 
   <link rel="stylesheet" href="/app/base.css">
   <link rel="stylesheet" href="/app/home.css">
+  <link rel="stylesheet" href="/app/explore.css"><link rel="stylesheet" href="/app/map-first.css" data-map-first="">
   <link rel="preload" as="font" type="font/woff2" href="/app/fonts/PlayfairDisplay.woff2" crossorigin="">
   <link rel="preload" as="font" type="font/woff2" href="/app/fonts/DMSans.woff2" crossorigin="">
-<link rel="stylesheet" href="/app/explore.css"></head>
+</head>
 <body data-view="collection">
   <a class="skip-link" href="#app-content">Skip to content</a>
   <div id="app" class="site-shell">
@@ -90,7 +91,7 @@
       </nav>
       <form class="header-search" role="search" aria-label="Site search" action="/routes/">
         <label class="sr-only" for="route-search">Search places, routes and stories</label>
-        <input id="route-search" type="search" name="q" placeholder="Search places, routes, stories…" autocomplete="off">
+        <input id="route-search" type="search" name="q" placeholder="Find a place or route" autocomplete="off">
         <button type="submit" aria-label="Search">
           <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.6"></circle><path d="m15.8 15.8 4.4 4.4"></path></svg>
         </button>

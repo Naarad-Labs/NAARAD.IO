@@ -3,7 +3,7 @@
 <html lang="en"><head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#f8f3e9">
+  <meta name="theme-color" content="#f5f6f2">
   <!-- Added to the home screen, the app opens standalone with a light status bar over the paper colour (no overlay,
        so no extra top inset). The paper background is also the manifest's background_color: no white flash on launch. -->
   <meta name="mobile-web-app-capable" content="yes">
@@ -66,9 +66,10 @@
 
   <link rel="stylesheet" href="/app/base.css">
   <link rel="stylesheet" href="/app/home.css">
+  <link rel="stylesheet" href="/app/explore.css"><link rel="stylesheet" href="/app/map-first.css" data-map-first="">
   <link rel="preload" as="font" type="font/woff2" href="/app/fonts/PlayfairDisplay.woff2" crossorigin="">
   <link rel="preload" as="font" type="font/woff2" href="/app/fonts/DMSans.woff2" crossorigin="">
-<link rel="stylesheet" href="/app/explore.css"></head>
+</head>
 <body data-view="routes">
   <a class="skip-link" href="#app-content">Skip to content</a>
   <div id="app" class="site-shell">
@@ -90,7 +91,7 @@
       </nav>
       <form class="header-search" role="search" aria-label="Site search" action="/routes/">
         <label class="sr-only" for="route-search">Search places, routes and stories</label>
-        <input id="route-search" type="search" name="q" placeholder="Search places, routes, stories…" autocomplete="off">
+        <input id="route-search" type="search" name="q" placeholder="Find a place or route" autocomplete="off">
         <button type="submit" aria-label="Search">
           <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.6"></circle><path d="m15.8 15.8 4.4 4.4"></path></svg>
         </button>
@@ -105,7 +106,6 @@
     <main id="app-content" class="view-routes" data-prerendered="/routes/"><div class="catalogue">
     <header class="catalogue-hero">
       <div>
-        <p class="eyebrow eyebrow-mark">The Naarad atlas · 20 routes</p>
         <h1 class="display">Go where <br>stories live.</h1>
         <p class="lede">Search places and browse published routes across India. 3 routes have ordered stops with stories; the rest carry their route facts while stops are written.</p>
       </div>
@@ -117,21 +117,9 @@
       </form>
     </header>
 
-    <section class="atlas" id="atlas" aria-labelledby="atlas-title">
-  <div class="atlas-head">
-    <h2 id="atlas-title" class="eyebrow eyebrow-mark">Every route on the map</h2>
-    <a class="text-link" href="#catalogue-grid">Skip the map</a>
-    <button type="button" class="button button-sm" data-atlas-near="">Routes near me</button>
-  </div>
-  <div class="atlas-map nr-map-host" data-atlas-map="" role="region" aria-label="Map of all routes. The same routes are listed below."></div>
-  <p class="atlas-status" data-atlas-status=""></p>
-  <ol class="atlas-near" data-atlas-list="" hidden=""></ol>
-  <p class="data-note">Your position is used on this device to sort the routes. It is not sent or kept.</p>
-</section>
-
     <div class="catalogue-body">
       <aside class="catalogue-filters" aria-label="Filters">
-        <h2 class="eyebrow">Filter</h2>
+        <h2 class="filters-title">Filter routes</h2>
         <fieldset>
           <legend>Activity</legend>
           <div class="filter-chips" role="group">
@@ -169,12 +157,13 @@
           </div>
         </fieldset>
         <fieldset>
-          <legend>Audio language</legend>
-          <label class="sr-only" for="filter-lang">Audio language</label>
+          <legend>Language plans</legend>
+          <label class="sr-only" for="filter-lang">Language plans</label>
           <select id="filter-lang" data-filter="lang">
-            <option value="any">Any language</option>
+            <option value="any">Any listed language</option>
             <option value="en">English</option><option value="hi">Hindi</option><option value="ta">Tamil</option><option value="te">Telugu</option><option value="kn">Kannada</option>
           </select>
+          <p class="data-note">Published stories are currently in English.</p>
         </fieldset>
         <fieldset>
           <legend>Content</legend>
@@ -186,10 +175,15 @@
         <p class="data-note">Route lines are shown only where a track or a published stop sequence exists.</p>
       </aside>
 
-      <section class="catalogue-results">
+      <div class="catalogue-mode" role="group" aria-label="Catalogue view">
+        <button type="button" data-catalogue-mode="list" aria-label="List view" aria-controls="catalogue-results" aria-pressed="true" disabled=""><svg class="ico " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M8.6 7h11"></path><path d="M8.6 12h11"></path><path d="M8.6 17h11"></path><path d="M4.6 7h.01"></path><path d="M4.6 12h.01"></path><path d="M4.6 17h.01"></path></svg> List</button>
+        <button type="button" data-catalogue-mode="map" aria-label="Map view" aria-controls="atlas" aria-pressed="false" disabled=""><svg class="ico " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 4.3 3.8 6.6v13l5.2-2.3 6 2.4 5.2-2.3v-13l-5.2 2.3Z"></path><path d="M9 4.3v13.4"></path><path d="M15 6.7v13"></path></svg> Map</button>
+      </div>
+      <p class="data-note" data-catalogue-map-error="" hidden="">The interactive map is unavailable. You can still browse and filter the route list.</p>
+      <div class="catalogue-workspace">
+      <section class="catalogue-results" id="catalogue-results">
         <div class="section-head">
           <div>
-            <p class="eyebrow eyebrow-mark">Curated and community routes</p>
             <h2 class="section-title"><span id="catalogue-count" role="status">20 routes</span></h2>
           </div>
           <div class="section-head-aside">
@@ -880,6 +874,18 @@
     </span>
   </a></div>
       </section>
+      <section class="atlas" id="atlas" aria-labelledby="atlas-title">
+  <div class="atlas-head">
+    <h2 id="atlas-title" class="atlas-title">Every route on the map</h2>
+    <a class="text-link" href="#catalogue-grid">Skip the map</a>
+    <button type="button" class="button button-sm" data-atlas-near="">Routes near me</button>
+  </div>
+  <div class="atlas-map nr-map-host" data-atlas-map="" role="region" aria-label="Map of all routes. The same routes are available in the route list."></div>
+  <p class="atlas-status" data-atlas-status=""></p>
+  <ol class="atlas-near" data-atlas-list="" hidden=""></ol>
+  <p class="data-note">Your position is used on this device to sort the routes. It is not sent or kept.</p>
+</section>
+      </div>
     </div>
   </div></main>
 

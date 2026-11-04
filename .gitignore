@@ -81,3 +81,6 @@ __pycache__/
 # Hallmark design skill (installed from Nutlope/hallmark) and its audit output
 .claude/skills/hallmark
 .hallmark/
+
+# Local enhancement build dependencies
+/node_modules/

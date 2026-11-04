@@ -247,7 +247,7 @@ const ORIGIN = 'https://naarad.io';
 
 /** One of each kind of page, with what its own address must say about it. */
 const PAGE_TYPES = [
-  { path: '/', canonical: '/', h1: 'Walk a place.', text: 'Iconic journeys, deeper stories.', types: ['WebSite', 'Organization'] },
+  { path: '/', canonical: '/', h1: 'Walk a place.', text: 'Find your next route.', types: ['WebSite', 'Organization'] },
   { path: '/routes/', canonical: '/routes/', h1: 'Go where', text: 'Hampi Heritage Trail', types: ['BreadcrumbList'] },
   { path: '/explore/', canonical: '/explore/', h1: 'Find your', text: 'Hampi Heritage Trail', types: ['BreadcrumbList'] },
   { path: '/routes/hampi-heritage-trail/', canonical: '/routes/hampi-heritage-trail/', h1: 'Hampi Heritage Trail', text: 'Virupaksha Temple', types: ['BreadcrumbList', 'TouristTrip'] },
@@ -1337,7 +1337,7 @@ test.describe('focus after a page is drawn in place', () => {
     const top = await page.evaluate(() => window.scrollY);
     expect(top).toBeGreaterThan(100);
 
-    await unsave.first().focus();
+    await unsave.first().evaluate((node) => node.focus({ preventScroll: true }));
     await page.keyboard.press('Enter');
     await expect(unsave).toHaveCount(2);
     await expect(page.locator('[data-journey-tab="saved"]')).toHaveAttribute('aria-selected', 'true');
@@ -2485,4 +2485,120 @@ test('linked elevation retains the inspected distance after pointer exit and key
   await wrap.focus();
   await expect(wrap).toHaveAttribute('data-cursor', selected);
   await expect(page.locator('.elevation-cursor')).toBeVisible();
+});
+
+/* Approved map-first redesign: functional contracts survive the new composition. */
+test('map-first catalogue switches views without remounting or dropping filters', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/routes/');
+  const workspace = page.locator('.catalogue-workspace');
+  await expect(workspace).toHaveAttribute('data-catalogue-mode', 'list');
+  await expect(page.locator('#catalogue-grid .route-card').first()).toBeVisible();
+  const mapButton = page.getByRole('button', { name: 'Map view', exact: true });
+  const listButton = page.getByRole('button', { name: 'List view', exact: true });
+  await expect(mapButton).toBeEnabled();
+  await mapButton.click();
+  await expect(workspace).toHaveAttribute('data-catalogue-mode', 'map');
+  await expect(page.locator('[data-atlas-map]')).toBeVisible();
+  await expect(page.locator('#catalogue-results')).toBeHidden();
+  await expect(page.locator('.leaflet-container')).toHaveCount(1);
+  await page.locator('#catalogue-query').fill('hampi');
+  await expect(page.locator('#catalogue-count')).toHaveText('1 route');
+  await listButton.click();
+  await expect(page.locator('#catalogue-grid .route-card')).toHaveCount(1);
+  await expect(page.locator('#catalogue-grid')).toContainText('Hampi Heritage Trail');
+  await mapButton.click();
+  await expect(page.locator('.leaflet-container')).toHaveCount(1);
+  await page.getByRole('link', { name: 'Skip the map', exact: true }).click();
+  await expect(workspace).toHaveAttribute('data-catalogue-mode', 'list');
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+});
+
+test('map-first library failure leaves the functional homepage and route controls available', async ({ page }) => {
+  await page.route('**/app/vendor/enhancements.js', (route) => route.abort());
+  await page.goto('/');
+  await expect(page.locator('#home-title')).toBeVisible();
+  await page.locator('#nav-routes').click();
+  await expect(page.locator('#catalogue-grid .route-card').first()).toBeVisible();
+  await page.goto('/routes/hampi-heritage-trail/');
+  await expect(page.locator('[data-map="fullscreen"]')).toBeEnabled();
+  await page.locator('[data-map="fullscreen"]').click();
+  await expect(page.locator('[data-route-map-dialog]')).toBeVisible();
+  await page.locator('[data-map-dialog-close]').click();
+  await expect(page.locator('[data-action="listen"]').first()).toBeVisible();
+});
+
+test('map-first reduced motion keeps native scrolling and visible content', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.goto('/');
+  await expect(page.locator('#home-title')).toBeVisible();
+  expect(await page.locator('html').getAttribute('class') || '').not.toContain('lenis');
+  await page.locator('#nav-routes').click();
+  await expect(page.locator('#catalogue-grid .route-card').first()).toBeVisible();
+  expect(await page.locator('html').getAttribute('class') || '').not.toContain('lenis');
+});
+
+test('hero carousel keeps the original photo and map without a pause button', async ({ page }) => {
+  await page.goto('/');
+  const carousel = page.locator('[data-hero-carousel]');
+  await expect(carousel).toHaveAttribute('data-hero-mode', 'photo');
+  await expect(carousel.locator('.home-hero-photo img')).toBeVisible();
+  await expect(carousel.locator('.home-hero-photo img')).toHaveAttribute('fetchpriority', 'high');
+  await carousel.getByRole('button', { name: 'Map', exact: true }).click();
+  await expect(carousel).toHaveAttribute('data-hero-mode', 'map');
+  await expect(carousel.locator('[data-hero-slide="photo"]')).toBeHidden();
+  await expect(carousel.locator('.route-preview')).toBeVisible();
+  await carousel.getByRole('button', { name: 'Photo', exact: true }).click();
+  await expect(carousel.locator('[data-hero-motion]')).toHaveCount(0);
+  await expect(carousel).toHaveAttribute('data-hero-motion', 'running');
+});
+
+test('hero close-up stops on Map and reduced motion tears down enhancements', async ({ page }) => {
+  await page.goto('/');
+  const carousel = page.locator('[data-hero-carousel]');
+  const image = carousel.locator('.home-hero-photo img');
+  await expect(page.locator('html')).toHaveClass(/lenis/);
+  await expect.poll(async () => {
+    const transform = await image.evaluate((node) => getComputedStyle(node).transform);
+    return transform === 'none' ? 1 : Number(transform.match(/matrix\(([^,]+)/)?.[1] || 1);
+  }).toBeGreaterThan(1);
+  await carousel.getByRole('button', { name: 'Map', exact: true }).click();
+  const paused = await image.evaluate((node) => getComputedStyle(node).transform);
+  await page.waitForTimeout(180);
+  expect(await image.evaluate((node) => getComputedStyle(node).transform)).toBe(paused);
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await expect(page.locator('html')).not.toHaveClass(/lenis/);
+  await expect(image).toHaveCSS('transform', 'none');
+  await expect(carousel.locator('[data-hero-motion]')).toHaveCount(0);
+  await carousel.getByRole('button', { name: 'Map', exact: true }).click();
+  await expect(carousel.locator('[data-hero-slide="map"]')).toBeVisible();
+});
+
+test('hero carousel supports touch swipes and keyboard slide selection', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/');
+  const carousel = page.locator('[data-hero-carousel]');
+  const stage = carousel.locator('.hero-carousel-stage');
+  await expect(carousel).toHaveAttribute('data-hero-mode', 'photo');
+  await stage.dispatchEvent('pointerdown', { pointerType: 'touch', clientX: 240, clientY: 120 });
+  await stage.dispatchEvent('pointerup', { pointerType: 'touch', clientX: 80, clientY: 130 });
+  await expect(carousel).toHaveAttribute('data-hero-mode', 'map');
+  await carousel.getByRole('button', { name: 'Map', exact: true }).focus();
+  await carousel.getByRole('button', { name: 'Map', exact: true }).press('ArrowLeft');
+  await expect(carousel).toHaveAttribute('data-hero-mode', 'photo');
+});
+
+test('mobile Open route map reveals the fragment target and follows later hash navigation', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/');
+  await page.locator('.home-hero-cta').click();
+  const workspace = page.locator('.catalogue-workspace');
+  await expect(page).toHaveURL(/\/routes\/#atlas$/);
+  await expect(workspace).toHaveAttribute('data-catalogue-mode', 'map');
+  await expect(page.locator('[data-atlas-map]')).toBeVisible();
+  await page.getByRole('link', { name: 'Skip the map', exact: true }).click();
+  await expect(workspace).toHaveAttribute('data-catalogue-mode', 'list');
+  await page.evaluate(() => { location.hash = 'atlas'; });
+  await expect(workspace).toHaveAttribute('data-catalogue-mode', 'map');
+  await expect(page.locator('.leaflet-container')).toHaveCount(1);
 });

@@ -1,88 +1,71 @@
-/* The motion layer.
- *
- * The plan's motion rules: transforms and opacity only, CSS transitions rather
- * than a library, and almost no decorative movement where someone is actually
- * walking a route. So editorial surfaces (home, stories, the catalogue, the
- * journal) get entrances and a gentle reveal on photographs, and the route
- * workspace — map, stop rail, the story being read on the walk — is left still.
- *
- * Nothing is hidden until this module is running: the hidden state lives under
- * html[data-motion='on'], which is only set when the observer is ready and the
- * reader has not asked for reduced motion. With no script, or with reduced
- * motion, every element is simply visible.
- *
- * A pre-rendered page is already on screen when this runs, so start() is told
- * to settle: what the reader can already see stays exactly as it is, and only
- * what is still below the fold waits to come in. Pre-rendering itself never
- * starts motion (main.js), so no hidden state is ever written into a page.
- */
-
+/* Optional, local-only editorial enhancements. The functional app never awaits
+ * this module's bundle, and no first-viewport content is hidden or replaced. */
 const REDUCED = matchMedia('(prefers-reduced-motion: reduce)');
+const DESKTOP = matchMedia('(min-width: 1024px) and (hover: hover) and (pointer: fine)');
+const EDITORIAL = '.home, .story-page, .info-page, .collection-page, .collection-index';
+let started = false;
+let frame = 0;
+let generation = 0;
+let dispose = null;
+let listening = false;
+let bundle = null;
 
-/* Surfaces that may animate. The route workspace is deliberately absent. */
-const SECTIONS = [
-  '.home-hero-copy', '.home-featured .section-head', '.route-card',
-  '.voices-copy', '.voices-panel', '.voices-languages',
-  '.experience-copy', '.magazine-page', '.experience-points li',
-  '.catalogue-hero', '.story-section', '.story-hero-copy', '.story-route-card', '.story-related',
-  '.info-hero-copy', '.info-body section', '.journey-hero-copy', '.journey-overview',
-  '.journey-section', '.journal-note', '.badge', '.studio-hero-copy',
-].join(',');
-
-/* Parts inside a revealed surface that come in one after another. */
-const PARTS = ':scope > .eyebrow, :scope > h1, :scope > h2, :scope > h3, :scope > p, '
-  + ':scope > .lede, :scope > .button, :scope > .text-link, :scope > picture, '
-  + ':scope > .chip-list, :scope > ul, :scope > ol, :scope > .metric-row';
-
-let observer = null;
-const seen = new WeakSet();
-
-function reveal(element) {
-  element.dataset.reveal = 'in';
-  const parts = element.querySelectorAll(PARTS);
-  parts.forEach((part, index) => {
-    // 70ms apart: the heading, then its text, then the picture.
-    part.style.transitionDelay = `${Math.min(index * 70, 420)}ms`;
-  });
+function stop() {
+  generation += 1;
+  cancelAnimationFrame(frame);
+  frame = 0;
+  dispose?.();
+  dispose = null;
 }
 
-const onScreen = (element) => {
-  const box = element.getBoundingClientRect();
-  return box.bottom > 0 && box.top < innerHeight && box.width > 0;
-};
+function onPreferenceChange() {
+  // Destroy first, including in-flight imports. Turning motion back on enhances
+  // only content still below the fold; it never replays the visible viewport.
+  stop();
+  if (!REDUCED.matches) scan(document, { settle: true });
+}
 
-/**
- * Watch everything in `root` that is allowed to move. With `settle`, anything
- * the reader can already see is left alone instead of hidden and replayed.
- */
+function listen() {
+  if (listening) return;
+  REDUCED.addEventListener('change', onPreferenceChange);
+  DESKTOP.addEventListener('change', onPreferenceChange);
+  listening = true;
+}
+
+export function destroy() {
+  stop();
+  if (listening) {
+    REDUCED.removeEventListener('change', onPreferenceChange);
+    DESKTOP.removeEventListener('change', onPreferenceChange);
+    listening = false;
+  }
+}
+
 export function scan(root = document, { settle = false } = {}) {
-  if (!observer) return;
-  root.querySelectorAll(SECTIONS).forEach((element) => {
-    if (seen.has(element)) return;
-    seen.add(element);
-    if (settle && onScreen(element)) return;
-    element.dataset.reveal = 'out';
-    observer.observe(element);
+  if (!started) return;
+  listen();
+  stop();
+  if (REDUCED.matches) return;
+  const current = generation;
+  // commit() may update body.dataset.view after calling scan(). Read the new
+  // page DOM on the next frame, never the old body metadata.
+  frame = requestAnimationFrame(async () => {
+    frame = 0;
+    if (current !== generation || REDUCED.matches) return;
+    const page = root.matches?.(EDITORIAL) ? root : root.querySelector(EDITORIAL);
+    if (!page?.isConnected) return;
+    try {
+      bundle ||= import('./vendor/enhancements.js').catch((error) => { bundle = null; throw error; });
+      const { mount } = await bundle;
+      if (current !== generation || REDUCED.matches || !page.isConnected) return;
+      dispose = mount(page, { settle, desktop: DESKTOP.matches });
+    } catch {
+      // A missing or uncached optional bundle leaves all static content usable.
+    }
   });
 }
 
 export function start({ settle = false } = {}) {
-  if (REDUCED.matches || !('IntersectionObserver' in window)) return;
-  document.documentElement.dataset.motion = 'on';
-  observer = new IntersectionObserver((entries) => {
-    for (const entry of entries) {
-      if (!entry.isIntersecting) continue;
-      reveal(entry.target);
-      observer.unobserve(entry.target);
-    }
-  }, { rootMargin: '0px 0px -8% 0px', threshold: 0.08 });
+  started = true;
   scan(document, { settle });
-
-  // If someone turns reduced motion on mid-visit, show everything and stop.
-  REDUCED.addEventListener?.('change', (event) => {
-    if (!event.matches) return;
-    observer?.disconnect();
-    observer = null;
-    delete document.documentElement.dataset.motion;
-  });
 }

@@ -21,7 +21,7 @@
  * a page that was already controlled reload once when the worker changes.
  */
 
-const VERSION = 'v45';
+const VERSION = 'v46';
 const SHELL = `naarad-shell-${VERSION}`;
 const PAGES = `naarad-pages-${VERSION}`;
 const CONTENT = `naarad-content-${VERSION}`;
@@ -56,6 +56,14 @@ const SHELL_ASSETS = [
   '/app/journey-store.js',
   '/app/listen-tracker.js',
   '/app/motion.js',
+  '/app/catalogue-layout.js',
+  '/app/hero-carousel.js',
+  '/app/map-first.css',
+  // Generated enhancement assets: start
+  '/app/vendor/enhancement-chunks/chunk-UOQBX4P3.js',
+  '/app/vendor/enhancement-chunks/react-accent-W5QL7TJ4.js',
+  '/app/vendor/enhancements.js',
+  // Generated enhancement assets: end
   '/app/studio-store.js',
   '/app/urls.js',
   '/app/seo.js',

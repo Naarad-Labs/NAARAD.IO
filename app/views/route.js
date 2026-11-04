@@ -138,14 +138,14 @@ function stopPanel(route, stop) {
 
   const minutes = Math.max(1, Math.round(stop.story.length / 900));
   return `<section class="stop-panel" id="section-stories" data-stop="${stop.order}">
+    <h2 class="stop-title">${escapeHtml(stop.name)}</h2>
     <div class="stop-panel-head">
-      <p class="eyebrow eyebrow-mark">Stop ${stop.order} of ${route.stopCount}</p>
+      <p class="stop-sequence">Stop ${stop.order} of ${route.stopCount}</p>
       <div class="stop-panel-meta">
         <span>${minutes} min read</span>
         <span class="stop-lang">${icon('globe')} English</span>
       </div>
     </div>
-    <h2 class="stop-title">${escapeHtml(stop.name)}</h2>
     <p class="stop-tagline">${escapeHtml(stop.tagline)}</p>
     <p class="stop-summary">${escapeHtml(stop.summary)}</p>
 

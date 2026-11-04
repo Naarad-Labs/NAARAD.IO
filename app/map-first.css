@@ -1,0 +1,266 @@
+/* Map-first public UI. Load after the page sheets; functional map/dialog owners stay native. */
+:root {
+  --paper: #f5f6f2;
+  --paper-bright: #ffffff;
+  --paper-deep: #e9ede5;
+  --paper-edge: #d9ded4;
+  --paper-rgb: 245 246 242;
+  --line: #dce1d8;
+  --line-strong: #bec8ba;
+  --field-edge: #7b887c;
+  --ink-muted: #5e685f;
+  --preview-ground: #e8eddf;
+  --map-ground: #e8eddf;
+  --radius: 12px;
+  --header-h: 72px;
+  --wrap: 1440px;
+}
+html { scrollbar-color: var(--line-strong) var(--paper); }
+input, textarea { caret-color: var(--orange-text); }
+a { text-underline-offset: 3px; }
+.display, .section-title, .route-card-title, .collection-card-copy strong,
+.catalogue h2, .discover h2, .home h2, .home h3, .route-page h1, .route-page h2, .route-page h3 {
+  font-family: var(--sans); letter-spacing: -.025em;
+}
+.display { font-size: clamp(30px, 3.2vw, 46px); line-height: 1.12; }
+.section-title { font-size: clamp(25px, 2.3vw, 32px); line-height: 1.18; }
+.button { border-radius: 8px; min-height: 44px; padding-inline: 17px; }
+.button-sm { min-height: 44px; }
+.button:hover { transform: none; }
+.route-card, .collection-card { box-shadow: none; }
+.route-card:hover, .collection-card:hover { transform: none; box-shadow: none; }
+.route-card:hover { border-color: var(--sage); }
+.route-card-title { font-size: 18px; line-height: 1.25; }
+.route-card-body { padding: 15px; gap: 8px; }
+.route-card-metrics { font-variant-numeric: tabular-nums; }
+.route-card-media { height: 175px; min-height: 0; max-height: 175px; overflow: hidden; }
+.route-card-map { min-height: 0; }
+.route-card-photo { min-height: 0; }
+.route-card-photo img { max-height: 175px; aspect-ratio: 4 / 3; }
+.route-card-level { border-radius: 5px; padding: 4px 8px; }
+.route-card-terrain { margin-top: 2px; }
+.section-head { margin-bottom: 22px; gap: 18px 28px; }
+.section-head-aside { gap: 20px; }
+.section-head-aside p { font-size: 14px; line-height: 1.5; max-width: 42ch; }
+/* The shell keeps its menu behavior, focus order and sticky stacking level. */
+.site-header { padding-block: 9px; gap: 18px; background: var(--paper-bright); backdrop-filter: none; }
+.brand img { width: 44px; height: 44px; }
+.brand-name { font-family: var(--sans); font-size: 23px; letter-spacing: .015em; }
+.brand-motto { font-size: 11px; }
+.primary-nav { gap: clamp(12px, 1.6vw, 24px); }
+.primary-nav a { min-height: 44px; font-size: 14px; }
+.header-search { border-radius: 8px; height: 44px; width: min(225px, 19vw); }
+.header-search button { min-width: 30px; min-height: 40px; }
+/* Home: a route-finding tool with one real route preview. */
+.home-hero {
+  width: min(100% - 64px, var(--wrap)); margin: 28px auto 0;
+  display: grid; grid-template-columns: minmax(300px, .78fr) minmax(0, 1.4fr);
+  align-items: center; gap: clamp(28px, 4vw, 64px); min-height: 0;
+}
+.home-hero-copy { max-width: 500px; padding: 16px 0; order: 0; }
+.home-hero-copy h1 { font-size: clamp(32px, 3.3vw, 48px); letter-spacing: -.035em; line-height: 1.12; }
+.home-hero-copy .lede { font-size: 16px; line-height: 1.6; margin: 18px 0 22px; max-width: 42ch; }
+.home-route-search { position: relative; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; }
+.home-route-search > .ico { position: absolute; top: 14px; margin-left: 13px; color: var(--ink-muted); pointer-events: none; }
+.home-route-search input { min-width: 0; width: 100%; min-height: 48px; padding: 10px 12px 10px 41px; border: 1px solid var(--field-edge); border-radius: 8px; background: var(--paper-bright); font-size: 16px; }
+.home-route-search input::placeholder { color: var(--ink-muted); }
+.home-route-search .button { min-height: 46px; }
+.home-hero-cta { height: 44px; font-size: 14px; padding-inline: 16px; }
+.quick-links { gap: 12px 24px; margin-top: 24px; padding-top: 18px; border-top: 1px solid var(--line); }
+.quick-links a { flex-direction: row; text-align: left; gap: 8px; min-height: 44px; padding: 0; }
+.quick-links .ico { width: 21px; height: 21px; }
+.quick-links small { font-size: 12px; }
+.home-hero-media { min-height: 0; align-self: center; height: auto; order: 0; border: 1px solid var(--line-strong); border-radius: 14px; overflow: hidden; background: var(--paper-bright); }
+.hero-carousel-stage { position: relative; aspect-ratio: 20 / 11; overflow: hidden; background: var(--preview-ground); }
+.hero-carousel-slide { position: absolute; inset: 0; }
+.hero-carousel-slide[hidden] { display: none; }
+.home-hero-media .home-hero-photo { position: absolute; inset: 0; display: block; width: 100%; height: 100%; }
+.home-hero-media .home-hero-photo img { width: 100%; height: 100%; object-fit: cover; object-position: 54% center; transform-origin: 54% 52%; }
+.home-hero-media .home-hero-photo .photo-credit { left: 12px; right: auto; bottom: 12px; max-width: calc(100% - 24px); background: rgb(var(--ink-deep-rgb) / 82%); }
+.hero-carousel-controls { position: absolute; top: 14px; right: 14px; left: 14px; display: flex; justify-content: space-between; align-items: start; gap: 12px; pointer-events: none; }
+.hero-carousel-select { display: flex; padding: 3px; border: 1px solid var(--line-strong); border-radius: 9px; background: var(--paper-bright); pointer-events: auto; }
+.hero-carousel-select button { min-width: 64px; min-height: 44px; padding: 8px 15px; border-radius: 6px; font-size: 14px; font-weight: 700; }
+.hero-carousel-select button[aria-pressed='true'] { background: var(--ink); color: var(--white); }
+.hero-carousel-controls button:disabled { cursor: default; }
+.home-map-preview { display: block; position: relative; width: 100%; height: 100%; background: var(--preview-ground); }
+.home-map-preview > .route-preview { width: 100%; height: 100%; }
+.home-map-open { position: absolute; bottom: 16px; left: 16px; display: inline-flex; gap: 8px; align-items: center; min-height: 44px; padding: 9px 13px; border-radius: 8px; background: var(--paper-bright); border: 1px solid var(--line-strong); font-size: 14px; font-weight: 700; }
+.home-map-route { display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 18px; border-top: 1px solid var(--line); }
+.home-map-route > a:first-child { display: grid; gap: 5px; min-width: 0; }
+.home-map-route strong { font-size: 16px; line-height: 1.3; }
+.home-map-route > a > span { color: var(--ink-muted); font-size: 13px; }
+.home-map-route .home-map-facts { color: var(--ink-soft); font-variant-numeric: tabular-nums; line-height: 1.5; }
+.home-preview-route { white-space: nowrap; flex: none; min-height: 44px; }
+.home-featured { padding: 38px 0 46px; }
+.home-featured > * { width: min(100% - 64px, var(--wrap)); }
+.home .route-card-grid { gap: 16px; }
+.home-voices { grid-template-columns: 1fr 1fr 1fr; }
+.voices-copy, .voices-panel, .voices-languages { padding: 32px; }
+.home-voices .section-title, .voices-languages h2 { font-size: 27px; }
+.voices-languages .note-plain { font: 500 17px/1.5 var(--sans); }
+.home-experience { padding: 44px 32px; gap: 28px; }
+.experience-copy h2 { font-size: 28px; }
+.experience-copy p { font-size: 15px; }
+.magazine-page { transform: none; box-shadow: none; border: 1px solid var(--line); border-radius: 12px; }
+.magazine-page:hover { transform: none; }
+.magazine-index { display: none; }
+/* Explore keeps themes and collections, with a map in its first viewport. */
+.discover { padding-top: 28px; }
+.discover-hero { grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); align-items: center; padding-bottom: 26px; }
+.discover-hero h1 { margin: 0 0 16px; max-width: 12ch; }
+.discover-hero .lede { font-size: 16px; max-width: 46ch; }
+.discover-actions { margin-top: 22px; }
+.discover-map-preview { display: block; overflow: hidden; border: 1px solid var(--line-strong); border-radius: 12px; background: var(--preview-ground); }
+.discover-map-preview > svg { width: 100%; aspect-ratio: 20 / 9; }
+.discover-map-preview > span { display: flex; align-items: center; gap: 8px; padding: 13px 15px; background: var(--paper-bright); font-size: 14px; font-weight: 600; }
+.discover-map-preview small { margin-left: auto; font-size: 12px; color: var(--ink-muted); font-weight: 400; }
+.discover .explore-tiles { margin-top: 24px; grid-auto-columns: minmax(150px, 1fr); }
+.discover .explore-tile { min-height: 120px; }
+.discover-featured { margin-top: 34px; }
+/* Catalogue contract: controls above one list and one native atlas instance. */
+.catalogue { width: min(100% - 48px, var(--wrap)); padding-top: 24px; }
+.catalogue .catalogue-hero { align-items: center; gap: 18px 32px; padding-bottom: 20px; }
+.catalogue .catalogue-hero h1 { margin: 0 0 10px; font-size: 32px; }
+.catalogue .catalogue-hero .lede { font-size: 15px; }
+.catalogue-search { height: 48px; border-radius: 8px; }
+.catalogue-body { display: block; margin-top: 20px; }
+.catalogue-filters { position: static; display: flex; flex-wrap: wrap; align-items: end; gap: 14px 20px; overflow: visible; max-height: none; padding-bottom: 18px; margin-bottom: 18px; border-bottom: 1px solid var(--line); mask-image: none; -webkit-mask-image: none; }
+.catalogue-filters > h2 { display: none; }
+.catalogue-filters > .data-note { flex-basis: 100%; }
+.catalogue-filters legend { padding-bottom: 7px; }
+.catalogue-filters fieldset { min-width: 130px; flex: 1 1 130px; }
+.catalogue-filters fieldset:has(.filter-chips) { flex-grow: 2; }
+.filter-chips button, .catalogue-filters select, .catalogue-filters .filter-check { min-height: 44px; }
+.catalogue-filters .filter-check { padding-block: 7px; }
+.catalogue-workspace { display: grid; grid-template-columns: minmax(300px, 360px) minmax(0, 1fr); gap: 22px; align-items: start; }
+.catalogue-results { min-width: 0; }
+.catalogue-results .section-head { gap: 12px; margin-bottom: 14px; }
+.catalogue-results .section-title { font-size: 21px; }
+.catalogue-results .route-card-grid { grid-template-columns: 1fr; gap: 12px; }
+.catalogue-results .route-card { display: grid; grid-template-columns: 96px minmax(0, 1fr); }
+.catalogue-results .route-card-media { display: block; height: auto; max-height: none; background: var(--preview-ground); }
+.catalogue-results .route-card-photo, .catalogue-results .route-card-photo img { height: 100%; max-height: none; }
+.catalogue-results .route-card-map { display: none; }
+.catalogue-results .route-card-level { top: 7px; left: 5px; font-size: 11px; max-width: calc(100% - 10px); padding: 3px 5px; }
+.catalogue-results .route-card-body { padding: 12px; gap: 7px; }
+.catalogue-results .route-card-title { font-size: 16px; }
+.catalogue-results .route-card-metrics { gap: 5px 10px; }
+.catalogue-results .route-card-terrain { flex-wrap: wrap; gap: 3px; }
+.catalogue-results .route-card-terrain .elevation-svg { height: 24px; width: 80px; }
+.catalogue-results .chip-list { gap: 4px; }
+.catalogue-results .chip { font-size: 11px; padding: 3px 5px; letter-spacing: 0; }
+.catalogue-workspace > .atlas { position: sticky; top: calc(var(--header-h) + 16px); margin-top: 0; min-width: 0; }
+.atlas .nr-map-marker-shell { display: grid; place-items: center; }
+.catalogue-workspace .atlas-map { height: clamp(440px, 65svh, 760px); border-radius: 12px; }
+.catalogue-workspace .atlas-head h2 { font-size: 21px; }
+.catalogue-mode { display: none; }
+/* Detail stays native: compact reading/facts without touching fullscreen or elevation layers. */
+@media (min-width: 768px) {
+  .route-hero { min-height: 320px; grid-template-columns: minmax(340px, 45%) minmax(0, 1fr); }
+  .route-hero-copy { padding-block: 28px 44px; }
+  .route-hero h1 { font-size: clamp(30px, 3.2vw, 46px); line-height: 1.12; }
+  .route-subtitle { font-family: var(--sans); font-size: 19px; }
+  .route-lede { font-size: 15px; margin-top: 14px; }
+  .route-hero-media { min-height: 320px; }
+  .route-hero-photo.torn-left { mask-image: none; -webkit-mask-image: none; }
+  .route-facts { box-shadow: none; }
+}
+@media (max-width: 1240px) {
+  .site-header { gap: 12px; }
+  .header-search { width: 180px; }
+  .primary-nav { gap: 12px; }
+  .home-voices { grid-template-columns: 1fr 1fr; }
+  .voices-languages { grid-column: 1 / -1; }
+}
+@media (max-width: 1023px) {
+  :root { --header-h: 64px; }
+  .site-header { min-height: 64px; }
+  .menu-toggle { grid-column: 3; justify-self: end; }
+  .home-hero { width: calc(100% - 40px); grid-template-columns: minmax(260px, .9fr) minmax(0, 1.1fr); gap: 24px; }
+  .home-hero-copy h1 { font-size: 34px; }
+  .home-hero-copy { padding: 0; }
+  .home-hero-media { min-height: 0; }
+  .quick-links { gap: 12px; }
+  .quick-links li { flex: 1 1 40%; }
+  .quick-links a { min-width: 0; }
+  .home-featured > * { width: calc(100% - 40px); }
+  .discover-hero { gap: 24px; }
+  .catalogue-workspace { grid-template-columns: 310px minmax(0, 1fr); gap: 16px; }
+}
+@media (max-width: 767px) {
+  .home-hero { grid-template-columns: 1fr; margin-top: 24px; gap: 24px; }
+  .home-hero-copy { max-width: none; }
+  .home-hero-copy h1 { font-size: 34px; }
+  .home-hero-copy h1 br { display: none; }
+  .home-hero-copy .lede { max-width: 54ch; margin: 12px 0 18px; }
+  .home-route-search { position: relative; }
+  .home-route-search > .ico { top: 14px; }
+  .home-route-search .button { width: 100%; }
+  .home-hero-cta { width: 100%; }
+  .quick-links { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 18px; padding-top: 14px; }
+  .quick-links a { flex-direction: column; align-items: flex-start; gap: 4px; }
+  .quick-links small { display: none; }
+  .home-hero-media { height: auto; min-height: 0; }
+  .home-map-open { bottom: 12px; left: 12px; min-height: 44px; padding: 8px 10px; font-size: 13px; }
+  .hero-carousel-controls { top: 10px; left: 10px; right: 10px; gap: 8px; }
+  .hero-carousel-select button { min-width: 58px; padding-inline: 11px; }
+  .home-map-route { padding: 14px; gap: 12px; }
+  .home-preview-route { font-size: 13px; }
+  .home-featured { padding-top: 30px; }
+  .section-head, .discover-hero { grid-template-columns: 1fr; }
+  .section-head-aside { align-items: flex-start; }
+  .section-head-aside p { text-align: left; }
+  .home .route-card-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .home-voices { grid-template-columns: 1fr; }
+  .voices-copy, .voices-panel, .voices-languages { padding: 28px 20px; }
+  .home-experience { grid-template-columns: 1fr; padding: 32px 20px; }
+  .experience-strip { order: 2; }
+  .experience-points { order: 3; }
+  .discover { padding-top: 24px; }
+  .discover-hero h1 { max-width: none; font-size: 32px; }
+  .discover-hero .lede { font-size: 15px; }
+  .discover-actions { margin-top: 18px; gap: 8px; }
+  .discover-actions .button { flex: 1; padding-inline: 12px; }
+  .discover-map-preview > span { flex-wrap: wrap; font-size: 13px; }
+  .discover-map-preview small { margin-left: 0; }
+  .catalogue, .discover { width: calc(100% - 32px); }
+  .catalogue .catalogue-hero { grid-template-columns: 1fr; }
+  .catalogue .catalogue-hero h1 { font-size: 29px; }
+  .catalogue-filters { flex-wrap: nowrap; overflow-x: auto; align-items: end; gap: 16px; padding-bottom: 14px; }
+  .catalogue-filters fieldset { flex: 0 0 auto; min-width: 120px; }
+  .catalogue-filters > .data-note { display: none; }
+  .catalogue-workspace { grid-template-columns: 1fr; }
+  .catalogue-workspace > .atlas { position: static; }
+  .catalogue-workspace .atlas-map { height: max(360px, 55svh); }
+  .catalogue-mode { display: flex; gap: 4px; padding: 4px; border: 1px solid var(--line-strong); border-radius: 9px; background: var(--paper-bright); margin: 0 0 16px; width: fit-content; }
+  .catalogue-mode[hidden] { display: none; }
+  .catalogue-mode button { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; min-width: 100px; padding: 8px 18px; border-radius: 6px; font-size: 14px; font-weight: 600; }
+  .catalogue-mode button:disabled { color: var(--ink-muted); cursor: wait; opacity: .65; }
+  .catalogue-mode button[aria-pressed='true'] { background: var(--ink); color: var(--white); }
+  .catalogue-workspace[data-catalogue-mode='map'] > .catalogue-results { display: none; }
+  .catalogue-workspace[data-catalogue-mode='list'] > .atlas { display: none; }
+}
+@media (max-width: 479px) {
+  .home .route-card-grid { grid-template-columns: 1fr; }
+  .route-card-media { height: 165px; max-height: 165px; }
+  .catalogue-results .route-card-media { height: auto; max-height: none; }
+  .route-card-photo img { max-height: 165px; }
+  .home-map-route strong { font-size: 15px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .button, .route-card, .collection-card, .magazine-page { transition: none; }
+}
+
+@media (max-width: 639px) {
+  .route-photos { order: 9; width: calc(100% - 28px); margin-inline: auto; }
+  .route-collections { order: 10; width: calc(100% - 28px); margin: 20px auto 0; }
+  .route-related { order: 11; }
+}
+
+.hero-carousel-stage { touch-action: pan-y pinch-zoom; }
+
+.catalogue-workspace > .atlas, #catalogue-grid { scroll-margin-top: calc(var(--header-h) + 14px); }
+
+.home-map-disclosure { position: absolute; left: 12px; bottom: 66px; max-width: calc(100% - 24px); margin: 0; padding: 5px 8px; background: var(--paper-bright); color: var(--ink); border-radius: 4px; font-size: 12px; line-height: 1.35; pointer-events: none; }
+
+.stop-sequence { margin: 0; color: var(--ink-muted); font-size: 13px; font-weight: 600; }
