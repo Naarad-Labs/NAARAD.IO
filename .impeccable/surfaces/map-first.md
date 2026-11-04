@@ -8,6 +8,6 @@ Build path: code-led; user-selected map-first direction, no image comp asserted 
 THESIS: A walker finds and compares real routes immediately; the map and honest facts lead the page.
 OWN-WORLD: Light neutral ground, navy ink, orange actions and quiet sage mapping; compact sans interface, clear dividers, practical controls and real licensed place imagery.
 STORY: Search or filter a place, inspect the map/list, open a route and walk/listen with existing controls.
-FIRST VIEWPORT: Compact navigation, short introduction/search, desktop results column beside a dominant map; mobile Map/List controls. Homepage opens with the original Hampi photograph and its slow close-up, with a manually selected map preview in the same frame. Photo/Map, pause, swipe and keyboard controls preserve this approved amendment; motion respects reduced-motion preferences.
+FIRST VIEWPORT: Compact navigation, short introduction/search, desktop results column beside a dominant map; mobile Map/List controls. Homepage opens with the original Hampi photograph and its slow close-up, with a manually selected map preview in the same frame. Photo/Map, swipe and keyboard controls preserve this approved amendment; motion respects reduced-motion preferences.
 FORM: User-selected compact outdoor map workspace. Seed: none (direction explicitly chosen in chat).
 FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, DESIGN.md, and every shipping raster carrying its provenance

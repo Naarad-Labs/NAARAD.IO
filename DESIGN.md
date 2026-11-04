@@ -64,7 +64,7 @@ components:
 
 Naarad's public surfaces pair a clear route-finding workspace with the warmth of an India travel guide. Light paper-like neutral grounds and navy text keep route facts legible; orange marks actions and sage quietly supports map-related detail. Real licensed place imagery gives routes a sense of place without taking over the task of comparing walks.
 
-The interface is compact and practical, with visible control boundaries, straightforward dividers and a restrained radius vocabulary. The homepage brings a real Hampi photograph and an explicitly selected route-map preview together in one frame; the map catalogue gives results and map equal working importance. The homepage photograph uses a slow, pauseable close-up; reduced-motion behavior is respected. Long-form story surfaces retain their distinct reading typography.
+The interface is compact and practical, with visible control boundaries, straightforward dividers and a restrained radius vocabulary. The homepage brings a real Hampi photograph and an explicitly selected route-map preview together in one frame; the map catalogue gives results and map equal working importance. The homepage photograph uses a slow close-up that stops on Map or reduced motion; reduced-motion behavior is respected. Long-form story surfaces retain their distinct reading typography.
 
 **Key Characteristics:**
 - Map and route facts lead the discovery experience.
@@ -152,7 +152,7 @@ The interface favors gently rounded practical controls: 8px fields and buttons, 
 The white-surface header is compact and uses dark, medium-weight sans links. Search is a bordered 44px control on desktop; navigation retains its responsive menu behavior on narrower layouts.
 
 ### Homepage Photo and Map Preview
-The hero media is one clipped frame with a 20:11 stage. The real place photograph is initially shown; visitors can explicitly select Photo or Map, pause the slow photo motion, and use touch or keyboard controls. The controls are light, bordered surfaces over the media. Keep the map preview and original photo within this same component.
+The hero media is one clipped frame with a 20:11 stage. The real place photograph is initially shown; visitors can explicitly select Photo or Map, use touch or keyboard controls, and select Map to stop photo motion. The controls are light, bordered surfaces over the media. Keep the map preview and original photo within this same component.
 
 ## Do's and Don'ts
 
@@ -161,7 +161,7 @@ The hero media is one clipped frame with a 20:11 stage. The real place photograp
 ### Do:
 - **Do** keep search and route facts close to the map they help visitors interpret.
 - **Do** use the compact control scale and maintain 44px minimum control heights.
-- **Do** keep map interaction native and preserve the explicit, pauseable photo/map selection.
+- **Do** keep map interaction native and preserve the explicit photo/map selection.
 - **Do** honor reduced-motion preferences.
 - **Do** use credited, existing place imagery and honest route facts.
 

@@ -48,4 +48,10 @@ Repeated navigation/late async loads must not leak roots, triggers or tickers. M
 
 Draft PR: https://github.com/Naarad-Labs/NAARAD.IO/pull/63. Implementation commit: `cc2692f`. A post-commit rebuild wrote zero files; all 73 generated outputs matched. Live deployment remains unchanged.
 
-The final finish reviewer cleared the stop-label placement fix. The formal QUALITY BAR/seed limitation above remains a historical process limitation rather than an asserted approval. The intermittent mobile overview anchor miss remains open for review: one focused repetition failed, while two complete final browser runs and a further 10 instrumented test repetitions plus 15 sequential diagnostic attempts passed. Steady-state header/tabs/margin are correct (64px header, tabs ending at 118px, 134px scroll margin); no cause was proven, so no speculative source patch or weaker assertion was accepted. The PR remains draft and is not a release-readiness claim.
+The final finish reviewer cleared the stop-label placement fix. The formal QUALITY BAR/seed limitation above remains a historical process limitation rather than an asserted approval. The intermittent mobile overview anchor miss remains open for review: one focused repetition failed, while two complete final browser runs passed. Later diagnostic stress batches were accidentally run from a duplicate worktree and are excluded from this branch’s verification evidence. Steady-state header/tabs/margin are correct (64px header, tabs ending at 118px, 134px scroll margin); no cause was proven, so no speculative source patch or weaker assertion was accepted. The PR remains draft and is not a release-readiness claim.
+
+## User amendment: remove Pause motion button (2026-11-05)
+
+Removed the visible motion button and its unused controller/CSS branches. Photo/Map selection and reduced-motion preference still govern photo animation. Updated regression checks assert the button is absent and Map stops the close-up. This supersedes earlier pause-button descriptions in the approved build history.
+
+The button-removal regression first failed with the old button present, then all three carousel browser cases and all three motion lifecycle tests passed after removal. Build/cache/diff checks passed; preview captures were refreshed.

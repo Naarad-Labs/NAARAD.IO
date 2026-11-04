@@ -14,7 +14,7 @@ export function mount(page, { desktop = false } = {}) {
   let lenis = null;
   let tick = null;
   let style = null;
-  // The native carousel owns slide and pause state. GSAP owns only the
+  // The native carousel owns slide and motion-preference state. GSAP owns only the
   // photograph's gradual close-up, never its frame, credit or controls.
   const heroCarousel = page.matches('.home') ? page.querySelector('[data-hero-carousel]') : null;
   const heroPhoto = heroCarousel?.querySelector('.home-hero-photo img');

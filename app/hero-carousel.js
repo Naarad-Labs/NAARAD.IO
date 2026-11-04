@@ -4,15 +4,13 @@ export function mountHeroCarousel(root) {
   if (!carousel) return { destroy() {} };
   const slides = [...carousel.querySelectorAll('[data-hero-slide]')];
   const choices = [...carousel.querySelectorAll('[data-hero-select]')];
-  const motion = carousel.querySelector('[data-hero-motion]');
   const reduced = matchMedia('(prefers-reduced-motion: reduce)');
   let mode = 'photo';
-  let paused = false;
   let gesture = null;
   let suppressClickUntil = 0;
   const update = () => {
     carousel.dataset.heroMode = mode;
-    carousel.dataset.heroMotion = paused || reduced.matches ? 'paused' : 'running';
+    carousel.dataset.heroMotion = reduced.matches ? 'paused' : 'running';
     for (const slide of slides) {
       const selected = slide.dataset.heroSlide === mode;
       slide.hidden = !selected;
@@ -24,13 +22,6 @@ export function mountHeroCarousel(root) {
       button.setAttribute('aria-pressed', String(button.dataset.heroSelect === mode));
       button.setAttribute('aria-controls', `hero-slide-${button.dataset.heroSelect}`);
     }
-    if (motion) {
-      motion.hidden = mode !== 'photo';
-      motion.disabled = reduced.matches;
-      const label = reduced.matches ? 'Motion reduced' : paused ? 'Resume motion' : 'Pause motion';
-      motion.textContent = label;
-      motion.setAttribute('aria-label', label);
-    }
     carousel.dispatchEvent(new CustomEvent('hero:motion', { bubbles: true }));
   };
   const click = (event) => {
@@ -39,7 +30,6 @@ export function mountHeroCarousel(root) {
     }
     const button = event.target.closest('[data-hero-select]');
     if (button) { mode = button.dataset.heroSelect === 'map' ? 'map' : 'photo'; update(); }
-    if (event.target.closest('[data-hero-motion]') && !reduced.matches) { paused = !paused; update(); }
   };
   const key = (event) => {
     if (!event.target.closest('[data-hero-select]') || !['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;

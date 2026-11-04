@@ -84,7 +84,7 @@
       {
         "name": "hero-photo-drift",
         "value": "scale 1 to 1.075; 16s; infinite repeat; yoyo; sine.inOut",
-        "purpose": "GSAP gradually closes in on the initial homepage photograph; Photo/Map selection and the pause control govern playback, and reduced motion pauses it."
+        "purpose": "GSAP gradually closes in on the initial homepage photograph; Photo/Map selection governs playback, and reduced motion pauses it."
       },
       {
         "name": "control-transition",
@@ -171,7 +171,7 @@
     "dos": [
       "Do keep search and route facts close to the map they help visitors interpret.",
       "Do use the compact control scale and maintain 44px minimum control heights.",
-      "Do keep map interaction native and preserve the explicit, pauseable photo/map selection.",
+      "Do keep map interaction native and preserve the explicit photo/map selection.",
       "Do honor reduced-motion preferences.",
       "Do use credited, existing place imagery and honest route facts."
     ],

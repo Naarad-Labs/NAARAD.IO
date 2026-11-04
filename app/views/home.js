@@ -109,7 +109,6 @@ function hero(featured) {
             <button type="button" data-hero-select="photo" aria-pressed="true" disabled>Photo</button>
             <button type="button" data-hero-select="map" aria-pressed="false" disabled>Map</button>
           </div>
-          <button class="hero-carousel-motion" type="button" data-hero-motion disabled>Pause motion</button>
         </div>
       </div>
       ${first ? `<div class="home-map-route">

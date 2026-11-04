@@ -2538,7 +2538,7 @@ test('map-first reduced motion keeps native scrolling and visible content', asyn
   expect(await page.locator('html').getAttribute('class') || '').not.toContain('lenis');
 });
 
-test('hero carousel keeps the original photo, map and motion controls in one frame', async ({ page }) => {
+test('hero carousel keeps the original photo and map without a pause button', async ({ page }) => {
   await page.goto('/');
   const carousel = page.locator('[data-hero-carousel]');
   await expect(carousel).toHaveAttribute('data-hero-mode', 'photo');
@@ -2549,12 +2549,11 @@ test('hero carousel keeps the original photo, map and motion controls in one fra
   await expect(carousel.locator('[data-hero-slide="photo"]')).toBeHidden();
   await expect(carousel.locator('.route-preview')).toBeVisible();
   await carousel.getByRole('button', { name: 'Photo', exact: true }).click();
-  await carousel.getByRole('button', { name: 'Pause motion', exact: true }).click();
-  await expect(carousel).toHaveAttribute('data-hero-motion', 'paused');
-  await expect(carousel.getByRole('button', { name: 'Resume motion', exact: true })).toBeVisible();
+  await expect(carousel.locator('[data-hero-motion]')).toHaveCount(0);
+  await expect(carousel).toHaveAttribute('data-hero-motion', 'running');
 });
 
-test('hero close-up pauses and reduced motion tears down enhancements', async ({ page }) => {
+test('hero close-up stops on Map and reduced motion tears down enhancements', async ({ page }) => {
   await page.goto('/');
   const carousel = page.locator('[data-hero-carousel]');
   const image = carousel.locator('.home-hero-photo img');
@@ -2563,14 +2562,14 @@ test('hero close-up pauses and reduced motion tears down enhancements', async ({
     const transform = await image.evaluate((node) => getComputedStyle(node).transform);
     return transform === 'none' ? 1 : Number(transform.match(/matrix\(([^,]+)/)?.[1] || 1);
   }).toBeGreaterThan(1);
-  await carousel.getByRole('button', { name: 'Pause motion', exact: true }).click();
+  await carousel.getByRole('button', { name: 'Map', exact: true }).click();
   const paused = await image.evaluate((node) => getComputedStyle(node).transform);
   await page.waitForTimeout(180);
   expect(await image.evaluate((node) => getComputedStyle(node).transform)).toBe(paused);
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await expect(page.locator('html')).not.toHaveClass(/lenis/);
   await expect(image).toHaveCSS('transform', 'none');
-  await expect(carousel.getByRole('button', { name: 'Motion reduced', exact: true })).toBeDisabled();
+  await expect(carousel.locator('[data-hero-motion]')).toHaveCount(0);
   await carousel.getByRole('button', { name: 'Map', exact: true }).click();
   await expect(carousel.locator('[data-hero-slide="map"]')).toBeVisible();
 });

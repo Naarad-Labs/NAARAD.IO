@@ -2,7 +2,7 @@
   "note": "Written by scripts/build-site.mjs. For each page in the sitemap: a hash of what the page says (its main content and the head tags it owns) and the date that hash was first built. The sitemap's lastmod is that date; it moves only when the hash does.",
   "pages": {
     "/": {
-      "hash": "6246445d8bb393cb8b41431777c60c4e8045da11bd5542899b81279a844b5fb2",
+      "hash": "0b3f024e02756b99920403d822faaad6799bf9cef277124cc0f7fd59ac4b1aa1",
       "date": "2026-11-04"
     },
     "/about/": {
