@@ -1,6 +1,7 @@
 # Naarad: Scalable Routes and Sarvam Integration
 
-Date: 5 November 2026  
+Date: 5 November 2026
+
 Status: Combined requirements brief; implementation and cloud deployment are not implied by this document.
 
 ## 1. Goal
