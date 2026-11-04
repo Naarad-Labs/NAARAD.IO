@@ -26,6 +26,7 @@ function show(wrap, fraction) {
   if (line) { line.hidden = false; line.style.left = `${(sample[0] / total) * 100}%`; }
   if (readout) readout.textContent = `${(sample[0] / 1000).toFixed(1)} km along the walk · ${Math.round(sample[1])} m above sea level`;
   wrap.dataset.cursor = String(sample[0] / total);
+  wrap.dispatchEvent(new CustomEvent("elevation:change", { bubbles: true, detail: { distanceM: sample[0] } }));
 }
 
 function reset(wrap) {
@@ -35,7 +36,7 @@ function reset(wrap) {
   delete wrap.dataset.cursor;
 }
 
-document.addEventListener('pointermove', (event) => {
+function pointer(event) {
   const wrap = event.target.closest?.('.elevation-wrap');
   const plot = wrap?.querySelector('.elevation-plot');
   if (!plot) return;
@@ -43,7 +44,9 @@ document.addEventListener('pointermove', (event) => {
   wrap.querySelector('.elevation-readout')?.removeAttribute('aria-live');
   const box = plot.getBoundingClientRect();
   show(wrap, (event.clientX - box.left) / box.width);
-});
+}
+document.addEventListener('pointermove', pointer);
+document.addEventListener('pointerdown', pointer);
 
 document.addEventListener('pointerout', (event) => {
   const wrap = event.target.closest?.('.elevation-wrap');

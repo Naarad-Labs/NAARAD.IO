@@ -2367,3 +2367,107 @@ test.describe('service worker', () => {
     expect(await page.evaluate(() => window.__sameDocument)).toBeUndefined();
   });
 });
+
+ test.describe("route workspace release", () => {
+  test('fullscreen map moves the same map and stop list, then restores focus and scroll', async ({ page }) => {
+    await page.goto('/routes/hampi-heritage-trail/');
+    const open = page.locator('[data-map="fullscreen"]');
+    await open.scrollIntoViewIfNeeded();
+    await expect(open).toBeEnabled();
+    const smallControls = await page.locator('.map-control').evaluateAll((buttons) => buttons
+      .filter((button) => { const bounds = button.getBoundingClientRect(); return bounds.width < 44 || bounds.height < 44; })
+      .map((button) => button.dataset.map));
+    expect(smallControls, 'route map controls meet the 44px target at desktop').toEqual([]);
+    await open.focus();
+    const before = await page.evaluate(() => window.scrollY);
+    await page.evaluate((scrollY) => { window.__routeWorkspaceScroll = scrollY; }, before);
+    await open.press('Enter');
+    const dialog = page.locator('[data-route-map-dialog]');
+    await expect(dialog).toBeVisible();
+    await expect(dialog.locator('[data-map-dialog-close]')).toBeFocused();
+    await expect(dialog.locator('[data-map="fullscreen"]')).toBeHidden();
+    const closeBounds = await dialog.locator('[data-map-dialog-close]').boundingBox();
+    expect(closeBounds.width).toBeGreaterThanOrEqual(44);
+    expect(closeBounds.height).toBeGreaterThanOrEqual(44);
+    await expect(dialog.locator('.stop-item')).toHaveCount(8);
+    await expect(dialog.locator('[data-map="fit"]')).toBeVisible();
+    await dialog.locator('[data-map="fit"]').click();
+    const layers = dialog.locator('[data-map="layers"]');
+    await layers.click();
+    await expect(layers).toContainText('Street');
+    expect(await page.locator('.leaflet-container').count()).toBe(1);
+    await dialog.locator('.stop-item', { hasText: 'Hampi Bazaar' }).click();
+    await expect(page.locator('.stop-title')).toHaveText('Hampi Bazaar');
+    await expect(dialog.locator('.stop-item.is-active')).toContainText('Hampi Bazaar');
+    await page.keyboard.press('Escape');
+    await expect(dialog).not.toBeVisible();
+    await expect(open).toBeFocused();
+    await expect(page.locator('.stop-item.is-active')).toContainText('Hampi Bazaar');
+    expect(await page.evaluate(() => Math.abs(window.scrollY - window.__routeWorkspaceScroll))).toBeLessThan(3);
+    expect(await page.locator('.leaflet-container').count()).toBe(1);
+    expect(await page.evaluate(() => window.scrollY)).toBeGreaterThanOrEqual(before - 2);
+    for (let cycle = 0; cycle < 2; cycle += 1) {
+      await open.press('Enter');
+      await expect(dialog).toBeVisible();
+      await expect(dialog.locator('[data-map-dialog-close]')).toBeFocused();
+      expect(await page.locator('.leaflet-container').count()).toBe(1);
+      await dialog.locator('[data-map-dialog-close]').click();
+      await expect(dialog).not.toBeVisible();
+      await expect(open).toBeFocused();
+    }
+  });
+
+  for (const size of [{ width: 390, height: 844 }, { width: 430, height: 932 }, { width: 768, height: 1024 }, DESKTOP]) {
+    test(`route map workspace fits and opens at ${size.width}px`, async ({ page }) => {
+      await page.setViewportSize(size);
+      await page.goto('/routes/hampi-heritage-trail/');
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+      if (size.width > 1240) {
+        await expect(page.locator('.map-panel')).toHaveCSS('position', 'sticky');
+        const bounds = await page.locator('.map-frame').boundingBox();
+        expect(bounds.height).toBeLessThanOrEqual(size.height);
+      }
+      await page.locator('[data-map="fullscreen"]').click();
+      const dialog = page.locator('[data-route-map-dialog]');
+      await expect(dialog).toBeVisible();
+      await expect(dialog.locator('.stop-item')).toHaveCount(8);
+      expect(await page.locator('.leaflet-container').count()).toBe(1);
+      await dialog.locator('[data-map-dialog-close]').click();
+      await expect(dialog).not.toBeVisible();
+    });
+  }
+
+
+});
+
+ test.describe("linked elevation release", () => {
+  test('the elevation range and profile pointer place a cursor on the published route', async ({ page }) => {
+    await page.goto('/routes/hampi-heritage-trail/');
+    const range = page.locator('[data-elevation-range]');
+    const output = page.locator('[data-elevation-output]');
+    await expect(range).toBeVisible();
+    await expect(output).toContainText('km ·');
+    await range.focus();
+    await range.press('End');
+    await expect(output).toContainText(/5\.2 km · \d+ m/);
+    await expect.poll(async () => {
+      const fraction = Number(await page.locator('.elevation-wrap').getAttribute('data-cursor'));
+      return Math.abs(fraction * Number(await range.getAttribute('max')) - Number(await range.inputValue()));
+    }).toBeLessThanOrEqual(1);
+    await expect(page.locator('.elevation-readout')).toContainText('5.2 km');
+    await expect(page.locator('.elevation-cursor')).toBeVisible();
+    await expect(page.locator('#map .nr-map-elevation-cursor')).toHaveCount(1);
+    await expect(page.locator('.leaflet-container')).toHaveCount(1);
+
+    const profile = page.locator('.glance-elevation .elevation-svg');
+    const box = await profile.boundingBox();
+    await page.mouse.click(box.x + box.width, box.y + box.height / 2);
+    const max = Number(await range.getAttribute('max'));
+    const value = Number(await range.inputValue());
+    expect(max - value).toBeLessThanOrEqual(Number(await range.getAttribute('step')));
+    await expect(output).toContainText(/5\.2 km · \d+ m/);
+    await expect(page.locator('#map .nr-map-elevation-cursor')).toHaveCount(1);
+  });
+
+
+});

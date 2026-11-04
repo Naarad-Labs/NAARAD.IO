@@ -40,6 +40,7 @@ const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
 
 let state = { page: null, route: null, stop: null, story: null };
 let map = null;
+let routeWorkspace = null;
 let generation = 0;
 // The path and query of the current history entry. A popstate that leaves them
 // as they were is the browser moving to an in-page anchor, which draws nothing.
@@ -383,7 +384,6 @@ async function prepare(view, context = {}) {
  * where the new page opens (null leaves the scroll position alone).
  */
 function commit({ markup, meta }, { keep = false, scrollY = 0 } = {}) {
-  document.documentElement.classList.remove('has-map-expanded');   // a navigation ends full screen
   if (!(keep && drawn(markup))) {
     destroyMap();
     unwatchRouteBar();
@@ -552,7 +552,7 @@ function unwatchRouteBar() {
 
 /* ── Map ────────────────────────────────────────────────────────── */
 
-function destroyMap() { map?.destroy?.(); map = null; }
+function destroyMap() { routeWorkspace?.destroy(); routeWorkspace = null; map?.destroy?.(); map = null; }
 
 /* The all-routes map above the catalogue. It follows the filters through the catalogue:filtered event. Not drawn
    while pre-rendering: the saved page keeps the empty frame, so it matches what boot draws. */
@@ -606,10 +606,16 @@ async function mountMap(route, current) {
     });
     if (current !== generation) controller.destroy();
     // Highlight the opening stop without panning, so the whole route stays framed.
-    else { map = controller; showMapLayer(layer); map.selectStop?.(state.stop, { pan: false }); }
+    else {
+      map = controller; showMapLayer(layer); map.selectStop?.(state.stop, { pan: false });
+      const workspace = await import('./route-workspace.js');
+      if (current !== generation) { controller.destroy(); return; }
+      routeWorkspace = workspace.mountRouteWorkspace(shell, route, controller);
+    }
   } catch (error) {
     console.error('Map unavailable', error);
     const node = $('#map');
+    if (current !== generation) return;
     if (node) node.insertAdjacentHTML('beforeend', '<p class="map-unavailable">The interactive map could not load. The route preview and details are still here.</p>');
   }
 }
@@ -999,7 +1005,6 @@ document.addEventListener('click', async (event) => {
   if (mapAction === 'out') map?.zoomOut();
   if (mapAction === 'locate') map?.locate();
   if (mapAction === 'fit') map?.fit();
-  if (mapAction === 'expand') setMapExpanded(!document.querySelector('.map-frame')?.classList.contains('is-expanded'));
   if (mapAction === 'layers') {
     const button = event.target.closest('[data-map="layers"]');
     const satellite = button.getAttribute('aria-pressed') !== 'true';
@@ -1012,23 +1017,6 @@ document.addEventListener('click', async (event) => {
   if (event.target.closest('[data-studio], [data-studio-step], [data-studio-stop], [data-studio-open], [data-studio-delete]')) {
     await handleStudio(event.target.closest('[data-studio], [data-studio-step], [data-studio-stop], [data-studio-open], [data-studio-delete]'));
   }
-});
-
-/* A full-screen map by CSS rather than the Fullscreen API, so it also works where that API does not (iPhone Safari).
-   The map resizes itself; Escape closes it. */
-function setMapExpanded(on) {
-  const frame = document.querySelector('.map-frame');
-  if (!frame) return;
-  frame.classList.toggle('is-expanded', on);
-  document.documentElement.classList.toggle('has-map-expanded', on);
-  const button = frame.querySelector('[data-map="expand"]');
-  const label = button?.querySelector('span');
-  if (label) label.textContent = on ? 'Exit full screen' : 'Full screen';
-  if (!on) button?.focus({ preventScroll: true });
-}
-
-document.addEventListener('keydown', (event) => {
-  if (event.key === 'Escape' && document.querySelector('.map-frame.is-expanded')) setMapExpanded(false);
 });
 
 /* Recent searches: offered when the box is focused, saved when a search is finished (Enter or leaving the box), not on every pause. */
@@ -1213,6 +1201,8 @@ addEventListener('pagehide', () => listenTracker.flush());
 function stopItemId(order) { return `${state.route?.slug}-${String(order).padStart(2, '0')}`; }
 Audio.subscribe((player) => {
   listenTracker.update(player);
+  const playingStop = player.playing ? state.route?.stops?.find((stop) => stop.slug === player.item?.id)?.order ?? null : null;
+  map?.setPlayingStop?.(playingStop);
   $$('[data-action="listen"]').forEach((button) => {
     if (!button.dataset.stop) return;
     const playingThis = Boolean(player.playing && stopItemId(button.dataset.stop) === player.item?.id);
