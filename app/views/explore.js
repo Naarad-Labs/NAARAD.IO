@@ -86,8 +86,8 @@ export function addRecentSuggestions() {
   }
 }
 
-/** Languages at least one route has audio in, in a stable order. */
-function audioLanguages() {
+/** Language plans listed by at least one route, in a stable order; published stories are English-only. */
+function listedLanguages() {
   const present = new Set(routes.flatMap((route) => route.languages || []));
   return Object.keys(LANGUAGE_NAMES).filter((code) => present.has(code));
 }
@@ -119,7 +119,7 @@ export function activeFilters() {
   if (distance !== 'any') out.push(['distance', DISTANCES[distance][0]]);
   if (time !== 'any') out.push(['time', TIMES[time][0]]);
   if (level !== 'any') out.push(['level', LEVELS[level]]);
-  if (lang !== 'any') out.push(['lang', `Audio in ${LANGUAGE_NAMES[lang] || lang}`]);
+  if (lang !== 'any') out.push(['lang', `Planned language: ${LANGUAGE_NAMES[lang] || lang}`]);
   return out;
 }
 
@@ -267,7 +267,7 @@ export async function render(context = {}) {
     sort = pick('sort', Object.keys(SORTS)) || 'default';
     withStories = params.get('stories') === '1';
     region = routes.some((route) => route.region === params.get('region')) ? params.get('region') : 'all';
-    lang = audioLanguages().includes(params.get('lang')) ? params.get('lang') : 'any';
+    lang = listedLanguages().includes(params.get('lang')) ? params.get('lang') : 'any';
   }
   const shown = routes.filter(matches);
   const regions = [...new Set(routes.map((route) => route.region).filter(Boolean))].sort();
@@ -276,7 +276,6 @@ export async function render(context = {}) {
   return `<div class="catalogue">
     <header class="catalogue-hero">
       <div>
-        <p class="eyebrow eyebrow-mark">The Naarad atlas · ${routes.length} routes</p>
         <h1 class="display">Go where <br>stories live.</h1>
         <p class="lede">Search places and browse published routes across India. ${withStops} ${withStops === 1 ? 'route has' : 'routes have'} ordered stops with stories; the rest carry their route facts while stops are written.</p>
       </div>
@@ -288,11 +287,9 @@ export async function render(context = {}) {
       </form>
     </header>
 
-    ${atlasMarkup(routes)}
-
     <div class="catalogue-body">
       <aside class="catalogue-filters" aria-label="Filters">
-        <h2 class="eyebrow">Filter</h2>
+        <h2 class="filters-title">Filter routes</h2>
         <fieldset>
           <legend>Activity</legend>
           <div class="filter-chips" role="group">
@@ -329,13 +326,14 @@ export async function render(context = {}) {
             ${Object.entries(LEVELS).map(([key, label]) => `<button type="button" data-filter-level="${key}" class="${key === level ? 'is-active' : ''}" aria-pressed="${key === level}">${label}</button>`).join('')}
           </div>
         </fieldset>
-        ${audioLanguages().length ? `<fieldset>
-          <legend>Audio language</legend>
-          <label class="sr-only" for="filter-lang">Audio language</label>
+        ${listedLanguages().length ? `<fieldset>
+          <legend>Language plans</legend>
+          <label class="sr-only" for="filter-lang">Language plans</label>
           <select id="filter-lang" data-filter="lang">
-            <option value="any">Any language</option>
-            ${audioLanguages().map((code) => `<option value="${code}" ${code === lang ? 'selected' : ''}>${LANGUAGE_NAMES[code]}</option>`).join('')}
+            <option value="any">Any listed language</option>
+            ${listedLanguages().map((code) => `<option value="${code}" ${code === lang ? 'selected' : ''}>${LANGUAGE_NAMES[code]}</option>`).join('')}
           </select>
+          <p class="data-note">Published stories are currently in English.</p>
         </fieldset>` : ''}
         <fieldset>
           <legend>Content</legend>
@@ -347,10 +345,15 @@ export async function render(context = {}) {
         <p class="data-note">Route lines are shown only where a track or a published stop sequence exists.</p>
       </aside>
 
-      <section class="catalogue-results">
+      ${atlasMarkup(routes) ? `<div class="catalogue-mode" role="group" aria-label="Catalogue view">
+        <button type="button" data-catalogue-mode="list" aria-label="List view" aria-controls="catalogue-results" aria-pressed="true" disabled>${icon('list')} List</button>
+        <button type="button" data-catalogue-mode="map" aria-label="Map view" aria-controls="atlas" aria-pressed="false" disabled>${icon('map')} Map</button>
+      </div>` : ''}
+      ${atlasMarkup(routes) ? '<p class="data-note" data-catalogue-map-error hidden>The interactive map is unavailable. You can still browse and filter the route list.</p>' : ''}
+      <div class="catalogue-workspace">
+      <section class="catalogue-results" id="catalogue-results">
         <div class="section-head">
           <div>
-            <p class="eyebrow eyebrow-mark">Curated and community routes</p>
             <h2 class="section-title"><span id="catalogue-count" role="status">${shown.length} ${shown.length === 1 ? 'route' : 'routes'}</span></h2>
           </div>
           <div class="section-head-aside">
@@ -363,6 +366,8 @@ export async function render(context = {}) {
         <div id="active-filters" class="active-filters" aria-label="Active filters" ${activeFilters().length ? '' : 'hidden'}>${activeFilters().map(([key, label]) => `<button type="button" class="filter-pill" data-clear-filter="${escapeHtml(key)}" aria-label="Remove ${escapeHtml(label)}">${escapeHtml(label)} <span aria-hidden="true">×</span></button>`).join('')}${activeFilters().length ? '<button type="button" class="text-link" data-clear-all>Clear all filters</button>' : ''}</div>
         <div id="catalogue-grid" class="route-card-grid">${grid(shown)}</div>
       </section>
+      ${atlasMarkup(routes)}
+      </div>
     </div>
   </div>`;
 }

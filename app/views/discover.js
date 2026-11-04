@@ -9,6 +9,7 @@ import { routeCard } from './home.js';
 import { themeTiles } from './explore.js';
 import { strip as collectionStrip } from './collection.js';
 import { cataloguePath } from '../urls.js';
+import { routePreview } from '../previews.js';
 import * as Seo from '../seo.js';
 
 export const stylesheet = '/app/explore.css';
@@ -19,18 +20,22 @@ const featured = (routes) => [...routes].sort((a, b) => Number(b.hasStops) - Num
 export async function render() {
   const routes = await Data.loadRoutes();
   const tiles = themeTiles(routes);
+  const lead = featured(routes).find((route) => route.geometry?.coordinates?.length) || routes.find((route) => route.geometry?.coordinates?.length);
   const collections = await collectionStrip();
   return `<div class="discover">
-    <header class="catalogue-hero">
-      <div>
-        <p class="eyebrow eyebrow-mark">Explore</p>
-        <h1 class="display">Find your <br>next walk.</h1>
+    <header class="catalogue-hero discover-hero">
+      <div class="discover-intro">
+        <h1 class="display">Find your next walk.</h1>
         <p class="lede">Start from a theme, a collection or the map. ${routes.length} routes across India, and the ones with stories are marked.</p>
+        <p class="discover-actions">
+          <a class="button button-primary" href="/routes/#atlas" data-view="routes">${icon('map')} Open route map ${icon('arrow')}</a>
+          <a class="button" href="/routes/" data-view="routes">Browse all routes ${icon('arrow')}</a>
+        </p>
       </div>
-      <p class="discover-actions">
-        <a class="button button-primary" href="/routes/" data-view="routes">Browse all routes ${icon('arrow')}</a>
-        <a class="button" href="/routes/#atlas" data-view="routes">${icon('map')} See the map</a>
-      </p>
+      ${lead ? `<a class="discover-map-preview" href="/routes/#atlas" data-view="routes" aria-label="Open map of all routes">
+        ${routePreview(lead, { width: 600, height: 270, numbered: lead.hasStops })}
+        <span>${icon('pin')} ${escapeHtml(lead.name)} <small>Route preview</small>${icon('arrow')}</span>
+      </a>` : ''}
     </header>
 
     ${tiles.length ? `<section class="explore-tiles" aria-label="Start from a theme">
@@ -43,7 +48,7 @@ export async function render() {
     ${collections}
 
     <section class="discover-featured" aria-labelledby="featured-title">
-      <div class="section-head"><div><p class="eyebrow eyebrow-mark">Begin here</p><h2 class="section-title" id="featured-title">Routes with a story.</h2></div>
+      <div class="section-head"><div><h2 class="section-title" id="featured-title">Routes with a story.</h2></div>
       </div>
       <div class="route-card-grid is-three">${featured(routes).map((route) => routeCard(route)).join('')}</div>
     </section>

@@ -50,11 +50,11 @@ export function formatKm(km) {
 
 const SECTION = `<section class="atlas" id="atlas" aria-labelledby="atlas-title">
   <div class="atlas-head">
-    <h2 id="atlas-title" class="eyebrow eyebrow-mark">Every route on the map</h2>
+    <h2 id="atlas-title" class="atlas-title">Every route on the map</h2>
     <a class="text-link" href="#catalogue-grid">Skip the map</a>
     <button type="button" class="button button-sm" data-atlas-near>Routes near me</button>
   </div>
-  <div class="atlas-map nr-map-host" data-atlas-map role="region" aria-label="Map of all routes. The same routes are listed below."></div>
+  <div class="atlas-map nr-map-host" data-atlas-map role="region" aria-label="Map of all routes. The same routes are available in the route list."></div>
   <p class="atlas-status" data-atlas-status></p>
   <ol class="atlas-near" data-atlas-list hidden></ol>
   <p class="data-note">Your position is used on this device to sort the routes. It is not sent or kept.</p>
@@ -86,6 +86,8 @@ export async function mountAtlas(routes, { before = '.catalogue-body', isCurrent
   const state = { destroyed: false, map: null, markers: new Map(), visible: null, you: null };
 
   const controller = {
+    get ready() { return Boolean(state.map && !state.destroyed); },
+    invalidateSize() { state.map?.invalidateSize({ pan: false }); },
     update(slugs) {
       state.visible = new Set(slugs);
       if (!state.map) return;
@@ -157,7 +159,7 @@ export async function mountAtlas(routes, { before = '.catalogue-body', isCurrent
         icon: L.divIcon({
           className: 'nr-map-marker-shell',
           html: `<span class="atlas-dot${route.hasStops ? ' has-stories' : ''}" aria-hidden="true"></span>`,
-          iconSize: [20, 20], iconAnchor: [10, 10],
+          iconSize: [44, 44], iconAnchor: [22, 22],
         }),
         title: route.name, alt: route.name,
       });

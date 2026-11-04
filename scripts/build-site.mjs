@@ -35,6 +35,7 @@
  * given, so a typo in the content cannot quietly take pages off the site.
  */
 
+import './build-enhancements.mjs';
 import fs from 'node:fs';
 import http from 'node:http';
 import path from 'node:path';
@@ -45,6 +46,19 @@ import { CARD_WIDTH, CARD_HEIGHT, cardPath } from '../app/seo.js';
 import { contentHash, nextManifest, sitemapXml } from './sitemap.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+
+// Keep local, content-hashed enhancement chunks available offline with this shell version.
+const enhancementAssets = JSON.parse(fs.readFileSync(path.join(ROOT, 'app/vendor/enhancements-manifest.json'), 'utf8')).assets;
+const enhancementBlock = '  // Generated enhancement assets: start\n'
+  + enhancementAssets.map((asset) => `  '${asset}',`).join('\n')
+  + '\n  // Generated enhancement assets: end';
+const workerPath = path.join(ROOT, 'sw.js');
+const workerSource = fs.readFileSync(workerPath, 'utf8');
+const workerNext = workerSource.includes('// Generated enhancement assets: start')
+  ? workerSource.replace(/  \/\/ Generated enhancement assets: start[\s\S]*?  \/\/ Generated enhancement assets: end/, enhancementBlock)
+  : workerSource.replace("  '/app/vendor/enhancements.js',", enhancementBlock);
+if (workerNext !== workerSource) fs.writeFileSync(workerPath, workerNext);
+
 const SHELL = path.join(ROOT, 'app', 'shell.html');
 const CARD_TEMPLATE = '/scripts/og-card.html';
 const CARD_DIR = path.join(ROOT, 'Images', 'og');

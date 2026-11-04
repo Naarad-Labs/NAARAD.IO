@@ -59,6 +59,8 @@ jobs:
           node-version: 22
           cache: npm
           cache-dependency-path: e2e/package-lock.json
+      - name: Install enhancement build dependencies
+        run: npm ci
       - run: npm ci
         working-directory: e2e
       - run: npx playwright install --with-deps chromium

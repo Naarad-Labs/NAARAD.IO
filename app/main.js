@@ -25,6 +25,7 @@ import * as Account from './account.js';
 import * as OfflineUI from './offline-ui.js';
 import * as Drafts from './studio-store.js';
 import * as Motion from './motion.js';
+import { mountHeroCarousel } from './hero-carousel.js';
 import { loadPreviewTiles } from './previews.js';
 import * as Lightbox from './lightbox.js';
 import { downloadGpx } from './gpx.js';
@@ -41,6 +42,8 @@ const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
 let state = { page: null, route: null, stop: null, story: null };
 let map = null;
 let routeWorkspace = null;
+let catalogueLayout = null;
+let heroCarousel = null;
 let generation = 0;
 // The path and query of the current history entry. A popstate that leaves them
 // as they were is the browser moving to an in-page anchor, which draws nothing.
@@ -110,6 +113,7 @@ async function syncCatalogue() {
 const PAGES = [
   {
     name: 'home', path: '/', view: 'home', nav: 'home',
+    after: () => { heroCarousel = mountHeroCarousel(shell); },
   },
   {
     name: 'routes', path: '/routes/', view: 'explore', nav: 'routes',
@@ -218,7 +222,7 @@ function loadStylesheet(href) {
     link.href = href;
     link.addEventListener('load', resolve, { once: true });
     link.addEventListener('error', resolve, { once: true });
-    document.head.append(link);
+    document.head.insertBefore(link, document.querySelector('link[data-map-first]'));
   });
 }
 
@@ -385,6 +389,8 @@ async function prepare(view, context = {}) {
  */
 function commit({ markup, meta }, { keep = false, scrollY = 0 } = {}) {
   if (!(keep && drawn(markup))) {
+    heroCarousel?.destroy(); heroCarousel = null;
+    Motion.destroy?.();
     destroyMap();
     unwatchRouteBar();
     shell.innerHTML = markup;
@@ -552,7 +558,7 @@ function unwatchRouteBar() {
 
 /* ── Map ────────────────────────────────────────────────────────── */
 
-function destroyMap() { routeWorkspace?.destroy(); routeWorkspace = null; map?.destroy?.(); map = null; }
+function destroyMap() { catalogueLayout?.destroy(); catalogueLayout = null; routeWorkspace?.destroy(); routeWorkspace = null; map?.destroy?.(); map = null; }
 
 /* The all-routes map above the catalogue. It follows the filters through the catalogue:filtered event. Not drawn
    while pre-rendering: the saved page keeps the empty frame, so it matches what boot draws. */
@@ -560,7 +566,7 @@ async function mountAtlasMap(current) {
   if (PRERENDER) return;
   destroyMap();
   try {
-    const { mountAtlas } = await import('./atlas.js');
+    const [{ mountAtlas }, { mountCatalogueLayout }] = await Promise.all([import('./atlas.js'), import('./catalogue-layout.js')]);
     const routes = await Data.loadRoutes();
     if (current !== generation) return;
     const atlas = await mountAtlas(routes, { isCurrent: () => current === generation });
@@ -569,7 +575,8 @@ async function mountAtlasMap(current) {
     const near = async (event) => (await moduleFor('explore')).setOrigin([event.detail.lng, event.detail.lat]);
     document.addEventListener('catalogue:filtered', follow);
     document.addEventListener('catalogue:near', near);
-    map = { destroy() { document.removeEventListener('catalogue:filtered', follow); document.removeEventListener('catalogue:near', near); atlas.destroy(); } };
+    map = { invalidateSize() { atlas.invalidateSize?.(); }, destroy() { document.removeEventListener('catalogue:filtered', follow); document.removeEventListener('catalogue:near', near); atlas.destroy(); } };
+    catalogueLayout = mountCatalogueLayout(shell, { available: atlas.ready, onChange: () => atlas.invalidateSize?.() });
     await syncCatalogue();
   } catch (error) {
     console.error('Atlas unavailable', error);

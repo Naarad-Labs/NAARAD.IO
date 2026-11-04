@@ -1,0 +1,184 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-04T21:03:33Z",
+  "title": "Design System: Naarad",
+  "extensions": {
+    "colorMeta": {
+      "orange-action": {
+        "role": "primary",
+        "displayName": "Trail Orange",
+        "canonical": "#c6511b"
+      },
+      "orange-text": {
+        "role": "primary",
+        "displayName": "Readable Orange",
+        "canonical": "#b04512"
+      },
+      "navy-ink": {
+        "role": "neutral",
+        "displayName": "Navy Ink",
+        "canonical": "#12294a"
+      },
+      "deep-navy": {
+        "role": "neutral",
+        "displayName": "Deep Navy",
+        "canonical": "#0c1c33"
+      },
+      "paper": {
+        "role": "neutral",
+        "displayName": "Trail Paper",
+        "canonical": "#f5f6f2"
+      },
+      "white-surface": {
+        "role": "neutral",
+        "displayName": "White Surface",
+        "canonical": "#ffffff"
+      },
+      "sage": {
+        "role": "tertiary",
+        "displayName": "Quiet Sage",
+        "canonical": "#6f8156"
+      },
+      "divider": {
+        "role": "neutral",
+        "displayName": "Soft Divider",
+        "canonical": "#dce1d8"
+      },
+      "map-ground": {
+        "role": "neutral",
+        "displayName": "Map Mist",
+        "canonical": "#e8eddf"
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Interface Display",
+        "purpose": "Homepage and route headings in the map-first public interface."
+      },
+      "headline": {
+        "displayName": "Section Headline",
+        "purpose": "Section headings in the map-first public interface."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Running text and form fields."
+      },
+      "label": {
+        "displayName": "Control Label",
+        "purpose": "Compact controls, facts and metadata."
+      }
+    },
+    "shadows": [
+      {
+        "name": "map-control-separation",
+        "value": "0 4px 18px rgb(var(--ink-deep-rgb) / 14%)",
+        "purpose": "Native map controls remain legible above map tiles."
+      },
+      {
+        "name": "map-marker-separation",
+        "value": "0 2px 8px rgb(var(--ink-deep-rgb) / 35%)",
+        "purpose": "Circular route markers remain legible above map content."
+      }
+    ],
+    "motion": [
+      {
+        "name": "hero-photo-drift",
+        "value": "scale 1 to 1.075; 16s; infinite repeat; yoyo; sine.inOut",
+        "purpose": "GSAP gradually closes in on the initial homepage photograph; Photo/Map selection and the pause control govern playback, and reduced motion pauses it."
+      },
+      {
+        "name": "control-transition",
+        "value": "180ms",
+        "purpose": "Small interactive state transitions; reduced-motion preferences are honored."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "mobile-layout",
+        "value": "767px"
+      },
+      {
+        "name": "tablet-header",
+        "value": "1023px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Main route-finding action with a compact, touch-friendly target.",
+      "html": "<button class=\"ds-button-primary\">Find routes</button>",
+      "css": ".ds-button-primary { min-height: 44px; padding: 0 17px; border: 1px solid #b04512; border-radius: 8px; background: #c6511b; color: #fff; font: 600 14.5px/1.2 'DM Sans', 'Segoe UI', system-ui, sans-serif; transition: background .18s, color .18s, border-color .18s, transform .18s; } .ds-button-primary:hover { background: #a23f10; border-color: #a23f10; transform: none; } .ds-button-primary:focus-visible { outline: 3px solid #d9622a; outline-offset: 3px; } .ds-button-primary:active { opacity: .82; }"
+    },
+    {
+      "name": "Route Search Field",
+      "kind": "input",
+      "refersTo": "search-field",
+      "description": "Place search used to find routes from the homepage.",
+      "html": "<input class=\"ds-search-field\" type=\"search\" placeholder=\"Search by place\" aria-label=\"Search by place\">",
+      "css": ".ds-search-field { width: 100%; min-height: 48px; padding: 10px 12px 10px 41px; border: 1px solid #7b887c; border-radius: 8px; background: #fff; color: #12294a; font: 400 16px/1.4 'DM Sans', 'Segoe UI', system-ui, sans-serif; } .ds-search-field:focus-visible { outline: 3px solid #d9622a; outline-offset: 3px; }"
+    },
+    {
+      "name": "Site Navigation",
+      "kind": "nav",
+      "description": "Compact public navigation over a white surface.",
+      "html": "<nav class=\"ds-nav\"><a href=\"#routes\">Routes</a><a href=\"#stories\">Stories</a></nav>",
+      "css": ".ds-nav { display: flex; align-items: center; gap: 20px; padding: 9px 16px; background: #fff; color: #46556d; font: 500 14px/1.4 'DM Sans', 'Segoe UI', system-ui, sans-serif; } .ds-nav a:hover { color: #12294a; } .ds-nav a:focus-visible { outline: 3px solid #d9622a; outline-offset: 3px; }"
+    },
+    {
+      "name": "Route Card",
+      "kind": "card",
+      "description": "Compact route summary with a photo, map preview and practical facts.",
+      "html": "<article class=\"ds-route-card\"><div class=\"ds-route-card-media\"></div><div class=\"ds-route-card-body\"><strong>Route name</strong><span>Distance · Duration</span></div></article>",
+      "css": ".ds-route-card { overflow: hidden; border: 1px solid #dce1d8; border-radius: 12px; background: #fff; color: #12294a; } .ds-route-card:hover { border-color: #6f8156; } .ds-route-card-media { min-height: 120px; background: #e8eddf; } .ds-route-card-body { display: grid; gap: 8px; padding: 15px; font: 400 13px/1.45 'DM Sans', 'Segoe UI', system-ui, sans-serif; } .ds-route-card-body strong { font-size: 18px; line-height: 1.25; } .ds-route-card:focus-within { outline: 3px solid #d9622a; outline-offset: 3px; }"
+    },
+    {
+      "name": "Photo and Map Selector",
+      "kind": "custom",
+      "description": "Explicitly selects the homepage photo or real route map in the same frame.",
+      "html": "<div class=\"ds-preview-select\" role=\"group\" aria-label=\"Choose preview\"><button type=\"button\" aria-pressed=\"true\">Photo</button><button type=\"button\" aria-pressed=\"false\">Map</button></div>",
+      "css": ".ds-preview-select { display: flex; gap: 2px; padding: 3px; border: 1px solid #bec8ba; border-radius: 9px; background: #fff; } .ds-preview-select button { min-width: 64px; min-height: 44px; padding: 8px 15px; border-radius: 6px; color: #12294a; font: 700 14px/1.2 'DM Sans', 'Segoe UI', system-ui, sans-serif; } .ds-preview-select button[aria-pressed='true'] { background: #12294a; color: #fff; } .ds-preview-select button:hover { background-color: #e9ede5; } .ds-preview-select button:focus-visible { outline: 3px solid #d9622a; outline-offset: 2px; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Walker's Atlas",
+    "overview": "Naarad's public surfaces pair a clear route-finding workspace with the warmth of an India travel guide. Light paper-like neutral grounds and navy text keep route facts legible; orange marks actions and sage quietly supports map-related detail. Real licensed place imagery gives routes a sense of place without taking over the task of comparing walks.\n\nThe interface is compact and practical, with visible control boundaries, straightforward dividers and a restrained radius vocabulary. The homepage brings a real Hampi photograph and an explicitly selected route-map preview together in one frame; the map catalogue gives results and map equal working importance. Motion is limited and user-controllable, and reduced-motion behavior is respected.",
+    "keyCharacteristics": [
+      "Map and route facts lead the discovery experience.",
+      "Warm, low-chroma surfaces support navy text and orange actions.",
+      "Compact sans-serif controls use clear boundaries and touch-friendly heights.",
+      "Photography is factual and credited; map previews use a quiet sage ground."
+    ],
+    "rules": [
+      {
+        "name": "The Route-Facts Contrast Rule",
+        "body": "Keep route facts on light neutral surfaces with the dark ink palette; reserve orange text for its contrast-safe text role.",
+        "section": "colors"
+      },
+      {
+        "name": "The Map-First Sans Rule",
+        "body": "Use DM Sans for homepage, catalogue and route headings and interface text; long-form story surfaces retain their serif reading typography.",
+        "section": "typography"
+      },
+      {
+        "name": "The Flat Card Rule",
+        "body": "Keep route and collection cards shadow-free and stationary; use a border-color shift to mark hover.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do keep search and route facts close to the map they help visitors interpret.",
+      "Do use the compact control scale and maintain 44px minimum control heights.",
+      "Do keep map interaction native and preserve the explicit, pauseable photo/map selection.",
+      "Do honor reduced-motion preferences.",
+      "Do use credited, existing place imagery and honest route facts."
+    ],
+    "donts": [
+      "Don't add resting shadows or lift to route and collection cards.",
+      "Don't make the route map compete with decorative scroll effects.",
+      "Don't use orange text as though it were the solid action-fill token."
+    ]
+  }
+}

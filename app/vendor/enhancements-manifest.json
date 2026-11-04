@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "entry": "/app/vendor/enhancements.js",
+  "assets": [
+    "/app/vendor/enhancement-chunks/chunk-UOQBX4P3.js",
+    "/app/vendor/enhancement-chunks/react-accent-W5QL7TJ4.js",
+    "/app/vendor/enhancements.js"
+  ],
+  "sizes": {
+    "/app/vendor/enhancement-chunks/chunk-UOQBX4P3.js": {
+      "bytes": 73286,
+      "gzip": 29128
+    },
+    "/app/vendor/enhancement-chunks/react-accent-W5QL7TJ4.js": {
+      "bytes": 226287,
+      "gzip": 70682
+    },
+    "/app/vendor/enhancements.js": {
+      "bytes": 24532,
+      "gzip": 7821
+    }
+  }
+}
