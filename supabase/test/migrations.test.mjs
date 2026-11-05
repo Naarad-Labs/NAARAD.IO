@@ -302,3 +302,92 @@ test('the consent ledger down migration removes the table cleanly', async () => 
   const after = await q(db, "select count(*)::int as n from pg_class where relname = 'consents'");
   assert.equal(after[0].n, 0);
 });
+
+/* Tests for sarvam migration (0002_sarvam.sql) */
+const sarvamUpFile = path.join(dir, '0002_sarvam.sql');
+const sarvamDownFile = path.join(dir, 'down', '0002_sarvam.down.sql');
+
+test('sarvam jobs table has correct columns and constraints', async () => {
+  const db = new PGlite();
+  await db.exec(STUB);
+  await db.exec(fs.readFileSync(sarvamUpFile, 'utf8'));
+  await db.exec(`insert into auth.users (id) values ('${A}')`);
+  const columns = await q(db, `select column_name, data_type, is_nullable from information_schema.columns where table_name = 'sarvam_jobs' order by ordinal_position`);
+  assert.equal(columns.length, 9);
+  assert.equal(columns[0].column_name, 'id');
+  assert.equal(columns[0].data_type, 'uuid');
+  assert.equal(columns[1].column_name, 'user_id');
+  assert.equal(columns[4].column_name, 'status');
+  assert.equal(columns[5].column_name, 'minutes_credited');
+  assert.equal(columns[6].column_name, 'minutes_spent');
+});
+
+test('sarvam credits table has correct structure', async () => {
+  const db = new PGlite();
+  await db.exec(STUB);
+  await db.exec(fs.readFileSync(sarvamUpFile, 'utf8'));
+  await db.exec(`insert into auth.users (id) values ('${A}')`);
+  const columns = await q(db, `select column_name, data_type from information_schema.columns where table_name = 'sarvam_credits' order by ordinal_position`);
+  assert.equal(columns.length, 3);
+  assert.equal(columns[0].column_name, 'user_id');
+  assert.equal(columns[1].column_name, 'balance');
+  assert.equal(columns[2].column_name, 'updated_at');
+});
+
+test('a user can insert sarvam jobs for themselves', async () => {
+  const db = new PGlite();
+  await db.exec(STUB);
+  await db.exec(fs.readFileSync(sarvamUpFile, 'utf8'));
+  await db.exec(`insert into auth.users (id) values ('${A}'), ('${B}')`);
+
+  await asA(db, async () => {
+    await q(db, `insert into sarvam_jobs (user_id, voice, text, minutes_credited) values ('${A}', 'en-US-JoeNeural', 'Hello world', 1)`);
+  });
+
+  const jobs = await asA(db, () => q(db, 'select user_id, voice from sarvam_jobs'));
+  assert.equal(jobs.length, 1);
+  assert.equal(jobs[0].user_id, A);
+});
+
+test('a user cannot insert sarvam jobs for another user', async () => {
+  const db = new PGlite();
+  await db.exec(STUB);
+  await db.exec(fs.readFileSync(sarvamUpFile, 'utf8'));
+  await db.exec(`insert into auth.users (id) values ('${A}'), ('${B}')`);
+
+  await asA(db, async () => {
+    await assert.rejects(q(db, `insert into sarvam_jobs (user_id, voice, text, minutes_credited) values ('${B}', 'en-US-JoeNeural', 'Hello', 1)`), /row-level security/);
+  });
+});
+
+test('spend_credits RPC returns false for insufficient balance', async () => {
+  const db = new PGlite();
+  await db.exec(STUB);
+  await db.exec(fs.readFileSync(sarvamUpFile, 'utf8'));
+  await db.exec(`insert into auth.users (id) values ('${A}')`);
+
+  /* Insert zero balance credit record */
+  await db.exec(`insert into sarvam_credits (user_id, balance) values ('${A}', 0)`);
+
+  const result = await db.query(`select public.spend_credits('${A}', 10) as spent`);
+  assert.equal(result.rows[0].spent, false);
+});
+
+test('down migration removes sarvam tables cleanly', async () => {
+  const db = new PGlite();
+  await db.exec(STUB);
+  await db.exec(`insert into auth.users (id) values ('${A}')`);
+  await db.exec(fs.readFileSync(sarvamUpFile, 'utf8'));
+  await as(db, { role: 'service_role' }, async () => {
+    await db.exec(`insert into sarvam_jobs (user_id, voice, text, minutes_credited) values ('${A}', 'en-US-JoeNeural', 'test', 1)`);
+    await db.exec(`insert into sarvam_credits (user_id, balance) values ('${A}', 0)`);
+  });
+
+  const before = await q(db, "select count(*)::int as n from pg_class where relname in ('sarvam_jobs', 'sarvam_credits')");
+  assert.equal(before.reduce((sum, r) => sum + r.n, 0), 2);
+
+  await db.exec(fs.readFileSync(sarvamDownFile, 'utf8'));
+
+  const after = await q(db, "select count(*)::int as n from pg_class where relname in ('sarvam_jobs', 'sarvam_credits')");
+  assert.equal(after.reduce((sum, r) => sum + r.n, 0), 0);
+});
