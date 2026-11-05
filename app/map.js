@@ -1,6 +1,6 @@
 const LEAFLET_CSS = '/app/vendor/leaflet/leaflet.css';
 const LEAFLET_JS = '/app/vendor/leaflet/leaflet.js';
-const STREET_URL = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+const STREET_URL = 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png';
 const SATELLITE_URL = 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}';
 
 let leafletPromise;
@@ -324,7 +324,7 @@ export async function mountRouteMap(container, route, options = {}) {
     state.placeholder = container.querySelector('.map-placeholder');
     if (state.placeholder) state.placeholder.classList.add('is-behind');
     state.map = L.map(container, { zoomControl: false, scrollWheelZoom: true, preferCanvas: true });
-    const attributionOSM = '© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap contributors</a>';
+    const attributionOSM = '© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap contributors</a> © <a href="https://carto.com/attributions" target="_blank" rel="noopener">CARTO</a>';
     const attributionEsri = 'Tiles © <a href="https://www.esri.com/" target="_blank" rel="noopener">Esri</a>, Maxar, Earthstar Geographics, and the GIS User Community';
     state.tileLayers.street = L.tileLayer(STREET_URL, { maxZoom: 19, attribution: attributionOSM, subdomains: 'abc' });
     state.tileLayers.satellite = L.tileLayer(SATELLITE_URL, { maxZoom: 19, attribution: attributionEsri });
