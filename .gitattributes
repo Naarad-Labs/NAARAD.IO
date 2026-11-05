@@ -1,0 +1,25 @@
+# Export settings
+# Files not needed when exporting/cloning the repository
+
+# Internal tools (already in .gitignore)
+internal/floorplan/ export-ignore
+
+# EditorConfig is for development, not for export
+.editorconfig export-ignore
+
+# OS files
+.DS_Store export-ignore
+Thumbs.db export-ignore
+
+# IDE files
+.idea/ export-ignore
+.vscode/ export-ignore
+
+# Build artifacts and caches
+*.log export-ignore
+
+# Git history for specific files (if needed)
+# *.png diff=png
+
+# Text file attributes
+*.md linguist-language=Markdown
