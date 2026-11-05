@@ -47,8 +47,8 @@ Run lock: none
 | 37 | done |  | Run e2e on a built site, not the dev tree | verify.sh and CI |  |
 | 38 | done |  | Upload Playwright traces and screenshots on failure | verify.sh and CI |  |
 | 39 | done |  | Add a CI size budget | verify.sh and CI |  |
-| 40 | todo |  | Protect main with required checks | verify.sh and CI |  |
-| 41 | todo |  | List every file reachable on the live domain | Public repo hygiene (what GitHub Pages s |  |
+| 40 | done |  | Protect main with required checks | verify.sh and CI |  |
+| 41 | done |  | List every file reachable on the live domain | Public repo hygiene (what GitHub Pages s |  |
 | 42 | todo |  | Move non-site files out of the published root | Public repo hygiene (what GitHub Pages s |  |
 | 43 | todo |  | Decide the fate of the replica/ folder | Public repo hygiene (what GitHub Pages s |  |
 | 44 | todo |  | Check docs/ for internal content | Public repo hygiene (what GitHub Pages s |  |
