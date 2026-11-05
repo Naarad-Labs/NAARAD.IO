@@ -101,6 +101,38 @@ export async function answer(question, { routeSlug, stopOrder, context } = {}) {
   });
 }
 
+/** Bulk import a .tar.gz route bundle.
+ *
+ * The browser selects a .tar.gz bundle file. This function:
+ *   1. Reads the manifest to get route slugs, stop counts, language configs
+ *   2. Calls the Edge Function `/functions/v1/sarvam-proxy/import` which
+ *      unpacks the bundle, records each job in sarvam_jobs, and spends from
+ *      the credit ledger
+ *   3. Returns { draftsCreated, routesImported, errors }
+ *
+ * The bundle stays in this browser only. No Sarvam key ever leaves the Edge
+ * Function. The credit ledger ensures the founder's budget is never surprised.
+ */
+export async function importBundle(bundle) {
+  if (!backend.configured()) throw new Error('Imports need the Naarad backend, which is not part of this build.');
+  const formData = new FormData();
+  formData.append('bundle', bundle);
+  let response;
+  try {
+    response = await fetch(`${PROXY}/import`, { method: 'POST', body: formData });
+  } catch {
+    throw new Error('No connection. Nothing was sent.');
+  }
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    const error = new Error(data.error || data.reason || `The proxy answered ${response.status}.`);
+    error.reason = data.reason;
+    error.balance = data.balance;
+    throw error;
+  }
+  return data;
+}
+
 /** The balance the last call was charged against, or null when nothing has been spent. */
 export function balanceOf(error) {
   return error && typeof error.balance === 'number' ? error.balance : null;

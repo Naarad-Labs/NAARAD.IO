@@ -12,6 +12,7 @@ import { routePreview, elevationProfile } from '../previews.js';
 import { elevationSamples } from '../elevation-model.js';
 import * as Journey from '../journey-store.js';
 import * as Offline from '../offline-bundles.js';
+import * as Sarvam from '../sarvam.js';
 import { routePath, sectionPath, absoluteUrl } from '../urls.js';
 import * as Seo from '../seo.js';
 
@@ -157,6 +158,15 @@ function stopPanel(route, stop) {
       </button>
       <span class="stop-media-note">${escapeHtml(creditText(stop.photo))}</span>
     </div>
+
+    <form class="stop-ask" data-ask>
+      <label class="field">
+        <span>Ask NAARAD about this stop</span>
+        <input type="text" data-ask-input placeholder="What would you like to know here?" aria-label="Ask NAARAD about this stop">
+      </label>
+      <button type="button" class="button button-primary button-sm" data-ask-button>${icon('mic')} Ask</button>
+      <div class="stop-ask-answer" data-ask-answer hidden></div>
+    </form>
 
     <div class="stop-tabs" role="tablist" aria-label="Stop detail">
       <button type="button" role="tab" id="stop-tab-transcript" aria-controls="stop-panel-transcript" aria-selected="true" tabindex="0" data-stop-tab="transcript">Transcript</button>

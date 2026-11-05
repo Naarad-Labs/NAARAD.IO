@@ -64,6 +64,7 @@ const SHELL_ASSETS = [
   '/app/account.js',
   '/app/backend.js',
   '/app/api.js',
+  '/app/sarvam.js',
   '/app/config.js',
   '/app/events.js',
   '/app/explore.css',

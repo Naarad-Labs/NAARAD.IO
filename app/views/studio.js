@@ -18,6 +18,7 @@ import * as Drafts from '../studio-store.js';
 import { routePath, sectionPath } from '../urls.js';
 import * as Seo from '../seo.js';
 import * as Account from '../account.js';
+import * as Sarvam from '../sarvam.js';
 
 const STEPS = [
   { id: 'upload', label: 'Upload' },
@@ -25,6 +26,7 @@ const STEPS = [
   { id: 'translate', label: 'Translate' },
   { id: 'metadata', label: 'Metadata' },
   { id: 'review', label: 'Review' },
+  { id: 'import', label: 'Import' },
 ];
 
 const NAV = [
@@ -50,7 +52,7 @@ function sidebar(active = 'create') {
       ${NAV.map((item) => `<li><button type="button" data-studio-nav="${item.id}" class="${item.id === active ? 'is-active' : ''}" ${item.id === active ? 'aria-current="page"' : 'disabled title="Coming later"'}>
         ${icon(item.icon)}<span>${item.label}</span>${item.id === active ? '' : '<small>Coming later</small>'}</button></li>`).join('')}
     </ul>
-    <p class="note-plain studio-nav-note">“Every place has a story. <br>You can be the one <br>who lets it speak.”</p>
+    <p class="note-plain studio-nav-note">"Every place has a story. <br>You can be the one <br>who lets it speak."</p>
   </nav>`;
 }
 
@@ -72,8 +74,8 @@ function picker(routes, draft) {
         <span class="sr-only">Stop</span>
         <select data-studio="stop" ${stops.length ? '' : 'disabled'}>
           ${stops.length
-    ? stops.map((stop) => `<option value="${stop.order}" ${stop.order === draft.stopOrder ? 'selected' : ''}>${stop.order}. ${escapeHtml(stop.name)}</option>`).join('')
-    : '<option>No published stops</option>'}
+  ? stops.map((stop) => `<option value="${stop.order}" ${stop.order === draft.stopOrder ? 'selected' : ''}>${stop.order}. ${escapeHtml(stop.name)}</option>`).join('')
+  : '<option>No published stops</option>'}
         </select>
       </label>
       ${route ? `<a class="button button-sm" href="${routePath(route.slug)}" data-route="${escapeHtml(route.slug)}">View route details ${icon('arrow')}</a>` : ''}
@@ -85,7 +87,7 @@ function picker(routes, draft) {
           <button type="button" data-studio-stop="${stop.order}" class="${stop.order === draft.stopOrder ? 'is-active' : ''}">
             <span class="stop-index">${stop.order}</span><span>${escapeHtml(stop.name)}</span>
           </button></li>`).join('')
-    : `<li class="studio-stop-empty">This route has no published stops yet, so there is nothing to record against.</li>`}
+  : `<li class="studio-stop-empty">This route has no published stops yet, so there is nothing to record against.</li>`}
       </ol>
       <div class="studio-map">
         ${preview || `<div class="empty-state">${icon('map')}<div><strong>No route line</strong><p>This route has no published geometry.</p></div></div>`}
@@ -113,8 +115,8 @@ function builder(draft, route, stop) {
       </label>
       <div class="studio-audio-preview" data-studio-audio-preview>
         ${draft.audioName
-    ? `<p class="data-note">${escapeHtml(draft.audioName)} is attached to this draft in this browser. Audio is not uploaded: publishing needs the Naarad backend.</p>`
-    : '<p class="data-note">No audio attached yet. You can also write the story first and record later.</p>'}
+  ? `<p class="data-note">${escapeHtml(draft.audioName)} is attached to this draft in this browser. Audio is not uploaded: publishing needs the Naarad backend.</p>`
+  : '<p class="data-note">No audio attached yet. You can also write the story first and record later.</p>'}
       </div>
     </div>
 
@@ -126,7 +128,7 @@ function builder(draft, route, stop) {
             ${LANGUAGES.map(([code, label]) => `<option value="${code}" lang="${code}" ${code === draft.language ? 'selected' : ''}>${label}</option>`).join('')}
           </select>
         </label>
-        <button type="button" class="button button-sm" data-studio="transcribe" aria-disabled="true">${icon('sparkle')} Transcribe audio</button>
+        <button type="button" class="button button-sm" data-studio="transcribe">${icon('sparkle')} Transcribe audio</button>
       </div>
       <label class="field">
         <span>Transcript</span>
@@ -169,19 +171,35 @@ function builder(draft, route, stop) {
       </dl>
       <div class="empty-state">${icon('upload')}<div>
         ${Account.signedIn()
-    ? `<strong>Send this draft for review</strong>
-        <p>The text goes to the Naarad team to read. Audio is not uploaded yet, and nothing is published until a person approves it.</p>`
-    : `<strong>Publishing is not available in this build</strong>
-        <p>Submitting a story needs the Naarad backend: audio storage, transcription, translation and review. Your draft stays in this browser until then.</p>`}
+  ? `<strong>Send this draft for review</strong>
+    <p>The text goes to the Naarad team to read. Audio is not uploaded yet, and nothing is published until a person approves it.</p>`
+  : `<strong>Publishing is not available in this build</strong>
+    <p>Submitting a story needs the Naarad backend: audio storage, transcription, translation and review. Your draft stays in this browser until then.</p>`}
       </div></div>
     </div>
+
+    ${draft.status !== 'submitted'
+      ? `<div class="studio-panel" data-step="import" ${draft.step === 'import' ? '' : 'hidden'}>
+          <h3>Bulk import</h3>
+          <label class="field">
+            <span>Select .tar.gz bundle</span>
+            <input type="file" data-studio="import-bundle" accept=".tar.gz">
+          </label>
+          <div class="data-note">
+            A route bundle contains the route page, 2.5D vector tiles, geofences,
+            graph slice, Q&A cache and audio for one stop. Import creates drafts
+            for every stop in the bundle. Audio from the bundle is not uploaded:
+            publishing needs the Naarad backend.
+          </div>
+          <button type="button" class="button button-primary button-sm" data-studio="import-start" disabled>${icon('upload')} Import bundles</button>
+        </div>` : ''}
 
     <div class="studio-actions">
       <button type="button" class="button button-sm" data-studio="back" ${stepIndex === 0 ? 'disabled' : ''}>Back</button>
       <button type="button" class="button button-sm" data-studio="save">${icon('check')} Save draft</button>
       ${stepIndex < STEPS.length - 1
-    ? `<button type="button" class="button button-primary button-sm" data-studio="next">Next ${icon('arrow')}</button>`
-    : `<button type="button" class="button button-primary button-sm" data-studio="submit"${Account.signedIn() ? '' : ' aria-disabled="true"'}>Submit for review</button>`}
+  ? `<button type="button" class="button button-primary button-sm" data-studio="next">Next ${icon('arrow')}</button>`
+  : `<button type="button" class="button button-primary button-sm" data-studio="submit"${Account.signedIn() ? '' : ' aria-disabled="true"'}>Submit for review</button>`}
     </div>
   </section>`;
 }

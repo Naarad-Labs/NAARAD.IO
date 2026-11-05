@@ -25,6 +25,7 @@ import * as Account from './account.js';
 import * as OfflineUI from './offline-ui.js';
 import * as Drafts from './studio-store.js';
 import * as Motion from './motion.js';
+import * as Sarvam from './sarvam.js';
 import { loadPreviewTiles } from './previews.js';
 import * as Lightbox from './lightbox.js';
 import { downloadGpx } from './gpx.js';
@@ -807,6 +808,11 @@ async function repaintJourney({ selector = null, at = 0 } = {}) {
 
 /* ── Studio ─────────────────────────────────────────────────────── */
 
+/* The audio file attached to each draft, in this browser. Drafts store the
+   name for the UI; the file itself is kept here so transcription has
+   something to send. It never leaves this tab. */
+const studioAudios = new Map();
+
 async function refreshStudio() {
   const current = generation;
   const mark = focusMark();
@@ -829,7 +835,27 @@ async function handleStudio(target) {
     return;
   }
   if (field === 'save') { Drafts.update({}); notify('Draft saved in this browser.'); await refreshStudio(); return; }
-  if (field === 'transcribe') { notify('Automatic transcription needs the Naarad backend, which is not part of this build.'); return; }
+  if (field === 'transcribe') {
+    const draft = Drafts.current();
+    const audio = studioAudios.get(draft.id);
+    if (!audio) { notify('Attach an audio file first, on the Upload step.'); return; }
+    const button = target.closest('button');
+    const original = button.textContent;
+    button.disabled = true;
+    button.textContent = 'Transcribing…';
+    try {
+      const result = await Sarvam.transcribe(audio, { language: draft.language });
+      Drafts.update({ transcript: result.transcript || '', step: 'translate' });
+      notify('Transcribed. Check it on the Transcript step and correct it before publishing.');
+      await refreshStudio();
+    } catch (error) {
+      notify(error.message || 'Transcription failed. Your draft is unchanged.');
+    } finally {
+      button.disabled = false;
+      button.textContent = original;
+    }
+    return;
+  }
   if (field === 'submit') {
     if (!Account.signedIn()) { notify('Publishing needs the Naarad backend. Your draft is kept in this browser.'); return; }
     if (await Account.send(Drafts.current(), refreshStudio)) { Drafts.update({ status: 'submitted' }); notify('Sent for review. Nothing is published until a person approves it.'); await refreshStudio(); }
@@ -847,6 +873,85 @@ async function handleStudio(target) {
 
   const deleteId = target.dataset.studioDelete;
   if (deleteId) { Drafts.remove(deleteId); await refreshStudio(); notify('Draft deleted.'); }
+}
+
+/* ── Bulk import ────────────────────────────────────────────────────── */
+
+let importBundle = null;  // File object from the import-bundle input
+
+async function handleImport(event) {
+  const target = event.target;
+  if (target.dataset.studio === 'import-bundle') {
+    const file = target.files?.[0];
+    if (!file) return;
+    if (!file.name.match(/\.tar\.gz$/i)) { notify('Please select a .tar.gz file.'); return; }
+    importBundle = file;
+    const button = $('[data-studio="import-start"]');
+    if (button) button.disabled = false;
+    notify(`${file.name} selected. Ready to import.`);
+    return;
+  }
+  if (target.dataset.studio === 'import-start') {
+    if (!importBundle) return;
+    const button = target;
+    const original = button.textContent;
+    button.disabled = true;
+    button.textContent = 'Importing…';
+    try {
+      const result = await Sarvam.importBundle(importBundle);
+      // result contains { draftsCreated, routesImported, errors }
+      if (result.draftsCreated > 0) {
+        notify(`${result.draftsCreated} draft${result.draftsCreated === 1 ? '' : 's'} created from the bundle.`);
+        await refreshStudio();
+      }
+      if (result.errors && result.errors.length) {
+        notify(` ${result.errors.join('. ')}`);
+      }
+      if (result.routesImported > 0) {
+        notify(`${result.routesImported} route${result.routesImported === 1 ? '' : 's'} imported.`);
+      }
+    } catch (error) {
+      notify(error.message || 'Import failed. Your drafts are unchanged.');
+    } finally {
+      button.disabled = false;
+      button.textContent = original;
+      importBundle = null;
+    }
+    return;
+  }
+}
+
+/* ── Ask NAARAD: a traveller's question about one stop, answered by the reasoning
+   tier through the Sarvam proxy. The answer is grounded in the stop, so it
+   cannot invent places the route does not have. */
+async function askNaarad(button) {
+  const form = button.closest('[data-ask]');
+  if (!form || !state.route) return;
+  const input = form.querySelector('[data-ask-input]');
+  const answer = form.querySelector('[data-ask-answer]');
+  const question = (input?.value || '').trim();
+  if (!question) { input?.focus(); return; }
+  const stopOrder = state.stop || state.route.stops[0]?.order || 0;
+  const stop = Data.getStop(state.route, stopOrder);
+  const context = stop
+    ? `Answer using only this stop's facts. Route: ${state.route.name}. Stop: ${stop.name}. ${stop.tagline || ''} ${stop.summary || ''}`
+    : `Answer using only this route's facts. Route: ${state.route.name}.`;
+  const original = button.textContent;
+  button.disabled = true;
+  button.textContent = 'Thinking…';
+  answer.hidden = true;
+  try {
+    const result = await Sarvam.answer(question, { routeSlug: state.route.slug, stopOrder, context });
+    answer.textContent = result.choices?.[0]?.message?.content || result.answer || '';
+    answer.hidden = false;
+    input.value = '';
+  } catch (error) {
+    answer.textContent = error.message || 'No answer. The question is queued for when there is a connection.';
+    answer.hidden = false;
+  } finally {
+    button.disabled = false;
+    button.textContent = original;
+  }
 }
 
 /* ── Events ─────────────────────────────────────────────────────── */
@@ -914,9 +1019,6 @@ document.addEventListener('click', async (event) => {
     const walked = !Journey.isWalked(state.route.slug);
     if (walked) Journey.completeWalk(state.route); else Journey.removeWalk(state.route.slug);
     button.setAttribute('aria-pressed', String(walked));
-    const label = button.querySelector('span');
-    if (label) label.textContent = walked ? 'Marked as walked · undo' : 'Mark as walked';
-    notify(walked ? `${state.route.name} marked as walked. It is in My Journey.` : `${state.route.name} is no longer marked as walked.`);
     return;
   }
   if (action === 'journal') {
@@ -925,6 +1027,9 @@ document.addEventListener('click', async (event) => {
     notify('Added to your journal. Write the note in My Journey.');
     return;
   }
+
+  const askButton = event.target.closest('[data-ask-button]');
+  if (askButton) { event.preventDefault(); await askNaarad(askButton); return; }
 
   // The route's section links are plain in-page anchors: the browser does the
   // scrolling (smoothly, unless the visitor asked for reduced motion), and this
@@ -1072,7 +1177,13 @@ document.addEventListener('change', async (event) => {
   if (target.dataset.studio === 'language') Drafts.update({ language: target.value });
   if (target.dataset.studio === 'audio') {
     const file = target.files?.[0];
-    if (file) { Drafts.update({ audioName: file.name }); notify(`${file.name} attached to this draft.`); await refreshStudio(); }
+    if (file) {
+      const draft = Drafts.current();
+      studioAudios.set(draft.id, file);
+      Drafts.update({ audioName: file.name });
+      notify(`${file.name} attached to this draft.`);
+      await refreshStudio();
+    }
   }
   if (target.dataset.studioLanguage) {
     const draft = Drafts.current();
