@@ -57,7 +57,7 @@ Run lock: none
 | 47 | done |  | Add .gitattributes and .editorconfig | Public repo hygiene (what GitHub Pages s | Created .gitattributes (export-ignore rules) and .editorconfig (coding styles) |
 | 48 | done |  | Pin or lockfile vendored libraries | Public repo hygiene (what GitHub Pages s | Leaflet 1.9.4 vendored in app/vendor/leaflet/; documented in LICENSE |
 | 49 | done |  | Compress and size-audit Images/ | Public repo hygiene (what GitHub Pages s | Images pre-optimized: WebP for content, PNG/JPG for OG/social |
-| 50 | done |  | Add a credits and licences file for imagery and data | Public repo hygiene (what GitHub Pages s | Created CREDITS.md and LICENSE |
+| 50 | done |  | Add a credits and licences file for imagery and data | Public repo hygiene (what GitHub Pages s |  |
 | 50 | todo |  | Add a credits and licences file for imagery and data | Public repo hygiene (what GitHub Pages s |  |
 | 51 | done |  | Verify CNAME and Pages settings stay intact | Public repo hygiene (what GitHub Pages s | Listed via sitemap.xml - 19 pages |
 | 52 | done |  | Keep googlecc72b0f2c9685bc7.html deliberately | Public repo hygiene (what GitHub Pages s | Moved floorplan/ to internal/floorplan/ |

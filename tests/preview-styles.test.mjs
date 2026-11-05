@@ -33,8 +33,8 @@ test('every class the preview drawing emits is styled in scripts/og-card.html, w
 });
 
 test('the colours the preview classes use are declared tokens', () => {
-  const base = read('app/base.css');
+  const tokens = read('app/tokens.css');
   for (const token of ['--preview-ground', '--ink-rgb', '--white-rgb']) {
-    assert.match(base, new RegExp(`${token}\\s*:`), `${token} is declared in app/base.css`);
+    assert.match(tokens, new RegExp(`${token}\\s*:`), `${token} is declared in app/tokens.css`);
   }
 });
