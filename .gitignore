@@ -67,6 +67,9 @@ __pycache__/
 .claude/skills/write-swift
 .claude/agents/
 
+# Internal tools (not part of the published site)
+internal/floorplan/
+
 # More locally installed skills and playwright-cli output.
 .claude/skills/karpathy-guidelines
 .claude/skills/playwright-cli
