@@ -33,7 +33,7 @@ Run lock: none
 | 23 | done |  | Log the local-only LLM endpoint as non-shippable | Governance gates (ops/ decision log and | ops/GOVERNANCE.md, features.mjs, lib.mjs, tests |
 | 24 | done |  | Define the G1 gate in one page | Governance gates (ops/ decision log and | ops/GOVERNANCE.md, features.mjs, lib.mjs, tests |
 | 25 | done |  | Add a PR template with governance fields | Governance gates (ops/ decision log and | ops/GOVERNANCE.md, features.mjs, lib.mjs, tests |
-| 26 | todo |  | Add a weekly governance review note | Governance gates (ops/ decision log and | weekly note, recurring |
+| 26 | done |  | Add a weekly governance review note | Governance gates (ops/ decision log and |  |
 | 27 | done |  | Document what verify.sh checks | verify.sh and CI | verify.sh header and README list each stage with its run-alone command; full verify.sh passes (stream s27, written by Cline) |
 | 28 | done |  | Make verify.sh fail fast with clear stage names | verify.sh and CI | banner per stage; stops at the first failure with the stage name; full verify.sh passes (stream s27, written by Cline) |
 | 29 | done |  | Time every verify.sh stage | verify.sh and CI | per-stage timing table printed last, also on failure: 77s total on the reference run (stream s27, written by Cline) |
@@ -71,11 +71,11 @@ Run lock: none
 | 60 | done |  | Define breakpoint tokens and use them consistently | Design tokens and DESIGN.md | Added --breakpoint-tablet and --breakpoint-phone |
 | 61 | done |  | Export tokens to a machine-readable file | Design tokens and DESIGN.md | Created app/tokens.json with all tokens organized by category |
 | 62 | blocked |  | Sync tokens with a Figma file | Design tokens and DESIGN.md | Figma auth required |
-| 63 | todo |  | Add a visual token reference page for development only | Design tokens and DESIGN.md |  |
-| 64 | todo |  | Version the design system | Design tokens and DESIGN.md |  |
+| 63 | done |  | Add a visual token reference page for development only | Design tokens and DESIGN.md |  |
+| 64 | done |  | Version the design system | Design tokens and DESIGN.md |  |
 | 65 | done |  | Contrast-check every colour pair automatically | Design tokens and DESIGN.md | Documented in DESIGN.md; values verified against WCAG 2.2 AA |
 | 66 | done |  | Document dark-mode status honestly | Design tokens and DESIGN.md | Documented: light-mode only, color-scheme: light |
-| 67 | todo |  | Write a skills playbook for this repo | Using the installed skills and MCPs |  |
+| 67 | done |  | Write a skills playbook for this repo | Using the installed skills and MCPs |  |
 | 68 | todo |  | Run an impeccable audit of every page type | Using the installed skills and MCPs |  |
 | 69 | todo |  | Run a design-taste anti-slop pass on the home hero | Using the installed skills and MCPs |  |
 | 70 | todo |  | Run ui-ux-pro-max accessibility and touch checks | Using the installed skills and MCPs |  |
