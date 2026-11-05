@@ -4,17 +4,17 @@
  * This is a separate page under /creators/media/.
  */
 
-import { picture, escapeHtml } from '../media.js';
+import { escapeHtml } from '../media.js';
 import { icon } from '../icons.js';
 import * as Drafts from '../studio-store.js';
-import * as Account from '../account.js';
 
 export function render() {
   const drafts = Drafts.list();
   const audioDrafts = drafts.filter((d) => d.audioName);
 
   return `<section class="studio-media-library">
-    <h2 class="studio-step-title">Media Library</h2>
+    <h1 class="display">Media Library</h1>
+    <h2 class="studio-step-title">Audio files in drafts</h2>
 
     <div class="studio-panel" data-step="media-audio">
       <h3>Audio files in drafts</h3>
