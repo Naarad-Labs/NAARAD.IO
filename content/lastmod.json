@@ -3,79 +3,79 @@
   "pages": {
     "/": {
       "hash": "122e6de7f24d8882d5a477be572b788eaa10080639d30ca12107e5f7e8dc071c",
-      "date": "2026-11-03"
+      "date": "2026-11-05"
     },
     "/about/": {
       "hash": "01a0c51eebe314f4f56c45bd9a4849fe2954eeb1fddb02ee39e24f8ef3969edc",
-      "date": "2026-11-01"
+      "date": "2026-11-05"
     },
     "/collections/": {
       "hash": "749b65d3351bc3362a94a3b2f34835e7db68d63ad74b6795faaf3387be8decf6",
-      "date": "2026-11-03"
+      "date": "2026-11-05"
     },
     "/collections/cities-of-the-north/": {
       "hash": "068cc5f4a6aef2064e67243742907c7abf05909fb9ef8515c9fd45d5bd36c89b",
-      "date": "2026-11-03"
+      "date": "2026-11-05"
     },
     "/collections/open-air-routes/": {
       "hash": "a44bb63854dd91da1893e8a9a0b207348f56067bca62ec4314fb1e43de4a944d",
-      "date": "2026-11-03"
+      "date": "2026-11-05"
     },
     "/collections/royal-cities-of-the-south/": {
       "hash": "c8186f3d261b74a671ae5262343d8f13a31bb484aa5c7900c6645f59a6a4669d",
-      "date": "2026-11-03"
+      "date": "2026-11-05"
     },
     "/collections/temples-across-india/": {
       "hash": "a802f8396f82d99d3a36b322e78ba0933aa3da5332da8af9396a05c7042d7bd4",
-      "date": "2026-11-03"
+      "date": "2026-11-05"
     },
     "/collections/walks-around-chennai/": {
       "hash": "9c4b58840f8326d382af6c43e80db200ddf51f6b9cfe6dd0fe30234e9aa01279",
-      "date": "2026-11-03"
+      "date": "2026-11-05"
     },
     "/creators/": {
       "hash": "521e4d8357edbe5f1d013a9bf408623bdf34c31489d5d3e7076a38b7d87e6f0f",
       "date": "2026-11-05"
     },
     "/creators/media/": {
-      "hash": "5fdce7582229a185b094eec8dc801117afb82ef908e116aaa48d0571f30f72da",
+      "hash": "eea42f8e0719c776493f8468f4cd306419343c6f652ef50dc550079823679026",
       "date": "2026-11-05"
     },
     "/explore/": {
       "hash": "85d274cbfb39b666e55f665d033786e7df7ffb3ab27281e47246233b7386f424",
-      "date": "2026-11-03"
+      "date": "2026-11-05"
     },
     "/routes/": {
       "hash": "7c80c09281ac0e9ed34206b03cce2f88aa50444dafdb2c91c997e2bef02ba399",
-      "date": "2026-11-03"
+      "date": "2026-11-05"
     },
     "/routes/auroville-explorer/": {
       "hash": "7100b5d9b6bf4bfd7f1c787830f3d09d59a792e951a304e2a8e72ad02c2c1ee2",
-      "date": "2026-11-04"
+      "date": "2026-11-05"
     },
     "/routes/hampi-heritage-trail/": {
       "hash": "f5eb0c3c27b596ea501be27f31293c8a499e6ca47f6388b8949ae3f8be3fc3ff",
-      "date": "2026-11-04"
+      "date": "2026-11-05"
     },
     "/routes/thanjavur-living-heritage/": {
       "hash": "ef618d9825e15c8de64ee03690486a24fc446795f1700914b0e63b21207715ba",
-      "date": "2026-11-04"
+      "date": "2026-11-05"
     },
     "/stories/": {
       "hash": "653dea717fa1ac498c89a71dad5c30209daf90acdacb616778735f3548287d60",
-      "date": "2026-10-27"
+      "date": "2026-11-05"
     },
     "/stories/bazaar-that-sold-the-world/": {
       "hash": "800598656a03072ad5b265ff1aa33d5e1277553840c9d3f349fb30f47a54be1f",
-      "date": "2026-11-03"
+      "date": "2026-11-05"
     },
     "/stories/stone-chariot-of-hampi/": {
       "hash": "16752f8569df586980bd2b0b6faa86bee7eb810a827b156d180aa1c6dc6685b5",
-      "date": "2026-11-03"
+      "date": "2026-11-05"
     },
     "/stories/water-that-built-a-capital/": {
       "hash": "8ee8c249606f5776a9badf8463369aeffacc6d5a0fcdb456a72b564e88f08c1c",
-      "date": "2026-11-03"
+      "date": "2026-11-05"
     }
   }
 }
