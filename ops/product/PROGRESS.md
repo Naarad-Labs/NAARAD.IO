@@ -68,7 +68,7 @@ Run lock: none
 | 58 | done |  | Add a z-index scale | Design tokens and DESIGN.md | Added --z-* tokens to tokens.css |
 | 59 | done |  | Add a motion token set | Design tokens and DESIGN.md | --ease-out and --move already present |
 | 60 | done |  | Define breakpoint tokens and use them consistently | Design tokens and DESIGN.md | Added --breakpoint-tablet and --breakpoint-phone |
-| 61 | todo |  | Export tokens to a machine-readable file | Design tokens and DESIGN.md |  |
+| 61 | done |  | Export tokens to a machine-readable file | Design tokens and DESIGN.md | Created app/tokens.json with all tokens organized by category |
 | 62 | todo |  | Sync tokens with a Figma file | Design tokens and DESIGN.md |  |
 | 63 | todo |  | Add a visual token reference page for development only | Design tokens and DESIGN.md |  |
 | 64 | todo |  | Version the design system | Design tokens and DESIGN.md |  |
