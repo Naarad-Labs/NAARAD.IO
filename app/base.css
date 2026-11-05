@@ -2,6 +2,8 @@
    Page-specific sheets (home, route, story, studio, journey, explore) are
    loaded by the view that needs them. */
 
+@import url('./tokens.css');
+
 /* Subset to the characters the site sets; scripts/build-fonts.py rebuilds them.
    Indic language names in the interface fall back to the reader's system
    fonts, which carry those scripts properly. */
@@ -9,59 +11,9 @@
 @font-face { font-family: 'Playfair Display'; src: url('/app/fonts/PlayfairDisplay.woff2') format('woff2'); font-style: normal; font-weight: 500 800; font-display: swap; }
 @font-face { font-family: 'Caveat'; src: url('/app/fonts/Caveat-latin.woff2') format('woff2'); font-style: normal; font-weight: 600; font-display: swap; unicode-range: U+0000-00FF, U+2010-2027, U+2030-205E; }
 
+/* Shell defaults - tokens are defined in tokens.css */
 :root {
   color-scheme: light;
-
-  /* Paper and ink */
-  --paper: #f8f3e9;
-  --paper-bright: #fdfaf4;
-  --paper-deep: #efe6d4;
-  --paper-edge: #e4d9c3;
-  --ink: #12294a;
-  --ink-deep: #0c1c33;
-  --ink-soft: #46556d;
-  --ink-muted: #66645b;       /* >= 4.5:1 on every ground it sits on */
-
-  /* Accents */
-  --orange: #c6511b;          /* fills: white on it is 4.6:1 */
-  --orange-text: #b04512;     /* accent as text: >= 4.5:1 on every ground it sits on */
-  --orange-on-dark: #e8894f;  /* and as text on the navy ground: 6.6:1 */
-  --orange-bright: #d9622a;
-  --orange-deep: #a23f10;
-  --orange-wash: #f6e7da;
-  --sage: #6f8156;
-  --gold: #c9a227;
-  --line: #e0d6c2;
-  --line-strong: #cdbfa4;
-  --field-edge: #857656;       /* the edge of an input, select or filter chip: 4.0:1 on paper, 4.3:1 on paper-bright (WCAG 1.4.11 needs 3:1) */
-  --map-ground: #e7e1d5;        /* the map's own ground colour, behind tiles */
-  --route-line: #173d68;        /* the route line on the map */
-  --white: #fff;            /* pure white: text, fills and rings on saturated or dark grounds */
-  --white-rgb: 255 255 255;   /* --white as three numbers, for rgb(var(--white-rgb) / 45%) */
-  --ink-rgb: 18 41 74;        /* --ink as three numbers */
-  --preview-ground: #eef2e6;  /* the ground of the route preview drawings */
-  --paper-rgb: 248 243 233;     /* --paper as three numbers, for rgb(var(--paper-rgb) / 50%) */
-  --ink-deep-rgb: 12 28 51;     /* --ink-deep as three numbers, for shadows */
-
-  /* Type */
-  --serif: 'Playfair Display', 'Iowan Old Style', Georgia, serif;
-  --sans: 'DM Sans', 'Segoe UI', system-ui, sans-serif;
-  --script: 'Caveat', 'Segoe Script', cursive;
-  --text-xs: 13px;      /* the smallest running UI text (the floor) */
-  --text-sm: 14.5px;    /* secondary UI text */
-  --text-base: 16px;    /* body text and form fields */
-  --text-md: 18px;      /* lead text */
-
-  /* Metrics */
-  --header-h: 78px;
-  --player-h: 0px;
-  --shadow-sm: 0 1px 2px rgba(18, 41, 74, .06), 0 4px 12px rgba(18, 41, 74, .05);
-  --shadow-md: 0 2px 6px rgba(18, 41, 74, .07), 0 14px 34px rgba(18, 41, 74, .09);
-  --shadow-lg: 0 10px 50px rgba(18, 41, 74, .16);
-  --radius: 10px;
-  --radius-lg: 16px;
-  --wrap: 1480px;
-
   font-family: var(--sans);
   color: var(--ink);
   background: var(--paper);

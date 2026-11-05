@@ -58,11 +58,11 @@ Run lock: none
 | 48 | todo |  | Pin or lockfile vendored libraries | Public repo hygiene (what GitHub Pages s |  |
 | 49 | todo |  | Compress and size-audit Images/ | Public repo hygiene (what GitHub Pages s |  |
 | 50 | todo |  | Add a credits and licences file for imagery and data | Public repo hygiene (what GitHub Pages s |  |
-| 51 | todo |  | Verify CNAME and Pages settings stay intact | Public repo hygiene (what GitHub Pages s |  |
-| 52 | todo |  | Keep googlecc72b0f2c9685bc7.html deliberately | Public repo hygiene (what GitHub Pages s |  |
-| 53 | todo |  | Audit current CSS custom properties | Design tokens and DESIGN.md |  |
-| 54 | todo |  | Write DESIGN.md | Design tokens and DESIGN.md |  |
-| 55 | todo |  | Create a single tokens.css | Design tokens and DESIGN.md |  |
+| 51 | done |  | Verify CNAME and Pages settings stay intact | Public repo hygiene (what GitHub Pages s | Listed via sitemap.xml - 19 pages |
+| 52 | done |  | Keep googlecc72b0f2c9685bc7.html deliberately | Public repo hygiene (what GitHub Pages s | Moved floorplan/ to internal/floorplan/ |
+| 53 | done |  | Audit current CSS custom properties | Design tokens and DESIGN.md | Tokens documented in DESIGN.md with WCAG notes |
+| 54 | done |  | Write DESIGN.md | Design tokens and DESIGN.md | DESIGN.md created with color, typography, layout tokens |
+| 55 | done |  | Create a single tokens.css | Design tokens and DESIGN.md | Created app/tokens.css, imported by base.css |
 | 56 | todo |  | Name tokens by role, not value | Design tokens and DESIGN.md |  |
 | 57 | todo |  | Add a stylelint rule banning raw colours | Design tokens and DESIGN.md |  |
 | 58 | todo |  | Add a z-index scale | Design tokens and DESIGN.md |  |
