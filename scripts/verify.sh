@@ -3,7 +3,7 @@
 #
 #   bash scripts/verify.sh
 #
-# Five stages, each with a banner and a PASS or FAIL line. Stops at the first
+# Six stages, each with a banner and a PASS or FAIL line. Stops at the first
 # failure and exits non-zero. At the end, prints a timing table for the stages
 # that ran.
 #
@@ -35,11 +35,14 @@
 #      that are not the route's stops, or a `checked` date more than 180 days
 #      old); warnings are allowed
 #      Run alone (from the repo root): bash -c 'source scripts/verify.sh; check_practical'
-#   5  cd e2e && npx playwright test: the browser checks (needs e2e/node_modules
+#   5  node scripts/check-content-numbers.mjs: require sources for numbers in
+#      content/*.json (routes, stories, photo-sources, collections, etc.)
+#      Run alone (from the repo root): bash -c 'source scripts/verify.sh; check_content_numbers'
+#   6  cd e2e && npx playwright test: the browser checks (needs e2e/node_modules
 #      and Chromium)
 #      Run alone (from the repo root): bash -c 'source scripts/verify.sh; check_e2e'
 #
-# After the five stages pass, a ledger staleness report prints as a warning (it
+# After the six stages pass, a ledger staleness report prints as a warning (it
 # never fails the run). Run it alone (from the repo root): node scripts/check-ledger-staleness.mjs
 # optionally with --days N.
 
@@ -71,7 +74,7 @@ step() {
   local log start elapsed
   log=$(mktemp)
 
-  echo "=== stage $num of 5: $name ==="
+  echo "=== stage $num of 6: $name ==="
 
   start=$SECONDS
   if "$@" >"$log" 2>&1; then
@@ -148,6 +151,10 @@ check_practical() {
   node scripts/check-practical.mjs || return 1
 }
 
+check_content_numbers() {
+  node scripts/check-content-numbers.mjs || return 1
+}
+
 check_e2e() {
   if [ ! -d e2e/node_modules/@playwright ]; then
     echo "e2e/node_modules is missing: cd e2e && npm install"
@@ -168,7 +175,8 @@ main() {
   step 2 "built site: sitemap, cache, meta, links (node scripts/check-sitemap.mjs, check-sw-cache.mjs, check-page-meta.mjs, check-links.mjs)" check_site
   step 3 "unit tests                            (node --test tests/)" check_tests
   step 4 "practical facts                       (node scripts/check-practical.mjs)" check_practical
-  step 5 "browser checks                        (cd e2e && npx playwright test)" check_e2e
+  step 5 "content numbers                       (node scripts/check-content-numbers.mjs)" check_content_numbers
+  step 6 "browser checks                        (cd e2e && npx playwright test)" check_e2e
 
   # All stages passed.
 

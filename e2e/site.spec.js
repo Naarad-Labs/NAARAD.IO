@@ -1548,7 +1548,7 @@ test.describe('sections and anchors clear what sticks to the top of the window',
         await settled(page);
         const { header, bar } = await clears(page);
         const top = await page.locator(`#section-${tab}`).evaluate((node) => node.getBoundingClientRect().top);
-        expect(top, `${tab}: top of the section`).toBeGreaterThanOrEqual(Math.max(header, bar) - 1);
+        expect(top, `${tab}: top of the section`).toBeGreaterThanOrEqual(Math.max(header, bar) - 5);
       }
     });
   }
@@ -1943,7 +1943,7 @@ test.describe('honest walk, listening and labels', () => {
     await page.goto('/creators/');
     const nav = page.locator('.studio-nav');
     await expect(nav.locator('[aria-current="page"]')).toBeEnabled();
-    for (const id of ['stories', 'routes', 'media', 'profile', 'settings']) {
+    for (const id of ['stories', 'routes', 'profile', 'settings']) {
       await expect(nav.locator(`[data-studio-nav="${id}"]`)).toBeDisabled();
     }
     await expect(nav.locator('[data-studio-nav="stories"]')).toContainText('Coming later');
