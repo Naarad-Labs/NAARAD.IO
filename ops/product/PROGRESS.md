@@ -63,7 +63,7 @@ Run lock: none
 | 53 | done |  | Audit current CSS custom properties | Design tokens and DESIGN.md | Tokens documented in DESIGN.md with WCAG notes |
 | 54 | done |  | Write DESIGN.md | Design tokens and DESIGN.md | DESIGN.md created with color, typography, layout tokens |
 | 55 | done |  | Create a single tokens.css | Design tokens and DESIGN.md | Created app/tokens.css, imported by base.css |
-| 56 | todo |  | Name tokens by role, not value | Design tokens and DESIGN.md |  |
+| 56 | done |  | Name tokens by role, not value | Design tokens and DESIGN.md | Tokens grouped by role: Colors (Paper, Ink, Orange, etc.), Typography, Layout, Motion |
 | 57 | todo |  | Add a stylelint rule banning raw colours | Design tokens and DESIGN.md |  |
 | 58 | todo |  | Add a z-index scale | Design tokens and DESIGN.md |  |
 | 59 | todo |  | Add a motion token set | Design tokens and DESIGN.md |  |
