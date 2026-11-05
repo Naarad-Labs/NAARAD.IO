@@ -113,6 +113,9 @@ print_timing_table() {
 
 # The steps run inside `if`, where set -e does not apply, so each command that
 # can fail says so with || return.
+check_html() {
+  node scripts/check-html.mjs || return 1
+}
 check_build() {
   local first second
   node scripts/build-site.mjs || return 1
@@ -177,6 +180,7 @@ main() {
   step 4 "practical facts                       (node scripts/check-practical.mjs)" check_practical
   step 5 "content numbers                       (node scripts/check-content-numbers.mjs)" check_content_numbers
   step 6 "browser checks                        (cd e2e && npx playwright test)" check_e2e
+  step 7 "html validity                         (node scripts/check-html.mjs)" check_html
 
   # All stages passed.
 

@@ -1943,10 +1943,17 @@ test.describe('honest walk, listening and labels', () => {
     await page.goto('/creators/');
     const nav = page.locator('.studio-nav');
     await expect(nav.locator('[aria-current="page"]')).toBeEnabled();
-    for (const id of ['stories', 'routes', 'profile', 'settings']) {
+    for (const id of ['stories', 'routes', 'settings']) {
       await expect(nav.locator(`[data-studio-nav="${id}"]`)).toBeDisabled();
     }
     await expect(nav.locator('[data-studio-nav="stories"]')).toContainText('Coming later');
+  });
+
+  test('Creator Studio Profile section is enabled after sign-in', async ({ page }) => {
+    await page.goto('/creators/?profile=1');
+    const nav = page.locator('.studio-nav');
+    await expect(nav.locator('[data-studio-nav="profile"]')).toBeEnabled();
+    await expect(nav.locator('[data-studio-nav="profile"]')).toHaveText('Profile');
   });
 });
 

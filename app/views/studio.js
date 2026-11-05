@@ -18,6 +18,7 @@ import * as Drafts from '../studio-store.js';
 import { routePath, sectionPath } from '../urls.js';
 import * as Seo from '../seo.js';
 import * as Account from '../account.js';
+import * as Journey from '../views/journey.js';
 
 const STEPS = [
   { id: 'upload', label: 'Upload' },
@@ -49,7 +50,7 @@ function sidebar(active = 'create') {
     <ul>
       ${NAV.map((item) => {
         const isActive = item.id === active;
-        const isAvailable = item.id !== 'stories' && item.id !== 'routes' && item.id !== 'profile' && item.id !== 'settings';
+        const isAvailable = item.id !== 'stories' && item.id !== 'routes' && item.id !== 'settings';
         const disabledAttr = isAvailable ? '' : 'disabled title="Coming later"';
         const ariaCurrent = isActive ? 'aria-current="page"' : '';
         const labelSuffix = isAvailable ? '' : '<small>Coming later</small>';
@@ -215,7 +216,18 @@ function draftTable(drafts) {
   </section>`;
 }
 
-export async function render(activeNav = 'create') {
+export async function render(context = {}) {
+  const activeNav = context.studioNav || 'create';
+  if (activeNav === 'profile') {
+    return `<div class="studio">
+      ${sidebar('profile')}
+      <div class="studio-main">
+        ${Account.panel()}
+        ${await Journey.renderBody({ breadcrumb: 'Profile' })}
+      </div>
+    </div>`;
+  }
+
   const routes = (await Data.loadRoutes()).filter((route) => route.hasStops);
   const drafts = Drafts.list();
   const draft = Drafts.current(routes[0]);
@@ -246,13 +258,15 @@ export async function render(activeNav = 'create') {
   </div>`;
 }
 
-export const stylesheet = '/app/studio.css';
-
-export function meta() {
+export function meta(context = {}) {
+  const profile = context.studioNav === 'profile';
   return {
-    title: 'Creator Studio · Naarad',
-    description: 'A drafting space for narrators: pick a route and stop, write a story and note its languages. Drafts stay in your browser; publishing is not open yet.',
+    title: profile ? 'Your profile · Naarad' : 'Creator Studio · Naarad',
+    description: profile
+      ? 'Your saved routes, completed walks, journal notes and listening history, kept on your device.'
+      : 'A drafting space for narrators: pick a route and stop, write a story and note its languages. Drafts stay in your browser; publishing is not open yet.',
     path: sectionPath('creators'),
+    robots: profile ? 'noindex' : null,
     card: Seo.HOME_CARD,
     schema: [Seo.breadcrumbs([['Creators', sectionPath('creators')]])],
   };

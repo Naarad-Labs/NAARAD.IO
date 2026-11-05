@@ -169,7 +169,8 @@ const PAGES = [
       return (await view.loadCollections()).map((collection) => Urls.collectionPath(collection.slug));
     },
   },
-  { name: 'creators', path: '/creators/', view: 'studio', nav: 'creators' },
+  { name: 'creators', path: '/creators/', view: 'studio', nav: 'creators',
+    address: (context) => context.studioNav === 'profile' ? `${Urls.sectionPath('creators')}?profile=1` : Urls.sectionPath('creators') },
   { name: 'creators-media', path: '/creators/media/', view: 'media-library', nav: 'creators' },
   { name: 'journey', path: '/journey/', view: 'journey', nav: 'journey' },
   {
@@ -310,6 +311,21 @@ function setNav(view) {
 function closeMenu() {
   $('.site-header')?.classList.remove('nav-open');
   $('.menu-toggle')?.setAttribute('aria-expanded', 'false');
+}
+
+/** The Profile link belongs to a signed-in person, so it shows only when the
+   account panel would show one. It is the same address as the Creators link,
+   so the active state is shared and the tab is never the only way in. */
+function syncProfileNav() {
+  const link = $('#nav-profile');
+  if (!link) return;
+  const signedIn = Account.signedIn();
+  link.hidden = !signedIn;
+  if (!signedIn) return;
+  const onProfile = new URL(location.href).searchParams.get('profile') === '1';
+  link.classList.toggle('is-current', onProfile && link.dataset.view === 'creators');
+  if (onProfile) link.setAttribute('aria-current', 'page');
+  else link.removeAttribute('aria-current');
 }
 
 export function notify(message) {
@@ -476,13 +492,15 @@ async function show(url, { push = true, boot = false, scrollY = 0 } = {}) {
   const ready = await prepare(view, context);
   if (current !== generation) return;
   // Nothing below waits, so no other navigation can slip in between these lines.
-  state = { page, route: context.route || null, stop: context.stop || null, story: context.story || null };
+  state = { page, route: context.route || null, stop: context.stop || null, story: context.story || null,
+    studioNav: new URL(url).searchParams.get('profile') === '1' ? 'profile' : 'create' };
   document.body.dataset.view = page.body || page.name;
   shell.className = `view-${page.body || page.name}`;
   const { meta } = ready;
   const leftAt = window.scrollY;
   commit(ready, { keep: shell.dataset.prerendered === key, scrollY: boot ? null : scrollY });
   setNav(page.nav);
+  syncProfileNav();
 
   const address = page === NOT_FOUND
     ? `${url.pathname}${url.search}`
@@ -809,15 +827,20 @@ async function repaintJourney({ selector = null, at = 0 } = {}) {
 
 /* ── Studio ─────────────────────────────────────────────────────── */
 
+/** Re-render the page that is on screen now, keeping the keyboard where it was.
+   Sign in and sign out happen inside the account panel, which both the
+   Studio and My Journey draw, so the same repaint serves both. */
 async function refreshStudio() {
   const current = generation;
   const mark = focusMark();
-  const studio = await moduleFor('studio');
-  const markup = await studio.render();
+  const isJourney = state.page?.name === 'journey';
+  const view = isJourney ? await moduleFor('journey') : await moduleFor('studio');
+  const markup = await view.render(isJourney ? {} : { studioNav: state.studioNav || 'create' });
   if (current !== generation) return;
   shell.innerHTML = markup;
   // The keyboard stays on the same control; when a step replaces it (Next on the last step), on the step's heading.
-  restoreFocus(mark, '.studio-panel:not([hidden]) h3');
+  restoreFocus(mark, shell.querySelector('.studio-panel:not([hidden]) h3, .journey-tabs [aria-selected="true"]') || 'h1');
+  syncProfileNav();
 }
 
 async function handleStudio(target) {
@@ -1026,8 +1049,10 @@ document.addEventListener('click', async (event) => {
     const navId = navButton.dataset.studioNav;
     if (navId === 'media') {
       await navigate(new URL(Urls.sectionPath('creators') + 'media/', location.origin));
+    } else if (navId === 'profile') {
+      await navigate(new URL(Urls.sectionPath('creators') + '?profile=1', location.origin));
     } else if (navId !== 'create') {
-      // Other nav items (stories, routes, profile, settings) are disabled for now
+      // Other nav items (stories, routes, settings) are disabled for now
       notify(`${navButton.textContent.trim()}: Coming later`);
     }
     return;

@@ -23,7 +23,7 @@ function sidebar(active = 'media') {
     <ul>
       ${NAV.map((item) => {
         const isActive = item.id === active;
-        const isAvailable = item.id !== 'stories' && item.id !== 'routes' && item.id !== 'profile' && item.id !== 'settings';
+        const isAvailable = item.id !== 'stories' && item.id !== 'routes' && item.id !== 'settings';
         const disabledAttr = isAvailable ? '' : 'disabled title="Coming later"';
         const ariaCurrent = isActive ? 'aria-current="page"' : '';
         const labelSuffix = isAvailable ? '' : '<small>Coming later</small>';
