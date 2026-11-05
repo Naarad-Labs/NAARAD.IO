@@ -6,6 +6,7 @@
 import { escapeHtml, picture } from '../media.js';
 import { icon } from '../icons.js';
 import * as Data from '../data.js';
+import * as Api from '../api.js';
 import { routeCard } from './home.js';
 import { atlasMarkup } from '../atlas.js';
 import { loadPreviewTiles } from '../previews.js';
@@ -31,6 +32,16 @@ let sort = 'default';
 let notify = null;          // main.js asks to hear about every change, to keep the address current
 let origin = null;          // the visitor's position, kept in this tab only and never sent anywhere
 const RECENT_KEY = 'naarad:recent-searches';
+
+/* The catalogue is a feed, not a book. The first page is drawn here; the
+   rest waits on a button, so a visitor on a slow connection sees something
+   before the whole list. `nextCursor` is what asks for the next page, and
+   `loadingMore` stops a double press from fetching twice. */
+let shown = [];             // the routes on the current page
+let total = 0;              // how many match the filters, for the count line
+let nextCursor = null;
+let loadingMore = false;
+const PAGE_SIZE = 24;
 
 const rad = (degrees) => (degrees * Math.PI) / 180;
 /** Kilometres between two [lng, lat] points (haversine). */
@@ -157,23 +168,78 @@ function grid(list) {
   return list.map((route) => routeCard(route)).join('');
 }
 
-export function applyFilters() {
-  // Before render() has loaded the routes (someone typing into a pre-rendered
-  // catalogue while the script arrives) there is nothing to filter yet.
-  if (!routes.length) return;
+/**
+ * The filtered, sorted list. The catalogue is filtered here, on this device,
+ * from the routes already in memory; the server is not asked again.
+ */
+function filteredList() {
   const list = routes.filter(matches);
   if (sort === 'short') list.sort((a, b) => (a.distanceM ?? Infinity) - (b.distanceM ?? Infinity));
   else if (sort === 'long') list.sort((a, b) => (b.distanceM ?? -1) - (a.distanceM ?? -1));
   else if (sort === 'stories') list.sort((a, b) => (b.stopCount || 0) - (a.stopCount || 0));
   else if (origin) list.sort((a, b) => (startOf(a) ? distanceKm(origin, startOf(a)) : 1e9) - (startOf(b) ? distanceKm(origin, startOf(b)) : 1e9));
+  return list;
+}
+
+export function applyFilters() {
+  // Before render() has loaded the routes (someone typing into a pre-rendered
+  // catalogue while the script arrives) there is nothing to filter yet.
+  if (!routes.length) return;
+  // A filter change starts the page over: the first page of the new list.
+  const list = filteredList();
+  total = list.length;
+  const page = Data.paginate(list, { limit: PAGE_SIZE });
+  shown = page.items;
+  nextCursor = page.nextCursor;
   if (typeof document === 'undefined') return;   // pre-render and unit tests have no page to redraw
-  const target = document.querySelector('#catalogue-grid');
-  if (target) { target.innerHTML = grid(list); loadPreviewTiles(target); }
-  document.dispatchEvent(new CustomEvent('catalogue:filtered', { detail: { slugs: list.map((route) => route.slug) } }));
-  const count = document.querySelector('#catalogue-count');
-  if (count) count.textContent = `${list.length} ${list.length === 1 ? 'route' : 'routes'}${origin && sort === 'default' ? ' · nearest first' : ''}`;
+  redrawGrid();
+  document.dispatchEvent(new CustomEvent('catalogue:filtered', { detail: { slugs: shown.map((route) => route.slug) } }));
   syncControls();
   notify?.();
+}
+
+/** Draw the current page into the grid, and show or hide the load-more row. */
+function redrawGrid() {
+  const target = document.querySelector('#catalogue-grid');
+  if (target) {
+    target.innerHTML = grid(shown);
+    target.classList.toggle('catalogue-grid-paginated', Boolean(nextCursor));
+    loadPreviewTiles(target);
+  }
+  const count = document.querySelector('#catalogue-count');
+  if (count) count.textContent = `${total} ${total === 1 ? 'route' : 'routes'}${origin && sort === 'default' ? ' · nearest first' : ''}`;
+  const more = document.querySelector('#catalogue-more');
+  if (more) more.hidden = !nextCursor || loadingMore;
+}
+
+/** Fetch the next page and append it. A second press while one is loading does nothing. */
+export async function loadMore() {
+  if (!nextCursor || loadingMore) return;
+  loadingMore = true;
+  const more = document.querySelector('#catalogue-more');
+  if (more) { more.disabled = true; more.querySelector('b').textContent = 'Loading…'; }
+  try {
+    const page = await Data.loadRoutesPage({ filter: matches, cursor: nextCursor, limit: PAGE_SIZE });
+    // The filters may have changed while the request was out; only keep the
+    // result when it is still for the filters now in force.
+    if (sort !== 'default' || origin) {
+      const fresh = filteredList();
+      const start = Number(nextCursor);
+      shown = shown.concat(page.items.filter((route) => fresh.includes(route)));
+    } else {
+      shown = shown.concat(page.items);
+    }
+    nextCursor = page.nextCursor;
+    redrawGrid();
+  } catch (error) {
+    console.error('Could not load more routes', error);
+    const more = document.querySelector('#catalogue-more');
+    if (more) { more.querySelector('b').textContent = 'Retry'; more.disabled = false; }
+  } finally {
+    loadingMore = false;
+    const more = document.querySelector('#catalogue-more');
+    if (more && !loadingMore) { more.disabled = false; more.querySelector('b').textContent = 'Show more routes'; }
+  }
 }
 
 /** Keep the controls and the chip bar in step with the filters, whichever way they were changed. */
@@ -269,9 +335,13 @@ export async function render(context = {}) {
     region = routes.some((route) => route.region === params.get('region')) ? params.get('region') : 'all';
     lang = audioLanguages().includes(params.get('lang')) ? params.get('lang') : 'any';
   }
-  const shown = routes.filter(matches);
   const regions = [...new Set(routes.map((route) => route.region).filter(Boolean))].sort();
   const withStops = routes.filter((route) => route.hasStops).length;
+  const list = filteredList();
+  total = list.length;
+  const page = Data.paginate(list, { limit: PAGE_SIZE });
+  shown = page.items;
+  nextCursor = page.nextCursor;
 
   return `<div class="catalogue">
     <header class="catalogue-hero">
@@ -362,6 +432,9 @@ export async function render(context = {}) {
         </div>
         <div id="active-filters" class="active-filters" aria-label="Active filters" ${activeFilters().length ? '' : 'hidden'}>${activeFilters().map(([key, label]) => `<button type="button" class="filter-pill" data-clear-filter="${escapeHtml(key)}" aria-label="Remove ${escapeHtml(label)}">${escapeHtml(label)} <span aria-hidden="true">×</span></button>`).join('')}${activeFilters().length ? '<button type="button" class="text-link" data-clear-all>Clear all filters</button>' : ''}</div>
         <div id="catalogue-grid" class="route-card-grid">${grid(shown)}</div>
+        ${nextCursor ? `<div id="catalogue-more" class="catalogue-more">
+          <button type="button" class="button button-ghost" data-load-more aria-live="polite"><b>Show more routes</b><span>${shown.length} of ${total} shown</span></button>
+        </div>` : ''}
       </section>
     </div>
   </div>`;

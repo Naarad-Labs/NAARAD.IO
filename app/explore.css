@@ -128,3 +128,10 @@
 @media (hover: hover) { .atlas-near a:hover { border-color: var(--ink); } }
 .collection-card-map { display: block; aspect-ratio: 3 / 2; background: var(--preview-ground); }
 .collection-card-map .route-preview { display: block; width: 100%; height: 100%; }
+
+/* The catalogue is a feed: the first page is drawn here, the rest waits on a
+   button. The row is hidden until there is a next page to fetch. */
+.catalogue-more { margin-top: 28px; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.catalogue-more button { min-width: 220px; }
+.catalogue-more span { font-size: var(--text-xs); color: var(--ink-muted); }
+@media (max-width: 639px) { .catalogue-more button { min-width: 0; width: 100%; } }

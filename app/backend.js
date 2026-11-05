@@ -98,6 +98,12 @@ export function createBackend({
     configured,
     session: () => (configured() ? load() : null),
 
+    /* The catalogue API. Plain JSON over the same fetch as the rest: no
+       library, and the anon key is public by design because row level
+       security is the wall, not the key. */
+    apiGet(path) { return raw(path); },
+    apiPost(path, { body } = {}) { return raw(path, { method: 'POST', body }); },
+
     /* Creating an account records, in the account itself, that the person said
        they are 18 or older. Under 18 needs a parent's consent this site does not
        collect yet, so it is refused here, before anything is sent. */

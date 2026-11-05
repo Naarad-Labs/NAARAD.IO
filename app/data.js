@@ -230,9 +230,75 @@ async function readRoutes() {
   return routes;
 }
 
+/** Every route, unfiltered. The atlas and the homepage need the whole set;
+    only the catalogue pages it. Kept separate from loadRoutes() so a future
+    backend can answer it without paging. */
+export function loadAllRoutes() {
+  return loadRoutes();
+}
+
 export async function getRoute(slug) {
   const routes = await loadRoutes();
   return routes.find((route) => route.slug === slug) || null;
+}
+
+/**
+ * Every route, paged. The static catalogue has no server to page it, so this
+ * slices the in-memory list: the first call returns the first page and hands
+ * back a cursor for the next one. A cursor is just an index, and it is opaque
+ * to the caller, so the two backends stay interchangeable.
+ *
+ * Filtering is applied before slicing, so a filtered page is a contiguous run
+ * of the filtered list, not a re-query.
+ *
+ * @param {object} params  { filter: (route)=>bool, cursor: number|string|null, limit: number }
+ * @returns {Promise<{ items: route[], nextCursor: number|null, total: number, hasMore: boolean }>}
+ */
+export async function loadRoutesPage({ filter, cursor, limit = 24 } = {}) {
+  const routes = await loadRoutes();
+  const list = filter ? routes.filter(filter) : routes;
+  const start = cursor == null ? 0 : Number(cursor);
+  const page = list.slice(start, start + limit);
+  return {
+    items: page,
+    nextCursor: start + page.length < list.length ? String(start + page.length) : null,
+    total: list.length,
+    hasMore: start + page.length < list.length,
+  };
+}
+
+/**
+ * The full model for a route that came from the backend, which may use field
+ * names the static files do not. Normalises it to the shape every view reads.
+ */
+export function normalizeRoute(route) {
+  if (!route) return null;
+  return {
+    ...route,
+    source: route.source || 'catalogue',
+    hasStops: Boolean(route.stops?.length),
+    hasGeometry: Boolean(route.geometry?.coordinates?.length),
+    hasElevation: Boolean(route.elevation?.samples?.length),
+    hasAudio: Boolean(route.stops?.some((stop) => stop.audio)),
+    media: route.media || { photo: route.photo || null, card: route.cardPhoto || route.photo || null },
+    stopCount: route.stops?.length ?? route.stopCount ?? 0,
+  };
+}
+
+/**
+ * Slice a list that is already in memory. The catalogue filters synchronously
+ * in the view, and a page of that filtered list is just a slice: no second
+ * query, no re-filter, so a filtered page is a contiguous run.
+ */
+export function paginate(list, { cursor, limit = 24 } = {}) {
+  const start = cursor == null ? 0 : Number(cursor);
+  const page = list.slice(start, start + limit);
+  return {
+    items: page,
+    nextCursor: start + page.length < list.length ? String(start + page.length) : null,
+    total: list.length,
+    hasMore: start + page.length < list.length,
+  };
 }
 
 export async function featuredRoutes(count = 4) {

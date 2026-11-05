@@ -561,7 +561,8 @@ async function mountAtlasMap(current) {
   destroyMap();
   try {
     const { mountAtlas } = await import('./atlas.js');
-    const routes = await Data.loadRoutes();
+    // The atlas needs every route, not the page the catalogue is showing.
+    const routes = await Data.loadAllRoutes();
     if (current !== generation) return;
     const atlas = await mountAtlas(routes, { isCurrent: () => current === generation });
     if (current !== generation) { atlas.destroy(); return; }
@@ -967,6 +968,10 @@ document.addEventListener('click', async (event) => {
     await repaintJourney({ selector: '[data-journal-delete]', at });
     return;
   }
+
+  // The catalogue is a feed: the first page is here, the rest waits on a button.
+  const loadMore = event.target.closest('[data-load-more]');
+  if (loadMore) { event.preventDefault(); (await moduleFor('explore')).loadMore(); return; }
 
   const filterSport = event.target.closest('[data-filter-sport]');
   if (filterSport) {
