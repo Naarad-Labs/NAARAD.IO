@@ -192,3 +192,113 @@ test('the down migration is safe to run twice, and the up migration applies agai
   await applyUp(db);
   assert.equal((await q(db, `select count(*)::int as n from pg_class where relname = 'creator_submissions'`))[0].n, 1);
 });
+
+/* Tests for consent ledger (0008_consent_ledger.sql) */
+const consentUpFile = path.join(dir, '0008_consent_ledger.sql');
+const consentDownFile = path.join(dir, 'down', '0008_consent_ledger.down.sql');
+
+test('consent ledger table has correct columns and constraints', async () => {
+  const db = new PGlite();
+  await db.exec(STUB);
+  await db.exec(fs.readFileSync(consentUpFile, 'utf8'));
+  await db.exec(`insert into auth.users (id) values ('${A}')`);
+  const columns = await q(db, `select column_name, data_type, is_nullable, column_default from information_schema.columns where table_name = 'consents' order by ordinal_position`);
+  assert.equal(columns.length, 5);
+  assert.equal(columns[0].column_name, 'user_id');
+  assert.equal(columns[0].data_type, 'uuid');
+  assert.equal(columns[0].is_nullable, 'NO');
+  assert.equal(columns[1].column_name, 'purpose');
+  assert.equal(columns[1].data_type, 'text');
+  assert.equal(columns[2].column_name, 'version');
+  assert.equal(columns[3].column_name, 'granted_at');
+  assert.equal(columns[4].column_name, 'withdrawn_at');
+});
+
+test('consent ledger has purpose check constraint limiting to valid values', async () => {
+  const db = new PGlite();
+  await db.exec(STUB);
+  await db.exec(fs.readFileSync(consentUpFile, 'utf8'));
+  await db.exec(`insert into auth.users (id) values ('${A}')`);
+  await asA(db, async () => {
+    await assert.rejects(q(db, `insert into consents (user_id, purpose, version) values ('${A}', 'invalid_purpose', '1.0')`), /check constraint/);
+  });
+});
+
+test('users can insert and read their own consent records', async () => {
+  const db = new PGlite();
+  await db.exec(STUB);
+  await db.exec(fs.readFileSync(consentUpFile, 'utf8'));
+  await db.exec(`insert into auth.users (id) values ('${A}'), ('${B}')`);
+
+  /* User A grants recording_publish consent */
+  await asA(db, () => q(db, `insert into consents (user_id, purpose, version, granted_at) values ('${A}', 'recording_publish', '2024-01-15', '2024-01-15 10:00:00')`));
+  const Aconsents = await asA(db, () => q(db, 'select purpose, version from consents order by purpose'));
+  assert.equal(Aconsents.length, 1);
+  assert.equal(Aconsents[0].purpose, 'recording_publish');
+  assert.equal(Aconsents[0].version, '2024-01-15');
+});
+
+test('users cannot write to other users consent records', async () => {
+  const db = new PGlite();
+  await db.exec(STUB);
+  await db.exec(fs.readFileSync(consentUpFile, 'utf8'));
+  await db.exec(`insert into auth.users (id) values ('${A}'), ('${B}')`);
+
+  /* User A grants consent */
+  await asA(db, () => q(db, `insert into consents (user_id, purpose, version) values ('${A}', 'account', '1.0')`));
+
+  /* User B cannot update user A's consent - RLS causes 0 affected rows */
+  await asB(db, async () => {
+    assert.equal((await db.query(`update consents set version = '2.0' where user_id = '${A}'`)).affectedRows, 0);
+  });
+
+  /* User B cannot delete user A's consent - RLS causes 0 affected rows */
+  await asB(db, async () => {
+    assert.equal((await db.query(`delete from consents where user_id = '${A}'`)).affectedRows, 0);
+  });
+
+  /* Verify user A's consent was not modified */
+  const consents = await asA(db, () => q(db, 'select version from consents'));
+  assert.equal(consents[0].version, '1.0');
+});
+
+test('users can withdraw consent by setting withdrawn_at', async () => {
+  const db = new PGlite();
+  await db.exec(STUB);
+  await db.exec(fs.readFileSync(consentUpFile, 'utf8'));
+  await db.exec(`insert into auth.users (id) values ('${A}')`);
+
+  /* User A grants consent */
+  await asA(db, () => q(db, `insert into consents (user_id, purpose, version) values ('${A}', 'training_use', '1.0')`));
+
+  /* User A withdraws consent */
+  await asA(db, () => q(db, `update consents set withdrawn_at = now() where user_id = '${A}' and purpose = 'training_use'`));
+
+  /* Verify withdrawal time is set */
+  const rows = await asA(db, () => q(db, 'select withdrawn_at is not null as withdrawn from consents where user_id = $1', [A]));
+  assert.equal(rows[0].withdrawn, true);
+});
+
+test('signed-out visitors cannot read or write consents', async () => {
+  const db = new PGlite();
+  await db.exec(STUB);
+  await db.exec(fs.readFileSync(consentUpFile, 'utf8'));
+
+  await as(db, { role: 'anon' }, async () => {
+    await assert.rejects(q(db, 'select * from consents'), /permission denied/);
+    await assert.rejects(q(db, `insert into consents (user_id, purpose, version) values ('${A}', 'account', '1.0')`), /permission denied/);
+  });
+});
+
+test('the consent ledger down migration removes the table cleanly', async () => {
+  const db = new PGlite();
+  await db.exec(STUB);
+  await db.exec(`insert into auth.users (id) values ('${A}')`);
+  await db.exec(fs.readFileSync(consentUpFile, 'utf8'));
+  await db.exec(`insert into consents (user_id, purpose, version) values ('${A}', 'account', '1.0')`);
+  const before = await q(db, "select count(*)::int as n from pg_class where relname = 'consents'");
+  assert.equal(before[0].n, 1);
+  await db.exec(fs.readFileSync(consentDownFile, 'utf8'));
+  const after = await q(db, "select count(*)::int as n from pg_class where relname = 'consents'");
+  assert.equal(after[0].n, 0);
+});
