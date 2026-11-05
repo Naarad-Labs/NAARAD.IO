@@ -31,6 +31,7 @@ import { downloadGpx } from './gpx.js';
 import './elevation-cursor.js';
 import * as Urls from './urls.js';
 import { SITE_NAME, CARD_WIDTH, CARD_HEIGHT, cardPath } from './seo.js';
+import * as MediaLibrary from './views/media-library.js';
 
 const PRERENDER = Boolean(window.__NAARAD_PRERENDER__);
 const shell = document.querySelector('#app-content');
@@ -169,6 +170,7 @@ const PAGES = [
     },
   },
   { name: 'creators', path: '/creators/', view: 'studio', nav: 'creators' },
+  { name: 'creators-media', path: '/creators/media/', view: 'media-library', nav: 'creators' },
   { name: 'journey', path: '/journey/', view: 'journey', nav: 'journey' },
   {
     name: 'about', path: '/about/', view: 'info', nav: 'about',
@@ -335,6 +337,7 @@ async function moduleFor(name) {
     story: () => import('./views/story.js'),
     collection: () => import('./views/collection.js'),
     studio: () => import('./views/studio.js'),
+    'media-library': () => import('./views/media-library.js'),
     journey: () => import('./views/journey.js'),
     info: () => import('./views/info.js'),
   };
@@ -1016,6 +1019,18 @@ document.addEventListener('click', async (event) => {
 
   if (event.target.closest('[data-studio], [data-studio-step], [data-studio-stop], [data-studio-open], [data-studio-delete]')) {
     await handleStudio(event.target.closest('[data-studio], [data-studio-step], [data-studio-stop], [data-studio-open], [data-studio-delete]'));
+  }
+
+  const navButton = event.target.closest('[data-studio-nav]');
+  if (navButton) {
+    const navId = navButton.dataset.studioNav;
+    if (navId === 'media') {
+      await navigate(new URL(Urls.sectionPath('creators') + 'media/', location.origin));
+    } else if (navId !== 'create') {
+      // Other nav items (stories, routes, profile, settings) are disabled for now
+      notify(`${navButton.textContent.trim()}: Coming later`);
+    }
+    return;
   }
 });
 
