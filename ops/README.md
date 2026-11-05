@@ -15,6 +15,7 @@ founder.**
 | `decisions/decision-log.jsonl` | Every gate result, who approved it, why. D-0001 is the proposal to adopt Phase 1 and is **waiting for the founder**. |
 | `guardrails.json` | Autonomy tiers, the 16 agent roles (all at Tier 1), and which action needs which tier. The daily cost cap is `null` until the founder sets it. |
 | `lib.mjs` | The rules as code: validation, gate G1, "may this role do this". |
+| `GATEWAY.md` | When the free-model gateway is worth using, what never goes through it, how to use it well, and the off switch (D-0010). |
 | `stranger-test.md` | The weekend stranger test: protocol and observation log. Not run yet. |
 | `interviews/` | Customer-discovery guides for tourism boards, temple trusts and CSR teams. Linted: no leading questions. No interview has been held yet. |
 | `redteam/` | Reports from `scripts/redteam.mjs`, the fresh-context reviewer. Empty until an opportunity has evidence. |
