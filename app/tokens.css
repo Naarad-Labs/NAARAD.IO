@@ -73,4 +73,16 @@
   /* Motion */
   --ease-out: cubic-bezier(.22, .61, .36, 1);
   --move: 460ms;
+
+  /* Z-index scale (documented in DESIGN.md, used ad-hoc currently) */
+  --z-skip-link: 2000;
+  --z-header: 900;
+  --z-listen-bar: 1100;
+  --z-lightbox: 1000;
+  --z-sticky: 500;
+  --z-foreground: 1;
+
+  /* Breakpoints (documented in DESIGN.md) */
+  --breakpoint-tablet: 1023px;
+  --breakpoint-phone: 639px;
 }
