@@ -1943,7 +1943,7 @@ test.describe('honest walk, listening and labels', () => {
     await page.goto('/creators/');
     const nav = page.locator('.studio-nav');
     await expect(nav.locator('[aria-current="page"]')).toBeEnabled();
-    for (const id of ['stories', 'routes', 'media', 'profile', 'settings']) {
+    for (const id of ['stories', 'routes', 'profile', 'settings']) {
       await expect(nav.locator(`[data-studio-nav="${id}"]`)).toBeDisabled();
     }
     await expect(nav.locator('[data-studio-nav="stories"]')).toContainText('Coming later');

@@ -215,7 +215,7 @@ function draftTable(drafts) {
   </section>`;
 }
 
-export async function render(activeNav = 'create') {
+export async function render(context) {
   const routes = (await Data.loadRoutes()).filter((route) => route.hasStops);
   const drafts = Drafts.list();
   const draft = Drafts.current(routes[0]);
@@ -223,7 +223,7 @@ export async function render(activeNav = 'create') {
   const stop = route?.stops?.find((candidate) => candidate.order === draft.stopOrder) || route?.stops?.[0];
 
   return `<div class="studio">
-    ${sidebar(activeNav)}
+    ${sidebar('create')}
     <div class="studio-main">
       ${Account.panel()}
       <header class="studio-hero">
