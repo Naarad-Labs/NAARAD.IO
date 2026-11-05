@@ -8,6 +8,7 @@ import { PGlite } from '@electric-sql/pglite';
 const dir = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'migrations');
 const A = '00000000-0000-0000-0000-00000000000a';
 const B = '00000000-0000-0000-0000-00000000000b';
+const C = '00000000-0000-0000-0000-00000000000c';
 
 /* Supabase's own pieces, stubbed: the roles, auth.users, auth.uid() and auth.jwt()
    read the same request settings PostgREST sets from the caller's token. */
@@ -389,5 +390,103 @@ test('down migration removes sarvam tables cleanly', async () => {
   await db.exec(fs.readFileSync(sarvamDownFile, 'utf8'));
 
   const after = await q(db, "select count(*)::int as n from pg_class where relname in ('sarvam_jobs', 'sarvam_credits')");
+  assert.equal(after.reduce((sum, r) => sum + r.n, 0), 0);
+});
+
+/* Tests for dubbing migration (0003_dubbing.sql) */
+const dubbingUpFile = path.join(dir, '0003_dubbing.sql');
+const dubbingDownFile = path.join(dir, 'down', '0003_dubbing.down.sql');
+
+test('dubbing jobs table has correct columns and constraints', async () => {
+  const db = new PGlite();
+  await db.exec(STUB);
+  await db.exec(fs.readFileSync(sarvamUpFile, 'utf8'));  // Need sarvam migration first
+  await db.exec(fs.readFileSync(dubbingUpFile, 'utf8'));
+  await db.exec(`insert into auth.users (id) values ('${A}')`);
+
+  const columns = await q(db, `select column_name from information_schema.columns where table_name = 'dubbing_jobs' order by ordinal_position`);
+  assert.ok(columns.find(c => c.column_name === 'sarvam_job_id'), 'sarvam_job_id column should exist');
+  assert.ok(columns.find(c => c.column_name === 'dubbing_job_id'), 'dubbing_job_id column should exist');
+});
+
+test('voice clone consent links to sarvam_job via job_id', async () => {
+  const db = new PGlite();
+  await db.exec(STUB);
+  await db.exec(fs.readFileSync(sarvamUpFile, 'utf8'));
+  await db.exec(fs.readFileSync(dubbingUpFile, 'utf8'));
+  await db.exec(`insert into auth.users (id) values ('${A}')`);
+
+  /* Insert sarvam job via service_role */
+  await as(db, { role: 'service_role' }, async () => {
+    await db.query(`insert into sarvam_jobs (user_id, voice, text, minutes_credited) values ('${A}', 'en-US-JoeNeural', 'test', 1)`);
+  });
+
+  await asA(db, async () => {
+    await q(db, `insert into voice_clone_consents (user_id, job_id, voice) values ('${A}', (select id from sarvam_jobs limit 1), 'en-US-JoeNeural')`);
+  });
+
+  const consents = await asA(db, () => q(db, 'select user_id, job_id, voice from voice_clone_consents'));
+  assert.equal(consents.length, 1);
+  assert.equal(consents[0].voice, 'en-US-JoeNeural');
+});
+
+test('a user can insert dubbing jobs for themselves', async () => {
+  const db = new PGlite();
+  await db.exec(STUB);
+  await db.exec(fs.readFileSync(sarvamUpFile, 'utf8'));
+  await db.exec(fs.readFileSync(dubbingUpFile, 'utf8'));
+  await db.exec(`insert into auth.users (id) values ('${A}'), ('${B}')`);
+
+  /* Insert sarvam job via service_role */
+  await as(db, { role: 'service_role' }, async () => {
+    await db.query(`insert into sarvam_jobs (user_id, voice, text, minutes_credited) values ('${A}', 'en-US-JoeNeural', 'test', 1)`);
+  });
+
+  await asA(db, async () => {
+    await q(db, `insert into dubbing_jobs (sarvam_job_id, user_id, voice, target_locale) values ((select id from sarvam_jobs), '${A}', 'en-US-JoeNeural', 'hi')`);
+  });
+
+  const jobs = await asA(db, () => q(db, 'select user_id, voice, target_locale from dubbing_jobs'));
+  assert.equal(jobs.length, 1);
+  assert.equal(jobs[0].user_id, A);
+  assert.equal(jobs[0].target_locale, 'hi');
+});
+
+test('a user cannot insert dubbing jobs for another user', async () => {
+  const db = new PGlite();
+  await db.exec(STUB);
+  await db.exec(fs.readFileSync(sarvamUpFile, 'utf8'));
+  await db.exec(fs.readFileSync(dubbingUpFile, 'utf8'));
+  await db.exec(`insert into auth.users (id) values ('${A}'), ('${B}')`);
+
+  /* Insert sarvam job via service_role */
+  await as(db, { role: 'service_role' }, async () => {
+    await db.query(`insert into sarvam_jobs (user_id, voice, text, minutes_credited) values ('${A}', 'en-US-JoeNeural', 'test', 1)`);
+  });
+
+  await asA(db, async () => {
+    await assert.rejects(q(db, `insert into dubbing_jobs (sarvam_job_id, user_id, voice, target_locale) values ((select id from sarvam_jobs), '${B}', 'en-US-JoeNeural', 'hi')`), /row-level security/);
+  });
+});
+
+test('down migration removes dubbing tables cleanly', async () => {
+  const db = new PGlite();
+  await db.exec(STUB);
+  await db.exec(`insert into auth.users (id) values ('${A}')`);
+  await db.exec(fs.readFileSync(sarvamUpFile, 'utf8'));
+  await db.exec(fs.readFileSync(dubbingUpFile, 'utf8'));
+
+  await as(db, { role: 'service_role' }, async () => {
+    await db.query(`insert into sarvam_jobs (user_id, voice, text, minutes_credited) values ('${A}', 'en-US-JoeNeural', 'test', 1)`);
+    await db.query(`insert into dubbing_jobs (sarvam_job_id, user_id, voice, target_locale) values ((select id from sarvam_jobs), '${A}', 'en-US-JoeNeural', 'hi')`);
+    await db.query(`insert into voice_clone_consents (user_id, job_id, voice) values ('${A}', (select id from sarvam_jobs), 'en-US-JoeNeural')`);
+  });
+
+  const before = await q(db, "select count(*)::int as n from pg_class where relname in ('dubbing_jobs', 'voice_clone_consents')");
+  assert.equal(before.reduce((sum, r) => sum + r.n, 0), 2);
+
+  await db.exec(fs.readFileSync(dubbingDownFile, 'utf8'));
+
+  const after = await q(db, "select count(*)::int as n from pg_class where relname in ('dubbing_jobs', 'voice_clone_consents')");
   assert.equal(after.reduce((sum, r) => sum + r.n, 0), 0);
 });
