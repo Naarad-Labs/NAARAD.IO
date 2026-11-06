@@ -258,6 +258,8 @@ export async function render(context = {}) {
   </div>`;
 }
 
+export const stylesheet = '/app/studio.css';
+
 export function meta(context = {}) {
   const profile = context.studioNav === 'profile';
   return {
