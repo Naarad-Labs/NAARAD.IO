@@ -16,6 +16,10 @@
  *
  * A download is all or nothing: every file is fetched first and written to the
  * cache only if all of them arrived, so a dropped connection keeps nothing.
+ *
+ * Versioning: each bundle is stored with a version hash of the route data
+ * (slug + stop count + photo list + lastmod). If the source route.json changes,
+ * the bundle becomes stale and an update can be offered.
  */
 
 import { formatBytes, assessSpace, isQuotaError, SpaceError } from './storage-budget.js';
@@ -24,6 +28,14 @@ export { requestPersistence, persistenceNote, SpaceError } from './storage-budge
 export const FLAG_KEY = 'naarad.flag.offline-bundles';
 export const BUNDLE_CACHE = 'naarad-bundles';
 export const BUNDLE_VERSION = 1;
+
+/** Compute a stability hash for a route to detect when its bundle is stale. */
+export function routeVersion(slug, stopCount, photoIds, lastmod) {
+  const str = `${slug}|${stopCount}|${photoIds.join(',')}|${lastmod || ''}`;
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) { hash = ((hash << 5) - hash + str.charCodeAt(i)) | 0; }
+  return hash >>> 0;  // unsigned 32-bit
+}
 
 /* The offline kit: what My Journey and the catalogue need to open with no
    network, so a saved route can be found again and the others can be seen to be

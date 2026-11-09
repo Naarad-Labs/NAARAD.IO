@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { UNSAVED_LABEL, routeSlug, isOnline, blocksNavigation, barModel, renderBar, markLinks } from '../../app/offline-state.js';
+import { routeVersion } from '../../app/offline-bundles.js';
 
 const origin = 'https://naarad.io';
 const base = { origin, online: false, savedSlugs: ['hampi-heritage-trail'], enabled: true };
@@ -78,4 +79,26 @@ test('markLinks flags exactly the unsaved route links, and nothing at all when o
 
 test('the label is plain and short', () => {
   assert.equal(UNSAVED_LABEL, 'Not saved for offline');
+});
+
+/* ---- route version detection (also tested in ops/test/offline-bundles.test.mjs) ---- */
+
+test('routeVersion returns consistent hash for same inputs', () => {
+  const v1 = routeVersion('hampi-heritage-trail', 8, ['h1', 'h2'], '2026-10-15');
+  const v2 = routeVersion('hampi-heritage-trail', 8, ['h1', 'h2'], '2026-10-15');
+  assert.equal(v1, v2, 'same route data yields same hash');
+});
+
+test('routeVersion differs when any field changes', () => {
+  const vBase = routeVersion('hampi-heritage-trail', 8, ['h1', 'h2'], '2026-10-15');
+  assert.notEqual(routeVersion('thanjavur-living-heritage', 8, ['h1', 'h2'], '2026-10-15'), vBase, 'different slug');
+  assert.notEqual(routeVersion('hampi-heritage-trail', 5, ['h1', 'h2'], '2026-10-15'), vBase, 'different stopCount');
+  assert.notEqual(routeVersion('hampi-heritage-trail', 8, ['h1', 'h3'], '2026-10-15'), vBase, 'different photoIds');
+  assert.notEqual(routeVersion('hampi-heritage-trail', 8, ['h1', 'h2'], '2026-11-01'), vBase, 'different lastmod');
+});
+
+test('routeVersion is unsigned 32-bit integer', () => {
+  const v = routeVersion('test', 100, ['a', 'b', 'c'], '2026-10-15');
+  assert.ok(Number.isInteger(v), 'is integer');
+  assert.ok(v >= 0 && v < 4294967296, 'fits in uint32');
 });

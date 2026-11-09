@@ -23,10 +23,16 @@ const REDUCED = typeof matchMedia === 'function' ? matchMedia('(prefers-reduced-
 /** GSAP is only fetched when none of these ask us not to move or not to spend bytes. */
 export const motionAllowed = ({ reducedMotion, saveData, prerender }) => !(reducedMotion || saveData || prerender);
 
-/** "5.2 km" at 0 -> "0.0 km"; every number scales with `progress`, keeping its decimals and unit. */
+/** "5.2 km" at 0 -> "0.0 km"; every number scales with `progress`, keeping its decimals and unit.
+ *  Returns the final text if progress is invalid (NaN, negative, or >= 1). */
 export function countUpText(finalText, progress) {
   if (progress >= 1) return finalText;
-  return finalText.replace(/\d+(?:\.\d+)?/g, (n) => (Number(n) * Math.max(progress, 0)).toFixed(n.split('.')[1]?.length || 0));
+  if (!Number.isFinite(progress) || progress < 0) return finalText;
+  return finalText.replace(/\d+(?:\.\d+)?/g, (n) => {
+    const value = Number(n) * progress;
+    if (!Number.isFinite(value) || isNaN(value)) return n;
+    return value.toFixed(n.split('.')[1]?.length || 0);
+  });
 }
 
 let gsap = null;   // set once the vendored build has loaded; until then the CSS reveal runs
@@ -117,7 +123,7 @@ export function start({ settle = false } = {}) {
   }, { rootMargin: '0px 0px -8% 0px', threshold: 0.08 });
   scan(document, { settle });
   const allowed = motionAllowed({ reducedMotion: REDUCED.matches, saveData: Boolean(navigator.connection?.saveData), prerender: Boolean(window.__NAARAD_PRERENDER__) });
-  if (allowed) (window.requestIdleCallback || ((fn) => setTimeout(fn, 200)))(loadGsap, { timeout: 1500 });
+  if (allowed) (window.requestIdleCallback || ((fn) => setTimeout(fn, 1500)))(loadGsap, { timeout: 1500 });
 
   // If someone turns reduced motion on mid-visit, show everything and stop.
   REDUCED.addEventListener?.('change', (event) => {

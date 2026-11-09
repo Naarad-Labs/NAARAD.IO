@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { parseSrcset, selectUrls, sizeLabel, download, remove, BUNDLE_CACHE, MAX_PHOTO_WIDTH } from '../../app/offline-bundles.js';
+import { parseSrcset, selectUrls, sizeLabel, download, remove, BUNDLE_CACHE, MAX_PHOTO_WIDTH, routeVersion } from '../../app/offline-bundles.js';
 
 const origin = 'https://naarad.io';
 
@@ -132,4 +132,26 @@ test('an unknown estimate does not block a download', async () => {
   const { store, env } = spaceEnv({ estimate: async () => undefined });
   const bundle = await download({ slug: 'x' }, env);
   assert.equal(store.size, bundle.urls.length);
+});
+
+/* ---- route version detection ---- */
+
+test('routeVersion returns consistent hash for same inputs', () => {
+  const v1 = routeVersion('hampi-heritage-trail', 8, ['h1', 'h2'], '2026-10-15');
+  const v2 = routeVersion('hampi-heritage-trail', 8, ['h1', 'h2'], '2026-10-15');
+  assert.equal(v1, v2, 'same route data yields same hash');
+});
+
+test('routeVersion differs when any field changes', () => {
+  const vBase = routeVersion('hampi-heritage-trail', 8, ['h1', 'h2'], '2026-10-15');
+  assert.notEqual(routeVersion('thanjavur-living-heritage', 8, ['h1', 'h2'], '2026-10-15'), vBase, 'different slug');
+  assert.notEqual(routeVersion('hampi-heritage-trail', 5, ['h1', 'h2'], '2026-10-15'), vBase, 'different stopCount');
+  assert.notEqual(routeVersion('hampi-heritage-trail', 8, ['h1', 'h3'], '2026-10-15'), vBase, 'different photoIds');
+  assert.notEqual(routeVersion('hampi-heritage-trail', 8, ['h1', 'h2'], '2026-11-01'), vBase, 'different lastmod');
+});
+
+test('routeVersion is unsigned 32-bit integer', () => {
+  const v = routeVersion('test', 100, ['a', 'b', 'c'], '2026-10-15');
+  assert.ok(Number.isInteger(v), 'is integer');
+  assert.ok(v >= 0 && v < 4294967296, 'fits in uint32');
 });

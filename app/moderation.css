@@ -1,0 +1,215 @@
+/* Moderation view styles */
+
+.moderation-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  color: var(--ink-mid);
+  gap: 0.75rem;
+}
+
+.moderation-error {
+  padding: 1.5rem;
+  background: var(--error-bg);
+  color: var(--error-fg);
+  border-radius: var(--radius-lg);
+  text-align: center;
+}
+
+.moderation-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  color: var(--ink-mid);
+  gap: 0.75rem;
+}
+
+.moderation-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.moderation-table th,
+.moderation-table td {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+
+.moderation-table th {
+  background: var(--surface);
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.moderation-table tr:hover td {
+  background: var(--surface);
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.status-draft {
+  background: var(--ink-faint);
+  color: var(--ink-mid);
+}
+
+.status-submitted {
+  background: var(--warning-bg);
+  color: var(--warning-fg);
+}
+
+.status-approved {
+  background: var(--success-bg);
+  color: var(--success-fg);
+}
+
+.status-rejected {
+  background: var(--error-bg);
+  color: var(--error-fg);
+}
+
+.moderation-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.status-final {
+  font-size: 0.85rem;
+  color: var(--ink-mid);
+}
+
+.moderation-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+  animation: fadeIn 0.15s ease;
+}
+
+.moderation-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  max-width: 500px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+  z-index: 1000;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+  animation: slideUp 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translate(-50%, -40%); }
+  to { opacity: 1; transform: translate(-50%, -50%); }
+}
+
+.moderation-modal h2 {
+  margin: 0 0 0.5rem;
+  font-size: 1.25rem;
+  color: var(--ink);
+}
+
+.modal-submission-title {
+  font-size: 0.9rem;
+  color: var(--ink-mid);
+  margin: 0 0 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.moderation-modal form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.moderation-modal .form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.moderation-modal label {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--ink);
+}
+
+.moderation-modal .required {
+  color: var(--error-fg);
+}
+
+.moderation-modal textarea {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg);
+  color: var(--ink);
+  font-family: inherit;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  resize: vertical;
+  min-height: 100px;
+}
+
+.moderation-modal textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-faint);
+}
+
+.moderation-modal textarea[readonly] {
+  background: var(--surface);
+  color: var(--ink-mid);
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.moderation-modal .button {
+  padding: 0.5rem 1rem;
+}
+
+@media (max-width: 480px) {
+  .moderation-table th,
+  .moderation-table td {
+    padding: 0.5rem;
+    font-size: 0.85rem;
+  }
+
+  .moderation-actions {
+    flex-direction: column;
+  }
+
+  .moderation-modal {
+    width: 95%;
+    padding: 1rem;
+  }
+}

@@ -56,8 +56,14 @@ const NOT_FOUND_ADDRESS = '/__not-found__/';
 /* Licences whose terms allow a photograph to be cropped and written over. */
 const ADAPTABLE = /^(CC0( 1\.0)?|Public Domain Mark( 1\.0)?|PDM( 1\.0)?|CC BY \d\.\d|CC BY-SA \d\.\d)$/;
 
-const require = createRequire(path.join(ROOT, 'e2e', 'package.json'));
-const { chromium } = require('playwright');
+const requireFromPkgJson = createRequire(path.join(ROOT, 'e2e', 'package.json'));
+// npm hoists everything into e2e/node_modules; pnpm (isolated) keeps it in
+// .pnpm/<pkg>@<ver>/node_modules. Try the flat layout first, then the pnpm one.
+const pnpmPlaywright = path.join(ROOT, 'e2e', 'node_modules', '.pnpm', 'playwright@1.65.0', 'node_modules', 'playwright');
+const { chromium } = (() => {
+  try { return requireFromPkgJson('playwright'); } catch {}
+  return requireFromPkgJson(pnpmPlaywright);
+})();
 
 const TYPES = {
   '.html': 'text/html; charset=utf-8', '.css': 'text/css', '.js': 'text/javascript', '.mjs': 'text/javascript',

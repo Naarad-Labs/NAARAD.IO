@@ -133,8 +133,12 @@ check_build() {
     echo "generated files not compared with the commit (VERIFY_ALLOW_UNCOMMITTED=1)"
     return 0
   fi
+  # The share cards are drawn by this machine's own Chromium and fonts, so their
+  # bytes differ from the committed ones on every machine; CI excludes them too
+  # (see .github/workflows/ci.yml). They are still drawn here and still checked
+  # for determinism above.
   local stale
-  stale=$(generated | xargs git status --porcelain --untracked-files=all -- || true)
+  stale=$(generated | grep -v '^./Images/og/' | xargs git status --porcelain --untracked-files=all -- || true)
   if [ -n "$stale" ]; then
     echo "the generated files differ from the commit; commit them with the change that caused them:"
     echo "$stale"

@@ -27,3 +27,28 @@ test('drafts expose ready() too', async () => {
   const { store } = await load('studio-store');
   assert.equal(typeof store.ready, 'function');
 });
+
+test('persistenceNote returns message when persistence failed mid-session', async () => {
+  // When persistence() returns 'memory' due to a failure, persistenceNote
+  // should inform the user that their data is not being saved
+  const { store } = await load('journey-store', {}, { wait: false });
+  
+  // Initially in memory mode (no IndexedDB in Node)
+  assert.equal(store.persistence(), 'memory');
+  
+  // persistenceNote should return a message for memory mode
+  const note = store.persistenceNote();
+  assert.ok(note.includes('not being saved') || note.includes('not saved'), 'persistenceNote mentions unsaved state');
+});
+
+test('persistenceNote returns empty string when storage is working', async () => {
+  // When persistence() returns 'localstorage' (working), persistenceNote should return empty
+  const { store } = await load('journey-store', { [KEY]: JSON.stringify(saved) });
+  
+  // persistence should be localstorage (the fake in Node)
+  assert.equal(store.persistence(), 'localstorage');
+  
+  // persistenceNote should return empty for working storage
+  const note = store.persistenceNote();
+  assert.equal(note, '', 'persistenceNote is empty for working storage');
+});

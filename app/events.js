@@ -133,7 +133,7 @@ export function createEventQueue({
     for (;;) {
       const result = await api.flush();
       if (result.reason === 'ok') { if (memory.queue.length) continue; return true; }
-      return ['empty', 'no-endpoint', 'no-consent', 'no-fetch'].includes(result.reason);
+      return ['empty', 'no-endpoint', 'no-consent', 'no-fetch', 'permanent-failure'].includes(result.reason);
     }
   }, { random, setTimer, clearTimer });
 
@@ -190,7 +190,18 @@ export function createEventQueue({
           keepalive: true,
           body: JSON.stringify({ v: SCHEMA_VERSION, sent_at: now(), dropped_before: dropped, events: batch }),
         });
-        if (!response || !response.ok) return { sent: 0, reason: 'rejected' };
+        if (!response || response.ok === false) {
+          // 4xx = permanent failure: drop the batch, count them, don't retry.
+          // 5xx = transient: the retrier will retry with backoff.
+          if (response && response.status >= 400 && response.status < 500) {
+            memory.dropped += batch.length;
+            memory.queue = [];
+            memory.session = null;
+            save();
+            return { sent: 0, reason: 'permanent-failure' };
+          }
+          return { sent: 0, reason: 'rejected' };
+        }
         const sent = new Set(batch.map((event) => event.id));
         memory.queue = memory.queue.filter((event) => !sent.has(event.id));
         memory.dropped -= dropped;                // reported once, then cleared
