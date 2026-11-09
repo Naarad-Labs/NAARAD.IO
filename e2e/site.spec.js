@@ -2623,3 +2623,15 @@ test.describe('the stop-photo scrubber on a route page', () => {
     });
   }
 });
+
+test.describe('the photo mosaic on a route page', () => {
+  test('a tile opens the lightbox on its own set of photographs', async ({ page }) => {
+    await page.goto('/routes/hampi-heritage-trail/');
+    const tiles = page.locator('.route-mosaic .mosaic-tile');
+    expect(await tiles.count()).toBeGreaterThan(0);
+    await tiles.first().click();
+    await expect(page.locator('html.has-lightbox')).toHaveCount(1);
+    await page.keyboard.press('Escape');
+    await expect(page.locator('html.has-lightbox')).toHaveCount(0);
+  });
+});

@@ -75,8 +75,8 @@ function factRow(route) {
 function routeMosaic(route) {
   const tiles = routePhotos(route).filter((photo) => photo.id !== route.media?.photo).slice(0, 4);
   if (!tiles.length) return '';
-  return `<div class="route-mosaic is-${tiles.length}">
-    ${tiles.map((photo, number) => `<button type="button" class="mosaic-tile" data-photo-open="${escapeHtml(photo.id)}" data-photo-caption="${escapeHtml(photo.caption)}" data-photo-alt="${escapeHtml(photo.caption)}" aria-label="Open photograph ${number + 2}: ${escapeHtml(photo.caption)}">
+  return `<div class="route-mosaic is-${tiles.length}" data-photo-set>
+    ${tiles.map((photo, number) => `<button type="button" class="mosaic-tile" data-photo-open="${escapeHtml(photo.id)}" data-photo-caption="${escapeHtml(photo.caption)}" data-photo-alt="${escapeHtml(photo.caption)}" aria-label="Open photograph ${number + 1} of ${tiles.length}: ${escapeHtml(photo.caption)}">
       ${picture(photo.id, { sizes: '(max-width: 1023px) 25vw, 180px', alt: photo.caption, ratio: '1 / 1' })}
     </button>`).join('\n    ')}
   </div>`;
@@ -88,7 +88,7 @@ function routeScrubber(route, selected) {
   if (stops.length < 2) return '';
   const total = stops.length;
   const current = Math.max(0, stops.findIndex((stop) => stop.order === selected));
-  const text = (index) => `Stop ${index + 1} of ${total}: ${stops[index].name}`;
+  const text = (index) => `Stop ${stops[index].order} of ${route.stops.length}: ${stops[index].name}`;
   return `<section class="route-scrubber" aria-labelledby="scrubber-title">
     <h2 class="sr-only" id="scrubber-title">Scrub along the route by stop photograph</h2>
     <div class="scrubber-stage">
@@ -138,10 +138,10 @@ function hero(route) {
     })
     : '<div class="route-hero-photo photo photo-missing"></div>'}
       ${routeLine(route)}
-      </div>
-      ${mosaic}
       ${route.subtitle ? `<p class="note-plain note-over-photo route-hero-note">${escapeHtml(route.themes?.[0] || 'A living story')}. <br>Walk it slowly.</p>` : ''}
       <span class="pin-chip route-hero-place">${icon('pin')}${escapeHtml(route.location || 'India')}</span>
+      </div>
+      ${mosaic}
     </div>
   </header>`;
 }

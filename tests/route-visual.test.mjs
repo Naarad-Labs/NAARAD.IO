@@ -118,3 +118,31 @@ test('the scrubber opens on the selected stop when it has a photograph, and is n
   assert.match(range, /value="3"/);
   assert.doesNotMatch(html.match(/<section class="route-scrubber"[\s\S]*?<\/section>/)[0], /role=|aria-selected|aria-controls/);
 });
+
+test('the mosaic is a lightbox set of its own, so a tile opens', async () => {
+  for (const route of routes) {
+    if (!extras(route).length) continue;
+    const html = await RouteView.render({ route, stop: route.stops[0]?.order });
+    assert.match(html, /<div class="route-mosaic[^"]*" data-photo-set>/, route.slug);
+    const labels = [...html.matchAll(/aria-label="Open photograph (\d+) of (\d+): /g)].filter((m) => m[0]);
+    assert.ok(labels.length >= 1);
+  }
+});
+
+test('the note and the place chip sit over the hero photograph, not over the mosaic column', async () => {
+  for (const route of routes.filter((r) => extras(r).length && r.subtitle)) {
+    const html = await RouteView.render({ route, stop: route.stops[0]?.order });
+    const main = html.slice(html.indexOf('class="route-hero-main"'), html.indexOf('class="route-mosaic'));
+    assert.match(main, /route-hero-note/, `${route.slug}: note`);
+    assert.match(main, /route-hero-place/, `${route.slug}: chip`);
+  }
+});
+
+test('the scrubber names the real stop number and the real stop count when some stops have no photograph', async () => {
+  const hampi = routes.find((r) => r.slug === 'hampi-heritage-trail');
+  const route = { ...hampi, stops: hampi.stops.map((stop, index) => (index === 0 ? { ...stop, photo: null } : stop)) };
+  const html = await RouteView.render({ route, stop: route.stops[0].order });
+  const range = html.match(/<input type="range"[^>]*data-scrubber[^>]*>/)[0];
+  const second = route.stops[1];
+  assert.match(range, new RegExp(`aria-valuetext="Stop ${second.order} of ${route.stops.length}: ${second.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}"`));
+});

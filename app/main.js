@@ -662,7 +662,7 @@ function syncScrubber(order) {
     frame.hidden = !here;
     if (here) name = frame.dataset.scrubberName;
   });
-  range.setAttribute('aria-valuetext', `Stop ${index + 1} of ${range.max}: ${name}`);
+  range.setAttribute('aria-valuetext', `Stop ${order} of ${state.route.stops.length}: ${name}`);
 }
 
 async function selectStop(order) {
