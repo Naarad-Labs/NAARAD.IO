@@ -27,6 +27,9 @@ const committed = (tx) => new Promise((resolve, reject) => {
 async function indexedDbAdapter(factory) {
   const open = factory.open('naarad', 1);
   open.onupgradeneeded = () => open.result.createObjectStore('kv');
+  // Handle version change: close the connection when a newer version of the SW takes over.
+  // This prevents the old tab from blocking the new worker from upgrading the schema.
+  open.onsuccess = () => { open.result.onversionchange = () => open.result.close(); };
   const db = await new Promise((resolve, reject) => {
     open.onsuccess = () => resolve(open.result);
     open.onerror = () => reject(open.error);
