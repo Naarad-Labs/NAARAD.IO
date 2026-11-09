@@ -180,7 +180,7 @@ test('the intro video and route-tracker sections exist only when their files are
   assert.equal(HomeView.trackerSectionMarkup({}), '');
   assert.equal(HomeView.trackerSectionMarkup(undefined), '');
 
-  const video = HomeView.introVideoMarkup({ introVideo: { src: '/Images/video/intro.mp4', poster: '/Images/video/intro-poster.webp' } });
+  const video = HomeView.introVideoMarkup({ introVideo: { src: '/Images/video/intro.mp4', poster: '/Images/video/intro-poster.webp', captions: '/Images/video/intro.vtt' } });
   assert.match(video, /<video[^>]*\scontrols/);
   assert.match(video, /preload="metadata"/);
   assert.match(video, /poster="\/Images\/video\/intro-poster\.webp"/);
@@ -189,4 +189,11 @@ test('the intro video and route-tracker sections exist only when their files are
   const tracker = HomeView.trackerSectionMarkup({ tracker: { image: '/Images/mockups/route-tracker.webp', width: 1200, height: 800, alt: 'The route tracker on a phone' } });
   assert.match(tracker, /<img[^>]*src="\/Images\/mockups\/route-tracker\.webp"[^>]*width="1200"[^>]*height="800"[^>]*alt="The route tracker on a phone"/);
   assert.doesNotMatch(tracker, /src=""/);
+});
+
+test('a video without captions is not published, and video skips the service worker', () => {
+  assert.equal(HomeView.introVideoMarkup({ introVideo: { src: '/Images/video/intro.mp4' } }), '', 'no captions, no video');
+  assert.match(HomeView.introVideoMarkup({ introVideo: { src: '/Images/video/intro.mp4', captions: '/Images/video/intro.vtt' } }), /<track kind="captions" src="\/Images\/video\/intro\.vtt"/);
+  // A <video> asks for byte ranges (206), which Cache.put rejects: the worker must not touch them.
+  assert.match(fs.readFileSync(new URL('sw.js', ROOT), 'utf8'), /request\.destination === 'video'[^\n]*headers\.has\('range'\)/);
 });

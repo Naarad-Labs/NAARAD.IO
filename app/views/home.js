@@ -179,11 +179,11 @@ function experienceSection(routes) {
 /** The intro video, or '' when content/visuals.json lists none. No autoplay: it has sound. */
 export function introVideoMarkup(visuals) {
   const video = visuals?.introVideo;
-  if (!video?.src) return '';
+  if (!video?.src || !video.captions) return '';   // a narrated video without captions fails WCAG 1.2.2
   return `<section class="home-video" aria-labelledby="intro-video-title">
     <h2 id="intro-video-title" class="section-title">See Naarad in two minutes.</h2>
     <video controls playsinline preload="metadata" src="${escapeHtml(video.src)}"${video.poster ? ` poster="${escapeHtml(video.poster)}"` : ''}>
-      ${video.captions ? `<track kind="captions" src="${escapeHtml(video.captions)}" srclang="en" label="English" default>` : ''}
+      <track kind="captions" src="${escapeHtml(video.captions)}" srclang="en" label="English" default>
     </video>
   </section>`;
 }

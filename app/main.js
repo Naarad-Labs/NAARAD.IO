@@ -388,6 +388,7 @@ function commit({ markup, meta }, { keep = false, scrollY = 0 } = {}) {
   if (!(keep && drawn(markup))) {
     destroyMap();
     unwatchRouteBar();
+    unmountBands(shell);
     shell.innerHTML = markup;
     delete shell.dataset.prerendered;
     // 'instant': the page is replaced, so it opens in place rather than gliding there.
@@ -1177,8 +1178,12 @@ window.addEventListener('popstate', () => {
 /* ── Boot ───────────────────────────────────────────────────────── */
 
 /** Dithered backgrounds (app/dither.js) on every [data-dither] element not yet drawn, the footer's included. */
+const bandStops = new Map();
+function unmountBands(root) {
+  for (const [el, stop] of bandStops) if (root.contains(el)) { stop(); bandStops.delete(el); }
+}
 function mountBands() {
-  const start = () => $$('[data-dither]:not([data-dither-on])').forEach((el) => { el.dataset.ditherOn = '1'; mountDither(el); });
+  const start = () => $$('[data-dither]:not([data-dither-on])').forEach((el) => { el.dataset.ditherOn = '1'; bandStops.set(el, mountDither(el)); });
   (window.requestIdleCallback || ((fn) => setTimeout(fn, 200)))(start, { timeout: 800 });
 }
 

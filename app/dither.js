@@ -119,6 +119,7 @@ export function mountDither(el, { palette, scale = 3, speed = 0.15 } = {}) {
       watchers.forEach((o) => o.disconnect());
       document.removeEventListener('visibilitychange', onVisibility);
       canvas.remove();
+      gl.getExtension('WEBGL_lose_context')?.loseContext();   // browsers keep ~16 live contexts
     };
     // A lost context leaves a blank canvas: drop it and let the static gradient show.
     canvas.addEventListener('webglcontextlost', (event) => { event.preventDefault(); teardown(); el.dataset.ditherFallback = '1'; });

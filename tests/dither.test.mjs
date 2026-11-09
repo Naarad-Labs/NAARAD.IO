@@ -35,3 +35,27 @@ test('mountDither marks the fallback and returns a teardown when WebGL is missin
   assert.equal(typeof stop, 'function');
   stop();
 });
+
+test('teardown releases the WebGL context so page swaps do not leak contexts', () => {
+  let lost = false;
+  const gl = new Proxy({}, {
+    get: (_, name) => {
+      if (name === 'getExtension') return (ext) => (ext === 'WEBGL_lose_context' ? { loseContext: () => { lost = true; } } : null);
+      if (name === 'getShaderParameter' || name === 'getProgramParameter') return () => true;
+      if (/^[A-Z_0-9]+$/.test(String(name))) return 1;
+      return () => 1;
+    },
+  });
+  const canvas = { getContext: () => gl, setAttribute() {}, addEventListener() {}, remove() {} };
+  const el = { dataset: {}, clientWidth: 100, clientHeight: 50, ownerDocument: { createElement: () => canvas }, prepend() {} };
+  Object.assign(globalThis, {
+    window: { devicePixelRatio: 1 },
+    document: { visibilityState: 'visible', addEventListener() {}, removeEventListener() {} },
+    requestAnimationFrame: () => 1,
+    cancelAnimationFrame() {},
+  });
+  const stop = mountDither(el);
+  assert.equal(el.dataset.ditherFallback, undefined);
+  stop();
+  assert.equal(lost, true);
+});
