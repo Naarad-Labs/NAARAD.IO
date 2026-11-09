@@ -172,6 +172,7 @@ export const meta = {
   title: 'Moderation – Naarad',
   description: 'Moderate creator submissions',
   path: '/creators/moderation/',
+  robots: 'noindex',   // a moderators-only tool: out of search and out of the sitemap
 };
 
 export async function list() {

@@ -132,8 +132,9 @@ export function createEventQueue({
   const retrier = createRetrier(async () => {
     for (;;) {
       const result = await api.flush();
-      if (result.reason === 'ok') { if (memory.queue.length) continue; return true; }
-      return ['empty', 'no-endpoint', 'no-consent', 'no-fetch', 'permanent-failure'].includes(result.reason);
+      /* A dropped batch (permanent-failure) removed events, so the loop ends too: it goes on while any are left. */
+      if (result.reason === 'ok' || result.reason === 'permanent-failure') { if (memory.queue.length) continue; return true; }
+      return ['empty', 'no-endpoint', 'no-consent', 'no-fetch'].includes(result.reason);
     }
   }, { random, setTimer, clearTimer });
 
@@ -191,12 +192,13 @@ export function createEventQueue({
           body: JSON.stringify({ v: SCHEMA_VERSION, sent_at: now(), dropped_before: dropped, events: batch }),
         });
         if (!response || response.ok === false) {
-          // 4xx = permanent failure: drop the batch, count them, don't retry.
+          // 4xx = permanent failure: drop only this batch, count it, don't retry it.
           // 5xx = transient: the retrier will retry with backoff.
           if (response && response.status >= 400 && response.status < 500) {
+            const gone = new Set(batch.map((event) => event.id));
+            memory.queue = memory.queue.filter((event) => !gone.has(event.id));
             memory.dropped += batch.length;
-            memory.queue = [];
-            memory.session = null;
+            if (!memory.queue.length) memory.session = null;   // as after a full flush
             save();
             return { sent: 0, reason: 'permanent-failure' };
           }
