@@ -71,6 +71,17 @@ function factRow(route) {
   </div>`;
 }
 
+/** Up to four more photographs beside the hero photograph; each opens the lightbox. Empty when the route has no others. */
+function routeMosaic(route) {
+  const tiles = routePhotos(route).filter((photo) => photo.id !== route.media?.photo).slice(0, 4);
+  if (!tiles.length) return '';
+  return `<div class="route-mosaic is-${tiles.length}">
+    ${tiles.map((photo, number) => `<button type="button" class="mosaic-tile" data-photo-open="${escapeHtml(photo.id)}" data-photo-caption="${escapeHtml(photo.caption)}" data-photo-alt="${escapeHtml(photo.caption)}" aria-label="Open photograph ${number + 2}: ${escapeHtml(photo.caption)}">
+      ${picture(photo.id, { sizes: '(max-width: 1023px) 25vw, 180px', alt: photo.caption, ratio: '1 / 1' })}
+    </button>`).join('\n    ')}
+  </div>`;
+}
+
 /** The route's line over the hero photograph, drawn in by CSS. Decorative: the map is where the route is read. */
 function routeLine(route) {
   const d = routeDrawPath(route.geometry?.coordinates);
@@ -78,6 +89,7 @@ function routeLine(route) {
 }
 
 function hero(route) {
+  const mosaic = routeMosaic(route);
   return `<header class="route-hero">
     <div class="route-hero-copy">
       <nav class="breadcrumb" aria-label="Breadcrumb">
@@ -97,7 +109,8 @@ function hero(route) {
         </span>
       </div>
     </div>
-    <div class="route-hero-media">
+    <div class="route-hero-media${mosaic ? ' has-mosaic' : ''}">
+      <div class="route-hero-main">
       ${route.media?.photo
     ? picture(route.media.photo, {
       sizes: HERO_SIZES,
@@ -106,6 +119,8 @@ function hero(route) {
     })
     : '<div class="route-hero-photo photo photo-missing"></div>'}
       ${routeLine(route)}
+      </div>
+      ${mosaic}
       ${route.subtitle ? `<p class="note-plain note-over-photo route-hero-note">${escapeHtml(route.themes?.[0] || 'A living story')}. <br>Walk it slowly.</p>` : ''}
       <span class="pin-chip route-hero-place">${icon('pin')}${escapeHtml(route.location || 'India')}</span>
     </div>

@@ -55,3 +55,34 @@ test('every route with geometry draws one decorative line; the others draw none'
     assert.match(html, /<path d="M[^"]+" pathLength="1"/, route.slug);
   }
 });
+
+const extras = (route) => RouteView.routePhotos(route).filter((photo) => photo.id !== route.media?.photo);
+const mosaicOf = (html) => (html.match(/<div class="route-mosaic[\s\S]*?<\/div>\s*<\/div>/) || [''])[0];
+
+test('the mosaic shows up to four photographs beside the hero photograph, and nothing when there are none', async () => {
+  let withMosaic = 0;
+  for (const route of routes) {
+    const html = await RouteView.render({ route, stop: route.stops[0]?.order });
+    const tiles = [...html.matchAll(/<button type="button" class="mosaic-tile"[^>]*data-photo-open="([^"]+)"[^>]*>/g)];
+    const want = Math.min(4, extras(route).length);
+    assert.equal(tiles.length, want, `${route.slug}: tiles`);
+    assert.equal(new Set(tiles.map((t) => t[1])).size, tiles.length, `${route.slug}: unique photographs`);
+    assert.equal(html.includes('class="route-mosaic'), want > 0, `${route.slug}: wrapper only when there are tiles`);
+    if (want) withMosaic++;
+    for (const [tag] of tiles) {
+      assert.match(tag, /data-photo-caption="[^"]+"/, route.slug);
+      assert.match(tag, /aria-label="Open photograph[^"]+"/, route.slug);
+    }
+    if (route.media?.photo) assert.match(html, /class="[^"]*route-hero-photo/, `${route.slug}: the hero photograph stays`);
+  }
+  assert.ok(withMosaic > 0, 'at least one route has a mosaic');
+});
+
+test('every mosaic photograph has alternative text', async () => {
+  for (const route of routes) {
+    const html = await RouteView.render({ route, stop: route.stops[0]?.order });
+    const block = html.match(/<div class="route-mosaic[\s\S]*?<\/div>\s*<\/div>/);
+    if (!block) continue;
+    for (const [img] of block[0].matchAll(/<img [^>]*>/g)) assert.match(img, /alt="[^"]+"/, `${route.slug}: ${img}`);
+  }
+});

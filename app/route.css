@@ -393,3 +393,16 @@
   .route-draw path { stroke-dashoffset: 1; animation: route-draw 3s .4s cubic-bezier(.4, 0, .2, 1) forwards; }
 }
 @keyframes route-draw { to { stroke-dashoffset: 0; } }
+
+/* The mosaic: the hero photograph keeps its place and gains a column of the route's other photographs. */
+.route-hero-main { position: relative; min-height: inherit; }
+.route-hero-media.has-mosaic { display: grid; grid-template-columns: minmax(0, 1fr) clamp(96px, 14%, 168px); gap: 6px; }
+.route-mosaic { display: grid; grid-auto-rows: minmax(0, 1fr); gap: 6px; }
+.route-mosaic.is-3, .route-mosaic.is-4 { grid-template-columns: 1fr; }
+.mosaic-tile { display: block; width: 100%; height: 100%; min-height: 0; padding: 0; border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: var(--paper-deep); cursor: zoom-in; }
+.mosaic-tile .photo, .mosaic-tile picture, .mosaic-tile img { display: block; width: 100%; height: 100%; object-fit: cover; }
+@media (max-width: 1023px) {
+  .route-hero-media.has-mosaic { grid-template-columns: 1fr; }
+  .route-hero-main { min-height: 46vh; }
+  .route-mosaic { grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); grid-auto-rows: auto; height: 76px; }
+}
