@@ -127,6 +127,20 @@ export function createBackend({
     listMine() {
       return authed('/rest/v1/creator_submissions?select=id,title,status,review_note,updated_at&order=updated_at.desc');
     },
+    /* Moderation (service role or moderator with elevated policy): list all submissions. */
+    listAllSubmissions() {
+      return authed('/rest/v1/creator_submissions?select=id,title,draft,status,review_note,author_id,updated_at&order=updated_at.desc');
+    },
+    /* Moderation: approve a submission. */
+    async moderateSubmission(id, action, reviewNote = '') {
+      const body = { status: action, review_note: reviewNote };
+      const rows = await authed(`/rest/v1/creator_submissions?id=eq.${encodeURIComponent(id)}`, {
+        method: 'PATCH',
+        body,
+        headers: { prefer: 'return=representation' },
+      });
+      return Array.isArray(rows) ? rows[0] : rows;
+    },
     /* Erasure: removes the account and everything it wrote (DPDP right to erasure). */
     async deleteAccount() {
       await authed('/rest/v1/rpc/delete_my_account', { method: 'POST', body: {} });

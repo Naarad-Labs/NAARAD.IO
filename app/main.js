@@ -33,6 +33,7 @@ import './elevation-cursor.js';
 import * as Urls from './urls.js';
 import { SITE_NAME, CARD_WIDTH, CARD_HEIGHT, cardPath } from './seo.js';
 import * as MediaLibrary from './views/media-library.js';
+import * as Moderation from './views/moderation.js';
 
 const PRERENDER = Boolean(window.__NAARAD_PRERENDER__);
 const shell = document.querySelector('#app-content');
@@ -173,6 +174,7 @@ const PAGES = [
   { name: 'creators', path: '/creators/', view: 'studio', nav: 'creators',
     address: (context) => context.studioNav === 'profile' ? `${Urls.sectionPath('creators')}?profile=1` : Urls.sectionPath('creators') },
   { name: 'creators-media', path: '/creators/media/', view: 'media-library', nav: 'creators' },
+  { name: 'creators-moderation', path: '/creators/moderation/', view: 'moderation', nav: 'creators' },
   { name: 'journey', path: '/journey/', view: 'journey', nav: 'journey' },
   {
     name: 'about', path: '/about/', view: 'info', nav: 'about',
@@ -357,6 +359,7 @@ async function moduleFor(name) {
     'media-library': () => import('./views/media-library.js'),
     journey: () => import('./views/journey.js'),
     info: () => import('./views/info.js'),
+    moderation: () => import('./views/moderation.js'),
   };
   modules[name] = await loaders[name]();
   return modules[name];
@@ -937,6 +940,15 @@ document.addEventListener('click', async (event) => {
     if (first && listen(first.order)) notify(`Playing stop 1 of ${state.route.stops.length}. Save the route to find it in My Journey.`);
     return;
   }
+  if (action === 'moderate') {
+    const modBtn = event.target.closest('[data-action="approve"], [data-action="reject"], [data-action="view-note"]');
+    if (modBtn) {
+      event.preventDefault();
+      await started;
+      await Moderation.handleAction(event);
+      return;
+    }
+  }
   if (action === 'walked' && state.route) {
     const button = event.target.closest('[data-action="walked"]');
     const walked = !Journey.isWalked(state.route.slug);
@@ -1151,6 +1163,13 @@ document.addEventListener('submit', async (event) => {
     await repaintJourney();
     focusNode($('[data-journal-form] input[name="title"]'));
     notify('Journal entry saved on this device.');
+    return;
+  }
+  if (event.target.matches('[data-moderation-form]')) {
+    event.preventDefault();
+    await started;
+    await Moderation.handleAction(event);
+    return;
   }
 });
 

@@ -1,40 +1,50 @@
-# Design System
+# Design System (Visual-First Revamp)
+
+## Design Philosophy
+
+**Komoot-style restraint is the base.** Every page leads with photography and maps. Text supports the visual; it never leads. The interface is quiet, the place is loud.
+
+**Borrow one idea from each reference:**
+- **Komoot**: Photo-tile grids, sticky map, editorial restraint
+- **AllTrails**: Scrubbable photo timeline along the route
+- **Strava Flyover**: 3D aerial flyover as route hero
+- **VoiceMap**: Now-playing screen against the map (walking mode)
+- **Airbnb**: Five-photo mosaic before any text
+- **Atlas Obscura**: Every place in India on one map (Explore)
 
 ## Design Tokens
 
 ### Colors
 
-Colors are defined as CSS custom properties in `app/tokens.css`:
-
 | Token | Value | Usage | Contrast Notes |
 |-------|-------|-------|----------------|
 | `--paper` | #f8f3e9 | Primary background | Base paper color |
-| `--paper-bright` | #fdfaf4 | Button backgrounds |  |
-| `--paper-deep` | #efe6d4 | Photo overlays |  |
-| `--paper-edge` | #e4d9c3 | Decorative edges |  |
+| `--paper-bright` | #fdfaf4 | Card backgrounds, buttons | |
+| `--paper-deep` | #efe6d4 | Photo overlays, secondary surfaces | |
+| `--paper-edge` | #e4d9c3 | Decorative edges, dividers | |
 | `--ink` | #12294a | Primary text | 13.17:1 on paper |
-| `--ink-deep` | #0c1c33 | Strong text, shadows |  |
-| `--ink-soft` | #46556d | Secondary text |  |
-| `--ink-muted` | #66645b | Muted text | 5.37:1 on paper (>= 4.5:1 WCAG AA) |
+| `--ink-deep` | #0c1c33 | Strong text, shadows, dark bands | |
+| `--ink-soft` | #46556d | Secondary text | |
+| `--ink-muted` | #66645b | Muted text, metadata | 5.37:1 on paper (AA) |
 | `--orange` | #c6511b | Accent, CTA fills | White: 4.57:1 (AA) |
 | `--orange-text` | #b04512 | Accent as text | 5.12:1 on paper (AA) |
-| `--orange-on-dark` | #e8894f | Orange on dark |
-| `--orange-bright` | #d9622a | Hover states |
-| `--orange-deep` | #a23f10 | Strong accent |
-| `--orange-wash` | #f6e7da | Accent wash |
-| `--sage` | #6f8156 | Secondary accent |
-| `--gold` | #c9a227 | Decorative accents |
-| `--line` | #e0d6c2 | Borders, dividers |
-| `--line-strong` | #cdbfa4 | Stronger borders |
-| `--field-edge` | #857656 | Form field borders | 4.0:1 on paper, 4.3:1 on paper-bright |
-| `--map-ground` | #e7e1d5 | Map background |
-| `--route-line` | #173d68 | Route lines on map |
-| `--white` | #fff | Text on saturated backgrounds |
-| `--preview-ground` | #eef2e6 | Route preview drawings |
-| `--white-rgb` | 255 255 255 | rgb() helper |
-| `--ink-rgb` | 18 41 74 | rgb() helper |
-| `--paper-rgb` | 248 243 233 | rgb() helper |
-| `--ink-deep-rgb` | 12 28 51 | Shadow rgba() helper |
+| `--orange-on-dark` | #e8894f | Orange on dark backgrounds | |
+| `--orange-bright` | #d9622a | Hover/focus states | |
+| `--orange-deep` | #a23f10 | Strong accent | |
+| `--orange-wash` | #f6e7da | Accent wash backgrounds | |
+| `--sage` | #6f8156 | Secondary accent, elevation | |
+| `--gold` | #c9a227 | Decorative accents | |
+| `--line` | #e0d6c2 | Borders, dividers | |
+| `--line-strong` | #cdbfa4 | Stronger borders | |
+| `--field-edge` | #857656 | Form field borders | 4.0:1 on paper |
+| `--map-ground` | #e7e1d5 | Map background | |
+| `--route-line` | #173d68 | Route lines on map | |
+| `--white` | #fff | Text on saturated backgrounds | |
+| `--preview-ground` | #eef2e6 | Route preview drawings | |
+| `--white-rgb` | 255 255 255 | rgb() helper | |
+| `--ink-rgb` | 18 41 74 | rgb() helper | |
+| `--paper-rgb` | 248 243 233 | rgb() helper | |
+| `--ink-deep-rgb` | 12 28 51 | Shadow rgba() helper | |
 
 ### Typography
 
@@ -52,16 +62,16 @@ Colors are defined as CSS custom properties in `app/tokens.css`:
 
 | Token | Value | Usage |
 |-------|-------|-------|
-| `--header-h` | 78px | Header height |
+| `--header-h` | 72px | Header height (reduced from 78) |
 | `--player-h` | 0px | Listening bar offset (dynamically set) |
-| `--shadow-sm` | 0 1px 2px rgba(18, 41, 74, .06), 0 4px 12px rgba(18, 41, 74, .05) |
-| `--shadow-md` | 0 2px 6px rgba(18, 41, 74, .07), 0 14px 34px rgba(18, 41, 74, .09) |
-| `--shadow-lg` | 0 10px 50px rgba(18, 41, 74, .16) |
-| `--radius` | 10px | Border radius |
-| `--radius-lg` | 16px | Large border radius |
+| `--shadow-sm` | 0 1px 2px rgba(18, 41, 74, .06), 0 4px 12px rgba(18, 41, 74, .05) | |
+| `--shadow-md` | 0 2px 6px rgba(18, 41, 74, .07), 0 14px 34px rgba(18, 41, 74, .09) | |
+| `--shadow-lg` | 0 10px 50px rgba(18, 41, 74, .16) | |
+| `--radius` | 12px | Border radius (increased from 10) |
+| `--radius-lg` | 20px | Large border radius (increased from 16) |
 | `--wrap` | 1480px | Content max width |
-| `--ease-out` | cubic-bezier(.22, .61, .36, 1) |
-| `--move` | 460ms |
+| `--ease-out` | cubic-bezier(.22, .61, .36, 1) | Standard easing |
+| `--move` | 460ms | Default animation duration |
 
 ### Motion
 
@@ -69,7 +79,10 @@ Motion is controlled via `html[data-motion='on']`:
 
 - **Transitions**: 180-520ms using `var(--ease-out)`
 - **Reveal animations**: Elements with `[data-reveal]` animate in/out
-- **Hero drift**: Subtle parallax on hero photos
+- **Hero drift**: Subtle parallax on hero photos (30s cycle)
+- **Photo scrubber**: Scrub along route, photos update in sync (AllTrails style)
+- **Walking mode**: Now-playing bar over map, GPS-synced (VoiceMap style)
+- **3D flyover**: Strava-style aerial hero video
 
 **Tokens** (`app/tokens.css`):
 
@@ -77,6 +90,7 @@ Motion is controlled via `html[data-motion='on']`:
 |-------|-------|-------|
 | `--ease-out` | cubic-bezier(.22, .61, .36, 1) | Standard transition easing |
 | `--move` | 460ms | Default animation duration |
+| `--scrub-speed` | 0.3s | Photo transition during scrub |
 
 > Note: Single easing function used throughout; duration varies (180-520ms). Raw values used in CSS for specific timings.
 
@@ -87,35 +101,28 @@ Hardcoded in CSS media queries:
 | Max Width | Usage |
 |-----------|-------|
 | 1240px | Collapse search/input in header |
-| 1023px | Phone layout (header, nav) |
+| 1023px | Phone layout (header, nav, map-first) |
 | 639px | Touch target sizes, footer layout |
 | 429px | Listen bar layout |
 
 ### Z-Index Scale
 
-Z-index values are defined as CSS custom properties in `app/tokens.css`:
-
 | Token | Value | Usage |
 |-------|-------|-------|
 | `--z-skip-link` | 2000 | Skip link overlay |
 | `--z-header` | 900 | Site header |
-| `--z-listen-bar` | 1100 | Listening bar |
+| `--z-walking-bar` | 1100 | Walking mode bar (same as listen) |
 | `--z-lightbox` | 1000 | Lightbox dialog |
-| `--z-sticky` | 500 | Sticky elements (route stops) |
+| `--z-sticky` | 500 | Sticky elements (route stops, map toolbar) |
+| `--z-scrubber` | 600 | Photo scrubber overlay |
 | `--z-foreground` | 1 | Default foreground layer |
 
-> Status: Tokenized. Values still used ad-hoc in CSS; future work to migrate all hardcoded values.
-
 ### Breakpoint Scale
-
-Breakpoints are defined as CSS custom properties in `app/tokens.css`:
 
 | Token | Value | Usage |
 |-------|-------|-------|
 | `--breakpoint-tablet` | 1023px | Max-width for tablet layout |
 | `--breakpoint-phone` | 639px | Max-width for phone layout |
-
-> Note: Breakpoints currently hardcoded in media queries. Future work: tokenize and use consistently.
 
 ## Components
 
@@ -126,20 +133,27 @@ Breakpoints are defined as CSS custom properties in `app/tokens.css`:
 - `.button-sm` - Small button (38px height)
 - `.button-ghost` - Transparent with border
 
-### Form Fields
+### Photo Mosaic (Airbnb-style)
 
-```css
-.field { display: grid; gap: 6px; }
-.field select, .field input, .field textarea { 
-  padding: 10px 12px; 
-  border-radius: 8px;
-}
-```
+Five-photo grid: one large, four small. Used on route hero, place pages, collections.
+
+### Photo Scrubber (AllTrails-style)
+
+Horizontal scrubber beneath route hero/map. Scrubbing reveals photos at each stop position along the route.
+
+### Walking Mode (VoiceMap-style)
+
+Bottom bar over map showing now-playing stop, progress, GPS location. Tap to expand to full-screen walking screen.
+
+### 3D Flyover Hero (Strava Flyover-style)
+
+Aerial 3D video/animation of the route as hero background.
 
 ### Cards
 
 - `.route-card`, `.story-card`, `.collection-card`, `.journey-card`
 - Feature a media area, title, metrics, and actions
+- Photo-led: image first, text below
 
 ### Navigation
 
@@ -176,6 +190,8 @@ Fonts are self-hosted as WOFF2 in `/app/fonts/`.
 - Photographs are served in multiple formats: AVIF, WebP, fallback
 - `img` tags include `loading="eager"` for hero images
 - Photos can have torn paper edges via `.torn-left` / `.torn-bottom` classes
+- **New**: Dithered hero backgrounds for motion/atmosphere (Framer dither style)
+- **New**: 3D flyover video as hero (Strava style)
 
 ## Spacing
 
@@ -193,3 +209,7 @@ The following components need specification files:
 - Focus ring pattern
 - Input fields
 - Chips/filters
+- **Photo mosaic component**
+- **Photo scrubber component**
+- **Walking mode component**
+- **3D flyover component**
