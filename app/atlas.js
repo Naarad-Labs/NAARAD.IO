@@ -8,7 +8,7 @@
    empty frame, and must still open offline, where the map engine is not available. */
 let mapTools = null;
 const tools = () => { mapTools ||= import('./map.js'); return mapTools; };
-import { escapeHtml } from './media.js';
+import { escapeHtml, picture, getPhoto } from './media.js';
 import { routePath } from './urls.js';
 
 const EARTH_RADIUS_KM = 6371;
@@ -48,13 +48,42 @@ export function formatKm(km) {
   return `${Math.round(km).toLocaleString('en-IN')} km`;
 }
 
-const SECTION = `<section class="atlas" id="atlas" aria-labelledby="atlas-title">
+/** The box a route is zoomed to: its whole line when it has one, else a small box round its start. null with neither. */
+export function routeBounds(route) {
+  const points = (route.geometry?.coordinates || []).filter((c) => Array.isArray(c) && validPoint(c[1], c[0]));
+  if (points.length >= 2) {
+    const lats = points.map((c) => c[1]);
+    const lngs = points.map((c) => c[0]);
+    return [[Math.min(...lats), Math.min(...lngs)], [Math.max(...lats), Math.max(...lngs)]];
+  }
+  const lat = Number(route.startLat);
+  const lng = Number(route.startLng);
+  return route.startLat != null && route.startLng != null && validPoint(lat, lng) ? [[lat - 0.01, lng - 0.01], [lat + 0.01, lng + 0.01]] : null;
+}
+
+/** The strip of route cards along the foot of the map: swiping it moves the map to each route (mountAtlas). */
+export function sliderMarkup(routes) {
+  const entries = located(routes);
+  if (!entries.length) return '';
+  const card = ({ route }) => {
+    const photo = route.media?.card || route.media?.photo;
+    return `<li class="atlas-slide"><a class="atlas-card" href="${routePath(route.slug)}" data-slug="${escapeHtml(route.slug)}">
+      <span class="atlas-card-photo">${photo && getPhoto(photo) ? picture(photo, { sizes: '96px', alt: '', ratio: '1 / 1' }) : ''}</span>
+      <span class="atlas-card-body"><strong>${escapeHtml(route.name)}</strong><small>${escapeHtml(route.location || route.region || 'India')}</small></span>
+    </a></li>`;
+  };
+  return `<ol class="atlas-slider" data-atlas-slider aria-label="Routes on the map. Swipe to move the map to each route.">${entries.map(card).join('')}</ol>`;
+}
+
+const section = (routes) => `<section class="atlas" id="atlas" aria-labelledby="atlas-title">
   <div class="atlas-head">
     <h2 id="atlas-title" class="eyebrow eyebrow-mark">Every route on the map</h2>
     <a class="text-link" href="#catalogue-grid">Skip the map</a>
+    <a class="text-link" href="#catalogue-query">Search and filters</a>
     <button type="button" class="button button-sm" data-atlas-near>Routes near me</button>
   </div>
   <div class="atlas-map nr-map-host" data-atlas-map role="region" aria-label="Map of all routes. The same routes are listed below."></div>
+  ${sliderMarkup(routes)}
   <p class="atlas-status" data-atlas-status></p>
   <ol class="atlas-near" data-atlas-list hidden></ol>
   <p class="data-note">Your position is used on this device to sort the routes. It is not sent or kept.</p>
@@ -62,7 +91,7 @@ const SECTION = `<section class="atlas" id="atlas" aria-labelledby="atlas-title"
 
 /** The empty frame, for render() to place above the catalogue so the page does not shift when the map arrives. */
 export function atlasMarkup(routes) {
-  return located(routes).length ? SECTION : '';
+  return located(routes).length ? section(routes) : '';
 }
 
 /**
@@ -75,7 +104,7 @@ export async function mountAtlas(routes, { before = '.catalogue-body', isCurrent
   if (!document.querySelector('.atlas')) {
     const anchor = document.querySelector(before);
     if (!anchor) return noop;
-    anchor.insertAdjacentHTML('beforebegin', SECTION);
+    anchor.insertAdjacentHTML('beforebegin', section(routes));
   }
   const section = document.querySelector('.atlas');
   const container = section.querySelector('[data-atlas-map]');
@@ -84,10 +113,47 @@ export async function mountAtlas(routes, { before = '.catalogue-body', isCurrent
   const list = section.querySelector('[data-atlas-list]');
   const near = section.querySelector('[data-atlas-near]');
   const state = { destroyed: false, map: null, markers: new Map(), visible: null, you: null };
+  const slider = section.querySelector('[data-atlas-slider]');
+  const reduced = typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let current = null;       // the slug the map is zoomed to
+  let line = null;          // that route's line, drawn over the map
+  let settle = null;        // waits for the swipe to come to rest
+
+  // Zoom the map to one route: its line when it has one, else a box round its start, clear of the card strip.
+  const focusRoute = (slug, token) => {
+    const route = routes.find((candidate) => candidate.slug === slug);
+    const box = route && routeBounds(route);
+    if (!box || !state.map || slug === current) return;
+    current = slug;
+    slider.querySelectorAll('.atlas-card').forEach((card) => card.classList.toggle('is-current', card.dataset.slug === slug));
+    line?.remove();
+    line = null;
+    const coords = (route.geometry?.coordinates || []).filter((c) => Array.isArray(c) && validPoint(c[1], c[0]));
+    if (coords.length >= 2) line = window.L.polyline(coords.map(([lng, lat]) => [lat, lng]), { color: token('--orange', '#c6511b'), weight: 4, opacity: 0.95 }).addTo(state.map);
+    state.map.flyToBounds(box, {
+      paddingTopLeft: [24, 64], paddingBottomRight: [24, (slider?.offsetHeight || 0) + 24], maxZoom: 15, animate: !reduced, duration: 0.9,
+    });
+  };
+  const centredSlug = () => {
+    const rail = slider.getBoundingClientRect();
+    const middle = rail.left + rail.width / 2;
+    let best = null;
+    for (const card of slider.querySelectorAll('.atlas-slide:not([hidden]) .atlas-card')) {
+      const box = card.getBoundingClientRect();
+      const gap = Math.abs(box.left + box.width / 2 - middle);
+      if (!best || gap < best.gap) best = { slug: card.dataset.slug, gap };
+    }
+    return best?.slug;
+  };
 
   const controller = {
     update(slugs) {
       state.visible = new Set(slugs);
+      slider?.querySelectorAll('.atlas-slide').forEach((slide) => { slide.hidden = !state.visible.has(slide.firstElementChild.dataset.slug); });
+      slider?.querySelectorAll('.atlas-card.is-current').forEach((card) => card.classList.remove('is-current'));
+      line?.remove();
+      line = null;
+      current = null;
       if (!state.map) return;
       const L = window.L;
       const shown = [];
@@ -102,6 +168,7 @@ export async function mountAtlas(routes, { before = '.catalogue-body', isCurrent
     destroy() {
       if (state.destroyed) return;
       state.destroyed = true;
+      clearTimeout(settle);
       state.resizeObserver?.disconnect();
       state.map?.remove();
       container.innerHTML = '';   // leave the empty frame the page was drawn with
@@ -142,7 +209,7 @@ export async function mountAtlas(routes, { before = '.catalogue-body', isCurrent
   });
 
   try {
-    const { loadMapCss, loadLeaflet } = await tools();
+    const { loadMapCss, loadLeaflet, token } = await tools();
     await loadMapCss();
     const L = await loadLeaflet();
     if (state.destroyed || !isCurrent()) { controller.destroy(); return noop; }
@@ -164,9 +231,17 @@ export async function mountAtlas(routes, { before = '.catalogue-body', isCurrent
       marker.bindPopup(`<strong>${escapeHtml(route.name)}</strong><br>${escapeHtml(route.location || route.region || 'India')}`
         + `<br><a href="${routePath(route.slug)}">View route</a>`);
       marker.on('add', () => marker.getElement()?.setAttribute('aria-label', route.name));
+      marker.on('click', () => {
+        const card = slider?.querySelector(`[data-slug="${CSS.escape(route.slug)}"]`);
+        if (card) card.scrollIntoView({ inline: 'center', block: 'nearest', behavior: reduced ? 'auto' : 'smooth' });
+      });
       state.markers.set(route.slug, { marker, latlng });
     }
     controller.update(state.visible || routes.map((route) => route.slug));
+    slider?.addEventListener('scroll', () => {
+      clearTimeout(settle);
+      settle = setTimeout(() => focusRoute(centredSlug(), token), 140);
+    }, { passive: true });
     state.resizeObserver = new ResizeObserver(() => { if (!state.destroyed) state.map?.invalidateSize({ pan: false }); });
     state.resizeObserver.observe(container);
   } catch {
