@@ -14,6 +14,7 @@ import * as Journey from '../journey-store.js';
 import * as Offline from '../offline-bundles.js';
 import { routePath, sectionPath, absoluteUrl } from '../urls.js';
 import * as Seo from '../seo.js';
+import { routeDrawPath } from '../route-draw.js';
 
 const HERO_SIZES = '(max-width: 1023px) 100vw, 56vw';
 
@@ -70,7 +71,44 @@ function factRow(route) {
   </div>`;
 }
 
+/** Up to four more photographs beside the hero photograph; each opens the lightbox. Empty when the route has no others. */
+function routeMosaic(route) {
+  const tiles = routePhotos(route).filter((photo) => photo.id !== route.media?.photo).slice(0, 4);
+  if (!tiles.length) return '';
+  return `<div class="route-mosaic is-${tiles.length}" data-photo-set>
+    ${tiles.map((photo, number) => `<button type="button" class="mosaic-tile" data-photo-open="${escapeHtml(photo.id)}" data-photo-caption="${escapeHtml(photo.caption)}" data-photo-alt="${escapeHtml(photo.caption)}" aria-label="Open photograph ${number + 1} of ${tiles.length}: ${escapeHtml(photo.caption)}">
+      ${picture(photo.id, { sizes: '(max-width: 1023px) 25vw, 180px', alt: photo.caption, ratio: '1 / 1' })}
+    </button>`).join('\n    ')}
+  </div>`;
+}
+
+/** One photograph per stop that has one, with a range to scrub through them; app/main.js moves the stop. Needs two or more. */
+function routeScrubber(route, selected) {
+  const stops = (route.stops || []).filter((stop) => stop.photo && getPhoto(stop.photo));
+  if (stops.length < 2) return '';
+  const total = stops.length;
+  const current = Math.max(0, stops.findIndex((stop) => stop.order === selected));
+  const text = (index) => `Stop ${stops[index].order} of ${route.stops.length}: ${stops[index].name}`;
+  return `<section class="route-scrubber" aria-labelledby="scrubber-title">
+    <h2 class="sr-only" id="scrubber-title">Scrub along the route by stop photograph</h2>
+    <div class="scrubber-stage">
+      ${stops.map((stop, index) => `<figure class="scrubber-frame" data-scrubber-order="${stop.order}" data-scrubber-name="${escapeHtml(stop.name)}"${index === current ? '' : ' hidden'}>
+        ${picture(stop.photo, { sizes: '(max-width: 1023px) 100vw, 640px', alt: `${stop.name}, stop ${index + 1} of ${total}`, ratio: '16 / 9', priority: index === current })}
+        <figcaption><b>${escapeHtml(stop.name)}</b></figcaption>
+      </figure>`).join('\n      ')}
+    </div>
+    <input type="range" class="scrubber-range" data-scrubber min="1" max="${total}" step="1" value="${current + 1}" data-scrubber-orders="[${stops.map((stop) => stop.order).join(',')}]" aria-label="Scrub along the route by stop" aria-valuetext="${escapeHtml(text(current))}">
+  </section>`;
+}
+
+/** The route's line over the hero photograph, drawn in by CSS. Decorative: the map is where the route is read. */
+function routeLine(route) {
+  const d = routeDrawPath(route.geometry?.coordinates);
+  return d ? `<svg class="route-draw" viewBox="0 0 100 60" aria-hidden="true" focusable="false"><path d="${d}" pathLength="1"/></svg>` : '';
+}
+
 function hero(route) {
+  const mosaic = routeMosaic(route);
   return `<header class="route-hero">
     <div class="route-hero-copy">
       <nav class="breadcrumb" aria-label="Breadcrumb">
@@ -90,7 +128,8 @@ function hero(route) {
         </span>
       </div>
     </div>
-    <div class="route-hero-media">
+    <div class="route-hero-media${mosaic ? ' has-mosaic' : ''}">
+      <div class="route-hero-main">
       ${route.media?.photo
     ? picture(route.media.photo, {
       sizes: HERO_SIZES,
@@ -98,8 +137,11 @@ function hero(route) {
       priority: true, credit: true, className: 'route-hero-photo torn-left',
     })
     : '<div class="route-hero-photo photo photo-missing"></div>'}
+      ${routeLine(route)}
       ${route.subtitle ? `<p class="note-plain note-over-photo route-hero-note">${escapeHtml(route.themes?.[0] || 'A living story')}. <br>Walk it slowly.</p>` : ''}
       <span class="pin-chip route-hero-place">${icon('pin')}${escapeHtml(route.location || 'India')}</span>
+      </div>
+      ${mosaic}
     </div>
   </header>`;
 }
@@ -364,6 +406,7 @@ export async function render(context) {
   return `<article class="route-page" data-route="${escapeHtml(route.slug)}">
     ${hero(route)}
     ${factRow(route)}
+    ${routeScrubber(route, selected)}
     ${tabBar(route)}
     <div class="route-workspace">
       ${mapPanel(route)}

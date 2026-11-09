@@ -21,7 +21,7 @@
  * a page that was already controlled reload once when the worker changes.
  */
 
-const VERSION = 'v56';
+const VERSION = 'v57';
 const SHELL = `naarad-shell-${VERSION}`;
 const PAGES = `naarad-pages-${VERSION}`;
 const CONTENT = `naarad-content-${VERSION}`;
@@ -60,13 +60,12 @@ const SHELL_ASSETS = [
   '/app/listen-tracker.js',
   '/app/motion.js',
   '/app/dither.js',
+  '/app/route-draw.js',
   '/app/studio-store.js',
   '/app/urls.js',
   '/app/seo.js',
   '/app/views/home.js',
-  '/app/photo-scrubber.js',
   '/app/walking-mode.js',
-  '/app/flyover.js',
   '/app/account-ui.js',
   '/app/account.js',
   '/app/backend.js',

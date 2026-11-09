@@ -2599,6 +2599,43 @@ test('linked elevation retains the inspected distance after pointer exit and key
   await expect(page.locator('.elevation-cursor')).toBeVisible();
 });
 
+test.describe('the stop-photo scrubber on a route page', () => {
+  for (const size of [{ width: 1440, height: 900 }, { width: 768, height: 1000 }, { width: 390, height: 844 }]) {
+    test(`the arrow keys move the photograph, the stop and the status line together at ${size.width} px`, async ({ page }) => {
+      await page.setViewportSize(size);
+      await page.goto('/routes/hampi-heritage-trail/');
+      const range = page.locator('[data-scrubber]');
+      await expect(range).toHaveCount(1);
+      const frames = page.locator('.scrubber-frame');
+      expect(await frames.count()).toBeGreaterThan(1);
+      await expect(page.locator('.scrubber-frame:not([hidden])')).toHaveCount(1);
+      const before = await page.locator('.stop-title').first().textContent();
+      await range.focus();
+      await page.keyboard.press('ArrowRight');
+      await expect(range).toHaveJSProperty('value', '2');
+      await expect(page.locator('[data-stop-status]')).toContainText(/^Stop 2 of/);
+      await expect(page.locator('.stop-title').first()).not.toHaveText(before.trim());
+      await expect(page.locator('.scrubber-frame:not([hidden])')).toHaveCount(1);
+      await expect(range).toHaveAttribute('aria-valuetext', /^Stop 2 of \d+: /);
+      // Choosing a stop in the rail moves the scrubber back.
+      await page.locator('.stop-item[data-select-stop="1"]').first().click();
+      await expect(range).toHaveJSProperty('value', '1');
+    });
+  }
+});
+
+test.describe('the photo mosaic on a route page', () => {
+  test('a tile opens the lightbox on its own set of photographs', async ({ page }) => {
+    await page.goto('/routes/hampi-heritage-trail/');
+    const tiles = page.locator('.route-mosaic .mosaic-tile');
+    expect(await tiles.count()).toBeGreaterThan(0);
+    await tiles.first().click();
+    await expect(page.locator('html.has-lightbox')).toHaveCount(1);
+    await page.keyboard.press('Escape');
+    await expect(page.locator('html.has-lightbox')).toHaveCount(0);
+  });
+});
+
 test.describe('the routes page opens on the map', () => {
   for (const size of [{ width: 1440, height: 900 }, { width: 390, height: 844 }]) {
     test(`the map fills the first screen and the route cards take no more than 15% of it at ${size.width} px`, async ({ page }) => {
