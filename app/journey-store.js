@@ -2,7 +2,7 @@
  *
  * Saved routes, walks, journal entries and downloads are this visitor's own
  * record. There is no account system yet, so everything lives in
- * localStorage: nothing is invented, and the page shows what the person has
+ * IndexedDB: nothing is invented, and the page shows what the person has
  * actually done. When accounts arrive this module is the one place to swap
  * for a server.
  */
@@ -68,6 +68,11 @@ function write() {
   listeners.forEach((listener) => { try { listener(state); } catch { /* view gone */ } });
 }
 
+/* Forward storage failures to listeners so the view can show an immediate notice. */
+store.onFailure(() => {
+  listeners.forEach((listener) => { try { listener(null, 'persistence-failed'); } catch { /* view gone */ } });
+});
+
 /** Wait for the device's storage to load, then drop the cache so the next read sees what it held. */
 export async function ready() {
   await store.ready();
@@ -75,6 +80,14 @@ export async function ready() {
 }
 
 export const persistence = () => store.persistence();
+
+/** Returns a notice message when persistence has failed mid-session, empty string otherwise. */
+export function persistenceNote() {
+  if (persistence() === 'memory') {
+    return 'Your journey is not being saved on this device. It will be kept until you close this tab.';
+  }
+  return '';
+}
 
 export function subscribe(listener) {
   listeners.add(listener);

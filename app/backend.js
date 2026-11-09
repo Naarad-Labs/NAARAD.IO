@@ -5,8 +5,8 @@
  * security in supabase/migrations, not by this file: the key in the browser is
  * public. While app/config.js is empty it is off, and every call says so.
  *
- * The session (access and refresh token) is kept in this browser's
- * localStorage, the same place My Journey lives. Signing out clears it.
+ * The session (access and refresh token) is kept in this browser's storage.
+ * Signing out clears it.
  */
 
 import { SUPABASE_URL, SUPABASE_ANON_KEY } from './config.js';

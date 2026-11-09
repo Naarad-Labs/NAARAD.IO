@@ -141,8 +141,8 @@ export async function renderBody({ breadcrumb = 'My Journey' } = {}) {
   const target = Math.max(5, Math.ceil((totals.walksCompleted + 1) / 5) * 5);
 
   return `<div class="journey">
-    ${Journey.persistence() === 'memory' && !globalThis.__NAARAD_PRERENDER__
-    ? '<p class="journey-unsaved" role="status">Your journey is not being saved on this device. It will be kept until you close this tab.</p>' : ''}
+    ${Journey.persistenceNote() && !globalThis.__NAARAD_PRERENDER__
+    ? `<p class="journey-unsaved" role="status">${Journey.persistenceNote()}</p>` : ''}
     <header class="journey-hero dither-band" data-dither="sand">
       <div class="journey-hero-copy">
         <nav class="breadcrumb" aria-label="Breadcrumb"><a href="/" data-view="home">Home</a>${icon('chevron')}<b aria-current="page">${escapeHtml(breadcrumb)}</b></nav>

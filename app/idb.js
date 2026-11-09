@@ -1,10 +1,8 @@
 /* The device's key-value store.
  *
- * localStorage is small, synchronous and easy for the browser to wipe, and
- * the journey, studio and event queue all want more room. This keeps one
- * in-memory copy that ready() loads once, so reads stay synchronous like
- * localStorage, and writes through to IndexedDB in the background. If
- * IndexedDB is unavailable it falls back to localStorage, then to memory
+ * IndexedDB is the primary storage, kept in an in-memory copy that ready()
+ * loads once, so reads stay synchronous, and writes through to IndexedDB
+ * in the background. If IndexedDB is unavailable it falls back to memory
  * alone, and says so through persistence() and onFailure() instead of
  * silently losing data.
  */

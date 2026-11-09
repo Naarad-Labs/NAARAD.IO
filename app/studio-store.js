@@ -1,8 +1,8 @@
-/* Creator Studio drafts, kept in this browser.
+/* Creator Studio drafts, kept on the device.
  *
- * There is no creator backend yet, so a draft lives in localStorage and says
- * so in the interface. The shape here is the one a submission endpoint would
- * take, so moving to a server is a change of transport, not of model.
+ * There is no creator backend yet, so drafts say so in the interface.
+ * The shape here is the one a submission endpoint would take, so moving
+ * to a server is a change of transport, not of model.
  */
 
 import { store as storage } from './idb.js';
