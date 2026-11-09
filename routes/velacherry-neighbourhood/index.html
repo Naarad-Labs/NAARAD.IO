@@ -184,10 +184,19 @@
       <div class="map-toolbar">
         <button type="button" class="map-control" data-map="layers" aria-pressed="true"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m12 3.6 8.4 4.2-8.4 4.2-8.4-4.2Z"></path><path d="m3.6 12.4 8.4 4.2 8.4-4.2"></path></svg><span>Satellite</span></button>
         <button type="button" class="map-control" data-map="fit"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="8.4"></circle><path d="m14.8 9.2-1.6 4.2-4.2 1.6 1.6-4.2Z"></path></svg><span>Fit route</span></button>
-        <button type="button" class="map-control" data-map="expand"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 4.3 3.8 6.6v13l5.2-2.3 6 2.4 5.2-2.3v-13l-5.2 2.3Z"></path><path d="M9 4.3v13.4"></path><path d="M15 6.7v13"></path></svg><span>Full screen</span></button>
+        <button type="button" class="map-control" data-map="fullscreen" disabled="" title="Map controls are loading"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 4.3 3.8 6.6v13l5.2-2.3 6 2.4 5.2-2.3v-13l-5.2 2.3Z"></path><path d="M9 4.3v13.4"></path><path d="M15 6.7v13"></path></svg><span>Full screen</span></button>
       </div>
       <p class="map-note script">Stories at every stop</p>
     </div>
+    <dialog class="route-map-dialog" data-route-map-dialog="" aria-labelledby="route-map-dialog-title">
+      <header class="route-map-dialog-head">
+        <h2 id="route-map-dialog-title">Velacherry Neighbourhood map and stops</h2>
+        <button type="button" class="button button-sm" data-map-dialog-close="">Close map</button>
+      </header>
+      <div class="route-map-dialog-content" data-map-dialog-content="">
+        <p class="data-note" data-map-dialog-empty="" hidden="">Stops are not published for this route.</p>
+      </div>
+    </dialog>
   </section>
       
       <section class="stop-panel" id="section-stories">

@@ -91,8 +91,6 @@
 .lightbox-close:focus-visible, .lightbox-step:focus-visible { outline: 3px solid var(--white); outline-offset: 2px; }
 .has-lightbox { overflow: hidden; }
 .route-map .map-placeholder { width: 100%; height: 100%; }
-.map-frame.is-expanded { position: fixed; inset: 0; z-index: 950; height: auto; min-height: 0; aspect-ratio: auto; border: 0; border-radius: 0; }
-.has-map-expanded { overflow: hidden; }
 .map-controls { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); display: grid; gap: 6px; }
 .map-toolbar { position: absolute; left: 12px; top: 12px; display: flex; gap: 6px; flex-wrap: wrap; max-width: calc(100% - 70px); }
 .map-control {
@@ -351,3 +349,38 @@
   .route-hero, .route-glance, .route-overview, .stop-item { break-inside: avoid; }
   .route-overview a[href^='http']::after { content: ' (' attr(href) ')'; font-size: var(--text-xs); }
 }
+
+/* One existing map and stop rail move into this native modal; neither is cloned. */
+.route-map-dialog {
+  width: min(1480px, calc(100% - 32px)); max-width: none; height: min(920px, calc(100svh - 32px)); max-height: none;
+  padding: 18px; overflow: hidden; border: 1px solid var(--line); border-radius: 14px;
+  background: var(--paper-bright); color: var(--ink); box-shadow: var(--shadow-lg);
+}
+.route-map-dialog [data-map-dialog-close] { min-width: 44px; min-height: 44px; }
+.route-map-dialog[open] [data-map="fullscreen"] { display: none; }
+.route-map-dialog::backdrop { background: rgb(12 28 51 / 78%); }
+.route-map-dialog-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 44px; margin-bottom: 14px; }
+.route-map-dialog-head h2 { margin: 0; font-family: var(--serif); font-size: var(--text-md); }
+.route-map-dialog-content { display: grid; grid-template-columns: minmax(0, 1fr) minmax(260px, 320px); gap: 16px; height: calc(100% - 58px); min-height: 0; }
+.route-map-dialog-content > .map-frame { height: 100%; min-height: 0; aspect-ratio: auto; }
+.route-map-dialog-content > .stop-rail { position: static; height: 100%; max-height: none; min-height: 0; }
+.route-map-dialog-content > [data-map-dialog-empty] { align-self: start; margin: 0; padding: 14px; }
+
+.elevation-control { display: grid; grid-template-columns: auto minmax(100px, 1fr) auto; align-items: center; gap: 12px; margin-top: 8px; color: var(--ink-soft); font-size: var(--text-xs); }
+.elevation-control input { width: 100%; min-height: 44px; accent-color: var(--orange); cursor: ew-resize; }
+.elevation-control output { min-width: 110px; color: var(--ink); font-variant-numeric: tabular-nums; text-align: right; }
+
+
+@media (max-width: 639px) {
+  .route-map-dialog { width: calc(100% - 12px); height: calc(100svh - 12px); padding: 10px; border-radius: 12px; }
+  .route-map-dialog-head { margin-bottom: 10px; }
+  .route-map-dialog-content { grid-template-columns: 1fr; grid-template-rows: minmax(250px, 52svh) minmax(0, 1fr); gap: 10px; height: calc(100% - 54px); }
+  .route-map-dialog-content > .map-frame { border-radius: 8px; }
+  .route-map-dialog-content > .stop-rail { padding: 12px; }
+  .elevation-control { grid-template-columns: 1fr auto; gap: 4px 12px; }
+  .elevation-control input { grid-column: 1 / -1; grid-row: 2; }
+  .elevation-control output { grid-column: 2; grid-row: 1; }
+}
+
+.map-control { min-width: 44px; min-height: 44px; }
+@media (min-width: 1241px) { .map-frame { min-height: 340px; max-height: calc(100svh - var(--header-h) - var(--route-bar-h, 58px) - 32px); } }

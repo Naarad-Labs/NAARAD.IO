@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Design Tokens Reference</title>
+  <link rel="stylesheet" href="/app/tokens.css">
+  <style>
+    body { font-family: var(--sans); background: var(--paper); color: var(--ink); padding: 2rem; }
+    h1 { font-family: var(--serif); margin-bottom: 1rem; }
+    h2 { margin-top: 2rem; font-family: var(--serif); }
+    .token { display: flex; align-items: center; gap: 12px; margin: 8px 0; }
+    .name { font-family: monospace; background: var(--paper-edge); padding: 2px 6px; border-radius: 3px; }
+    .value { font-family: monospace; background: var(--line); padding: 2px 6px; border-radius: 3px; }
+    .swatch { width: 24px; height: 24px; border: 1px solid var(--line-strong); border-radius: 4px; }
+    .swatch-text { width: 24px; height: 24px; background: var(--ink); }
+  </style>
+</head>
+<body>
+  <h1>Design Tokens Reference</h1>
+  <p>Development reference page. All tokens defined in <a href="/app/tokens.css">/app/tokens.css</a>.</p>
+
+  <h2>Colors</h2>
+  <h3>Paper (backgrounds)</h3>
+  <div class="token"><span class="name">--paper</span><span class="value">#f8f3e9</span><span class="swatch" style="background: var(--paper)"></span></div>
+  <div class="token"><span class="name">--paper-bright</span><span class="value">#fdfaf4</span><span class="swatch" style="background: var(--paper-bright)"></span></div>
+  <div class="token"><span class="name">--paper-deep</span><span class="value">#efe6d4</span><span class="swatch" style="background: var(--paper-deep)"></span></div>
+  <div class="token"><span class="name">--paper-edge</span><span class="value">#e4d9c3</span><span class="swatch" style="background: var(--paper-edge)"></span></div>
+
+  <h3>Ink (text)</h3>
+  <div class="token"><span class="name">--ink</span><span class="value">#12294a</span><span class="swatch" style="background: var(--ink); color: var(--white)"></span></div>
+  <div class="token"><span class="name">--ink-deep</span><span class="value">#0c1c33</span><span class="swatch" style="background: var(--ink-deep); color: var(--white)"></span></div>
+  <div class="token"><span class="name">--ink-soft</span><span class="value">#46556d</span><span class="swatch" style="background: var(--ink-soft); color: var(--white)"></span></div>
+  <div class="token"><span class="name">--ink-muted</span><span class="value">#66645b</span><span class="swatch" style="background: var(--ink-muted); color: var(--white)"></span></div>
+
+  <h3>Accent</h3>
+  <div class="token"><span class="name">--orange</span><span class="value">#c6511b</span><span class="swatch" style="background: var(--orange); color: var(--white)"></span></div>
+  <div class="token"><span class="name">--sage</span><span class="value">#6f8156</span><span class="swatch" style="background: var(--sage); color: var(--white)"></span></div>
+  <div class="token"><span class="name">--gold</span><span class="value">#c9a227</span><span class="swatch" style="background: var(--gold); color: var(--white)"></span></div>
+
+  <h2>Typography</h2>
+  <div class="token"><span class="name">--serif</span><span class="value">'Playfair Display', serif</span></div>
+  <div class="token"><span class="name">--sans</span><span class="value">'DM Sans', system-ui, sans-serif</span></div>
+  <div class="token"><span class="name">--script</span><span class="value">'Caveat', cursive</span></div>
+
+  <h3>Sizes</h3>
+  <div class="token"><span class="name">--text-xs</span><span class="value">13px</span></div>
+  <div class="token"><span class="name">--text-sm</span><span class="value">14.5px</span></div>
+  <div class="token"><span class="name">--text-base</span><span class="value">16px</span></div>
+  <div class="token"><span class="name">--text-md</span><span class="value">18px</span></div>
+
+  <h2>Layout</h2>
+  <div class="token"><span class="name">--z-skip-link</span><span class="value">2000</span></div>
+  <div class="token"><span class="name">--z-header</span><span class="value">900</span></div>
+  <div class="token"><span class="name">--z-listen-bar</span><span class="value">1100</span></div>
+  <div class="token"><span class="name">--z-lightbox</span><span class="value">1000</span></div>
+  <div class="token"><span class="name">--z-sticky</span><span class="value">500</span></div>
+  <div class="token"><span class="name">--breakpoint-tablet</span><span class="value">1023px</span></div>
+  <div class="token"><span class="name">--breakpoint-phone</span><span class="value">639px</span></div>
+
+  <h2>Version</h2>
+  <p>Design system version: 1.0 (tokens.css extracted from base.css)</p>
+</body>
+</html>

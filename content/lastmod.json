@@ -34,8 +34,12 @@
       "date": "2026-11-09"
     },
     "/creators/": {
-      "hash": "50e65c7b655b684a1b9f6efeba87c4d014c0bcc6c71f7955bc6ddd6452bae7d3",
-      "date": "2026-11-03"
+      "hash": "add46cdaf0868489ec8152a8331f310042748d529ed0edca77e6196ba17c288a",
+      "date": "2026-11-05"
+    },
+    "/creators/media/": {
+      "hash": "458dd86f55c24f2489a3f8cd3c40021f99b8ae79727f8e6326e288c67403d0ea",
+      "date": "2026-11-05"
     },
     "/explore/": {
       "hash": "382f912f112b0f53cb2c7b08055ac5bfa8150b10523923dbbf537eb3e19de9a9",
@@ -46,16 +50,16 @@
       "date": "2026-11-09"
     },
     "/routes/auroville-explorer/": {
-      "hash": "72f6c0545f86ddb350c20884a269f7b5d8423e3fbef147453718a774ced081a0",
-      "date": "2026-11-03"
+      "hash": "7100b5d9b6bf4bfd7f1c787830f3d09d59a792e951a304e2a8e72ad02c2c1ee2",
+      "date": "2026-11-05"
     },
     "/routes/hampi-heritage-trail/": {
-      "hash": "cbcfe7bca380464bf1a9928571108d142c9048ec86729e362a3d77769975e9f4",
-      "date": "2026-11-03"
+      "hash": "f5eb0c3c27b596ea501be27f31293c8a499e6ca47f6388b8949ae3f8be3fc3ff",
+      "date": "2026-11-05"
     },
     "/routes/thanjavur-living-heritage/": {
-      "hash": "ca0e1c42ef956df6ec87cb625c1dc20ed8f20bff88dd9110fe17bae6a753caa8",
-      "date": "2026-11-03"
+      "hash": "ef618d9825e15c8de64ee03690486a24fc446795f1700914b0e63b21207715ba",
+      "date": "2026-11-05"
     },
     "/stories/": {
       "hash": "feec6dd769db626bc2e445ac8d4f629c9aad5c85c21795f93453794a60fdf802",
@@ -63,15 +67,15 @@
     },
     "/stories/bazaar-that-sold-the-world/": {
       "hash": "800598656a03072ad5b265ff1aa33d5e1277553840c9d3f349fb30f47a54be1f",
-      "date": "2026-11-03"
+      "date": "2026-11-05"
     },
     "/stories/stone-chariot-of-hampi/": {
       "hash": "16752f8569df586980bd2b0b6faa86bee7eb810a827b156d180aa1c6dc6685b5",
-      "date": "2026-11-03"
+      "date": "2026-11-05"
     },
     "/stories/water-that-built-a-capital/": {
       "hash": "8ee8c249606f5776a9badf8463369aeffacc6d5a0fcdb456a72b564e88f08c1c",
-      "date": "2026-11-03"
+      "date": "2026-11-05"
     }
   }
 }

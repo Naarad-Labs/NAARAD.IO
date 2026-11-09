@@ -222,10 +222,19 @@
       <div class="map-toolbar">
         <button type="button" class="map-control" data-map="layers" aria-pressed="true"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m12 3.6 8.4 4.2-8.4 4.2-8.4-4.2Z"></path><path d="m3.6 12.4 8.4 4.2 8.4-4.2"></path></svg><span>Satellite</span></button>
         <button type="button" class="map-control" data-map="fit"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="8.4"></circle><path d="m14.8 9.2-1.6 4.2-4.2 1.6 1.6-4.2Z"></path></svg><span>Fit route</span></button>
-        <button type="button" class="map-control" data-map="expand"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 4.3 3.8 6.6v13l5.2-2.3 6 2.4 5.2-2.3v-13l-5.2 2.3Z"></path><path d="M9 4.3v13.4"></path><path d="M15 6.7v13"></path></svg><span>Full screen</span></button>
+        <button type="button" class="map-control" data-map="fullscreen" disabled="" title="Map controls are loading"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 4.3 3.8 6.6v13l5.2-2.3 6 2.4 5.2-2.3v-13l-5.2 2.3Z"></path><path d="M9 4.3v13.4"></path><path d="M15 6.7v13"></path></svg><span>Full screen</span></button>
       </div>
       <p class="map-note script">Stories at every stop</p>
     </div>
+    <dialog class="route-map-dialog" data-route-map-dialog="" aria-labelledby="route-map-dialog-title">
+      <header class="route-map-dialog-head">
+        <h2 id="route-map-dialog-title">Hampi Heritage Trail map and stops</h2>
+        <button type="button" class="button button-sm" data-map-dialog-close="">Close map</button>
+      </header>
+      <div class="route-map-dialog-content" data-map-dialog-content="">
+        <p class="data-note" data-map-dialog-empty="" hidden="">Stops are not published for this route.</p>
+      </div>
+    </dialog>
   </section>
       <p class="sr-only" role="status" data-stop-status=""></p>
       <section class="stop-panel" id="section-stories" data-stop="1">
@@ -445,7 +454,11 @@
         <h3 class="eyebrow eyebrow-mark">Elevation profile</h3>
         <span class="chip">NASA SRTM 30 m via OpenTopoData</span>
       </div>
-      <div class="elevation-wrap" tabindex="0" role="group" aria-label="Elevation profile. Use the left and right arrow keys to move along the walk." data-elevation="[[0,427],[83,425],[167,430],[250,427],[334,424],[418,423],[502,425],[585,425],[666,424],[747,424],[829,433],[910,443],[991,449],[1072,448],[1153,443],[1234,435],[1315,433],[1397,430],[1480,434],[1563,433],[1645,431],[1728,431],[1811,431],[1893,430],[1976,432],[2059,429],[2140,428],[2220,430],[2300,430],[2380,433],[2460,437],[2541,440],[2621,447],[2701,450],[2781,453],[2863,464],[2944,469],[3026,488],[3108,480],[3189,456],[3271,434],[3353,425],[3435,422],[3516,425],[3598,424],[3680,431],[3762,448],[3846,453],[3931,443],[4016,431],[4101,424],[4186,419],[4266,429],[4346,440],[4426,433],[4506,417],[4586,420],[4666,423],[4746,426],[4826,427],[4906,427],[4986,428],[5066,427],[5146,428],[5186,427]]">
+      <label class="elevation-control">
+        <span>Distance along route</span>
+        <input type="range" data-elevation-range="" min="0" max="5186" step="5" value="0" aria-describedby="elevation-range-readout">
+        <output id="elevation-range-readout" data-elevation-output="" aria-live="polite"></output>
+      </label><div class="elevation-wrap" tabindex="0" role="group" aria-label="Elevation profile. Use the left and right arrow keys to move along the walk." data-elevation="[[0,427],[83,425],[167,430],[250,427],[334,424],[418,423],[502,425],[585,425],[666,424],[747,424],[829,433],[910,443],[991,449],[1072,448],[1153,443],[1234,435],[1315,433],[1397,430],[1480,434],[1563,433],[1645,431],[1728,431],[1811,431],[1893,430],[1976,432],[2059,429],[2140,428],[2220,430],[2300,430],[2380,433],[2460,437],[2541,440],[2621,447],[2701,450],[2781,453],[2863,464],[2944,469],[3026,488],[3108,480],[3189,456],[3271,434],[3353,425],[3435,422],[3516,425],[3598,424],[3680,431],[3762,448],[3846,453],[3931,443],[4016,431],[4101,424],[4186,419],[4266,429],[4346,440],[4426,433],[4506,417],[4586,420],[4666,423],[4746,426],[4826,427],[4906,427],[4986,428],[5066,427],[5146,428],[5186,427]]">
     <div class="elevation-plot"><svg class="elevation-svg " viewBox="0 0 760 168" role="img" preserveAspectRatio="none" aria-label="Elevation profile: 417 to 488 metres over 5.2 kilometres">
     <path d="M2.0 113.8L14.1 116.5L26.3 109.8L38.4 113.8L50.7 117.8L62.9 119.1L75.2 116.5L87.3 116.5L99.1 117.8L110.9 117.8L122.8 105.8L134.7 92.6L146.5 84.6L158.3 86.0L170.1 92.6L181.9 103.2L193.7 105.8L205.7 109.8L217.8 104.5L229.8 105.8L241.8 108.5L253.9 108.5L266.0 108.5L278.0 109.8L290.1 107.2L302.2 111.2L314.0 112.5L325.6 109.8L337.3 109.8L348.9 105.8L360.6 100.5L372.4 96.6L384.1 87.3L395.7 83.3L407.4 79.3L419.4 64.8L431.2 58.1L443.1 32.9L455.1 43.5L466.9 75.4L478.8 104.5L490.8 116.5L502.7 120.4L514.6 116.5L526.5 117.8L538.5 108.5L550.4 86.0L562.7 79.3L575.0 92.6L587.4 108.5L599.8 117.8L612.2 124.4L623.9 111.2L635.5 96.6L647.2 105.8L658.9 127.1L670.5 123.1L682.2 119.1L693.9 115.1L705.5 113.8L717.2 113.8L728.8 112.5L740.5 113.8L752.2 112.5L758.0 113.8L758.0 144.0L2.0 144.0Z" class="ep-area"></path>
     <path d="M2.0 113.8L14.1 116.5L26.3 109.8L38.4 113.8L50.7 117.8L62.9 119.1L75.2 116.5L87.3 116.5L99.1 117.8L110.9 117.8L122.8 105.8L134.7 92.6L146.5 84.6L158.3 86.0L170.1 92.6L181.9 103.2L193.7 105.8L205.7 109.8L217.8 104.5L229.8 105.8L241.8 108.5L253.9 108.5L266.0 108.5L278.0 109.8L290.1 107.2L302.2 111.2L314.0 112.5L325.6 109.8L337.3 109.8L348.9 105.8L360.6 100.5L372.4 96.6L384.1 87.3L395.7 83.3L407.4 79.3L419.4 64.8L431.2 58.1L443.1 32.9L455.1 43.5L466.9 75.4L478.8 104.5L490.8 116.5L502.7 120.4L514.6 116.5L526.5 117.8L538.5 108.5L550.4 86.0L562.7 79.3L575.0 92.6L587.4 108.5L599.8 117.8L612.2 124.4L623.9 111.2L635.5 96.6L647.2 105.8L658.9 127.1L670.5 123.1L682.2 119.1L693.9 115.1L705.5 113.8L717.2 113.8L728.8 112.5L740.5 113.8L752.2 112.5L758.0 113.8" class="ep-line"></path>

@@ -15,6 +15,7 @@ import * as Offline from '../offline-bundles.js';
 import { routePreview } from '../previews.js';
 import { routePath, sectionPath } from '../urls.js';
 import * as Seo from '../seo.js';
+import * as Account from '../account.js';
 
 const TABS = [
   { id: 'journey', label: 'My Journey', icon: 'compass' },
@@ -131,7 +132,7 @@ function downloadsPanel(store) {
   </ul>`;
 }
 
-export async function render() {
+export async function renderBody({ breadcrumb = 'My Journey' } = {}) {
   const store = Journey.all();
   const totals = Journey.stats();
   const badges = Journey.badges();
@@ -142,9 +143,9 @@ export async function render() {
   return `<div class="journey">
     <header class="journey-hero dither-band" data-dither="sand">
       <div class="journey-hero-copy">
-        <nav class="breadcrumb" aria-label="Breadcrumb"><a href="/" data-view="home">Home</a>${icon('chevron')}<b aria-current="page">My Journey</b></nav>
-        <h1 class="display">My Journey <br><span class="accent">More than places.</span></h1>
-        <p class="lede">Your walks, stories and notes in one place. Everything here is kept on this device — there are no accounts yet, so nothing leaves your browser.</p>
+        <nav class="breadcrumb" aria-label="Breadcrumb"><a href="/" data-view="home">Home</a>${icon('chevron')}<b aria-current="page">${escapeHtml(breadcrumb)}</b></nav>
+        <h1 class="display">${breadcrumb === 'Profile' ? 'Your profile' : 'My Journey'} <br><span class="accent">More than places.</span></h1>
+        <p class="lede">Your walks, stories and notes in one place. Everything here is kept on this device.</p>
       </div>
       <div class="journey-hero-media">
         ${picture('india-traveller', {
@@ -229,6 +230,13 @@ export async function render() {
       </div>
       <p class="data-note">Badges count what you have actually done on this device.</p>
     </section>
+  </div>`;
+}
+
+export async function render() {
+  return `<div class="journey">
+    ${Account.panel()}
+    ${await renderBody()}
   </div>`;
 }
 

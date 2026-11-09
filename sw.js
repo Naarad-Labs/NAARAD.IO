@@ -21,7 +21,7 @@
  * a page that was already controlled reload once when the worker changes.
  */
 
-const VERSION = 'v46';
+const VERSION = 'v48';
 const SHELL = `naarad-shell-${VERSION}`;
 const PAGES = `naarad-pages-${VERSION}`;
 const CONTENT = `naarad-content-${VERSION}`;
@@ -40,6 +40,7 @@ const SHELL_ASSETS = [
   '/',
   OFFLINE_SHELL,
   '/manifest.json',
+  '/app/tokens.css',
   '/app/base.css',
   '/app/home.css',
   '/app/main.js',
@@ -50,6 +51,8 @@ const SHELL_ASSETS = [
   '/app/lightbox.js',
   '/app/gpx.js',
   '/app/elevation-cursor.js',
+  '/app/elevation-model.js',
+  '/app/route-workspace.js',
   '/app/audio.js',
   '/app/journey-store.js',
   '/app/listen-tracker.js',
@@ -83,6 +86,7 @@ const SHELL_ASSETS = [
   '/app/atlas.js',
   '/app/views/collection.js',
   '/app/views/studio.js',
+  '/app/views/media-library.js',
   '/app/fonts/DMSans.woff2',
   '/app/fonts/PlayfairDisplay.woff2',
   '/app/fonts/Caveat-latin.woff2',

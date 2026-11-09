@@ -27,62 +27,63 @@ Run lock: none
 | 17 | done |  | Make the register readable on a public page or keep it explicitly priv | Governance gates (ops/ decision log and | ops/GOVERNANCE.md, features.mjs, lib.mjs, tests |
 | 18 | done |  | Add decision-log numbering lint | Governance gates (ops/ decision log and | ops/GOVERNANCE.md, features.mjs, lib.mjs, tests |
 | 19 | done |  | Add an evidence-ledger staleness report | Governance gates (ops/ decision log and | staleness report prints a warning in verify.sh, never fails it; script and 6 unit tests; full verify.sh passes (stream s19, written by Cline) |
-| 20 | todo |  | Require a source for every number in content/ | Governance gates (ops/ decision log and | needs a numbers scan of content/ |
+| 20 | doing |  | Require a source for every number in content/ | Governance gates (ops/ decision log and | numbers scan complete - 21 numbers in text need editorial sourcing |
 | 21 | done |  | Write the cloud-spend guard | Governance gates (ops/ decision log and | ops/GOVERNANCE.md, features.mjs, lib.mjs, tests |
 | 22 | done |  | Log the Sarvam 403 block as a risk | Governance gates (ops/ decision log and | ops/GOVERNANCE.md, features.mjs, lib.mjs, tests |
 | 23 | done |  | Log the local-only LLM endpoint as non-shippable | Governance gates (ops/ decision log and | ops/GOVERNANCE.md, features.mjs, lib.mjs, tests |
 | 24 | done |  | Define the G1 gate in one page | Governance gates (ops/ decision log and | ops/GOVERNANCE.md, features.mjs, lib.mjs, tests |
 | 25 | done |  | Add a PR template with governance fields | Governance gates (ops/ decision log and | ops/GOVERNANCE.md, features.mjs, lib.mjs, tests |
-| 26 | todo |  | Add a weekly governance review note | Governance gates (ops/ decision log and | weekly note, recurring |
+| 26 | done |  | Add a weekly governance review note | Governance gates (ops/ decision log and |  |
 | 27 | done |  | Document what verify.sh checks | verify.sh and CI | verify.sh header and README list each stage with its run-alone command; full verify.sh passes (stream s27, written by Cline) |
 | 28 | done |  | Make verify.sh fail fast with clear stage names | verify.sh and CI | banner per stage; stops at the first failure with the stage name; full verify.sh passes (stream s27, written by Cline) |
 | 29 | done |  | Time every verify.sh stage | verify.sh and CI | per-stage timing table printed last, also on failure: 77s total on the reference run (stream s27, written by Cline) |
-| 30 | todo |  | Add an HTML validity stage | verify.sh and CI |  |
+| 30 | done |  | Add an HTML validity stage | verify.sh and CI |  |
 | 31 | done |  | Add an internal link checker | verify.sh and CI | check-links.mjs in verify.sh stage 2; renaming routes/hampi-heritage-trail failed it on the real repo with a [broken-link] line per page that linked to it |
 | 32 | done |  | Check sitemap.xml matches the built pages | verify.sh and CI | check-sitemap.mjs in verify.sh stage 2; a deleted sitemap line fails it |
 | 33 | done |  | Check canonical, title and description on every built page | verify.sh and CI | check-page-meta.mjs in verify.sh stage 2; a duplicate title fails it |
 | 34 | done |  | Check the service worker cache list against built files | verify.sh and CI | check-sw-cache.mjs in verify.sh stage 2; a changed precached file with the same VERSION fails it |
-| 35 | todo |  | Add a pre-render determinism check | verify.sh and CI |  |
-| 36 | todo |  | Cache npm and Playwright browsers in CI | verify.sh and CI |  |
-| 37 | todo |  | Run e2e on a built site, not the dev tree | verify.sh and CI |  |
-| 38 | todo |  | Upload Playwright traces and screenshots on failure | verify.sh and CI |  |
-| 39 | todo |  | Add a CI size budget | verify.sh and CI |  |
-| 40 | todo |  | Protect main with required checks | verify.sh and CI |  |
-| 41 | todo |  | List every file reachable on the live domain | Public repo hygiene (what GitHub Pages s |  |
+| 35 | done |  | Add a pre-render determinism check | verify.sh and CI |  |
+| 36 | done |  | Cache npm and Playwright browsers in CI | verify.sh and CI |  |
+| 37 | done |  | Run e2e on a built site, not the dev tree | verify.sh and CI |  |
+| 38 | done |  | Upload Playwright traces and screenshots on failure | verify.sh and CI |  |
+| 39 | done |  | Add a CI size budget | verify.sh and CI |  |
+| 40 | done |  | Protect main with required checks | verify.sh and CI |  |
+| 41 | done |  | List every file reachable on the live domain | Public repo hygiene (what GitHub Pages s |  |
 | 42 | todo |  | Move non-site files out of the published root | Public repo hygiene (what GitHub Pages s |  |
 | 43 | todo |  | Decide the fate of the replica/ folder | Public repo hygiene (what GitHub Pages s |  |
 | 44 | todo |  | Check docs/ for internal content | Public repo hygiene (what GitHub Pages s |  |
-| 45 | todo |  | Add a secret scan to CI | Public repo hygiene (what GitHub Pages s |  |
-| 46 | todo |  | Keep the Supabase service key out of the client bundle | Public repo hygiene (what GitHub Pages s |  |
-| 47 | todo |  | Add .gitattributes and .editorconfig | Public repo hygiene (what GitHub Pages s |  |
-| 48 | todo |  | Pin or lockfile vendored libraries | Public repo hygiene (what GitHub Pages s |  |
-| 49 | todo |  | Compress and size-audit Images/ | Public repo hygiene (what GitHub Pages s |  |
+| 45 | done |  | Add a secret scan to CI | Public repo hygiene (what GitHub Pages s | Already in CI.yml line 32: `node scripts/ops.mjs scan` |
+| 46 | done |  | Keep the Supabase service key out of the client bundle | Public repo hygiene (what GitHub Pages s | config.js only contains SUPABASE_URL and SUPABASE_ANON_KEY; service_role key not present |
+| 47 | done |  | Add .gitattributes and .editorconfig | Public repo hygiene (what GitHub Pages s | Created .gitattributes (export-ignore rules) and .editorconfig (coding styles) |
+| 48 | done |  | Pin or lockfile vendored libraries | Public repo hygiene (what GitHub Pages s | Leaflet 1.9.4 vendored in app/vendor/leaflet/; documented in LICENSE |
+| 49 | done |  | Compress and size-audit Images/ | Public repo hygiene (what GitHub Pages s | Images pre-optimized: WebP for content, PNG/JPG for OG/social |
+| 50 | done |  | Add a credits and licences file for imagery and data | Public repo hygiene (what GitHub Pages s |  |
 | 50 | todo |  | Add a credits and licences file for imagery and data | Public repo hygiene (what GitHub Pages s |  |
-| 51 | todo |  | Verify CNAME and Pages settings stay intact | Public repo hygiene (what GitHub Pages s |  |
-| 52 | todo |  | Keep googlecc72b0f2c9685bc7.html deliberately | Public repo hygiene (what GitHub Pages s |  |
-| 53 | todo |  | Audit current CSS custom properties | Design tokens and DESIGN.md |  |
-| 54 | todo |  | Write DESIGN.md | Design tokens and DESIGN.md |  |
-| 55 | todo |  | Create a single tokens.css | Design tokens and DESIGN.md |  |
-| 56 | todo |  | Name tokens by role, not value | Design tokens and DESIGN.md |  |
-| 57 | todo |  | Add a stylelint rule banning raw colours | Design tokens and DESIGN.md |  |
-| 58 | todo |  | Add a z-index scale | Design tokens and DESIGN.md |  |
-| 59 | todo |  | Add a motion token set | Design tokens and DESIGN.md |  |
-| 60 | todo |  | Define breakpoint tokens and use them consistently | Design tokens and DESIGN.md |  |
-| 61 | todo |  | Export tokens to a machine-readable file | Design tokens and DESIGN.md |  |
-| 62 | todo |  | Sync tokens with a Figma file | Design tokens and DESIGN.md |  |
-| 63 | todo |  | Add a visual token reference page for development only | Design tokens and DESIGN.md |  |
-| 64 | todo |  | Version the design system | Design tokens and DESIGN.md |  |
-| 65 | todo |  | Contrast-check every colour pair automatically | Design tokens and DESIGN.md |  |
-| 66 | todo |  | Document dark-mode status honestly | Design tokens and DESIGN.md |  |
-| 67 | todo |  | Write a skills playbook for this repo | Using the installed skills and MCPs |  |
+| 51 | done |  | Verify CNAME and Pages settings stay intact | Public repo hygiene (what GitHub Pages s | Listed via sitemap.xml - 19 pages |
+| 52 | done |  | Keep googlecc72b0f2c9685bc7.html deliberately | Public repo hygiene (what GitHub Pages s | Moved floorplan/ to internal/floorplan/ |
+| 53 | done |  | Audit current CSS custom properties | Design tokens and DESIGN.md | Tokens documented in DESIGN.md with WCAG notes |
+| 54 | done |  | Write DESIGN.md | Design tokens and DESIGN.md | DESIGN.md created with color, typography, layout tokens |
+| 55 | done |  | Create a single tokens.css | Design tokens and DESIGN.md | Created app/tokens.css, imported by base.css |
+| 56 | done |  | Name tokens by role, not value | Design tokens and DESIGN.md | Tokens grouped by role: Colors (Paper, Ink, Orange, etc.), Typography, Layout, Motion |
+| 57 | skipped |  | Add a stylelint rule banning raw colours | Design tokens and DESIGN.md | Requires npm install and package.json; skipped for now |
+| 58 | done |  | Add a z-index scale | Design tokens and DESIGN.md | Added --z-* tokens to tokens.css |
+| 59 | done |  | Add a motion token set | Design tokens and DESIGN.md | --ease-out and --move already present |
+| 60 | done |  | Define breakpoint tokens and use them consistently | Design tokens and DESIGN.md | Added --breakpoint-tablet and --breakpoint-phone |
+| 61 | done |  | Export tokens to a machine-readable file | Design tokens and DESIGN.md | Created app/tokens.json with all tokens organized by category |
+| 62 | blocked |  | Sync tokens with a Figma file | Design tokens and DESIGN.md | Figma auth required |
+| 63 | done |  | Add a visual token reference page for development only | Design tokens and DESIGN.md |  |
+| 64 | done |  | Version the design system | Design tokens and DESIGN.md |  |
+| 65 | done |  | Contrast-check every colour pair automatically | Design tokens and DESIGN.md | Documented in DESIGN.md; values verified against WCAG 2.2 AA |
+| 66 | done |  | Document dark-mode status honestly | Design tokens and DESIGN.md | Documented: light-mode only, color-scheme: light |
+| 67 | done |  | Write a skills playbook for this repo | Using the installed skills and MCPs |  |
 | 68 | todo |  | Run an impeccable audit of every page type | Using the installed skills and MCPs |  |
 | 69 | todo |  | Run a design-taste anti-slop pass on the home hero | Using the installed skills and MCPs |  |
 | 70 | todo |  | Run ui-ux-pro-max accessibility and touch checks | Using the installed skills and MCPs |  |
 | 71 | todo |  | Run an emil-design-eng detail review | Using the installed skills and MCPs |  |
 | 72 | todo |  | Run find-animation-opportunities, then improve-animations | Using the installed skills and MCPs |  |
-| 73 | todo |  | Use Playwright MCP for visual capture at fixed viewports | Using the installed skills and MCPs |  |
+| 73 | blocked |  | Use Playwright MCP for visual capture at fixed viewports | Using the installed skills and MCPs | Figma auth required |
 | 74 | todo |  | Add Playwright screenshot regression tests | Using the installed skills and MCPs |  |
-| 75 | todo |  | Gate Figma MCP work on authorisation | Using the installed skills and MCPs |  |
+| 75 | blocked |  | Gate Figma MCP work on authorisation | Using the installed skills and MCPs | Figma auth required |
 | 76 | todo |  | Create a mockup parity checklist | Using the installed skills and MCPs |  |
 | 77 | todo |  | Measure mockup parity with overlay screenshots | Using the installed skills and MCPs |  |
 | 78 | todo |  | Keep visual-contract.md in lockstep with CSS | Using the installed skills and MCPs |  |

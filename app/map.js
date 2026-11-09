@@ -1,6 +1,6 @@
 const LEAFLET_CSS = '/app/vendor/leaflet/leaflet.css';
 const LEAFLET_JS = '/app/vendor/leaflet/leaflet.js';
-const STREET_URL = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+const STREET_URL = 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png';
 const SATELLITE_URL = 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}';
 
 let leafletPromise;
@@ -151,12 +151,12 @@ function makeStatus(container, message, actionLabel, action, kind = 'notice') {
   return status;
 }
 
-function markerIcon(L, number, selected = false) {
+function markerIcon(L, number, selected = false, playing = false) {
   return L.divIcon({
     className: 'nr-map-marker-shell',
     html: number == null
       ? '<span class="nr-map-start-marker" aria-hidden="true"></span>'
-      : `<span class="nr-map-stop-marker${selected ? ' is-selected' : ''}" aria-hidden="true">${number}</span>`,
+      : `<span class="nr-map-stop-marker${selected ? ' is-selected' : ''}${playing ? ' is-playing' : ''}" aria-hidden="true">${number}</span>`,
     iconSize: number == null ? [24, 24] : selected ? [38, 38] : [32, 32],
     iconAnchor: number == null ? [12, 12] : selected ? [19, 19] : [16, 16],
   });
@@ -178,6 +178,13 @@ function decorateStopMarker(marker, stop, selected, choose) {
   });
 }
 
+function refreshStopMarker(L, entry, order, selected, playing, choose) {
+  const focused = entry.marker.getElement?.() === document.activeElement;
+  entry.marker.setIcon(markerIcon(L, order, selected, playing));
+  decorateStopMarker(entry.marker, entry.stop, selected, choose);
+  if (focused) entry.marker.getElement?.().focus({ preventScroll: true });
+}
+
 /** Mount an interactive route map. Returns map controls and a destroy method. */
 export async function mountRouteMap(container, route, options = {}) {
   if (!(container instanceof HTMLElement)) throw new TypeError('mountRouteMap requires a map container element.');
@@ -188,7 +195,7 @@ export async function mountRouteMap(container, route, options = {}) {
   container.setAttribute('aria-label', `${route?.name || 'Route'} map`);
   container.setAttribute('role', 'region');
 
-  const state = { destroyed: false, map: null, tileLayers: {}, activeLayer: 'street', resizeObserver: null, status: null };
+  const state = { destroyed: false, map: null, tileLayers: {}, activeLayer: 'street', resizeObserver: null, status: null, selectedStop: null, playingStop: null };
   const instance = {
     fit() {
       if (!state.map) return;
@@ -214,18 +221,57 @@ export async function mountRouteMap(container, route, options = {}) {
     /** Highlight a stop and bring it into view, without re-mounting the map. */
     selectStop(order, { pan = true } = {}) {
       if (!state.map || !state.stopMarkers?.size || order == null) return;
+      state.selectedStop = Number(order);
       const L = window.L;
       for (const [key, entry] of state.stopMarkers) {
-        entry.marker.setIcon(markerIcon(L, key, key === Number(order)));
-        decorateStopMarker(entry.marker, entry.stop, key === Number(order), () => options.onSelectStop?.(entry.stop.order, entry.stop.data, route));
+        refreshStopMarker(L, entry, key, key === state.selectedStop, key === state.playingStop,
+          () => options.onSelectStop?.(entry.stop.order, entry.stop.data, route));
         if (key === Number(order)) {
           entry.marker.setZIndexOffset(600);
-          if (pan) state.map.panTo(entry.stop.latlng, { animate: true, duration: 0.5 });
+          if (pan) {
+            const reduced = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+            state.map.panTo(entry.stop.latlng, { animate: !reduced, duration: reduced ? 0 : 0.5 });
+          }
         } else {
           entry.marker.setZIndexOffset(0);
         }
       }
     },
+    setPlayingStop(order) {
+      if (!state.stopMarkers?.size) return;
+      const next = order == null ? null : Number(order);
+      if (next === state.playingStop) return;
+      const previous = state.playingStop;
+      state.playingStop = next;
+      const L = window.L;
+      for (const key of new Set([previous, next])) {
+        const entry = state.stopMarkers.get(key);
+        if (!entry) continue;
+        refreshStopMarker(L, entry, key, key === state.selectedStop, key === state.playingStop,
+          () => options.onSelectStop?.(entry.stop.order, entry.stop.data, route));
+      }
+    },
+    setElevationCursor(coordinate) {
+      if (!state.map) return;
+      if (!Array.isArray(coordinate) || coordinate.length < 2 || !coordinate.every(Number.isFinite)
+        || Math.abs(coordinate[0]) > 180 || Math.abs(coordinate[1]) > 90) {
+        state.elevationCursor?.remove();
+        state.elevationCursor = null;
+        return;
+      }
+      if (!state.elevationCursor) {
+        const icon = window.L.divIcon({
+          className: 'nr-map-elevation-cursor-shell',
+          html: '<span class="nr-map-elevation-cursor" aria-hidden="true"></span>',
+          iconSize: [20, 20], iconAnchor: [10, 10],
+        });
+        state.elevationCursor = window.L.marker([coordinate[1], coordinate[0]], {
+          icon, keyboard: false, interactive: false, zIndexOffset: 900,
+          title: '', alt: '',
+        }).addTo(state.map);
+      } else state.elevationCursor.setLatLng([coordinate[1], coordinate[0]]);
+    },
+    invalidateSize() { state.map?.invalidateSize({ pan: false }); },
     zoomIn() { state.map?.zoomIn(); },
     zoomOut() { state.map?.zoomOut(); },
     locate() {
@@ -278,7 +324,7 @@ export async function mountRouteMap(container, route, options = {}) {
     state.placeholder = container.querySelector('.map-placeholder');
     if (state.placeholder) state.placeholder.classList.add('is-behind');
     state.map = L.map(container, { zoomControl: false, scrollWheelZoom: true, preferCanvas: true });
-    const attributionOSM = '© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap contributors</a>';
+    const attributionOSM = '© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap contributors</a> © <a href="https://carto.com/attributions" target="_blank" rel="noopener">CARTO</a>';
     const attributionEsri = 'Tiles © <a href="https://www.esri.com/" target="_blank" rel="noopener">Esri</a>, Maxar, Earthstar Geographics, and the GIS User Community';
     state.tileLayers.street = L.tileLayer(STREET_URL, { maxZoom: 19, attribution: attributionOSM, subdomains: 'abc' });
     state.tileLayers.satellite = L.tileLayer(SATELLITE_URL, { maxZoom: 19, attribution: attributionEsri });

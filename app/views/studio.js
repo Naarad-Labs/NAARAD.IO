@@ -18,6 +18,7 @@ import * as Drafts from '../studio-store.js';
 import { routePath, sectionPath } from '../urls.js';
 import * as Seo from '../seo.js';
 import * as Account from '../account.js';
+import * as Journey from '../views/journey.js';
 
 const STEPS = [
   { id: 'upload', label: 'Upload' },
@@ -47,8 +48,15 @@ function sidebar(active = 'create') {
   return `<nav class="studio-nav" aria-label="Creator Studio">
     <p class="eyebrow eyebrow-mark studio-nav-title">Creator Studio</p>
     <ul>
-      ${NAV.map((item) => `<li><button type="button" data-studio-nav="${item.id}" class="${item.id === active ? 'is-active' : ''}" ${item.id === active ? 'aria-current="page"' : 'disabled title="Coming later"'}>
-        ${icon(item.icon)}<span>${item.label}</span>${item.id === active ? '' : '<small>Coming later</small>'}</button></li>`).join('')}
+      ${NAV.map((item) => {
+        const isActive = item.id === active;
+        const isAvailable = item.id !== 'stories' && item.id !== 'routes' && item.id !== 'settings';
+        const disabledAttr = isAvailable ? '' : 'disabled title="Coming later"';
+        const ariaCurrent = isActive ? 'aria-current="page"' : '';
+        const labelSuffix = isAvailable ? '' : '<small>Coming later</small>';
+        return `<li><button type="button" data-studio-nav="${item.id}" class="${isActive ? 'is-active' : ''}" ${disabledAttr} ${ariaCurrent}>
+          ${icon(item.icon)}<span>${item.label}</span>${labelSuffix}</button></li>`;
+      }).join('')}
     </ul>
     <p class="note-plain studio-nav-note">“Every place has a story. <br>You can be the one <br>who lets it speak.”</p>
   </nav>`;
@@ -208,7 +216,18 @@ function draftTable(drafts) {
   </section>`;
 }
 
-export async function render() {
+export async function render(context = {}) {
+  const activeNav = context.studioNav || 'create';
+  if (activeNav === 'profile') {
+    return `<div class="studio">
+      ${sidebar('profile')}
+      <div class="studio-main">
+        ${Account.panel()}
+        ${await Journey.renderBody({ breadcrumb: 'Profile' })}
+      </div>
+    </div>`;
+  }
+
   const routes = (await Data.loadRoutes()).filter((route) => route.hasStops);
   const drafts = Drafts.list();
   const draft = Drafts.current(routes[0]);
@@ -216,7 +235,7 @@ export async function render() {
   const stop = route?.stops?.find((candidate) => candidate.order === draft.stopOrder) || route?.stops?.[0];
 
   return `<div class="studio">
-    ${sidebar()}
+    ${sidebar(activeNav)}
     <div class="studio-main">
       ${Account.panel()}
       <header class="studio-hero">
@@ -241,11 +260,15 @@ export async function render() {
 
 export const stylesheet = '/app/studio.css';
 
-export function meta() {
+export function meta(context = {}) {
+  const profile = context.studioNav === 'profile';
   return {
-    title: 'Creator Studio · Naarad',
-    description: 'A drafting space for narrators: pick a route and stop, write a story and note its languages. Drafts stay in your browser; publishing is not open yet.',
+    title: profile ? 'Your profile · Naarad' : 'Creator Studio · Naarad',
+    description: profile
+      ? 'Your saved routes, completed walks, journal notes and listening history, kept on your device.'
+      : 'A drafting space for narrators: pick a route and stop, write a story and note its languages. Drafts stay in your browser; publishing is not open yet.',
     path: sectionPath('creators'),
+    robots: profile ? 'noindex' : null,
     card: Seo.HOME_CARD,
     schema: [Seo.breadcrumbs([['Creators', sectionPath('creators')]])],
   };

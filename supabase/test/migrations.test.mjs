@@ -8,6 +8,7 @@ import { PGlite } from '@electric-sql/pglite';
 const dir = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'migrations');
 const A = '00000000-0000-0000-0000-00000000000a';
 const B = '00000000-0000-0000-0000-00000000000b';
+const C = '00000000-0000-0000-0000-00000000000c';
 
 /* Supabase's own pieces, stubbed: the roles, auth.users, auth.uid() and auth.jwt()
    read the same request settings PostgREST sets from the caller's token. */
@@ -191,4 +192,301 @@ test('the down migration is safe to run twice, and the up migration applies agai
   await db.exec(fs.readFileSync(downFile, 'utf8'));
   await applyUp(db);
   assert.equal((await q(db, `select count(*)::int as n from pg_class where relname = 'creator_submissions'`))[0].n, 1);
+});
+
+/* Tests for consent ledger (0008_consent_ledger.sql) */
+const consentUpFile = path.join(dir, '0008_consent_ledger.sql');
+const consentDownFile = path.join(dir, 'down', '0008_consent_ledger.down.sql');
+
+test('consent ledger table has correct columns and constraints', async () => {
+  const db = new PGlite();
+  await db.exec(STUB);
+  await db.exec(fs.readFileSync(consentUpFile, 'utf8'));
+  await db.exec(`insert into auth.users (id) values ('${A}')`);
+  const columns = await q(db, `select column_name, data_type, is_nullable, column_default from information_schema.columns where table_name = 'consents' order by ordinal_position`);
+  assert.equal(columns.length, 5);
+  assert.equal(columns[0].column_name, 'user_id');
+  assert.equal(columns[0].data_type, 'uuid');
+  assert.equal(columns[0].is_nullable, 'NO');
+  assert.equal(columns[1].column_name, 'purpose');
+  assert.equal(columns[1].data_type, 'text');
+  assert.equal(columns[2].column_name, 'version');
+  assert.equal(columns[3].column_name, 'granted_at');
+  assert.equal(columns[4].column_name, 'withdrawn_at');
+});
+
+test('consent ledger has purpose check constraint limiting to valid values', async () => {
+  const db = new PGlite();
+  await db.exec(STUB);
+  await db.exec(fs.readFileSync(consentUpFile, 'utf8'));
+  await db.exec(`insert into auth.users (id) values ('${A}')`);
+  await asA(db, async () => {
+    await assert.rejects(q(db, `insert into consents (user_id, purpose, version) values ('${A}', 'invalid_purpose', '1.0')`), /check constraint/);
+  });
+});
+
+test('users can insert and read their own consent records', async () => {
+  const db = new PGlite();
+  await db.exec(STUB);
+  await db.exec(fs.readFileSync(consentUpFile, 'utf8'));
+  await db.exec(`insert into auth.users (id) values ('${A}'), ('${B}')`);
+
+  /* User A grants recording_publish consent */
+  await asA(db, () => q(db, `insert into consents (user_id, purpose, version, granted_at) values ('${A}', 'recording_publish', '2024-01-15', '2024-01-15 10:00:00')`));
+  const Aconsents = await asA(db, () => q(db, 'select purpose, version from consents order by purpose'));
+  assert.equal(Aconsents.length, 1);
+  assert.equal(Aconsents[0].purpose, 'recording_publish');
+  assert.equal(Aconsents[0].version, '2024-01-15');
+});
+
+test('users cannot write to other users consent records', async () => {
+  const db = new PGlite();
+  await db.exec(STUB);
+  await db.exec(fs.readFileSync(consentUpFile, 'utf8'));
+  await db.exec(`insert into auth.users (id) values ('${A}'), ('${B}')`);
+
+  /* User A grants consent */
+  await asA(db, () => q(db, `insert into consents (user_id, purpose, version) values ('${A}', 'account', '1.0')`));
+
+  /* User B cannot update user A's consent - RLS causes 0 affected rows */
+  await asB(db, async () => {
+    assert.equal((await db.query(`update consents set version = '2.0' where user_id = '${A}'`)).affectedRows, 0);
+  });
+
+  /* User B cannot delete user A's consent - RLS causes 0 affected rows */
+  await asB(db, async () => {
+    assert.equal((await db.query(`delete from consents where user_id = '${A}'`)).affectedRows, 0);
+  });
+
+  /* Verify user A's consent was not modified */
+  const consents = await asA(db, () => q(db, 'select version from consents'));
+  assert.equal(consents[0].version, '1.0');
+});
+
+test('users can withdraw consent by setting withdrawn_at', async () => {
+  const db = new PGlite();
+  await db.exec(STUB);
+  await db.exec(fs.readFileSync(consentUpFile, 'utf8'));
+  await db.exec(`insert into auth.users (id) values ('${A}')`);
+
+  /* User A grants consent */
+  await asA(db, () => q(db, `insert into consents (user_id, purpose, version) values ('${A}', 'training_use', '1.0')`));
+
+  /* User A withdraws consent */
+  await asA(db, () => q(db, `update consents set withdrawn_at = now() where user_id = '${A}' and purpose = 'training_use'`));
+
+  /* Verify withdrawal time is set */
+  const rows = await asA(db, () => q(db, 'select withdrawn_at is not null as withdrawn from consents where user_id = $1', [A]));
+  assert.equal(rows[0].withdrawn, true);
+});
+
+test('signed-out visitors cannot read or write consents', async () => {
+  const db = new PGlite();
+  await db.exec(STUB);
+  await db.exec(fs.readFileSync(consentUpFile, 'utf8'));
+
+  await as(db, { role: 'anon' }, async () => {
+    await assert.rejects(q(db, 'select * from consents'), /permission denied/);
+    await assert.rejects(q(db, `insert into consents (user_id, purpose, version) values ('${A}', 'account', '1.0')`), /permission denied/);
+  });
+});
+
+test('the consent ledger down migration removes the table cleanly', async () => {
+  const db = new PGlite();
+  await db.exec(STUB);
+  await db.exec(`insert into auth.users (id) values ('${A}')`);
+  await db.exec(fs.readFileSync(consentUpFile, 'utf8'));
+  await db.exec(`insert into consents (user_id, purpose, version) values ('${A}', 'account', '1.0')`);
+  const before = await q(db, "select count(*)::int as n from pg_class where relname = 'consents'");
+  assert.equal(before[0].n, 1);
+  await db.exec(fs.readFileSync(consentDownFile, 'utf8'));
+  const after = await q(db, "select count(*)::int as n from pg_class where relname = 'consents'");
+  assert.equal(after[0].n, 0);
+});
+
+/* Tests for sarvam migration (0002_sarvam.sql) */
+const sarvamUpFile = path.join(dir, '0002_sarvam.sql');
+const sarvamDownFile = path.join(dir, 'down', '0002_sarvam.down.sql');
+
+test('sarvam jobs table has correct columns and constraints', async () => {
+  const db = new PGlite();
+  await db.exec(STUB);
+  await db.exec(fs.readFileSync(sarvamUpFile, 'utf8'));
+  await db.exec(`insert into auth.users (id) values ('${A}')`);
+  const columns = await q(db, `select column_name, data_type, is_nullable from information_schema.columns where table_name = 'sarvam_jobs' order by ordinal_position`);
+  assert.equal(columns.length, 9);
+  assert.equal(columns[0].column_name, 'id');
+  assert.equal(columns[0].data_type, 'uuid');
+  assert.equal(columns[1].column_name, 'user_id');
+  assert.equal(columns[4].column_name, 'status');
+  assert.equal(columns[5].column_name, 'minutes_credited');
+  assert.equal(columns[6].column_name, 'minutes_spent');
+});
+
+test('sarvam credits table has correct structure', async () => {
+  const db = new PGlite();
+  await db.exec(STUB);
+  await db.exec(fs.readFileSync(sarvamUpFile, 'utf8'));
+  await db.exec(`insert into auth.users (id) values ('${A}')`);
+  const columns = await q(db, `select column_name, data_type from information_schema.columns where table_name = 'sarvam_credits' order by ordinal_position`);
+  assert.equal(columns.length, 3);
+  assert.equal(columns[0].column_name, 'user_id');
+  assert.equal(columns[1].column_name, 'balance');
+  assert.equal(columns[2].column_name, 'updated_at');
+});
+
+test('a user can insert sarvam jobs for themselves', async () => {
+  const db = new PGlite();
+  await db.exec(STUB);
+  await db.exec(fs.readFileSync(sarvamUpFile, 'utf8'));
+  await db.exec(`insert into auth.users (id) values ('${A}'), ('${B}')`);
+
+  await asA(db, async () => {
+    await q(db, `insert into sarvam_jobs (user_id, voice, text, minutes_credited) values ('${A}', 'en-US-JoeNeural', 'Hello world', 1)`);
+  });
+
+  const jobs = await asA(db, () => q(db, 'select user_id, voice from sarvam_jobs'));
+  assert.equal(jobs.length, 1);
+  assert.equal(jobs[0].user_id, A);
+});
+
+test('a user cannot insert sarvam jobs for another user', async () => {
+  const db = new PGlite();
+  await db.exec(STUB);
+  await db.exec(fs.readFileSync(sarvamUpFile, 'utf8'));
+  await db.exec(`insert into auth.users (id) values ('${A}'), ('${B}')`);
+
+  await asA(db, async () => {
+    await assert.rejects(q(db, `insert into sarvam_jobs (user_id, voice, text, minutes_credited) values ('${B}', 'en-US-JoeNeural', 'Hello', 1)`), /row-level security/);
+  });
+});
+
+test('spend_credits RPC returns false for insufficient balance', async () => {
+  const db = new PGlite();
+  await db.exec(STUB);
+  await db.exec(fs.readFileSync(sarvamUpFile, 'utf8'));
+  await db.exec(`insert into auth.users (id) values ('${A}')`);
+
+  /* Insert zero balance credit record */
+  await db.exec(`insert into sarvam_credits (user_id, balance) values ('${A}', 0)`);
+
+  const result = await db.query(`select public.spend_credits('${A}', 10) as spent`);
+  assert.equal(result.rows[0].spent, false);
+});
+
+test('down migration removes sarvam tables cleanly', async () => {
+  const db = new PGlite();
+  await db.exec(STUB);
+  await db.exec(`insert into auth.users (id) values ('${A}')`);
+  await db.exec(fs.readFileSync(sarvamUpFile, 'utf8'));
+  await as(db, { role: 'service_role' }, async () => {
+    await db.exec(`insert into sarvam_jobs (user_id, voice, text, minutes_credited) values ('${A}', 'en-US-JoeNeural', 'test', 1)`);
+    await db.exec(`insert into sarvam_credits (user_id, balance) values ('${A}', 0)`);
+  });
+
+  const before = await q(db, "select count(*)::int as n from pg_class where relname in ('sarvam_jobs', 'sarvam_credits')");
+  assert.equal(before.reduce((sum, r) => sum + r.n, 0), 2);
+
+  await db.exec(fs.readFileSync(sarvamDownFile, 'utf8'));
+
+  const after = await q(db, "select count(*)::int as n from pg_class where relname in ('sarvam_jobs', 'sarvam_credits')");
+  assert.equal(after.reduce((sum, r) => sum + r.n, 0), 0);
+});
+
+/* Tests for dubbing migration (0003_dubbing.sql) */
+const dubbingUpFile = path.join(dir, '0003_dubbing.sql');
+const dubbingDownFile = path.join(dir, 'down', '0003_dubbing.down.sql');
+
+test('dubbing jobs table has correct columns and constraints', async () => {
+  const db = new PGlite();
+  await db.exec(STUB);
+  await db.exec(fs.readFileSync(sarvamUpFile, 'utf8'));  // Need sarvam migration first
+  await db.exec(fs.readFileSync(dubbingUpFile, 'utf8'));
+  await db.exec(`insert into auth.users (id) values ('${A}')`);
+
+  const columns = await q(db, `select column_name from information_schema.columns where table_name = 'dubbing_jobs' order by ordinal_position`);
+  assert.ok(columns.find(c => c.column_name === 'sarvam_job_id'), 'sarvam_job_id column should exist');
+  assert.ok(columns.find(c => c.column_name === 'dubbing_job_id'), 'dubbing_job_id column should exist');
+});
+
+test('voice clone consent links to sarvam_job via job_id', async () => {
+  const db = new PGlite();
+  await db.exec(STUB);
+  await db.exec(fs.readFileSync(sarvamUpFile, 'utf8'));
+  await db.exec(fs.readFileSync(dubbingUpFile, 'utf8'));
+  await db.exec(`insert into auth.users (id) values ('${A}')`);
+
+  /* Insert sarvam job via service_role */
+  await as(db, { role: 'service_role' }, async () => {
+    await db.query(`insert into sarvam_jobs (user_id, voice, text, minutes_credited) values ('${A}', 'en-US-JoeNeural', 'test', 1)`);
+  });
+
+  await asA(db, async () => {
+    await q(db, `insert into voice_clone_consents (user_id, job_id, voice) values ('${A}', (select id from sarvam_jobs limit 1), 'en-US-JoeNeural')`);
+  });
+
+  const consents = await asA(db, () => q(db, 'select user_id, job_id, voice from voice_clone_consents'));
+  assert.equal(consents.length, 1);
+  assert.equal(consents[0].voice, 'en-US-JoeNeural');
+});
+
+test('a user can insert dubbing jobs for themselves', async () => {
+  const db = new PGlite();
+  await db.exec(STUB);
+  await db.exec(fs.readFileSync(sarvamUpFile, 'utf8'));
+  await db.exec(fs.readFileSync(dubbingUpFile, 'utf8'));
+  await db.exec(`insert into auth.users (id) values ('${A}'), ('${B}')`);
+
+  /* Insert sarvam job via service_role */
+  await as(db, { role: 'service_role' }, async () => {
+    await db.query(`insert into sarvam_jobs (user_id, voice, text, minutes_credited) values ('${A}', 'en-US-JoeNeural', 'test', 1)`);
+  });
+
+  await asA(db, async () => {
+    await q(db, `insert into dubbing_jobs (sarvam_job_id, user_id, voice, target_locale) values ((select id from sarvam_jobs), '${A}', 'en-US-JoeNeural', 'hi')`);
+  });
+
+  const jobs = await asA(db, () => q(db, 'select user_id, voice, target_locale from dubbing_jobs'));
+  assert.equal(jobs.length, 1);
+  assert.equal(jobs[0].user_id, A);
+  assert.equal(jobs[0].target_locale, 'hi');
+});
+
+test('a user cannot insert dubbing jobs for another user', async () => {
+  const db = new PGlite();
+  await db.exec(STUB);
+  await db.exec(fs.readFileSync(sarvamUpFile, 'utf8'));
+  await db.exec(fs.readFileSync(dubbingUpFile, 'utf8'));
+  await db.exec(`insert into auth.users (id) values ('${A}'), ('${B}')`);
+
+  /* Insert sarvam job via service_role */
+  await as(db, { role: 'service_role' }, async () => {
+    await db.query(`insert into sarvam_jobs (user_id, voice, text, minutes_credited) values ('${A}', 'en-US-JoeNeural', 'test', 1)`);
+  });
+
+  await asA(db, async () => {
+    await assert.rejects(q(db, `insert into dubbing_jobs (sarvam_job_id, user_id, voice, target_locale) values ((select id from sarvam_jobs), '${B}', 'en-US-JoeNeural', 'hi')`), /row-level security/);
+  });
+});
+
+test('down migration removes dubbing tables cleanly', async () => {
+  const db = new PGlite();
+  await db.exec(STUB);
+  await db.exec(`insert into auth.users (id) values ('${A}')`);
+  await db.exec(fs.readFileSync(sarvamUpFile, 'utf8'));
+  await db.exec(fs.readFileSync(dubbingUpFile, 'utf8'));
+
+  await as(db, { role: 'service_role' }, async () => {
+    await db.query(`insert into sarvam_jobs (user_id, voice, text, minutes_credited) values ('${A}', 'en-US-JoeNeural', 'test', 1)`);
+    await db.query(`insert into dubbing_jobs (sarvam_job_id, user_id, voice, target_locale) values ((select id from sarvam_jobs), '${A}', 'en-US-JoeNeural', 'hi')`);
+    await db.query(`insert into voice_clone_consents (user_id, job_id, voice) values ('${A}', (select id from sarvam_jobs), 'en-US-JoeNeural')`);
+  });
+
+  const before = await q(db, "select count(*)::int as n from pg_class where relname in ('dubbing_jobs', 'voice_clone_consents')");
+  assert.equal(before.reduce((sum, r) => sum + r.n, 0), 2);
+
+  await db.exec(fs.readFileSync(dubbingDownFile, 'utf8'));
+
+  const after = await q(db, "select count(*)::int as n from pg_class where relname in ('dubbing_jobs', 'voice_clone_consents')");
+  assert.equal(after.reduce((sum, r) => sum + r.n, 0), 0);
 });

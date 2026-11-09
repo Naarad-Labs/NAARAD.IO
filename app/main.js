@@ -32,6 +32,7 @@ import { downloadGpx } from './gpx.js';
 import './elevation-cursor.js';
 import * as Urls from './urls.js';
 import { SITE_NAME, CARD_WIDTH, CARD_HEIGHT, cardPath } from './seo.js';
+import * as MediaLibrary from './views/media-library.js';
 
 const PRERENDER = Boolean(window.__NAARAD_PRERENDER__);
 const shell = document.querySelector('#app-content');
@@ -41,6 +42,7 @@ const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
 
 let state = { page: null, route: null, stop: null, story: null };
 let map = null;
+let routeWorkspace = null;
 let generation = 0;
 // The path and query of the current history entry. A popstate that leaves them
 // as they were is the browser moving to an in-page anchor, which draws nothing.
@@ -168,7 +170,9 @@ const PAGES = [
       return (await view.loadCollections()).map((collection) => Urls.collectionPath(collection.slug));
     },
   },
-  { name: 'creators', path: '/creators/', view: 'studio', nav: 'creators' },
+  { name: 'creators', path: '/creators/', view: 'studio', nav: 'creators',
+    address: (context) => context.studioNav === 'profile' ? `${Urls.sectionPath('creators')}?profile=1` : Urls.sectionPath('creators') },
+  { name: 'creators-media', path: '/creators/media/', view: 'media-library', nav: 'creators' },
   { name: 'journey', path: '/journey/', view: 'journey', nav: 'journey' },
   {
     name: 'about', path: '/about/', view: 'info', nav: 'about',
@@ -310,6 +314,21 @@ function closeMenu() {
   $('.menu-toggle')?.setAttribute('aria-expanded', 'false');
 }
 
+/** The Profile link belongs to a signed-in person, so it shows only when the
+   account panel would show one. It is the same address as the Creators link,
+   so the active state is shared and the tab is never the only way in. */
+function syncProfileNav() {
+  const link = $('#nav-profile');
+  if (!link) return;
+  const signedIn = Account.signedIn();
+  link.hidden = !signedIn;
+  if (!signedIn) return;
+  const onProfile = new URL(location.href).searchParams.get('profile') === '1';
+  link.classList.toggle('is-current', onProfile && link.dataset.view === 'creators');
+  if (onProfile) link.setAttribute('aria-current', 'page');
+  else link.removeAttribute('aria-current');
+}
+
 export function notify(message) {
   let notice = $('#site-notice');
   if (!notice) {
@@ -335,6 +354,7 @@ async function moduleFor(name) {
     story: () => import('./views/story.js'),
     collection: () => import('./views/collection.js'),
     studio: () => import('./views/studio.js'),
+    'media-library': () => import('./views/media-library.js'),
     journey: () => import('./views/journey.js'),
     info: () => import('./views/info.js'),
   };
@@ -384,7 +404,6 @@ async function prepare(view, context = {}) {
  * where the new page opens (null leaves the scroll position alone).
  */
 function commit({ markup, meta }, { keep = false, scrollY = 0 } = {}) {
-  document.documentElement.classList.remove('has-map-expanded');   // a navigation ends full screen
   if (!(keep && drawn(markup))) {
     destroyMap();
     unwatchRouteBar();
@@ -476,13 +495,15 @@ async function show(url, { push = true, boot = false, scrollY = 0 } = {}) {
   const ready = await prepare(view, context);
   if (current !== generation) return;
   // Nothing below waits, so no other navigation can slip in between these lines.
-  state = { page, route: context.route || null, stop: context.stop || null, story: context.story || null };
+  state = { page, route: context.route || null, stop: context.stop || null, story: context.story || null,
+    studioNav: new URL(url).searchParams.get('profile') === '1' ? 'profile' : 'create' };
   document.body.dataset.view = page.body || page.name;
   shell.className = `view-${page.body || page.name}`;
   const { meta } = ready;
   const leftAt = window.scrollY;
   commit(ready, { keep: shell.dataset.prerendered === key, scrollY: boot ? null : scrollY });
   setNav(page.nav);
+  syncProfileNav();
 
   const address = page === NOT_FOUND
     ? `${url.pathname}${url.search}`
@@ -555,7 +576,7 @@ function unwatchRouteBar() {
 
 /* ── Map ────────────────────────────────────────────────────────── */
 
-function destroyMap() { map?.destroy?.(); map = null; }
+function destroyMap() { routeWorkspace?.destroy(); routeWorkspace = null; map?.destroy?.(); map = null; }
 
 /* The all-routes map above the catalogue. It follows the filters through the catalogue:filtered event. Not drawn
    while pre-rendering: the saved page keeps the empty frame, so it matches what boot draws. */
@@ -609,10 +630,16 @@ async function mountMap(route, current) {
     });
     if (current !== generation) controller.destroy();
     // Highlight the opening stop without panning, so the whole route stays framed.
-    else { map = controller; showMapLayer(layer); map.selectStop?.(state.stop, { pan: false }); }
+    else {
+      map = controller; showMapLayer(layer); map.selectStop?.(state.stop, { pan: false });
+      const workspace = await import('./route-workspace.js');
+      if (current !== generation) { controller.destroy(); return; }
+      routeWorkspace = workspace.mountRouteWorkspace(shell, route, controller);
+    }
   } catch (error) {
     console.error('Map unavailable', error);
     const node = $('#map');
+    if (current !== generation) return;
     if (node) node.insertAdjacentHTML('beforeend', '<p class="map-unavailable">The interactive map could not load. The route preview and details are still here.</p>');
   }
 }
@@ -803,15 +830,20 @@ async function repaintJourney({ selector = null, at = 0 } = {}) {
 
 /* ── Studio ─────────────────────────────────────────────────────── */
 
+/** Re-render the page that is on screen now, keeping the keyboard where it was.
+   Sign in and sign out happen inside the account panel, which both the
+   Studio and My Journey draw, so the same repaint serves both. */
 async function refreshStudio() {
   const current = generation;
   const mark = focusMark();
-  const studio = await moduleFor('studio');
-  const markup = await studio.render();
+  const isJourney = state.page?.name === 'journey';
+  const view = isJourney ? await moduleFor('journey') : await moduleFor('studio');
+  const markup = await view.render(isJourney ? {} : { studioNav: state.studioNav || 'create' });
   if (current !== generation) return;
   shell.innerHTML = markup;
   // The keyboard stays on the same control; when a step replaces it (Next on the last step), on the step's heading.
-  restoreFocus(mark, '.studio-panel:not([hidden]) h3');
+  restoreFocus(mark, shell.querySelector('.studio-panel:not([hidden]) h3, .journey-tabs [aria-selected="true"]') || 'h1');
+  syncProfileNav();
 }
 
 async function handleStudio(target) {
@@ -1002,7 +1034,6 @@ document.addEventListener('click', async (event) => {
   if (mapAction === 'out') map?.zoomOut();
   if (mapAction === 'locate') map?.locate();
   if (mapAction === 'fit') map?.fit();
-  if (mapAction === 'expand') setMapExpanded(!document.querySelector('.map-frame')?.classList.contains('is-expanded'));
   if (mapAction === 'layers') {
     const button = event.target.closest('[data-map="layers"]');
     const satellite = button.getAttribute('aria-pressed') !== 'true';
@@ -1015,23 +1046,20 @@ document.addEventListener('click', async (event) => {
   if (event.target.closest('[data-studio], [data-studio-step], [data-studio-stop], [data-studio-open], [data-studio-delete]')) {
     await handleStudio(event.target.closest('[data-studio], [data-studio-step], [data-studio-stop], [data-studio-open], [data-studio-delete]'));
   }
-});
 
-/* A full-screen map by CSS rather than the Fullscreen API, so it also works where that API does not (iPhone Safari).
-   The map resizes itself; Escape closes it. */
-function setMapExpanded(on) {
-  const frame = document.querySelector('.map-frame');
-  if (!frame) return;
-  frame.classList.toggle('is-expanded', on);
-  document.documentElement.classList.toggle('has-map-expanded', on);
-  const button = frame.querySelector('[data-map="expand"]');
-  const label = button?.querySelector('span');
-  if (label) label.textContent = on ? 'Exit full screen' : 'Full screen';
-  if (!on) button?.focus({ preventScroll: true });
-}
-
-document.addEventListener('keydown', (event) => {
-  if (event.key === 'Escape' && document.querySelector('.map-frame.is-expanded')) setMapExpanded(false);
+  const navButton = event.target.closest('[data-studio-nav]');
+  if (navButton) {
+    const navId = navButton.dataset.studioNav;
+    if (navId === 'media') {
+      await navigate(new URL(Urls.sectionPath('creators') + 'media/', location.origin));
+    } else if (navId === 'profile') {
+      await navigate(new URL(Urls.sectionPath('creators') + '?profile=1', location.origin));
+    } else if (navId !== 'create') {
+      // Other nav items (stories, routes, settings) are disabled for now
+      notify(`${navButton.textContent.trim()}: Coming later`);
+    }
+    return;
+  }
 });
 
 /* Recent searches: offered when the box is focused, saved when a search is finished (Enter or leaving the box), not on every pause. */
@@ -1226,6 +1254,8 @@ addEventListener('pagehide', () => listenTracker.flush());
 function stopItemId(order) { return `${state.route?.slug}-${String(order).padStart(2, '0')}`; }
 Audio.subscribe((player) => {
   listenTracker.update(player);
+  const playingStop = player.playing ? state.route?.stops?.find((stop) => stop.slug === player.item?.id)?.order ?? null : null;
+  map?.setPlayingStop?.(playingStop);
   $$('[data-action="listen"]').forEach((button) => {
     if (!button.dataset.stop) return;
     const playingThis = Boolean(player.playing && stopItemId(button.dataset.stop) === player.item?.id);

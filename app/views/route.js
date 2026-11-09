@@ -9,6 +9,7 @@ import { picture, creditText, escapeHtml, photoPath, getPhoto } from '../media.j
 import { icon } from '../icons.js';
 import * as Data from '../data.js';
 import { routePreview, elevationProfile } from '../previews.js';
+import { elevationSamples } from '../elevation-model.js';
 import * as Journey from '../journey-store.js';
 import * as Offline from '../offline-bundles.js';
 import { routePath, sectionPath, absoluteUrl } from '../urls.js';
@@ -224,10 +225,19 @@ function mapPanel(route) {
       <div class="map-toolbar">
         <button type="button" class="map-control" data-map="layers" aria-pressed="true">${icon('layers')}<span>Satellite</span></button>
         <button type="button" class="map-control" data-map="fit">${icon('compass')}<span>Fit route</span></button>
-        <button type="button" class="map-control" data-map="expand">${icon('map')}<span>Full screen</span></button>
+        <button type="button" class="map-control" data-map="fullscreen" disabled title="Map controls are loading">${icon('map')}<span>Full screen</span></button>
       </div>
       <p class="map-note script">Stories at every stop</p>
     </div>
+    ${route.hasGeometry || route.startLat != null ? `<dialog class="route-map-dialog" data-route-map-dialog aria-labelledby="route-map-dialog-title">
+      <header class="route-map-dialog-head">
+        <h2 id="route-map-dialog-title">${escapeHtml(route.name)} map and stops</h2>
+        <button type="button" class="button button-sm" data-map-dialog-close>Close map</button>
+      </header>
+      <div class="route-map-dialog-content" data-map-dialog-content>
+        <p class="data-note" data-map-dialog-empty hidden>Stops are not published for this route.</p>
+      </div>
+    </dialog>` : ''}
   </section>`;
 }
 
@@ -241,7 +251,14 @@ function elevationCursor(route, profile) {
 }
 
 function glance(route) {
-  const profile = elevationProfile(route, { width: 760, height: 168 });
+  const samples = elevationSamples(route);
+  const profile = samples.length >= 3 ? elevationProfile(route, { width: 760, height: 168 }) : "";
+  const elevationControl = profile && samples.length >= 2 ? `<label class="elevation-control">
+        <span>Distance along route</span>
+        <input type="range" data-elevation-range min="${samples[0].d}" max="${samples.at(-1).d}" step="${Math.max(1, Math.round((samples.at(-1).d - samples[0].d) / 1000))}" value="${samples[0].d}" aria-describedby="elevation-range-readout">
+        <output id="elevation-range-readout" data-elevation-output aria-live="polite"></output>
+      </label>` : '';
+
   const gap = (value) => (Data.isUnmeasured(route, value) ? Data.NOT_MEASURED : null);
   return `<section class="route-glance" id="section-terrain">
     <div class="glance-facts">
@@ -265,7 +282,7 @@ function glance(route) {
         <h3 class="eyebrow eyebrow-mark">Elevation profile</h3>
         ${route.elevation ? `<span class="chip">${escapeHtml(route.elevation.source)}</span>` : ''}
       </div>
-      ${profile ? elevationCursor(route, profile) : `<div class="empty-state">${icon('terrain')}<div>
+      ${elevationControl}${profile ? elevationCursor(route, profile) : `<div class="empty-state">${icon('terrain')}<div>
         <strong>No elevation profile yet</strong>
         <p>This route has no sampled heights, so no profile is drawn.</p></div></div>`}
     </div>
