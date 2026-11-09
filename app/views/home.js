@@ -72,7 +72,7 @@ export function routeCard(route, options = {}) {
 
 function hero(featured) {
   const first = featured[0];
-  return `<section class="home-hero" aria-labelledby="home-title">
+  return `<section class="home-hero dither-band" data-dither="sand" aria-labelledby="home-title">
     <div class="home-hero-copy">
       <p class="eyebrow">A living heritage, a shared human story</p>
       <h1 id="home-title" class="display">Walk a place. <br><span class="accent">Hear its story.</span></h1>

@@ -150,3 +150,10 @@ test('the studio says it is a drafting space, and promises no recording, audio o
   assert.doesNotMatch(lede, /\brecord|audio stories|prepare/i);
   assert.doesNotMatch(html, /up to 10 minutes|Drag and drop/, 'a limit nothing enforces, and a drop target that is not there');
 });
+
+test('the home hero and the footer carry a dithered band, and the service worker precaches the module', async () => {
+  const html = await HomeView.render();
+  assert.match(html, /<section class="home-hero dither-band" data-dither="sand"/);
+  assert.match(fs.readFileSync(new URL('app/shell.html', ROOT), 'utf8'), /<footer class="site-footer dither-band" data-dither="navy"/);
+  assert.match(fs.readFileSync(new URL('sw.js', ROOT), 'utf8'), /'\/app\/dither\.js'/);
+});

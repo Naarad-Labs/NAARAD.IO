@@ -38,6 +38,21 @@ test.describe('homepage', () => {
     });
   });
 
+  test('the hero and footer draw a dithered canvas, and reduced motion keeps it', async ({ page }) => {
+    await noPageErrors(page, async () => {
+      await page.emulateMedia({ reducedMotion: 'reduce' });
+      await page.goto('/');
+      for (const band of ['.home-hero', '.site-footer']) {
+        await expect(page.locator(band)).toHaveAttribute('data-dither-on', '1');   // mounted when the browser is idle
+        const canvas = page.locator(`${band} .dither-canvas`);
+        // No WebGL (headless without a GPU) is allowed: then the band is marked and shows its gradient.
+        const drawn = await canvas.count();
+        if (drawn) await expect(canvas).toHaveAttribute('aria-hidden', 'true');
+        else await expect(page.locator(band)).toHaveAttribute('data-dither-fallback', '1');
+      }
+    });
+  });
+
   test('the hero image is eager with responsive sources, the rest are lazy', async ({ page }) => {
     await page.goto('/');
     const hero = page.locator('.home-hero-photo img');
