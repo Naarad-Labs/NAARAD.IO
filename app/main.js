@@ -263,6 +263,7 @@ function headTags(meta) {
   }
   const hint = meta.preload ? preloadHint(meta.preload.photo, meta.preload.sizes) : null;
   if (hint) add('link', { rel: 'preload', as: 'image', type: 'image/avif', href: hint.href, imagesrcset: hint.imagesrcset, imagesizes: hint.imagesizes, fetchpriority: 'high' });
+  for (const link of meta.hints || []) add('link', link);
   if (meta.schema?.length) {
     // '<' is escaped so no string in the data can close the script element.
     const json = JSON.stringify({ '@context': 'https://schema.org', '@graph': meta.schema }).replace(/</g, '\\u003c');
@@ -587,8 +588,7 @@ async function mountAtlasMap(current) {
   if (PRERENDER) return;
   destroyMap();
   try {
-    const { mountAtlas } = await import('./atlas.js');
-    const routes = await Data.loadRoutes();
+    const [{ mountAtlas }, routes] = await Promise.all([import('./atlas.js'), Data.loadRoutes()]);
     if (current !== generation) return;
     const atlas = await mountAtlas(routes, { isCurrent: () => current === generation });
     if (current !== generation) { atlas.destroy(); return; }

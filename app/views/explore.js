@@ -378,6 +378,7 @@ export function meta() {
     title: 'All routes · Naarad',
     description: `Search ${routes.length} heritage walking routes across India. ${withStops} ${withStops === 1 ? 'has' : 'have'} ordered stops with a written story at each; the rest are listed with the facts known so far.`,
     path: '/routes/',
+    hints: Seo.mapHints({ atlas: true }),
     card: {
       name: 'routes',
       eyebrow: 'The Naarad atlas',

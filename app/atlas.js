@@ -7,7 +7,7 @@
 /* map.js (Leaflet's loader) is imported when the map is drawn, not with this module: the catalogue imports this file for its
    empty frame, and must still open offline, where the map engine is not available. */
 let mapTools = null;
-const tools = () => { mapTools ||= import('./map.js'); return mapTools; };
+const tools = () => { mapTools ||= import('./map.js').catch((error) => { mapTools = null; throw error; }); return mapTools; };
 import { escapeHtml, picture, getPhoto } from './media.js';
 import { routePath } from './urls.js';
 
@@ -113,6 +113,7 @@ export async function mountAtlas(routes, { before = '.catalogue-body', isCurrent
   const list = section.querySelector('[data-atlas-list]');
   const near = section.querySelector('[data-atlas-near]');
   const state = { destroyed: false, map: null, markers: new Map(), visible: null, you: null };
+  tools().catch(() => {});   // fetch map.js now; draw() waits for it
   const slider = section.querySelector('[data-atlas-slider]');
   const reduced = typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
   let current = null;       // the slug the map is zoomed to
@@ -130,8 +131,8 @@ export async function mountAtlas(routes, { before = '.catalogue-body', isCurrent
     line = null;
     const coords = (route.geometry?.coordinates || []).filter((c) => Array.isArray(c) && validPoint(c[1], c[0]));
     if (coords.length >= 2) line = window.L.polyline(coords.map(([lng, lat]) => [lat, lng]), { color: token('--orange', '#c6511b'), weight: 4, opacity: 0.95 }).addTo(state.map);
-    state.map.flyToBounds(box, {
-      paddingTopLeft: [24, 64], paddingBottomRight: [24, (slider?.offsetHeight || 0) + 24], maxZoom: 15, animate: !reduced, duration: 0.9,
+    state.map.fitBounds(box, {
+      paddingTopLeft: [24, 64], paddingBottomRight: [24, (slider?.offsetHeight || 0) + 24], maxZoom: 15, animate: !reduced, duration: 0.5,
     });
   };
   const centredSlug = () => {
@@ -177,7 +178,7 @@ export async function mountAtlas(routes, { before = '.catalogue-body', isCurrent
 
   near.addEventListener('click', () => {
     if (!navigator.geolocation) { status.textContent = 'Location is not available in this browser.'; return; }
-    status.textContent = 'Finding your location…';
+    status.textContent = 'Finding your location… It stays on this device and is not sent or kept.';
     near.disabled = true;
     navigator.geolocation.getCurrentPosition(async ({ coords }) => {
       near.disabled = false;
@@ -208,44 +209,61 @@ export async function mountAtlas(routes, { before = '.catalogue-body', isCurrent
     }, { enableHighAccuracy: false, timeout: 12000, maximumAge: 60000 });
   });
 
-  try {
-    const { loadMapCss, loadLeaflet, token } = await tools();
-    await loadMapCss();
-    const L = await loadLeaflet();
-    if (state.destroyed || !isCurrent()) { controller.destroy(); return noop; }
-    state.map = L.map(container, { zoomControl: true, scrollWheelZoom: false, preferCanvas: false });
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      maxZoom: 19, subdomains: 'abc',
-      attribution: '© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap contributors</a>',
-    }).addTo(state.map);
-    for (const { route, point } of located(routes)) {
-      const latlng = [point.lat, point.lng];
-      const marker = L.marker(latlng, {
-        icon: L.divIcon({
-          className: 'nr-map-marker-shell',
-          html: `<span class="atlas-dot${route.hasStops ? ' has-stories' : ''}" aria-hidden="true"></span>`,
-          iconSize: [20, 20], iconAnchor: [10, 10],
-        }),
-        title: route.name, alt: route.name,
+  // A message over the map with a button to try again: the map's code, its tiles or a bad signal can each fail on a phone.
+  const problem = (message, retry) => {
+    container.querySelector('.map-unavailable')?.remove();
+    container.insertAdjacentHTML('beforeend', `<div class="map-unavailable" role="status"><p>${message}</p><button type="button" class="button button-sm" data-atlas-retry>Try again</button></div>`);
+    container.querySelector('[data-atlas-retry]').addEventListener('click', retry);
+  };
+  const draw = async () => {
+    if (state.destroyed) return;
+    container.innerHTML = '<p class="map-loading" role="status">Loading the map…</p>';
+    try {
+      const { loadMapCss, loadLeaflet, token, STREET_URL, STREET_ATTRIBUTION } = await tools();
+      const [, L] = await Promise.all([loadMapCss(), loadLeaflet()]);
+      if (state.destroyed || !isCurrent()) { controller.destroy(); return noop; }
+      container.innerHTML = '';
+      state.map = L.map(container, { zoomControl: true, scrollWheelZoom: false, preferCanvas: false });
+      const tiles = L.tileLayer(STREET_URL, { maxZoom: 19, attribution: STREET_ATTRIBUTION }).addTo(state.map);
+      let tilesLoaded = false;
+      let tilesFailed = 0;
+      tiles.on('tileload', () => { tilesLoaded = true; container.querySelector('.map-unavailable')?.remove(); });
+      tiles.on('tileerror', () => {
+        tilesFailed += 1;
+        if (!tilesLoaded && tilesFailed >= 3 && !state.destroyed && !container.querySelector('.map-unavailable')) {
+          problem('The map pictures could not be loaded. Check your connection, then try again.', () => { tilesFailed = 0; tiles.redraw(); });
+        }
       });
-      marker.bindPopup(`<strong>${escapeHtml(route.name)}</strong><br>${escapeHtml(route.location || route.region || 'India')}`
-        + `<br><a href="${routePath(route.slug)}">View route</a>`);
-      marker.on('add', () => marker.getElement()?.setAttribute('aria-label', route.name));
-      marker.on('click', () => {
-        const card = slider?.querySelector(`[data-slug="${CSS.escape(route.slug)}"]`);
-        if (card) card.scrollIntoView({ inline: 'center', block: 'nearest', behavior: reduced ? 'auto' : 'smooth' });
-      });
-      state.markers.set(route.slug, { marker, latlng });
+      for (const { route, point } of located(routes)) {
+        const latlng = [point.lat, point.lng];
+        const marker = L.marker(latlng, {
+          icon: L.divIcon({
+            className: 'nr-map-marker-shell',
+            html: `<span class="atlas-dot${route.hasStops ? ' has-stories' : ''}" aria-hidden="true"></span>`,
+            iconSize: [20, 20], iconAnchor: [10, 10],
+          }),
+          title: route.name, alt: route.name,
+        });
+        marker.bindPopup(`<strong>${escapeHtml(route.name)}</strong><br>${escapeHtml(route.location || route.region || 'India')}`
+          + `<br><a href="${routePath(route.slug)}">View route</a>`);
+        marker.on('add', () => marker.getElement()?.setAttribute('aria-label', route.name));
+        marker.on('click', () => {
+          const card = slider?.querySelector(`[data-slug="${CSS.escape(route.slug)}"]`);
+          if (card) card.scrollIntoView({ inline: 'center', block: 'nearest', behavior: reduced ? 'auto' : 'smooth' });
+        });
+        state.markers.set(route.slug, { marker, latlng });
+      }
+      controller.update(state.visible || routes.map((route) => route.slug));
+      slider?.addEventListener('scroll', () => {
+        clearTimeout(settle);
+        settle = setTimeout(() => focusRoute(centredSlug(), token), 140);
+      }, { passive: true });
+      state.resizeObserver = new ResizeObserver(() => { if (!state.destroyed) state.map?.invalidateSize({ pan: false }); });
+      state.resizeObserver.observe(container);
+    } catch {
+      if (!state.destroyed) problem('The map could not load. The routes are listed below.', draw);
     }
-    controller.update(state.visible || routes.map((route) => route.slug));
-    slider?.addEventListener('scroll', () => {
-      clearTimeout(settle);
-      settle = setTimeout(() => focusRoute(centredSlug(), token), 140);
-    }, { passive: true });
-    state.resizeObserver = new ResizeObserver(() => { if (!state.destroyed) state.map?.invalidateSize({ pan: false }); });
-    state.resizeObserver.observe(container);
-  } catch {
-    if (!state.destroyed) container.innerHTML = '<p class="map-unavailable" role="status">The map could not load. The routes are listed below.</p>';
-  }
+  };
+  draw();
   return controller;
 }

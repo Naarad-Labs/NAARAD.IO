@@ -12,6 +12,7 @@
  *                        photo, route }; scripts/build-site.mjs draws it into
  *                        Images/og/<name>.jpg
  *   preload              { photo, sizes } for the page's hero photograph
+ *   hints                link tags to fetch ahead ({ rel, href, as }), e.g. mapHints() for a page that draws a map
  *   schema               JSON-LD nodes, without @context
  * main.js turns that into the head (setMeta). The helpers here are the parts
  * every page shares: the site and organisation nodes, breadcrumbs, and the
@@ -92,3 +93,14 @@ export function compact(node) {
     value != null && !(Array.isArray(value) && !value.length)
   )));
 }
+
+/* What a page that draws a map asks the browser to fetch while it is still parsing, so the map's code, styles and
+   Leaflet download side by side instead of one after another, and the tile host's connection is already open. */
+const MAP_HINTS = [
+  { rel: 'modulepreload', href: '/app/map.js' },
+  { rel: 'preload', as: 'style', href: '/app/map.css' },
+  { rel: 'preload', as: 'style', href: '/app/vendor/leaflet/leaflet.css' },
+  { rel: 'preload', as: 'script', href: '/app/vendor/leaflet/leaflet.js' },
+  { rel: 'preconnect', href: 'https://tile.openstreetmap.org' },
+];
+export const mapHints = ({ atlas = false } = {}) => (atlas ? [{ rel: 'modulepreload', href: '/app/atlas.js' }, ...MAP_HINTS] : MAP_HINTS);

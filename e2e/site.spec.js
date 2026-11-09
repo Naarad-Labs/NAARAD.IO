@@ -2688,3 +2688,16 @@ test.describe('the routes page opens on the map', () => {
     await expect(page).toHaveURL(/\/routes\/[a-z0-9-]+\/$/);
   });
 });
+
+test.describe('the maps start from a keyless tile source', () => {
+  for (const path of ['/routes/', '/routes/hampi-heritage-trail/']) {
+    test(`${path} asks OpenStreetMap for its street tiles and nothing that needs an API key`, async ({ page }) => {
+      const hosts = new Set();
+      page.on('request', (request) => { const host = new URL(request.url()).host; if (/tile\.openstreetmap\.org|arcgisonline\.com|cartocdn\.com/.test(host)) hosts.add(host); });
+      await page.goto(path);
+      await expect(page.locator('.leaflet-tile').first()).toBeAttached();
+      expect([...hosts].some((host) => /(^|\.)tile\.openstreetmap\.org$|server\.arcgisonline\.com$/.test(host))).toBe(true);
+      expect([...hosts].some((host) => /cartocdn/.test(host))).toBe(false);
+    });
+  }
+});
