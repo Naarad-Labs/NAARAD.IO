@@ -66,13 +66,26 @@ test.describe('gsap motion', () => {
     expect(seen).toEqual([]);
   });
 
-  test('with neither, GSAP loads once and the Hampi card still reads 5.2 km and 8 stops', async ({ page }) => {
+  test('with neither, GSAP loads once, settled content stays put, and a card scrolled in counts up to 5.2 km and 8 stops', async ({ page }) => {
+    // Record every text the metrics ever show, so the count-up is observed rather than assumed.
+    await page.addInitScript(() => {
+      window.__metricTexts = new Set();
+      new MutationObserver(() => document.querySelectorAll('.route-card-metrics').forEach((m) => window.__metricTexts.add(m.textContent.replace(/\s+/g, ' ').trim())))
+        .observe(document, { subtree: true, childList: true, characterData: true });
+    });
     const seen = vendorRequests(page);
     await page.goto('/');
     await expect.poll(() => seen.filter((url) => url.endsWith('gsap.min.js')).length, { timeout: 5000 }).toBe(1);
+    // Already on screen at boot: not hidden and replayed.
+    await expect(page.locator('.home-hero-copy')).toBeVisible();
+    await expect(page.locator('.home-hero-copy')).not.toHaveAttribute('data-reveal', 'out');
     const hampi = page.locator('.route-card', { hasText: 'Hampi Heritage Trail' });
+    await hampi.scrollIntoViewIfNeeded();
     await expect(hampi.locator('.route-card-metrics')).toContainText('5.2 km');
     await expect(hampi.locator('.route-card-metrics')).toContainText('8 stops');
+    await expect(hampi).toHaveAttribute('data-reveal', 'in');
+    // The count-up really ran: the metrics were shown starting from zero.
+    expect(await page.evaluate(() => [...window.__metricTexts].some((t) => t.includes('0.0 km')))).toBe(true);
   });
 });
 
