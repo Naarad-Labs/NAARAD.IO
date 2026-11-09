@@ -25,7 +25,9 @@ app/
   studio-store.js   Creator Studio drafts, kept in this browser
   views/            home, explore, route, story, studio, journey, info (About, 404)
 content/
-  routes.source.json  the routes as written, with stop coordinates and text
+  routes.source.json  every route as written: editorial routes with stops and text, plus the flat
+                      `catalogue` and `tracks` lists that the build copies to discover/seed-tours.json
+                      and routes/geo-tracks.json (edit this file, not those two)
   routes.json         the runtime file: adds the route line, distances, elevation
   stories.json        short stories, undated until a real date is known
   photo-sources.json  every photograph's author and licence
@@ -350,6 +352,23 @@ python3 scripts/build-routes.py     # route lines, distances, elevation profiles
 python3 scripts/build-fonts.py      # subset the fonts to woff2
 node scripts/build-site.mjs         # pages, share cards and sitemap: run last, after any of these
 ```
+
+### Adding many routes at once
+
+```bash
+python3 scripts/import-routes.py --csv routes.csv                 # catalogue rows
+python3 scripts/import-routes.py --gpx ~/Downloads/gpx --type nature-hike   # recorded tracks
+python3 scripts/import-routes.py --csv routes.csv --dry-run       # check only, write nothing
+```
+
+The CSV needs a header row; only `name` and `location` ("Place, State") are required, and
+`sport` (walk, hike, cycle), `theme`, `difficulty` (easy, moderate, hard), `distance_km`,
+`duration_min`, `ascent_m`, `start_lat`, `start_lng` and `slug` are optional. A blank stays
+null and the pages say "Not yet measured". Each GPX file becomes a track whose length is measured
+from its points. The run is all or nothing, a slug that exists is skipped (so re-running is safe),
+and it ends by running `build-routes.py --catalogue-only`, which needs no network.
+Editorial routes (stops, stories, elevation) are still written by hand in the source file and
+built with the full `build-routes.py`. Review the diff, then run `node scripts/build-site.mjs`.
 
 `build-photos.py` crops the black bars off the uploads listed in `LETTERBOXED`
 before it encodes them.
