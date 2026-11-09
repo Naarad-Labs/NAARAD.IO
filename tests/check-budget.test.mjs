@@ -29,6 +29,20 @@ test('measure: no gsap row without app/vendor/gsap', () => {
   assert.deepEqual(rows.map((r) => r.page), ['v']);
 });
 
+test('measure: entry lazy non-view import() and the vendor files it names count on every page', () => {
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'budget-'));
+  fs.mkdirSync(path.join(tmp, 'vendor/x'), { recursive: true });
+  fs.writeFileSync(path.join(tmp, 'e.js'), "const load = () => import('./lazy.js');\nexport {load};");
+  fs.writeFileSync(path.join(tmp, 'lazy.js'), "const SRC = '/vendor/x/x.js'; const CSS = '/vendor/x/x.css';");
+  fs.writeFileSync(path.join(tmp, 'vendor/x/x.js'), 'var x = "xxxxxxxxxxxxxxxxxxxxxxxxxx";');
+  fs.writeFileSync(path.join(tmp, 'vendor/x/x.css'), '.x{color:red}');
+  fs.writeFileSync(path.join(tmp, 'v.js'), 'export const v = 1;');
+  const [row] = measure({ root: tmp, entry: 'e.js', views: ['v.js'], shellCss: [] });
+  const g = (f) => zlib.gzipSync(fs.readFileSync(path.join(tmp, f))).length;
+  assert.equal(row.js, g('e.js') + g('lazy.js') + g('v.js') + g('vendor/x/x.js'));
+  assert.equal(row.css, g('vendor/x/x.css'));
+});
+
 test('check: breaches name the page; gsap held to its own cap', () => {
   const rows = [{ page: 'v', js: 100, css: 100 }, { page: 'gsap', js: 100, css: 0 }];
   assert.deepEqual(check(rows), []);

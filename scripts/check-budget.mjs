@@ -29,16 +29,33 @@ function cssClosure(file, seen = new Set()) {
   return seen;
 }
 
+const VENDOR = /['"](\/(?:app\/)?vendor\/[^'"]+\.(?:js|css))['"]/g;
+
 const sum = (files) => [...files].reduce((n, f) => n + gz(f), 0);
 
 export function measure({ root, entry, views, shellCss }) {
   const gsapDir = path.resolve(root, GSAP_DIR) + path.sep;
   const jsOf = (files) => [...files].filter((f) => !f.startsWith(gsapDir));
-  const entryFiles = closure(path.resolve(root, entry), false);
+  const entryPath = path.resolve(root, entry);
+  const entryFiles = closure(entryPath, false);
+  // shortcut: every page is charged all of main.js's lazy non-view modules and their vendor files (overstates home), split per page when a page nears the cap.
+  const viewSet = new Set(views.map((v) => path.resolve(root, v)));
+  for (const m of fs.readFileSync(entryPath, 'utf8').matchAll(DYNAMIC)) {
+    const target = path.resolve(path.dirname(entryPath), m[1]);
+    if (!viewSet.has(target)) closure(target, true, entryFiles);
+  }
   const rows = views.map((view) => {
     const viewPath = path.resolve(root, view);
     const js = new Set([...entryFiles, ...closure(viewPath, true)]);
     const css = new Set();
+    for (const f of [...js]) {
+      for (const m of fs.readFileSync(f, 'utf8').matchAll(VENDOR)) {
+        const v = path.resolve(root, m[1].slice(1));
+        if (v.startsWith(gsapDir) || !fs.existsSync(v)) continue;
+        if (v.endsWith('.css')) cssClosure(v, css);
+        else js.add(v);
+      }
+    }
     for (const c of shellCss) cssClosure(path.resolve(root, c), css);
     const m = fs.readFileSync(viewPath, 'utf8').match(/export const stylesheet\s*=\s*['"]([^'"]+)['"]/);
     if (m) cssClosure(path.resolve(root, m[1].replace(/^\//, '')), css);
