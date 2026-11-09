@@ -1,13 +1,14 @@
-/* The homepage: a cinematic flyover hero, 5-photo mosaic, featured routes
-   with their real previews, the creator and language bands, and the magazine strip.
+/* The homepage: a cinematic hero, featured routes with their real previews,
+   the creator and language bands, and the magazine strip.
 
    Desktop reads as an editorial spread; the same components stack into a
    single column on a phone (see home.css). */
 
-import { picture, escapeHtml, photoPath } from '../media.js'; import { routePath, sectionPath } from '../urls.js';
+import { picture, escapeHtml } from '../media.js';
 import { icon } from '../icons.js';
 import * as Data from '../data.js';
 import { routePreview, terrainSparkline } from '../previews.js';
+import { routePath, sectionPath } from '../urls.js';
 import * as Seo from '../seo.js';
 
 const HERO_SIZES = '(max-width: 1023px) 100vw, 62vw';
@@ -69,67 +70,33 @@ export function routeCard(route, options = {}) {
   </a>`;
 }
 
-/** Flyover hero: aerial video/animation with overlay headline, lede, CTA, quick-links. */
-function flyoverHero(featured) {
+function hero(featured) {
   const first = featured[0];
-  const posterPhoto = first?.media?.card || first?.media?.photo || 'hampi-landscape';
-  return `<section class="flyover-hero dither-band" data-dither="sand" aria-labelledby="home-title">
-    <div class="flyover-media">
-      <video class="flyover-video" playsinline muted loop preload="metadata" poster="${photoPath(posterPhoto) || '/Images/hero-1600.webp'}">
-        <source src="/videos/flyover-hampi.av1.mp4" type="video/mp4; codecs=av01.0.05M.08">
-        <source src="/videos/flyover-hampi.webm" type="video/webm; codecs=vp09.00.51.08">
-        <source src="/videos/flyover-hampi.mp4" type="video/mp4">
-      </video>
-      <canvas class="flyover-canvas" aria-hidden="true"></canvas>
+  return `<section class="home-hero dither-band" data-dither="sand" aria-labelledby="home-title">
+    <div class="home-hero-copy">
+      <p class="eyebrow">A living heritage, a shared human story</p>
+      <h1 id="home-title" class="display">Walk a place. <br><span class="accent">Hear its story.</span></h1>
+      <p class="lede">Heritage walks across India, told at the places where the stories happened: real routes, local history, and stories your phone can read aloud as you walk.</p>
+      <a class="button button-primary home-hero-cta" href="${sectionPath('explore')}" data-view="explore">Start Exploring ${icon('arrow')}</a>
+      <ul class="quick-links">
+        ${QUICK_LINKS.map((link) => `<li><a href="${sectionPath(link.view)}" data-view="${link.view}">
+          ${icon(link.icon, { className: 'ico-orange' })}
+          <span><b>${link.title}</b><small>${link.sub}</small></span>
+        </a></li>`).join('')}
+      </ul>
     </div>
-    <div class="flyover-overlay">
-      <div class="flyover-copy">
-        <p class="eyebrow">A living heritage, a shared human story</p>
-        <h1 id="home-title" class="display">Walk a place. <br><span class="accent">Hear its story.</span></h1>
-        <p class="lede">Heritage walks across India, told at the places where the stories happened: real routes, local history, and stories your phone can read aloud as you walk.</p>
-        <a class="button button-primary flyover-cta" href="${sectionPath('explore')}" data-view="explore">Start Exploring ${icon('arrow')}</a>
-        <ul class="quick-links">
-          ${QUICK_LINKS.map((link) => `<li><a href="${sectionPath(link.view)}" data-view="${link.view}">
-            ${icon(link.icon, { className: 'ico-orange' })}
-            <span><b>${link.title}</b><small>${link.sub}</small></span>
-          </a></li>`).join('')}
-        </ul>
-        ${first ? `<span class="pin-chip flyover-place">${icon('pin')}${escapeHtml(first.location || 'India')}</span>` : ''}
+    <div class="home-hero-media">
+      ${picture('hampi-landscape', {
+    sizes: HERO_SIZES,
+    alt: 'The boulder landscape of Hampi, Karnataka, with temple towers among the rocks',
+    priority: true,
+    credit: true,
+    className: 'home-hero-photo torn-left',
+  })}
+      <div class="note-card home-hero-note">
+        <p class="script">Every stone has a story. <br>All you have to do is listen.</p>
       </div>
-    </div>
-  </section>`;
-}
-
-/** Airbnb-style 5-photo mosaic: 1 large (featured[0]) + 4 small (featured[1]..featured[4]). */
-function photoMosaic(featured) {
-  if (!featured?.length) return '';
-
-  const photos = featured.slice(0, 5).map((route, index) => {
-    const photo = route.media?.card || route.media?.photo;
-    if (!photo) return null;
-    return {
-      id: photo,
-      alt: `${route.name}, ${route.location || ''}`,
-      routeSlug: route.slug,
-      routeName: route.name,
-      isLarge: index === 0,
-    };
-  }).filter(Boolean);
-
-  if (!photos.length) return '';
-
-  return `<section class="photo-mosaic" aria-labelledby="mosaic-title">
-    <h2 id="mosaic-title" class="visually-hidden">Featured places</h2>
-    <div class="mosaic-grid">
-      ${photos.map((photo, index) => `
-        <a class="mosaic-tile ${photo.isLarge ? 'is-large' : ''}" href="${routePath(photo.routeSlug)}" data-route="${escapeHtml(photo.routeSlug)}" style="--index:${index}">
-          ${picture(photo.id, { sizes: photo.isLarge ? '(max-width: 1023px) 100vw, 50vw' : '(max-width: 760px) 50vw, 25vw', alt: escapeHtml(photo.alt), ratio: photo.isLarge ? '4 / 3' : '3 / 4', className: 'mosaic-photo' })}
-          <div class="mosaic-overlay">
-            <span class="mosaic-name">${escapeHtml(photo.routeName)}</span>
-            <span class="text-link">View Route ${icon('arrow')}</span>
-          </div>
-        </a>
-      `).join('')}
+      ${first ? `<span class="pin-chip home-hero-place">${icon('pin')}${escapeHtml(first.location || 'India')}</span>` : ''}
     </div>
   </section>`;
 }
@@ -166,7 +133,7 @@ function voicesSection() {
         <a class="text-link" href="${sectionPath('creators')}" data-view="creators">Apply to narrate your city ${icon('arrow')}</a>
       </div>
       <ul class="voices-roles">
-        <li>${icon('mic')}<span><b>Historians & guides</b><small>Context that holds up</small></span></li>
+        <li>${icon('mic')}<span><b>Historians &amp; guides</b><small>Context that holds up</small></span></li>
         <li>${icon('temple')}<span><b>Temple and site staff</b><small>What a visitor never sees</small></span></li>
         <li>${icon('users')}<span><b>Residents</b><small>The place as it is lived</small></span></li>
       </ul>
@@ -241,13 +208,12 @@ async function loadVisuals() {
 }
 
 export async function render() {
-  const [featured, all, visuals] = await Promise.all([Data.featuredRoutes(5), Data.loadRoutes(), loadVisuals()]);
+  const [featured, all, visuals] = await Promise.all([Data.featuredRoutes(4), Data.loadRoutes(), loadVisuals()]);
   const editorial = all.filter((route) => route.source === 'editorial');
   return `<div class="home">
-    ${flyoverHero(featured)}
-    ${photoMosaic(featured)}
+    ${hero(featured)}
     ${introVideoMarkup(visuals)}
-    ${featuredSection(featured.slice(0, 4))}
+    ${featuredSection(featured)}
     ${trackerSectionMarkup(visuals)}
     ${voicesSection()}
     ${experienceSection(editorial.length ? editorial : featured)}
@@ -257,13 +223,12 @@ export async function render() {
 export const stylesheet = '/app/home.css';
 
 export function meta() {
-  const firstHeroPhoto = 'hampi-landscape'; // will be overridden by featured[0] at render time
   return {
     title: 'Naarad · Walk a place. Hear its story.',
     description: Seo.SITE_DESCRIPTION,
     path: '/',
     card: Seo.HOME_CARD,
-    preload: { photo: firstHeroPhoto, sizes: HERO_SIZES },
+    preload: { photo: Seo.HOME_CARD.photo, sizes: HERO_SIZES },
     schema: [Seo.website(), Seo.organization()],
   };
 }
