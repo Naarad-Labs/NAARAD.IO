@@ -4,7 +4,7 @@ import { register } from 'node:module';
 register('./fresh-hook.mjs', import.meta.url);
 
 let copy = 0;
-export async function load(module, stored = {}) {
+export async function load(module, stored = {}, { wait = true } = {}) {
   const data = new Map(Object.entries(stored));
   globalThis.localStorage = {
     getItem: (key) => (data.has(key) ? data.get(key) : null),
@@ -14,6 +14,6 @@ export async function load(module, stored = {}) {
     key: (i) => Array.from(data.keys())[i] ?? null,
   };
   const store = await import(`../app/${module}.js?copy=${copy++}`);
-  await store.ready();
+  if (wait) await store.ready();
   return { store, data };
 }

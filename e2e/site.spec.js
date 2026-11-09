@@ -23,6 +23,24 @@ async function noPageErrors(page, run) {
   expect(errors, `console/page errors: ${errors.join(' | ')}`).toEqual([]);
 }
 
+// The journey lives in IndexedDB ('naarad' / 'kv'), written in the background: poll until the record is there.
+const journey = (page) => page.evaluate(async () => {
+  const read = () => new Promise((resolve) => {
+    const open = indexedDB.open('naarad', 1);
+    open.onsuccess = () => {
+      const get = open.result.transaction('kv').objectStore('kv').get('naarad.journey.v1');
+      get.onsuccess = () => { open.result.close(); resolve(get.result); };
+    };
+    open.onerror = () => resolve(undefined);
+  });
+  for (let i = 0; i < 20; i++) {
+    const raw = await read();
+    if (raw) return JSON.parse(raw);
+    await new Promise((r) => setTimeout(r, 100));
+  }
+  return {};
+});
+
 test.describe('homepage', () => {
   test('renders the editorial hero and featured routes with real facts', async ({ page }) => {
     await noPageErrors(page, async () => {
@@ -632,7 +650,7 @@ test.describe('offline route bundles (behind a flag)', () => {
       await page.locator('[data-action="offline"]').click();
       await expect(page.locator('[data-action="offline"]')).toContainText('Download for offline', { timeout: 30000 });
       expect(await page.evaluate(async () => (await (await caches.open('naarad-bundles')).keys()).length)).toBe(0);
-      expect(await page.evaluate(() => JSON.parse(localStorage.getItem('naarad.journey.v1') || '{"downloads":[]}').downloads.length)).toBe(0);
+      expect(((await journey(page)).downloads || []).length).toBe(0);
     });
   });
 });
@@ -852,7 +870,7 @@ test.describe('offline route bundles v2, part A: the kit and the space check', (
     await expect(page.locator('#site-notice')).toContainText(/space/i, { timeout: 30000 });
     await expect(page.locator('[data-action="offline"]')).toContainText('Download for offline');
     expect(await page.evaluate(async () => (await (await caches.open('naarad-bundles')).keys()).length)).toBe(0);
-    expect(await page.evaluate(() => JSON.parse(localStorage.getItem('naarad.journey.v1') || '{"downloads":[]}').downloads.length)).toBe(0);
+    expect(((await journey(page)).downloads || []).length).toBe(0);
   });
 
   test('after a download the browser is asked to keep it, and the notice says honestly what it answered', async ({ page }) => {
@@ -1887,23 +1905,6 @@ test.describe('touch targets on a phone', () => {
 
 test.describe('honest walk, listening and labels', () => {
   test.beforeEach(async ({ page }) => { await page.addInitScript(withSpeech); });
-  // The journey lives in IndexedDB ('naarad' / 'kv'), written in the background: poll until the record is there.
-  const journey = (page) => page.evaluate(async () => {
-    const read = () => new Promise((resolve) => {
-      const open = indexedDB.open('naarad', 1);
-      open.onsuccess = () => {
-        const get = open.result.transaction('kv').objectStore('kv').get('naarad.journey.v1');
-        get.onsuccess = () => { open.result.close(); resolve(get.result); };
-      };
-      open.onerror = () => resolve(undefined);
-    });
-    for (let i = 0; i < 20; i++) {
-      const raw = await read();
-      if (raw) return JSON.parse(raw);
-      await new Promise((r) => setTimeout(r, 100));
-    }
-    return {};
-  });
 
   test('listening from stop 1 plays the stop and records no walk and no listening at the tap', async ({ page }) => {
     await page.goto('/routes/hampi-heritage-trail/');
