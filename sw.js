@@ -54,6 +54,7 @@ const SHELL_ASSETS = [
   '/app/elevation-model.js',
   '/app/route-workspace.js',
   '/app/audio.js',
+  '/app/idb.js',
   '/app/journey-store.js',
   '/app/listen-tracker.js',
   '/app/motion.js',
