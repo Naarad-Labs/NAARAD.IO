@@ -112,8 +112,8 @@ function checkObject(obj, path, sources, errors, skipChildren, depth) {
   return false;
 }
 
-/** Check text fields for embedded numbers */
-function checkTextNumbers(obj, path, errors) {
+/** Check text fields for embedded numbers; an ancestor's source field covers them */
+function checkTextNumbers(obj, path, sources, errors) {
   if (!obj || typeof obj !== 'object') return;
 
   for (const key of Object.keys(obj)) {
@@ -123,11 +123,12 @@ function checkTextNumbers(obj, path, errors) {
     // Skip 'note' - it's file metadata, not editorial content
     if (key === 'note') continue;
 
+    const hasSource = sources.length > 0;
     if (typeof value === 'string') {
       if (FACT_TEXT_KEYS.includes(key)) {
         const numberPattern = /\b\d+\.?\d*\b/g;
         const matches = value.match(numberPattern);
-        if (matches && matches.length > 0) {
+        if (matches && matches.length > 0 && !hasSource) {
           errors.push({
             rule: 'number-in-text',
             path: currentPath,
@@ -138,11 +139,19 @@ function checkTextNumbers(obj, path, errors) {
     } else if (Array.isArray(value)) {
       for (const item of value) {
         if (item !== null && typeof item === 'object') {
-          checkTextNumbers(item, currentPath, errors);
+          const newSources = [...sources];
+          for (const srcKey of SOURCE_KEYS) {
+            if (item[srcKey]) newSources.push(item[srcKey]);
+          }
+          checkTextNumbers(item, currentPath, newSources, errors);
         }
       }
     } else if (typeof value === 'object' && value !== null) {
-      checkTextNumbers(value, currentPath, errors);
+      const newSources = [...sources];
+      for (const srcKey of SOURCE_KEYS) {
+        if (value[srcKey]) newSources.push(value[srcKey]);
+      }
+      checkTextNumbers(value, currentPath, newSources, errors);
     }
   }
 }
@@ -155,7 +164,7 @@ export function check(files, options = {}) {
     try {
       const data = JSON.parse(content);
       checkObject(data, '', [], errors, false, 0);
-      checkTextNumbers(data, '', errors);
+      checkTextNumbers(data, '', [], errors);
     } catch (e) {
       errors.push({
         rule: 'invalid-json',

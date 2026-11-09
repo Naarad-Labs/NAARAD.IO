@@ -929,6 +929,11 @@
           "elevationM": 419,
           "audio": null
         }
+      ],
+      "sources": [
+        "https://asi.nic.in/pages/WorldHeritageHampi",
+        "https://karnatakatourism.org/en/destinations/hampi/",
+        "https://vijayanagara.nic.in/en/tourist-place/matanga-parvata-hampi/"
       ]
     },
     {
@@ -1176,6 +1181,11 @@
           "elevationM": 58,
           "audio": null
         }
+      ],
+      "sources": [
+        "https://www.incredibleindia.gov.in/en/tamil-nadu/thanjavur/brihadeeswarar-temple",
+        "https://thanjavur.nic.in/tourist-place/big-brihadeeshwara-temple/",
+        "https://www.lonelyplanet.com/points-of-interest/brihadishwara-temple/1151896"
       ]
     },
     {
@@ -1409,6 +1419,11 @@
           "elevationM": 57,
           "audio": null
         }
+      ],
+      "sources": [
+        "https://www.auroville.org/page/where-is-auroville",
+        "https://www.auroville.org/page/the-amphitheatre",
+        "https://matrimandir.org/how-to-visit/"
       ]
     }
   ]
