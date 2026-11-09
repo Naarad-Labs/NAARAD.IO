@@ -274,7 +274,7 @@ export async function render(context = {}) {
   const withStops = routes.filter((route) => route.hasStops).length;
 
   return `<div class="catalogue">
-    <header class="catalogue-hero">
+    <header class="catalogue-hero dither-band" data-dither="sand">
       <div>
         <p class="eyebrow eyebrow-mark">The Naarad atlas · ${routes.length} routes</p>
         <h1 class="display">Go where <br>stories live.</h1>

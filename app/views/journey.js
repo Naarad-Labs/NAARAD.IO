@@ -140,7 +140,7 @@ export async function render() {
   const target = Math.max(5, Math.ceil((totals.walksCompleted + 1) / 5) * 5);
 
   return `<div class="journey">
-    <header class="journey-hero">
+    <header class="journey-hero dither-band" data-dither="sand">
       <div class="journey-hero-copy">
         <nav class="breadcrumb" aria-label="Breadcrumb"><a href="/" data-view="home">Home</a>${icon('chevron')}<b aria-current="page">My Journey</b></nav>
         <h1 class="display">My Journey <br><span class="accent">More than places.</span></h1>

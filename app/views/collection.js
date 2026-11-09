@@ -87,13 +87,13 @@ export async function renderIndex() {
   let all;
   try { all = await loadCollections(); } catch { all = null; }
   if (!all?.length) {
-    return `<div class="collection-index"><header class="catalogue-hero"><div><p class="eyebrow eyebrow-mark">Collections</p><h1 class="display">Routes, grouped.</h1>
+    return `<div class="collection-index"><header class="catalogue-hero dither-band" data-dither="sand"><div><p class="eyebrow eyebrow-mark">Collections</p><h1 class="display">Routes, grouped.</h1>
       <p class="lede">${all ? 'No collections are published yet.' : 'Collections could not load right now.'} <a class="text-link" href="/routes/" data-view="routes">Browse every route</a>.</p></div></header></div>`;
   }
   const cards = await Promise.all(all.map(async (collection) => card(collection, await routesOf(collection))));
   return `<div class="collection-index">
     <nav class="breadcrumb" aria-label="Breadcrumb"><a href="/routes/" data-view="routes">Routes</a>${icon('chevron')}<b aria-current="page">Collections</b></nav>
-    <header class="catalogue-hero"><div>
+    <header class="catalogue-hero dither-band" data-dither="sand"><div>
       <p class="eyebrow eyebrow-mark">Collections</p>
       <h1 class="display">Routes, grouped.</h1>
       <p class="lede">Hand-picked sets of routes, each with a short introduction. ${all.length} ${all.length === 1 ? 'collection' : 'collections'} so far.</p>
@@ -127,7 +127,7 @@ export async function render({ collection }) {
   const [first, ...more] = collection.intro || [];
   return `<article class="collection-page" data-collection="${escapeHtml(collection.slug)}">
     <nav class="breadcrumb" aria-label="Breadcrumb"><a href="/routes/" data-view="routes">Routes</a>${icon('chevron')}<a href="/collections/" data-view="collections">Collections</a>${icon('chevron')}<b aria-current="page">${escapeHtml(collection.title)}</b></nav>
-    <header class="catalogue-hero"><div>
+    <header class="catalogue-hero dither-band" data-dither="sand"><div>
       <p class="eyebrow eyebrow-mark">${escapeHtml(collection.category)} collection · ${count(routes.length)}</p>
       <h1 class="display">${escapeHtml(collection.title)}</h1>
       <p class="lede">${escapeHtml(collection.standfirst)}</p>
