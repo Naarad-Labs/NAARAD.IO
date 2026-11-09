@@ -41,6 +41,9 @@
 #   6  cd e2e && npx playwright test: the browser checks (needs e2e/node_modules
 #      and Chromium)
 #      Run alone (from the repo root): bash -c 'source scripts/verify.sh; check_e2e'
+#   8  node scripts/check-budget.mjs: per-page gzipped size budget (JS 150 KB, CSS
+#      60 KB, vendored GSAP 70 KB); a breach fails the step, raise nothing, trim code
+#      Run alone (from the repo root): bash -c 'source scripts/verify.sh; check_budget'
 #
 # After the six stages pass, a ledger staleness report prints as a warning (it
 # never fails the run). Run it alone (from the repo root): node scripts/check-ledger-staleness.mjs
@@ -146,6 +149,10 @@ check_site() {
   node scripts/check-links.mjs || return 1
 }
 
+check_budget() {
+  node scripts/check-budget.mjs || return 1
+}
+
 check_tests() {
   node --test --test-reporter=spec tests/*.test.mjs || return 1
 }
@@ -181,6 +188,7 @@ main() {
   step 5 "content numbers                       (node scripts/check-content-numbers.mjs)" check_content_numbers
   step 6 "browser checks                        (cd e2e && npx playwright test)" check_e2e
   step 7 "html validity                         (node scripts/check-html.mjs)" check_html
+  step 8 "page size budget                      (node scripts/check-budget.mjs)" check_budget
 
   # All stages passed.
 
