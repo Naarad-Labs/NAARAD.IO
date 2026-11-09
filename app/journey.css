@@ -150,3 +150,5 @@
   .journal-list { grid-template-columns: 1fr; }
   .journey-hero-note { font-size: var(--text-md); max-width: 150px; }
 }
+
+.journey-unsaved { margin: 0; padding: 12px 20px; background: var(--sand, #f3ead8); border-bottom: 1px solid currentColor; font-size: 0.9375rem; }

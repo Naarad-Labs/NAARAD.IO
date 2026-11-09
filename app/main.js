@@ -1223,6 +1223,7 @@ async function boot() {
   const settle = Boolean(shell.dataset.prerendered);
   await loadMedia();
   await Data.loadRoutes();
+  if (!PRERENDER) await Promise.all([Journey.ready(), Drafts.ready()]);
   await show(new URL(location.href), { push: false, boot: true });
   if (!PRERENDER) {
     Motion.start({ settle });

@@ -7,6 +7,8 @@
  * for a server.
  */
 
+import { store } from './idb.js';
+
 const KEY = 'naarad.journey.v1';
 
 /* A pre-rendered page is the same for everyone, so the build never reads or
@@ -53,7 +55,7 @@ function normalise(stored) {
 function read() {
   if (state) return state;
   try {
-    const raw = PRERENDER ? null : localStorage.getItem(KEY);
+    const raw = PRERENDER ? null : store.getItem(KEY);
     state = normalise(raw ? JSON.parse(raw) : null);
   } catch {
     state = empty();
@@ -62,9 +64,17 @@ function read() {
 }
 
 function write() {
-  try { if (!PRERENDER) localStorage.setItem(KEY, JSON.stringify(state)); } catch { /* private mode */ }
+  try { if (!PRERENDER) store.setItem(KEY, JSON.stringify(state)); } catch { /* private mode */ }
   listeners.forEach((listener) => { try { listener(state); } catch { /* view gone */ } });
 }
+
+/** Wait for the device's storage to load, then drop the cache so the next read sees what it held. */
+export async function ready() {
+  await store.ready();
+  state = null;
+}
+
+export const persistence = () => store.persistence();
 
 export function subscribe(listener) {
   listeners.add(listener);

@@ -5,6 +5,8 @@
  * take, so moving to a server is a change of transport, not of model.
  */
 
+import { store as storage } from './idb.js';
+
 const KEY = 'naarad.studio.v1';
 
 /* Pre-rendering (main.js) draws the studio as a first visit sees it. */
@@ -63,7 +65,7 @@ function normalise(stored) {
 function read() {
   if (state) return state;
   try {
-    const raw = PRERENDER ? null : localStorage.getItem(KEY);
+    const raw = PRERENDER ? null : storage.getItem(KEY);
     state = normalise(raw ? JSON.parse(raw) : null);
   } catch {
     state = normalise(null);
@@ -72,7 +74,13 @@ function read() {
 }
 
 function write() {
-  try { if (!PRERENDER) localStorage.setItem(KEY, JSON.stringify(state)); } catch { /* private mode */ }
+  try { if (!PRERENDER) storage.setItem(KEY, JSON.stringify(state)); } catch { /* private mode */ }
+}
+
+/** Wait for the device's storage to load, then drop the cache so the next read sees what it held. */
+export async function ready() {
+  await storage.ready();
+  state = null;
 }
 
 export function list() { return read().drafts.slice(); }
