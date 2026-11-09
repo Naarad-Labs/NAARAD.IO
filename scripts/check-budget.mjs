@@ -6,6 +6,7 @@ import { fileURLToPath } from 'node:url';
 
 const KB = 1024;
 const GSAP_DIR = 'app/vendor/gsap';
+const REACT_DIR = 'app/vendor/react';
 const gz = (file) => zlib.gzipSync(fs.readFileSync(file)).length;
 const STATIC = /(?:\bimport|\bexport)\s[^'"`;]*?from\s*['"](\.[^'"]+)['"]|\bimport\s*['"](\.[^'"]+)['"]/g;
 const DYNAMIC = /\bimport\(\s*['"](\.[^'"]+)['"]\s*\)/g;
@@ -65,6 +66,14 @@ export function measure({ root, entry, views, shellCss }) {
   if (fs.existsSync(gsapDirAbs)) {
     const files = fs.readdirSync(gsapDirAbs).filter((f) => f.endsWith('.js')).map((f) => path.join(gsapDirAbs, f));
     rows.push({ page: 'gsap', js: sum(files), css: 0 });
+  }
+  // React UMD is loaded dynamically via <script>, not counted in module graph
+  if (fs.existsSync(path.join(root, 'app/vendor/react'))) {
+    const files = [
+      'app/vendor/react/react.production.min.js',
+      'app/vendor/react/react-dom.production.min.js',
+    ].map((p) => path.join(root, p)).filter((f) => fs.existsSync(f));
+    rows.push({ page: 'react', js: sum(files), css: 0 });
   }
   return rows;
 }
