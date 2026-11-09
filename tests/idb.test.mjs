@@ -76,17 +76,38 @@ test('a read-back that differs keeps the legacy key', async () => {
   assert.equal(legacy.getItem(JOURNEY), 'x');
 });
 
-test('a setItem made while migration runs is not lost', async () => {
-  const adapter = durable();
-  const legacy = fakeLegacy({ [JOURNEY]: 'x' });
+test('a setItem made while the migration write is in flight wins, and the legacy key is kept', async () => {
+  const disk = new Map();
+  const gates = [];
+  const adapter = {
+    load: async () => new Map(disk),
+    write: (k, v) => new Promise((resolve) => gates.push(() => { disk.set(k, v); resolve(); })),
+    remove: async (k) => { disk.delete(k); },
+  };
+  const legacy = fakeLegacy({ [JOURNEY]: 'old' });
   const s = openStore({ adapter, legacy, migrateKeys: KEYS });
   const ready = s.ready();
-  await tick(0);
-  s.setItem('other', 'y');
-  await ready;
+  await tick(); // the migration write is now pending
+  assert.equal(gates.length, 1);
+  s.setItem(JOURNEY, 'new');
+  gates.shift()();
   await tick();
-  assert.equal(adapter.disk.get('other'), 'y');
-  assert.equal(adapter.disk.get(JOURNEY), 'x');
+  gates.shift()();
+  await ready;
+  assert.equal(s.getItem(JOURNEY), 'new');
+  assert.equal(disk.get(JOURNEY), 'new');
+  assert.equal(legacy.getItem(JOURNEY), 'old');
+});
+
+test('ready() resolves within its bound when a write never settles, and the legacy key is kept', async () => {
+  const adapter = { load: async () => new Map(), write: () => new Promise(() => {}), remove: async () => {} };
+  const legacy = fakeLegacy({ [JOURNEY]: 'x' });
+  const s = openStore({ adapter, legacy, migrateKeys: KEYS });
+  const started = Date.now();
+  await s.ready();
+  assert.ok(Date.now() - started < 3500);
+  assert.equal(s.getItem(JOURNEY), 'x');
+  assert.equal(legacy.getItem(JOURNEY), 'x');
 });
 
 test('writes and removes made before ready() reach the backend, and a removed key stays removed', async () => {
@@ -131,10 +152,11 @@ test('a throwing indexedDB falls back to memory and ready() resolves', async () 
   assert.equal(s.persistence(), 'memory');
 });
 
-test('a rejecting write downgrades to memory and notifies once', async () => {
+test('after a failed write the store is memory, the listener fired once, and no further backend writes happen', async () => {
+  let writes = 0;
   const adapter = {
     load: async () => new Map(),
-    write: async () => { throw new Error('quota'); },
+    write: async () => { writes += 1; throw new Error('quota'); },
     remove: async () => {},
   };
   const s = openStore({ adapter, legacy: null });
@@ -143,12 +165,14 @@ test('a rejecting write downgrades to memory and notifies once', async () => {
   await s.ready();
   s.setItem('a', '1');
   await tick();
-  s.setItem('b', '2');
-  s.setItem('c', '3');
-  await tick();
   assert.equal(s.persistence(), 'memory');
   assert.equal(errors.length, 1);
   assert.ok(errors[0] instanceof Error);
+  assert.equal(writes, 1);
+  s.setItem('b', '2');
+  await tick();
+  assert.equal(writes, 1);
+  assert.equal(errors.length, 1);
   assert.equal(s.getItem('b'), '2');
 });
 

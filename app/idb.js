@@ -12,6 +12,7 @@
 const PRERENDER = Boolean(globalThis.__NAARAD_PRERENDER__);
 
 const OPEN_TIMEOUT_MS = 1500;
+const READY_TIMEOUT_MS = 3000;
 
 const request = (req) => new Promise((resolve, reject) => {
   req.onsuccess = () => resolve(req.result);
@@ -73,9 +74,9 @@ function memoryAdapter() {
   };
 }
 
-function withTimeout(promise) {
+function withTimeout(promise, ms = OPEN_TIMEOUT_MS) {
   let timer;
-  const timeout = new Promise((_, reject) => { timer = setTimeout(() => reject(new Error('backend timed out')), OPEN_TIMEOUT_MS); });
+  const timeout = new Promise((_, reject) => { timer = setTimeout(() => reject(new Error('backend timed out')), ms); });
   return Promise.race([promise, timeout]).finally(() => clearTimeout(timer));
 }
 
@@ -177,7 +178,8 @@ export function openStore({ backend = 'auto', legacy = null, migrateKeys = [], i
   }
 
   return {
-    ready: () => (readyPromise ||= init().catch(() => {})),
+    /* Bounded: a transaction that never commits must not hold the page's boot. The write-through carries on in the background. */
+    ready: () => (readyPromise ||= withTimeout(init(), READY_TIMEOUT_MS).catch(() => {})),
     getItem: (key) => (memory.has(key) ? memory.get(key) : null),
     setItem(key, value) {
       const text = String(value);
