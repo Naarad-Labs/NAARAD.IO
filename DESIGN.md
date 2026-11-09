@@ -6,10 +6,10 @@
 
 **Borrow one idea from each reference:**
 - **Komoot**: Photo-tile grids, sticky map, editorial restraint
-- **AllTrails**: Scrubbable photo timeline along the route
-- **Strava Flyover**: 3D aerial flyover as route hero
+- **AllTrails**: Scrubbable stop photographs (a range under one photograph; route page, built)
+- **Strava Flyover**: the route drawn in over the hero photograph (an SVG line, no video, still under reduced motion; route page, built)
 - **VoiceMap**: Now-playing screen against the map (walking mode)
-- **Airbnb**: Five-photo mosaic before any text
+- **Airbnb**: Five-photo mosaic before any text (hero photograph plus up to four more; route page, built; place and collection pages not yet)
 - **Atlas Obscura**: Every place in India on one map (Explore)
 
 ## Design Tokens
