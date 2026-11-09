@@ -82,6 +82,25 @@ function routeMosaic(route) {
   </div>`;
 }
 
+/** One photograph per stop that has one, with a range to scrub through them; app/main.js moves the stop. Needs two or more. */
+function routeScrubber(route, selected) {
+  const stops = (route.stops || []).filter((stop) => stop.photo && getPhoto(stop.photo));
+  if (stops.length < 2) return '';
+  const total = stops.length;
+  const current = Math.max(0, stops.findIndex((stop) => stop.order === selected));
+  const text = (index) => `Stop ${index + 1} of ${total}: ${stops[index].name}`;
+  return `<section class="route-scrubber" aria-labelledby="scrubber-title">
+    <h2 class="sr-only" id="scrubber-title">Scrub along the route by stop photograph</h2>
+    <div class="scrubber-stage">
+      ${stops.map((stop, index) => `<figure class="scrubber-frame" data-scrubber-order="${stop.order}" data-scrubber-name="${escapeHtml(stop.name)}"${index === current ? '' : ' hidden'}>
+        ${picture(stop.photo, { sizes: '(max-width: 1023px) 100vw, 640px', alt: `${stop.name}, stop ${index + 1} of ${total}`, ratio: '16 / 9', priority: index === current })}
+        <figcaption><b>${escapeHtml(stop.name)}</b></figcaption>
+      </figure>`).join('\n      ')}
+    </div>
+    <input type="range" class="scrubber-range" data-scrubber min="1" max="${total}" step="1" value="${current + 1}" data-scrubber-orders="[${stops.map((stop) => stop.order).join(',')}]" aria-label="Scrub along the route by stop" aria-valuetext="${escapeHtml(text(current))}">
+  </section>`;
+}
+
 /** The route's line over the hero photograph, drawn in by CSS. Decorative: the map is where the route is read. */
 function routeLine(route) {
   const d = routeDrawPath(route.geometry?.coordinates);
@@ -387,6 +406,7 @@ export async function render(context) {
   return `<article class="route-page" data-route="${escapeHtml(route.slug)}">
     ${hero(route)}
     ${factRow(route)}
+    ${routeScrubber(route, selected)}
     ${tabBar(route)}
     <div class="route-workspace">
       ${mapPanel(route)}

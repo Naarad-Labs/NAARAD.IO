@@ -649,11 +649,28 @@ async function mountMap(route, current) {
 
 /* ── Stop selection ─────────────────────────────────────────────── */
 
+/* Moves the stop-photo scrubber to a stop; a stop with no photograph leaves it where it is. */
+function syncScrubber(order) {
+  const range = $('[data-scrubber]');
+  if (!range) return;
+  const index = JSON.parse(range.dataset.scrubberOrders || '[]').indexOf(order);
+  if (index < 0) return;
+  range.value = String(index + 1);
+  let name = '';
+  $$('.scrubber-frame').forEach((frame) => {
+    const here = Number(frame.dataset.scrubberOrder) === order;
+    frame.hidden = !here;
+    if (here) name = frame.dataset.scrubberName;
+  });
+  range.setAttribute('aria-valuetext', `Stop ${index + 1} of ${range.max}: ${name}`);
+}
+
 async function selectStop(order) {
   if (!state.route) return;
   const stop = Data.getStop(state.route, order);
   if (!stop) return;
   state.stop = stop.order;
+  syncScrubber(stop.order);
 
   const view = await moduleFor('route');
   const panel = $('.stop-panel');
@@ -1089,6 +1106,11 @@ let filterTimer = null;
 document.addEventListener('input', async (event) => {
   await started;
   const target = event.target;
+  if (target.matches?.('[data-scrubber]')) {
+    const order = JSON.parse(target.dataset.scrubberOrders || '[]')[Number(target.value) - 1];
+    if (order) selectStop(order);
+    return;
+  }
   if (target.id === 'catalogue-query') {
     const explore = await moduleFor('explore');
     // The grid redraws once typing pauses, so a screen reader is not read the whole list for every letter.

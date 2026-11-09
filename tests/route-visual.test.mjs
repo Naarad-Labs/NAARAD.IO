@@ -86,3 +86,35 @@ test('every mosaic photograph has alternative text', async () => {
     for (const [img] of block[0].matchAll(/<img [^>]*>/g)) assert.match(img, /alt="[^"]+"/, `${route.slug}: ${img}`);
   }
 });
+
+const photoStops = (route) => route.stops.filter((stop) => stop.photo && Media.getPhoto(stop.photo));
+
+test('the scrubber has one frame per stop with a photograph, and its range maps to those stops in order', async () => {
+  let drawn = 0;
+  for (const route of routes) {
+    const stops = photoStops(route);
+    const html = await RouteView.render({ route, stop: route.stops[0]?.order });
+    const sections = html.match(/<section class="route-scrubber"/g) || [];
+    if (stops.length < 2) { assert.equal(sections.length, 0, `${route.slug}: fewer than two photographs, no scrubber`); continue; }
+    drawn++;
+    assert.equal(sections.length, 1, route.slug);
+    assert.equal((html.match(/<figure class="scrubber-frame"/g) || []).length, stops.length, `${route.slug}: frames`);
+    const range = html.match(/<input type="range"[^>]*data-scrubber[^>]*>/)[0];
+    assert.match(range, new RegExp(`min="1"[^>]*max="${stops.length}"|max="${stops.length}"[^>]*min="1"`), `${route.slug}: range bounds`);
+    assert.match(range, /aria-label="[^"]+"/, route.slug);
+    assert.match(range, /aria-valuetext="Stop \d+ of \d+: [^"]+"/, route.slug);
+    const orders = JSON.parse(range.match(/data-scrubber-orders="([^"]+)"/)[1].replace(/&quot;/g, '"'));
+    assert.deepEqual(orders, stops.map((stop) => stop.order), `${route.slug}: orders`);
+    assert.equal((html.match(/<figure class="scrubber-frame"(?![^>]*hidden)/g) || []).length, 1, `${route.slug}: one frame showing`);
+  }
+  assert.ok(drawn > 0, 'at least one route has a scrubber');
+});
+
+test('the scrubber opens on the selected stop when it has a photograph, and is not a tab widget', async () => {
+  const route = routes.find((r) => photoStops(r).length >= 3);
+  const chosen = photoStops(route)[2];
+  const html = await RouteView.render({ route, stop: chosen.order });
+  const range = html.match(/<input type="range"[^>]*data-scrubber[^>]*>/)[0];
+  assert.match(range, /value="3"/);
+  assert.doesNotMatch(html.match(/<section class="route-scrubber"[\s\S]*?<\/section>/)[0], /role=|aria-selected|aria-controls/);
+});
