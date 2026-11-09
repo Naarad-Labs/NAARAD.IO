@@ -14,6 +14,7 @@ import * as Journey from '../journey-store.js';
 import * as Offline from '../offline-bundles.js';
 import { routePath, sectionPath, absoluteUrl } from '../urls.js';
 import * as Seo from '../seo.js';
+import { routeDrawPath } from '../route-draw.js';
 
 const HERO_SIZES = '(max-width: 1023px) 100vw, 56vw';
 
@@ -70,6 +71,12 @@ function factRow(route) {
   </div>`;
 }
 
+/** The route's line over the hero photograph, drawn in by CSS. Decorative: the map is where the route is read. */
+function routeLine(route) {
+  const d = routeDrawPath(route.geometry?.coordinates);
+  return d ? `<svg class="route-draw" viewBox="0 0 100 60" aria-hidden="true" focusable="false"><path d="${d}" pathLength="1"/></svg>` : '';
+}
+
 function hero(route) {
   return `<header class="route-hero">
     <div class="route-hero-copy">
@@ -98,6 +105,7 @@ function hero(route) {
       priority: true, credit: true, className: 'route-hero-photo torn-left',
     })
     : '<div class="route-hero-photo photo photo-missing"></div>'}
+      ${routeLine(route)}
       ${route.subtitle ? `<p class="note-plain note-over-photo route-hero-note">${escapeHtml(route.themes?.[0] || 'A living story')}. <br>Walk it slowly.</p>` : ''}
       <span class="pin-chip route-hero-place">${icon('pin')}${escapeHtml(route.location || 'India')}</span>
     </div>
