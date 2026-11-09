@@ -65,9 +65,15 @@ test('flush is driven by the retrier: failure retries at backoffDelay, an empty 
   const clock = fakeTimers();
   let ok = false;
   const fetchImpl = async () => ({ ok });
-  const q = make(null, { endpoint: 'https://e.test', fetchImpl, isOnline: () => true, random: () => 0.5, ...clock });
-  q.setConsent(true);
-  q.track('route_open', { slug: 'x' });
+  // An earlier visit left one event; flushing starts at boot (spec: online, visible, boot), not on each track().
+  const store = openStore({ backend: 'memory' });
+  await store.ready();
+  const earlier = make(store);
+  await earlier.ready;
+  earlier.setConsent(true);
+  earlier.track('route_open', { slug: 'x' });
+  const q = make(store, { endpoint: 'https://e.test', fetchImpl, isOnline: () => true, random: () => 0.5, ...clock });
+  await q.ready;
   await settle();
   const live = () => clock.timers.filter((t) => t.live);
   assert.equal(live().length, 1);

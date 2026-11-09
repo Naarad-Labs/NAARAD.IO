@@ -168,7 +168,6 @@ export function createEventQueue({
       memory.queue.push(event);
       while (memory.queue.length > MAX_QUEUE) { memory.queue.shift(); memory.dropped += 1; }
       save();
-      if (endpoint) retrier.kick();
       return event;
     },
 
