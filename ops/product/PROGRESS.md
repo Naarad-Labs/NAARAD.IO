@@ -58,14 +58,13 @@ Run lock: none
 | 48 | done |  | Pin or lockfile vendored libraries | Public repo hygiene (what GitHub Pages s | Leaflet 1.9.4 vendored in app/vendor/leaflet/; documented in LICENSE |
 | 49 | done |  | Compress and size-audit Images/ | Public repo hygiene (what GitHub Pages s | Images pre-optimized: WebP for content, PNG/JPG for OG/social |
 | 50 | done |  | Add a credits and licences file for imagery and data | Public repo hygiene (what GitHub Pages s |  |
-| 50 | todo |  | Add a credits and licences file for imagery and data | Public repo hygiene (what GitHub Pages s |  |
 | 51 | done |  | Verify CNAME and Pages settings stay intact | Public repo hygiene (what GitHub Pages s | Listed via sitemap.xml - 19 pages |
 | 52 | done |  | Keep googlecc72b0f2c9685bc7.html deliberately | Public repo hygiene (what GitHub Pages s | Moved floorplan/ to internal/floorplan/ |
 | 53 | done |  | Audit current CSS custom properties | Design tokens and DESIGN.md | Tokens documented in DESIGN.md with WCAG notes |
 | 54 | done |  | Write DESIGN.md | Design tokens and DESIGN.md | DESIGN.md created with color, typography, layout tokens |
 | 55 | done |  | Create a single tokens.css | Design tokens and DESIGN.md | Created app/tokens.css, imported by base.css |
 | 56 | done |  | Name tokens by role, not value | Design tokens and DESIGN.md | Tokens grouped by role: Colors (Paper, Ink, Orange, etc.), Typography, Layout, Motion |
-| 57 | skipped |  | Add a stylelint rule banning raw colours | Design tokens and DESIGN.md | Requires npm install and package.json; skipped for now |
+| 57 | todo |  | Add a stylelint rule banning raw colours | Design tokens and DESIGN.md | Requires npm install and package.json; skipped for now |
 | 58 | done |  | Add a z-index scale | Design tokens and DESIGN.md | Added --z-* tokens to tokens.css |
 | 59 | done |  | Add a motion token set | Design tokens and DESIGN.md | --ease-out and --move already present |
 | 60 | done |  | Define breakpoint tokens and use them consistently | Design tokens and DESIGN.md | Added --breakpoint-tablet and --breakpoint-phone |
