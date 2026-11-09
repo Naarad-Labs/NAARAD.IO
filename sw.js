@@ -55,6 +55,7 @@ const SHELL_ASSETS = [
   '/app/route-workspace.js',
   '/app/audio.js',
   '/app/idb.js',
+  '/app/outbox.js',
   '/app/journey-store.js',
   '/app/listen-tracker.js',
   '/app/motion.js',

@@ -20,6 +20,9 @@
  * With no endpoint set, flush() sends nothing and says so.
  */
 
+import { createRetrier } from './outbox.js';
+import { store } from './idb.js';
+
 export const SCHEMA_VERSION = 1;
 
 /* event name -> field name -> the type its value must have */
@@ -41,7 +44,7 @@ export const MAX_QUEUE = 500;
 const PRERENDER = Boolean(globalThis.__NAARAD_PRERENDER__);
 
 function defaultStorage() {
-  try { return globalThis.localStorage || null; } catch { return null; }
+  return store;
 }
 
 function randomId() {
@@ -76,11 +79,18 @@ export function createEventQueue({
   isOnline = () => globalThis.navigator ? globalThis.navigator.onLine !== false : true,
   endpoint = null,
   disabled = PRERENDER,
+  random = Math.random,
+  setTimer = setTimeout,
+  clearTimer = clearTimeout,
 } = {}) {
   let memory = { queue: [], dropped: 0, consent: false, session: null, seq: 0 };
   let flushing = false;
+  /* A persisted store loads asynchronously: until it has, the queue lives in
+     memory only, so a save cannot overwrite what is still being loaded. */
+  let hydrated = !(storage && typeof storage.ready === 'function');
 
   function load() {
+    if (!hydrated) return;
     if (!storage) return;
     try {
       const saved = JSON.parse(storage.getItem(KEY_QUEUE) || 'null');
@@ -90,7 +100,7 @@ export function createEventQueue({
   }
 
   function save() {
-    if (!storage) return;
+    if (!storage || !hydrated) return;
     try {
       storage.setItem(KEY_QUEUE, JSON.stringify({
         queue: memory.queue, dropped: memory.dropped, session: memory.session, seq: memory.seq,
@@ -100,7 +110,35 @@ export function createEventQueue({
 
   load();
 
+  /* Bring in what an earlier visit left: persisted events first, then those
+     recorded while loading, each id once. */
+  const ready = hydrated ? Promise.resolve() : storage.ready().then(() => {
+    const inMemory = memory;
+    hydrated = true;
+    load();
+    const saved = memory;
+    const known = new Set(saved.queue.map((event) => event.id));
+    const queue = saved.queue.concat(inMemory.queue.filter((event) => !known.has(event.id)));
+    const dropped = (saved.dropped || 0) + inMemory.dropped;
+    let { session, seq } = saved;
+    if (inMemory.session) ({ session, seq } = inMemory);
+    memory = { ...memory, queue, dropped, session: session || null, seq: seq || 0 };
+    while (memory.queue.length > MAX_QUEUE) { memory.queue.shift(); memory.dropped += 1; }
+    save();
+    retrier.kick();
+  });
+
+  /* flush() until the queue is empty or a send fails; false schedules a retry with backoff. */
+  const retrier = createRetrier(async () => {
+    for (;;) {
+      const result = await api.flush();
+      if (result.reason === 'ok') { if (memory.queue.length) continue; return true; }
+      return ['empty', 'no-endpoint', 'no-consent', 'no-fetch'].includes(result.reason);
+    }
+  }, { random, setTimer, clearTimer });
+
   const api = {
+    ready,
     get consent() { return memory.consent; },
     get size() { return memory.queue.length; },
     get dropped() { return memory.dropped; },
@@ -130,6 +168,7 @@ export function createEventQueue({
       memory.queue.push(event);
       while (memory.queue.length > MAX_QUEUE) { memory.queue.shift(); memory.dropped += 1; }
       save();
+      if (endpoint) retrier.kick();
       return event;
     },
 
