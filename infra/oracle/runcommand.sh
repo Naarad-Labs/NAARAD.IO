@@ -47,6 +47,8 @@ media.naarad.io {
 }
 CADDY
 sudo caddy validate --config /etc/caddy/Caddyfile
+# validate runs as root and creates the log file; hand it back to the caddy user or the service cannot open it
+sudo chown -R caddy:caddy /var/log/caddy
 sudo systemctl enable --now caddy
 sudo systemctl reload caddy
 echo "Done. Check: curl -I https://media.naarad.io/health.txt"

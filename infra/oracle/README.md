@@ -12,3 +12,10 @@ DNS: A record `media` -> 140.245.207.20 at Hostinger (added 2026-11-09).
 ## Limits
 - 1 GB RAM: Caddy only. Do not run Umami or listmonk here without more memory.
 - Port 22 stays closed to the world; use an SSH key and restrict the source IP.
+
+## Status (2026-11-09)
+- Live: `https://media.naarad.io/health.txt` on VM `naarad-media-origin` (152.70.76.230, Hyderabad). Built with cloud-init from `runcommand.sh`.
+- The first VM (`naarad-web-prod`) was deleted: Oracle cannot add an SSH key to a running instance, and its Run Command agent never picked up jobs.
+- Gotcha fixed in the scripts: `caddy validate` as root creates `/var/log/caddy/access.log` owned by root, so the service failed to load the config until the log was chowned to `caddy`.
+- DNS must point at the VM before Caddy can get its certificate.
+- Security list has an SSH rule for Cloud Shell (152.67.178.91/32); remove it when not needed.

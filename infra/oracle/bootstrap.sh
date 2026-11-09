@@ -24,6 +24,8 @@ sudo netfilter-persistent save 2>/dev/null || sudo apt-get install -y iptables-p
 
 sudo install -m 644 "$(dirname "$0")/Caddyfile" /etc/caddy/Caddyfile
 sudo caddy validate --config /etc/caddy/Caddyfile
+# validate runs as root and creates the log file; hand it back to the caddy user or the service cannot open it
+sudo chown -R caddy:caddy /var/log/caddy
 sudo systemctl enable --now caddy
 sudo systemctl reload caddy
 echo "Done. Check: curl -I https://media.naarad.io/health.txt"
