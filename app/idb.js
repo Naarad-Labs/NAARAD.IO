@@ -11,25 +11,48 @@
 
 const PRERENDER = Boolean(globalThis.__NAARAD_PRERENDER__);
 
+const OPEN_TIMEOUT_MS = 1500;
+
 const request = (req) => new Promise((resolve, reject) => {
   req.onsuccess = () => resolve(req.result);
   req.onerror = () => reject(req.error);
 });
 
+/* A write has landed only when its transaction commits, not when the request is accepted. */
+const committed = (tx) => new Promise((resolve, reject) => {
+  tx.oncomplete = () => resolve();
+  tx.onerror = () => reject(tx.error);
+  tx.onabort = () => reject(tx.error || new Error('transaction aborted'));
+});
+
 async function indexedDbAdapter(factory) {
   const open = factory.open('naarad', 1);
   open.onupgradeneeded = () => open.result.createObjectStore('kv');
-  const db = await request(open);
-  const store = (mode) => db.transaction('kv', mode).objectStore('kv');
+  const db = await new Promise((resolve, reject) => {
+    open.onsuccess = () => resolve(open.result);
+    open.onerror = () => reject(open.error);
+    open.onblocked = () => reject(new Error('IndexedDB blocked'));
+  });
+  const write = (run) => {
+    const tx = db.transaction('kv', 'readwrite');
+    const done = committed(tx);
+    run(tx.objectStore('kv'));
+    return done;
+  };
   return {
     async load() {
-      const os = store('readonly');
+      const os = db.transaction('kv', 'readonly').objectStore('kv');
       const [keys, values] = await Promise.all([request(os.getAllKeys()), request(os.getAll())]);
       return new Map(keys.map((key, i) => [key, values[i]]));
     },
-    write: async (key, value) => { await request(store('readwrite').put(value, key)); },
-    remove: async (key) => { await request(store('readwrite').delete(key)); },
+    write: (key, value) => write((os) => os.put(value, key)),
+    remove: (key) => write((os) => os.delete(key)),
   };
+}
+
+/* Reading the property itself throws when the browser blocks storage. */
+function safeLocalStorage() {
+  try { return globalThis.localStorage ?? null; } catch { return null; }
 }
 
 function localStorageAdapter(storage) {
@@ -40,6 +63,7 @@ function localStorageAdapter(storage) {
   };
 }
 
+/* Non-durable: a legacy key is never deleted on the strength of this one. */
 function memoryAdapter() {
   const map = new Map();
   return {
@@ -49,18 +73,34 @@ function memoryAdapter() {
   };
 }
 
-async function chooseAdapter({ backend, indexedDB, adapter }) {
-  if (adapter) return { adapter, kind: 'indexeddb' };
-  if (backend === 'auto') {
-    try {
+function withTimeout(promise) {
+  let timer;
+  const timeout = new Promise((_, reject) => { timer = setTimeout(() => reject(new Error('backend timed out')), OPEN_TIMEOUT_MS); });
+  return Promise.race([promise, timeout]).finally(() => clearTimeout(timer));
+}
+
+/* IndexedDB, then localStorage, then memory: the first that opens and loads. */
+async function chooseBackend({ backend, indexedDB, adapter }) {
+  const candidates = adapter ? [['indexeddb', async () => adapter]] : [];
+  if (!adapter && backend === 'auto') {
+    candidates.push(['indexeddb', async () => {
       const factory = indexedDB === undefined ? globalThis.indexedDB : indexedDB;
-      if (factory) return { adapter: await indexedDbAdapter(factory), kind: 'indexeddb' };
-    } catch { /* fall through to localStorage */ }
-    try {
-      if (globalThis.localStorage) return { adapter: localStorageAdapter(globalThis.localStorage), kind: 'localstorage' };
-    } catch { /* storage blocked */ }
+      if (!factory) throw new Error('no IndexedDB');
+      return indexedDbAdapter(factory);
+    }]);
+    candidates.push(['localstorage', async () => {
+      const storage = safeLocalStorage();
+      if (!storage) throw new Error('no localStorage');
+      return localStorageAdapter(storage);
+    }]);
   }
-  return { adapter: memoryAdapter(), kind: 'memory' };
+  for (const [kind, make] of candidates) {
+    try {
+      return await withTimeout((async () => { const made = await make(); return { adapter: made, kind, loaded: await made.load() }; })());
+    } catch { /* try the next backend */ }
+  }
+  const made = memoryAdapter();
+  return { adapter: made, kind: 'memory', loaded: new Map() };
 }
 
 /**
@@ -74,7 +114,7 @@ export function openStore({ backend = 'auto', legacy = null, migrateKeys = [], i
   let backing = null;
   let kind = 'memory';
   let failed = false; // a write-through failed: memory only from here on
-  let flushing = false;
+  let flushing = null;
   let readyPromise = null;
 
   function fail(error) {
@@ -85,24 +125,27 @@ export function openStore({ backend = 'auto', legacy = null, migrateKeys = [], i
   }
 
   /* One write at a time; a key written twice before its turn is written once, with the latest value. */
-  async function flush() {
-    if (flushing) return;
-    flushing = true;
-    try {
-      while (pending.size && !failed) {
-        const [key, value] = pending.entries().next().value;
-        pending.delete(key);
-        await (value === null ? backing.remove(key) : backing.write(key, value));
+  function flush() {
+    if (!backing || failed) return Promise.resolve();
+    flushing ||= (async () => {
+      await null; // so `flushing` is assigned before the loop can finish
+      try {
+        while (pending.size && !failed) {
+          const [key, value] = pending.entries().next().value;
+          pending.delete(key);
+          await (value === null ? backing.remove(key) : backing.write(key, value));
+        }
+      } catch (error) {
+        fail(error);
       }
-    } catch (error) {
-      fail(error);
-    } finally {
-      flushing = false;
-    }
+      flushing = null; // same tick as the loop's last check: a later setItem starts a new flush
+    })();
+    return flushing;
   }
 
+  /* Recorded even before ready(): flush() starts once a backend is chosen. */
   const queue = (key, value) => {
-    if (!backing || failed) return;
+    if (failed) return;
     pending.set(key, value);
     flush();
   };
@@ -111,28 +154,25 @@ export function openStore({ backend = 'auto', legacy = null, migrateKeys = [], i
     if (!legacy) return;
     for (const key of migrateKeys) {
       try {
-        if (memory.has(key) || !backing) continue;
+        if (memory.has(key) || pending.has(key)) continue;
         const value = legacy.getItem(key);
         if (value === null) continue;
         memory.set(key, value);
         queue(key, value);
-        while (flushing) await new Promise((r) => setTimeout(r, 0));
-        if (failed) continue;
+        await flush();
+        if (failed || kind === 'memory') continue;
         if ((await backing.load()).get(key) === value) legacy.removeItem(key);
       } catch { /* leave the legacy copy in place */ }
     }
   }
 
   async function init() {
-    try {
-      const chosen = await chooseAdapter({ backend, indexedDB, adapter });
-      backing = chosen.adapter;
-      for (const [key, value] of await backing.load()) if (!memory.has(key)) memory.set(key, value);
-      kind = chosen.kind;
-    } catch (error) {
-      backing = null;
-      kind = 'memory';
-    }
+    const chosen = await chooseBackend({ backend, indexedDB, adapter });
+    backing = chosen.adapter;
+    kind = chosen.kind;
+    // Keys set or removed before the load finished are newer than what it read.
+    for (const [key, value] of chosen.loaded) if (!memory.has(key) && !pending.has(key)) memory.set(key, value);
+    await flush();
     await migrate();
   }
 
@@ -160,4 +200,4 @@ export function openStore({ backend = 'auto', legacy = null, migrateKeys = [], i
    nor writes anyone's data: the store stays in memory and ready() is instant. */
 export const store = PRERENDER
   ? openStore({ backend: 'memory', legacy: null })
-  : openStore({ migrateKeys: ['naarad.journey.v1', 'naarad.studio.v1'], legacy: globalThis.localStorage ?? null });
+  : openStore({ migrateKeys: ['naarad.journey.v1', 'naarad.studio.v1'], legacy: safeLocalStorage() });
