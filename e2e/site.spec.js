@@ -2635,3 +2635,56 @@ test.describe('the photo mosaic on a route page', () => {
     await expect(page.locator('html.has-lightbox')).toHaveCount(0);
   });
 });
+
+test.describe('the routes page opens on the map', () => {
+  for (const size of [{ width: 1440, height: 900 }, { width: 390, height: 844 }]) {
+    test(`the map fills the first screen and the route cards take no more than 15% of it at ${size.width} px`, async ({ page }) => {
+      await page.setViewportSize(size);
+      await page.goto('/routes/');
+      await expect(page.locator('.leaflet-container')).toHaveCount(1);
+      const header = await page.locator('.site-header').evaluate((node) => node.getBoundingClientRect().bottom);
+      const atlas = await page.locator('.atlas').boundingBox();
+      const map = await page.locator('.atlas-map').boundingBox();
+      const strip = await page.locator('.atlas-slider').boundingBox();
+      expect(atlas.y).toBeLessThanOrEqual(header + 2);
+      expect(atlas.height, 'the stage fills the screen under the header').toBeGreaterThanOrEqual(size.height - header - 4);
+      expect(map.width, 'the map is the background').toBeGreaterThanOrEqual(atlas.width - 2);
+      expect(map.height).toBeGreaterThanOrEqual(atlas.height - 2);
+      expect(strip.height, 'the cards').toBeLessThanOrEqual(atlas.height * 0.15 + 1);
+      expect(strip.y + strip.height).toBeLessThanOrEqual(atlas.y + atlas.height + 1);
+    });
+  }
+
+  test('swiping the cards zooms the map to the route on the centred card', async ({ page }) => {
+    await page.goto('/routes/');
+    await expect(page.locator('.leaflet-tile').first()).toBeAttached();
+    const zoom = () => page.evaluate(() => {
+      const tile = [...document.querySelectorAll('.leaflet-tile-container img.leaflet-tile')].find((img) => /\/(\d+)\/\d+\/\d+\.png/.test(img.src));
+      return tile ? Number(tile.src.match(/\/(\d+)\/\d+\/\d+\.png/)[1]) : 0;
+    });
+    const before = await zoom();
+    const slug = await page.evaluate(() => {
+      const strip = document.querySelector('.atlas-slider');
+      const slide = strip.querySelectorAll('.atlas-slide')[2];
+      strip.scrollTo({ left: slide.offsetLeft - (strip.clientWidth - slide.offsetWidth) / 2, behavior: 'instant' });
+      return slide.querySelector('.atlas-card').dataset.slug;
+    });
+    await expect(page.locator('.atlas-card.is-current')).toHaveAttribute('data-slug', slug);
+    await expect.poll(zoom, { timeout: 8000 }).toBeGreaterThan(before + 2);
+    // Swiping on to the next card moves the highlight and the map with it.
+    const next = await page.evaluate(() => {
+      const strip = document.querySelector('.atlas-slider');
+      const slide = strip.querySelectorAll('.atlas-slide')[3];
+      strip.scrollTo({ left: slide.offsetLeft - (strip.clientWidth - slide.offsetWidth) / 2, behavior: 'instant' });
+      return slide.querySelector('.atlas-card').dataset.slug;
+    });
+    await expect(page.locator('.atlas-card.is-current')).toHaveAttribute('data-slug', next);
+    await expect(page.locator('.atlas-card.is-current')).toHaveCount(1);
+  });
+
+  test('a card opens its route', async ({ page }) => {
+    await page.goto('/routes/');
+    await page.locator('.atlas-card').first().click();
+    await expect(page).toHaveURL(/\/routes\/[a-z0-9-]+\/$/);
+  });
+});
