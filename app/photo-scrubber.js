@@ -307,10 +307,8 @@ export function initPhotoScrubber(rootEl, route, options = {}) {
       };
     },
 
-    /**
-     * Destroy the scrubber and clean up
-     */
-    destroy()
+    /** Destroy the scrubber and clean up. */
+    destroy,
   };
 }
 

@@ -1,56 +1,41 @@
-/* Homepage: photo-led, map-led. Komoot restraint with Airbnb mosaic hero. */
+/* Homepage: editorial spread on desktop, single column on a phone. */
 
 .home { display: block; }
 
-/* ── Hero: Flyover + Mosaic ────────────────────────────────────── */
+/* ── Hero ──────────────────────────────────────────────────────── */
 .home-hero {
-  position: relative;
-  min-height: min(calc(100svh - var(--header-h)), 720px);
-  display: grid;
-  grid-template-rows: auto 1fr;
-}
-.home-hero-flyover {
-  position: relative;
-  z-index: 1;
-}
-.home-hero-overlay {
-  position: absolute;
-  inset: 0;
   display: grid;
   grid-template-columns: minmax(400px, 40%) 1fr;
   align-items: center;
-  padding: 40px clamp(28px, 3vw, 56px) 40px clamp(24px, 4vw, 72px);
-  background: linear-gradient(to right, rgba(12, 28, 51, .92) 0%, rgba(12, 28, 51, 0) 65%);
+  min-height: min(calc(100svh - var(--header-h)), 860px);
 }
-.home-hero-copy { max-width: 580px; }
-.home-hero-copy .eyebrow { margin-bottom: 18px; color: var(--orange-on-dark); }
-.home-hero-copy .eyebrow::before { background: var(--orange-on-dark); }
-.home-hero-copy h1 { font-size: clamp(42px, 4.5vw, 66px); letter-spacing: -.028em; text-wrap: balance; color: var(--white); }
-.home-hero-copy h1 .accent { color: var(--orange-on-dark); }
-.home-hero-copy .lede { margin: 22px 0 28px; max-width: 42ch; font-size: 17.5px; line-height: 1.65; color: rgba(247, 242, 232, .95); }
-.home-hero-cta { height: 52px; padding: 0 28px; font-size: 15px; background: var(--orange); border-color: var(--orange-text); color: var(--white); }
-@media (hover: hover) { .home-hero-cta:hover { background: var(--orange-deep); border-color: var(--orange-deep); } }
+.home-hero-copy { padding: 40px clamp(28px, 3vw, 56px) 40px clamp(24px, 4vw, 72px); max-width: 640px; }
+.home-hero-copy .eyebrow { margin-bottom: 18px; }
+.home-hero-copy h1 { font-size: clamp(42px, 4.5vw, 66px); letter-spacing: -.028em; text-wrap: balance; }
+.home-hero-copy .lede { margin: 22px 0 28px; max-width: 42ch; font-size: 16.5px; }
+.home-hero-cta { height: 52px; padding: 0 28px; font-size: 15px; }
 
 .quick-links { display: flex; flex-wrap: wrap; gap: 10px 34px; margin-top: 42px; }
-.quick-links a { display: flex; flex-direction: column; align-items: center; gap: 7px; text-align: center; padding: 6px 2px; color: var(--white); }
-.quick-links .ico { width: 26px; height: 26px; stroke-width: 1.45; color: var(--orange-on-dark); }
+.quick-links a { display: flex; flex-direction: column; align-items: center; gap: 7px; text-align: center; padding: 6px 2px; }
+.quick-links .ico { width: 26px; height: 26px; stroke-width: 1.45; }
 .quick-links b { display: block; font-size: var(--text-xs); font-weight: 700; }
-.quick-links small { display: block; font-size: var(--text-xs); color: rgba(247, 242, 232, .75); }
-@media (hover: hover) { .quick-links a:hover b { color: var(--orange-on-dark); } }
+.quick-links small { display: block; font-size: var(--text-xs); color: var(--ink-muted); }
+@media (hover: hover) { .quick-links a:hover b { color: var(--orange-text); } }
 
-/* Photo mosaic below flyover (Airbnb 5-photo grid) */
-.home-hero-mosaic {
-  position: relative;
-  z-index: 2;
-  margin-top: -80px;
-  padding: 0 clamp(24px, 4vw, 64px) 60px;
-}
-.home-hero-mosaic-inner { max-width: var(--wrap); margin: 0 auto; }
+.home-hero-media { position: relative; align-self: stretch; min-height: 420px; }
+.home-hero-photo { position: absolute; inset: 0; }
+.home-hero-photo img { width: 100%; height: 100%; object-fit: cover; object-position: 54% center; }
+.home-hero-note { position: absolute; top: clamp(24px, 5vw, 64px); right: clamp(20px, 3vw, 48px); max-width: 290px; }
+.home-hero-place { position: absolute; right: clamp(20px, 3vw, 48px); bottom: 28px; }
+.home-hero-media .photo-credit { left: auto; right: 20px; bottom: 74px; }
 
 /* ── Featured routes ───────────────────────────────────────────── */
 .home-featured { padding: clamp(56px, 6vw, 92px) 0 clamp(50px, 5vw, 80px); }
 .home-featured > * { width: min(100% - 48px, var(--wrap)); margin-inline: auto; }
-.section-head { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 42%); gap: 20px 40px; align-items: end; margin-bottom: 34px; }
+.section-head {
+  display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 42%); gap: 20px 40px;
+  align-items: end; margin-bottom: 34px;
+}
 .section-head .eyebrow { margin-bottom: 14px; }
 .section-head-aside { display: flex; align-items: center; justify-content: flex-end; gap: 26px; }
 .section-head-aside p { max-width: 46ch; font-size: var(--text-base); line-height: 1.6; color: var(--ink); text-align: right; }
@@ -86,7 +71,7 @@
 .route-card .text-link { margin-top: 2px; font-size: var(--text-xs); }
 .route-card .text-link .ico { width: 15px; height: 15px; }
 
-/* Route preview SVG */
+/* Route preview SVG (shared with other pages) */
 .route-preview { display: block; }
 .rp-line-case { fill: none; stroke: rgb(var(--white-rgb) / 95%); stroke-width: 5.5; stroke-linecap: round; stroke-linejoin: round; }
 .rp-line { fill: none; stroke: #2f6cb5; stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; }
@@ -99,7 +84,7 @@
 .rp-pin { fill: var(--orange); stroke: var(--white); stroke-width: 1.8; }
 .rp-num { fill: var(--white); font: 700 9.5px/1 var(--sans); text-anchor: middle; }
 
-/* Elevation SVG */
+/* Elevation SVG (shared) */
 .elevation-svg { display: block; width: 100%; }
 .ep-area { fill: rgba(111, 129, 86, .22); }
 .ep-line { fill: none; stroke: var(--sage); stroke-width: 2; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
@@ -183,28 +168,30 @@
   .experience-strip { grid-column: 1 / -1; order: 3; }
 }
 @media (max-width: 1023px) {
-  .home-hero-overlay { grid-template-columns: 1fr; padding: 34px 24px 40px; background: linear-gradient(to bottom, rgba(12, 28, 51, .9) 0%, transparent 50%); }
-  .home-hero-mosaic { margin-top: -60px; padding: 0 20px 40px; }
+  .home-hero { grid-template-columns: 1fr; min-height: 0; }
+  .home-hero-copy { order: 2; padding: 34px 24px 40px; }
+  .home-hero-media { order: 1; min-height: 58vh; }
+  .home-hero-photo { position: relative; }
+  .home-hero-photo.torn-left { -webkit-mask-image: none; mask-image: none; }
+  .home-hero-note { max-width: 240px; top: 20px; right: 16px; padding: 13px 17px 15px; }
+  .home-hero-note .script { font-size: var(--text-md); }
   .section-head { grid-template-columns: 1fr; }
   .section-head-aside { justify-content: space-between; }
   .section-head-aside p { text-align: left; }
 }
 
-/* ── Phone ─────────────────────────────────────────────────────── */
+/* ── Phone: the pocket guide composition ───────────────────────── */
 @media (max-width: 639px) {
-  .home-hero { min-height: 100svh; }
-  .home-hero-flyover { height: 42svh; min-height: 280px; }
-  .home-hero-overlay { padding: 28px 20px 34px; }
-  .home-hero-copy h1 { font-size: clamp(36px, 11vw, 54px); }
+  /* The photo no longer pushes the headline and the main button below the first screen. */
+  .home-hero-media { height: 36svh; min-height: 240px; overflow: hidden; }
+  .home-hero-photo { height: 100%; }
+  .home-hero-copy { padding: 28px 20px 34px; }
+  .home-hero-copy h1 { font-size: clamp(40px, 12vw, 58px); }
   .home-hero-copy .lede { font-size: var(--text-base); margin: 16px 0 22px; }
   .home-hero-cta { width: 100%; }
   .quick-links { margin-top: 30px; justify-content: space-between; gap: 14px; }
   .quick-links a { flex: 1; min-width: 70px; }
-  
-  .home-hero-mosaic { margin-top: -40px; padding: 0 16px 30px; }
-  .home-hero-mosaic .photo-mosaic { grid-template-columns: 1fr; grid-template-rows: auto; gap: 10px; }
-  .home-hero-mosaic .photo-mosaic > *:first-child { grid-column: 1; grid-row: 1; aspect-ratio: 16 / 9; }
-  .home-hero-mosaic .photo-mosaic > * + * { aspect-ratio: 4 / 3; }
+  .home-hero-note { display: none; }
 
   .home-featured { padding: 46px 0 40px; }
   .home-featured > * { width: calc(100% - 32px); }
