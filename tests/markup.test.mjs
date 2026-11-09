@@ -150,3 +150,50 @@ test('the studio says it is a drafting space, and promises no recording, audio o
   assert.doesNotMatch(lede, /\brecord|audio stories|prepare/i);
   assert.doesNotMatch(html, /up to 10 minutes|Drag and drop/, 'a limit nothing enforces, and a drop target that is not there');
 });
+
+test('the home hero and the footer carry a dithered band, and the service worker precaches the module', async () => {
+  const html = await HomeView.render();
+  assert.match(html, /<section class="home-hero dither-band" data-dither="sand"/);
+  assert.match(fs.readFileSync(new URL('app/shell.html', ROOT), 'utf8'), /<footer class="site-footer dither-band" data-dither="navy"/);
+  assert.match(fs.readFileSync(new URL('sw.js', ROOT), 'utf8'), /'\/app\/dither\.js'/);
+});
+
+test('every page-header block is a dithered band, and reading pages are not', () => {
+  const views = new URL('app/views/', ROOT);
+  let headers = 0;
+  for (const name of fs.readdirSync(views).filter((file) => file.endsWith('.js'))) {
+    const source = fs.readFileSync(new URL(name, views), 'utf8');
+    for (const [tag] of source.matchAll(/<header class="(?:catalogue-hero|info-hero|journey-hero|story-index-hero)[^>]*>/g)) {
+      headers++;
+      assert.match(tag, /dither-band/, `${name}: ${tag}`);
+      assert.match(tag, /data-dither="sand"/, `${name}: ${tag}`);
+    }
+  }
+  assert.ok(headers >= 8, `found ${headers} page headers`);
+  assert.doesNotMatch(fs.readFileSync(new URL('route.js', views), 'utf8'), /data-dither/, 'route pages stay on plain paper');
+  assert.doesNotMatch(fs.readFileSync(new URL('story.js', views), 'utf8'), /<header class="story-hero[^>]*data-dither/, 'a story stays on plain paper');
+});
+
+test('the intro video and route-tracker sections exist only when their files are listed', () => {
+  assert.equal(HomeView.introVideoMarkup({}), '');
+  assert.equal(HomeView.introVideoMarkup(null), '');
+  assert.equal(HomeView.trackerSectionMarkup({}), '');
+  assert.equal(HomeView.trackerSectionMarkup(undefined), '');
+
+  const video = HomeView.introVideoMarkup({ introVideo: { src: '/Images/video/intro.mp4', poster: '/Images/video/intro-poster.webp', captions: '/Images/video/intro.vtt' } });
+  assert.match(video, /<video[^>]*\scontrols/);
+  assert.match(video, /preload="metadata"/);
+  assert.match(video, /poster="\/Images\/video\/intro-poster\.webp"/);
+  assert.doesNotMatch(video, /autoplay/);
+
+  const tracker = HomeView.trackerSectionMarkup({ tracker: { image: '/Images/mockups/route-tracker.webp', width: 1200, height: 800, alt: 'The route tracker on a phone' } });
+  assert.match(tracker, /<img[^>]*src="\/Images\/mockups\/route-tracker\.webp"[^>]*width="1200"[^>]*height="800"[^>]*alt="The route tracker on a phone"/);
+  assert.doesNotMatch(tracker, /src=""/);
+});
+
+test('a video without captions is not published, and video skips the service worker', () => {
+  assert.equal(HomeView.introVideoMarkup({ introVideo: { src: '/Images/video/intro.mp4' } }), '', 'no captions, no video');
+  assert.match(HomeView.introVideoMarkup({ introVideo: { src: '/Images/video/intro.mp4', captions: '/Images/video/intro.vtt' } }), /<track kind="captions" src="\/Images\/video\/intro\.vtt"/);
+  // A <video> asks for byte ranges (206), which Cache.put rejects: the worker must not touch them.
+  assert.match(fs.readFileSync(new URL('sw.js', ROOT), 'utf8'), /request\.destination === 'video'[^\n]*headers\.has\('range'\)/);
+});

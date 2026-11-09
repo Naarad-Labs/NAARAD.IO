@@ -21,7 +21,7 @@ export async function render() {
   const tiles = themeTiles(routes);
   const collections = await collectionStrip();
   return `<div class="discover">
-    <header class="catalogue-hero">
+    <header class="catalogue-hero dither-band" data-dither="sand">
       <div>
         <p class="eyebrow eyebrow-mark">Explore</p>
         <h1 class="display">Find your <br>next walk.</h1>

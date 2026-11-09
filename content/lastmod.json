@@ -2,36 +2,36 @@
   "note": "Written by scripts/build-site.mjs. For each page in the sitemap: a hash of what the page says (its main content and the head tags it owns) and the date that hash was first built. The sitemap's lastmod is that date; it moves only when the hash does.",
   "pages": {
     "/": {
-      "hash": "122e6de7f24d8882d5a477be572b788eaa10080639d30ca12107e5f7e8dc071c",
-      "date": "2026-11-05"
+      "hash": "66cac4e59a23252e630e358aaab4a0280a1513fecc47cba0c14481aead57d48a",
+      "date": "2026-11-09"
     },
     "/about/": {
-      "hash": "01a0c51eebe314f4f56c45bd9a4849fe2954eeb1fddb02ee39e24f8ef3969edc",
-      "date": "2026-11-05"
+      "hash": "b76bdd3d637df8738a9935522bce33abb79e711643ae6e1168d75d410733a9f4",
+      "date": "2026-11-09"
     },
     "/collections/": {
-      "hash": "749b65d3351bc3362a94a3b2f34835e7db68d63ad74b6795faaf3387be8decf6",
-      "date": "2026-11-05"
+      "hash": "baa5ab7e4a4a76e7d91dc222c5e30829dfb2500bdeae0cdc2f40cd636f269c94",
+      "date": "2026-11-09"
     },
     "/collections/cities-of-the-north/": {
-      "hash": "068cc5f4a6aef2064e67243742907c7abf05909fb9ef8515c9fd45d5bd36c89b",
-      "date": "2026-11-05"
+      "hash": "bc8c705156660e0f30527705b17f12249a5e98d0ed9cdc74a43d039f173c615a",
+      "date": "2026-11-09"
     },
     "/collections/open-air-routes/": {
-      "hash": "a44bb63854dd91da1893e8a9a0b207348f56067bca62ec4314fb1e43de4a944d",
-      "date": "2026-11-05"
+      "hash": "614059f20721de784217f91f65559cf6572b1c889fc9a7b56fe5180becc886b6",
+      "date": "2026-11-09"
     },
     "/collections/royal-cities-of-the-south/": {
-      "hash": "c8186f3d261b74a671ae5262343d8f13a31bb484aa5c7900c6645f59a6a4669d",
-      "date": "2026-11-05"
+      "hash": "b66452f472107bd13252a7df5450e9cd792f90fb0b63e49627aa0ca971466eea",
+      "date": "2026-11-09"
     },
     "/collections/temples-across-india/": {
-      "hash": "a802f8396f82d99d3a36b322e78ba0933aa3da5332da8af9396a05c7042d7bd4",
-      "date": "2026-11-05"
+      "hash": "4bd317a66ba453e608e9367b37ba22422cc5d123c5fa54c167837fbb326dc433",
+      "date": "2026-11-09"
     },
     "/collections/walks-around-chennai/": {
-      "hash": "9c4b58840f8326d382af6c43e80db200ddf51f6b9cfe6dd0fe30234e9aa01279",
-      "date": "2026-11-05"
+      "hash": "1e6bb87c8dc4c4c2a9298a72b963c7f5d02946ee9b104f269cd546c3febe2d1d",
+      "date": "2026-11-09"
     },
     "/creators/": {
       "hash": "add46cdaf0868489ec8152a8331f310042748d529ed0edca77e6196ba17c288a",
@@ -42,12 +42,12 @@
       "date": "2026-11-05"
     },
     "/explore/": {
-      "hash": "85d274cbfb39b666e55f665d033786e7df7ffb3ab27281e47246233b7386f424",
-      "date": "2026-11-05"
+      "hash": "382f912f112b0f53cb2c7b08055ac5bfa8150b10523923dbbf537eb3e19de9a9",
+      "date": "2026-11-09"
     },
     "/routes/": {
-      "hash": "7c80c09281ac0e9ed34206b03cce2f88aa50444dafdb2c91c997e2bef02ba399",
-      "date": "2026-11-05"
+      "hash": "ee3c970468c5711c6ec4fe5d86be904705c8ad6382aa909fbd15e42c6359bdf9",
+      "date": "2026-11-09"
     },
     "/routes/auroville-explorer/": {
       "hash": "7100b5d9b6bf4bfd7f1c787830f3d09d59a792e951a304e2a8e72ad02c2c1ee2",
@@ -62,8 +62,8 @@
       "date": "2026-11-05"
     },
     "/stories/": {
-      "hash": "653dea717fa1ac498c89a71dad5c30209daf90acdacb616778735f3548287d60",
-      "date": "2026-11-05"
+      "hash": "feec6dd769db626bc2e445ac8d4f629c9aad5c85c21795f93453794a60fdf802",
+      "date": "2026-11-09"
     },
     "/stories/bazaar-that-sold-the-world/": {
       "hash": "800598656a03072ad5b265ff1aa33d5e1277553840c9d3f349fb30f47a54be1f",

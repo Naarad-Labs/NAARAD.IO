@@ -21,7 +21,7 @@
  * a page that was already controlled reload once when the worker changes.
  */
 
-const VERSION = 'v47';
+const VERSION = 'v48';
 const SHELL = `naarad-shell-${VERSION}`;
 const PAGES = `naarad-pages-${VERSION}`;
 const CONTENT = `naarad-content-${VERSION}`;
@@ -57,6 +57,7 @@ const SHELL_ASSETS = [
   '/app/journey-store.js',
   '/app/listen-tracker.js',
   '/app/motion.js',
+  '/app/dither.js',
   '/app/studio-store.js',
   '/app/urls.js',
   '/app/seo.js',
@@ -197,6 +198,8 @@ self.addEventListener('fetch', (event) => {
   }
 
   if (url.origin !== location.origin) return;
+  // A <video> asks for byte ranges (206), which Cache.put rejects and Safari will not replay from a cache.
+  if (request.destination === 'video' || request.headers.has('range')) return;
 
   // Pages first: /routes/<slug>/ is a page, though /routes/ also holds track data.
   if (request.mode === 'navigate') { event.respondWith(page(request, url)); return; }

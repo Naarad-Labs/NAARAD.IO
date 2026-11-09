@@ -243,7 +243,7 @@ export async function renderIndex() {
   }
   const rest = all.slice(1);
   return `<div class="story-index">
-    <header class="story-index-hero">
+    <header class="story-index-hero dither-band" data-dither="sand">
       <p class="eyebrow eyebrow-mark">Stories · Field notes</p>
       <h1 class="display">Listen closer.</h1>
       <p class="lede">Short written stories about the places on Naarad's routes: what happened there, who built it, and what is left to see.</p>

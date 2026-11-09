@@ -13,6 +13,7 @@
   /* Colors - Ink (text) */
   --ink: #12294a;
   --ink-deep: #0c1c33;
+  --forest: #1e5b46;          /* brand Forest Green: fills and dither only */
   --ink-soft: #46556d;
   --ink-muted: #66645b;
 

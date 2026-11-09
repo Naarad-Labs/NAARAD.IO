@@ -25,6 +25,7 @@ import * as Account from './account.js';
 import * as OfflineUI from './offline-ui.js';
 import * as Drafts from './studio-store.js';
 import * as Motion from './motion.js';
+import { mountDither } from './dither.js';
 import { loadPreviewTiles } from './previews.js';
 import * as Lightbox from './lightbox.js';
 import { downloadGpx } from './gpx.js';
@@ -406,6 +407,7 @@ function commit({ markup, meta }, { keep = false, scrollY = 0 } = {}) {
   if (!(keep && drawn(markup))) {
     destroyMap();
     unwatchRouteBar();
+    unmountBands(shell);
     shell.innerHTML = markup;
     delete shell.dataset.prerendered;
     // 'instant': the page is replaced, so it opens in place rather than gliding there.
@@ -413,6 +415,7 @@ function commit({ markup, meta }, { keep = false, scrollY = 0 } = {}) {
   }
   setMeta(meta);
   Motion.scan(shell);
+  if (!PRERENDER) mountBands();
   if (!PRERENDER) loadPreviewTiles(shell);   // a saved page must keep data-src, not the fetched state
   OfflineUI.start();
   OfflineUI.refresh();
@@ -1201,6 +1204,16 @@ window.addEventListener('popstate', () => {
 });
 
 /* ── Boot ───────────────────────────────────────────────────────── */
+
+/** Dithered backgrounds (app/dither.js) on every [data-dither] element not yet drawn, the footer's included. */
+const bandStops = new Map();
+function unmountBands(root) {
+  for (const [el, stop] of bandStops) if (root.contains(el)) { stop(); bandStops.delete(el); }
+}
+function mountBands() {
+  const start = () => $$('[data-dither]:not([data-dither-on])').forEach((el) => { el.dataset.ditherOn = '1'; bandStops.set(el, mountDither(el)); });
+  (window.requestIdleCallback || ((fn) => setTimeout(fn, 200)))(start, { timeout: 800 });
+}
 
 async function boot() {
   // An address from the single-document site becomes the page that replaced it.

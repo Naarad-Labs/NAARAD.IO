@@ -44,7 +44,7 @@ const PAGES = {
 export async function render(context) {
   const page = PAGES[context.view] || PAGES.about;
   return `<div class="info-page">
-    <header class="info-hero${page.photo ? '' : ' is-plain'}">
+    <header class="info-hero dither-band${page.photo ? '' : ' is-plain'}" data-dither="sand">
       <div class="info-hero-copy">
         <p class="eyebrow eyebrow-mark">${escapeHtml(page.eyebrow)}</p>
         <h1 class="display">${page.title}</h1>
