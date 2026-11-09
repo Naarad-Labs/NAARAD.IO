@@ -5,6 +5,10 @@
  * not saved on this device is marked and does not navigate: the alternative is
  * a dead end with no explanation. The decisions live in offline-state.js; this
  * file only reads the page and the browser and applies them.
+ *
+ * The SW update prompt (app/offline-ui.js, sw.js SWUpdateBanner). When a new
+ * service worker is found, the page shows a banner "New version available — Reload"
+ * that the visitor can dismiss or click to refresh.
  */
 
 import * as Offline from './offline-bundles.js';
@@ -14,6 +18,7 @@ import * as State from './offline-state.js';
 let started = false;
 let observer = null;
 let timer = null;
+let updateBanner = null;
 
 const savedSlugs = () => Journey.getDownloads().map((entry) => entry.slug);
 const online = () => State.isOnline(globalThis.navigator);
@@ -83,4 +88,46 @@ export function start() {
 /** Would opening this address be a dead end right now? */
 export function blocks(url) {
   return State.blocksNavigation({ ...context(), url: String(url) });
+}
+
+/* ── SW update prompt ───────────────────────────────────────────────────── */
+
+const updateHostId = 'sw-update-host';
+
+function updateBannerHtml() {
+  return `<div id="${updateHostId}" class="sw-update-banner" role="status">
+    <span>New version available. <button id="sw-update-reload" class="sw-update-btn">Reload</button></span>
+    <button id="sw-update-dismiss" class="sw-update-dismiss" aria-label="Dismiss update notice">&times;</button>
+  </div>`;
+}
+
+export function showUpdateBanner() {
+  if (updateBanner) return;          // already visible
+  let host = document.getElementById(updateHostId);
+  if (!host) {
+    host = document.createElement('div');
+    host.id = updateHostId;
+    document.body.prepend(host);
+    host.innerHTML = updateBannerHtml();
+    host.querySelector('#sw-update-reload')?.addEventListener('click', () => location.reload());
+    host.querySelector('#sw-update-dismiss')?.addEventListener('click', () => {
+      host.remove();
+      updateBanner = null;
+    });
+    updateBanner = host;
+  }
+}
+
+export function hideUpdateBanner() {
+  if (updateBanner) { updateBanner.remove(); updateBanner = null; }
+}
+
+/** Check and optionally show the update banner. Returns true if an update is waiting. */
+export function checkUpdate() {
+  const registration = globalThis.navigator?.serviceWorker?.controller;
+  if (!registration) return false;
+  const waiting = globalThis.registration?.waiting;
+  if (!waiting) return false;
+  showUpdateBanner();
+  return true;
 }

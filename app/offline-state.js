@@ -6,6 +6,10 @@
  * either already local or not part of the offline promise, so we never
  * block it. The bar is a status region: hidden when online, and when
  * offline it says what is being shown and whether anything is saved.
+ *
+ * Route version detection (offline-bundles.js): each bundle has a version
+ * hash computed from the route's data; if the source route.json changes,
+ * the bundle becomes stale and an update prompt can offer to re-download.
  */
 
 export const UNSAVED_LABEL = 'Not saved for offline';
