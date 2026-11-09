@@ -173,3 +173,20 @@ test('every page-header block is a dithered band, and reading pages are not', ()
   assert.doesNotMatch(fs.readFileSync(new URL('route.js', views), 'utf8'), /data-dither/, 'route pages stay on plain paper');
   assert.doesNotMatch(fs.readFileSync(new URL('story.js', views), 'utf8'), /<header class="story-hero[^>]*data-dither/, 'a story stays on plain paper');
 });
+
+test('the intro video and route-tracker sections exist only when their files are listed', () => {
+  assert.equal(HomeView.introVideoMarkup({}), '');
+  assert.equal(HomeView.introVideoMarkup(null), '');
+  assert.equal(HomeView.trackerSectionMarkup({}), '');
+  assert.equal(HomeView.trackerSectionMarkup(undefined), '');
+
+  const video = HomeView.introVideoMarkup({ introVideo: { src: '/Images/video/intro.mp4', poster: '/Images/video/intro-poster.webp' } });
+  assert.match(video, /<video[^>]*\scontrols/);
+  assert.match(video, /preload="metadata"/);
+  assert.match(video, /poster="\/Images\/video\/intro-poster\.webp"/);
+  assert.doesNotMatch(video, /autoplay/);
+
+  const tracker = HomeView.trackerSectionMarkup({ tracker: { image: '/Images/mockups/route-tracker.webp', width: 1200, height: 800, alt: 'The route tracker on a phone' } });
+  assert.match(tracker, /<img[^>]*src="\/Images\/mockups\/route-tracker\.webp"[^>]*width="1200"[^>]*height="800"[^>]*alt="The route tracker on a phone"/);
+  assert.doesNotMatch(tracker, /src=""/);
+});

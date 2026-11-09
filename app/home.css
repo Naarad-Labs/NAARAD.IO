@@ -216,3 +216,8 @@
   .route-card, .magazine-page { transition: none; }
   .route-card:hover, .magazine-page:hover { transform: none; }
 }
+
+/* ── Intro video and route-tracker picture (content/visuals.json) ─── */
+.home-video, .home-how { width: min(1100px, calc(100% - 32px)); margin: 56px auto; }
+.home-video video { display: block; width: 100%; height: auto; margin-top: 18px; border-radius: var(--radius); background: var(--ink-deep); }
+.home-how img { display: block; width: 100%; height: auto; margin-top: 18px; border-radius: var(--radius); }

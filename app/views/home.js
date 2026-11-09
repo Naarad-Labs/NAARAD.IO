@@ -176,12 +176,45 @@ function experienceSection(routes) {
   </section>`;
 }
 
+/** The intro video, or '' when content/visuals.json lists none. No autoplay: it has sound. */
+export function introVideoMarkup(visuals) {
+  const video = visuals?.introVideo;
+  if (!video?.src) return '';
+  return `<section class="home-video" aria-labelledby="intro-video-title">
+    <h2 id="intro-video-title" class="section-title">See Naarad in two minutes.</h2>
+    <video controls playsinline preload="metadata" src="${escapeHtml(video.src)}"${video.poster ? ` poster="${escapeHtml(video.poster)}"` : ''}>
+      ${video.captions ? `<track kind="captions" src="${escapeHtml(video.captions)}" srclang="en" label="English" default>` : ''}
+    </video>
+  </section>`;
+}
+
+/** The route-tracker picture (an Ultramock export), or '' when content/visuals.json lists none. */
+export function trackerSectionMarkup(visuals) {
+  const tracker = visuals?.tracker;
+  if (!tracker?.image) return '';
+  return `<section class="home-how" aria-labelledby="how-title">
+    <h2 id="how-title" class="section-title">Your walk, tracked as you go.</h2>
+    <img src="${escapeHtml(tracker.image)}" width="${Number(tracker.width) || 1200}" height="${Number(tracker.height) || 800}" alt="${escapeHtml(tracker.alt || '')}" loading="lazy" decoding="async">
+  </section>`;
+}
+
+async function loadVisuals() {
+  try {
+    const response = await fetch('/content/visuals.json');
+    return response.ok ? await response.json() : {};
+  } catch {
+    return {};
+  }
+}
+
 export async function render() {
-  const [featured, all] = await Promise.all([Data.featuredRoutes(4), Data.loadRoutes()]);
+  const [featured, all, visuals] = await Promise.all([Data.featuredRoutes(4), Data.loadRoutes(), loadVisuals()]);
   const editorial = all.filter((route) => route.source === 'editorial');
   return `<div class="home">
     ${hero(featured)}
+    ${introVideoMarkup(visuals)}
     ${featuredSection(featured)}
+    ${trackerSectionMarkup(visuals)}
     ${voicesSection()}
     ${experienceSection(editorial.length ? editorial : featured)}
   </div>`;
