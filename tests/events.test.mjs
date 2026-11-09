@@ -137,3 +137,25 @@ test('4xx responses during queue fills count dropped items correctly', async () 
   assert.equal(q.size, 0, 'queue should be empty');
   assert.equal(q.dropped, 3, 'dropped count should be 3 (all items dropped due to 4xx)');
 });
+
+test('a 4xx drops only the batch that was refused: the events behind it stay and are sent, with the count', async () => {
+  const clock = fakeTimers();
+  const store = openStore({ backend: 'memory' });
+  await store.ready();
+  const earlier = make(store);
+  await earlier.ready;
+  earlier.setConsent(true);
+  for (let i = 0; i < 60; i += 1) earlier.track('route_open', { slug: `r${i}` });   // 60 queued: batches of 50 and 10
+  const bodies = [];
+  const responses = [{ status: 400, ok: false }, { ok: true }];
+  const fetchImpl = async (url, init) => { bodies.push(JSON.parse(init.body)); return responses.shift(); };
+  const q = make(store, { endpoint: 'https://e.test', fetchImpl, isOnline: () => true, random: () => 0.5, ...clock });
+  await q.ready;
+  await settle();                                   // the boot flush runs: refused batch, then the rest
+  assert.equal(bodies.length, 2);
+  assert.equal(bodies[0].events.length, 50);
+  assert.equal(bodies[1].events.length, 10, 'the ten events behind the refused batch were still sent');
+  assert.equal(bodies[1].dropped_before, 50, 'and the fifty that were lost are reported');
+  assert.equal(q.size, 0);
+  assert.equal(q.dropped, 0, 'reported once, then cleared');
+});
