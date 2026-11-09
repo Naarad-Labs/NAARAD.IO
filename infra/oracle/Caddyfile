@@ -1,0 +1,22 @@
+# Media origin for media.naarad.io. Static files only; Caddy gets and renews the TLS certificate itself.
+media.naarad.io {
+	root * /srv/media
+	file_server {
+		precompressed br gzip
+	}
+	encode zstd gzip
+	header {
+		Access-Control-Allow-Origin "https://naarad.io"
+		Cache-Control "public, max-age=86400"
+		X-Content-Type-Options nosniff
+		-Server
+	}
+	@immutable path_regexp \.[0-9a-f]{8,}\.(js|css|mp3|m4a|webp|pmtiles)$
+	header @immutable Cache-Control "public, max-age=31536000, immutable"
+	log {
+		output file /var/log/caddy/access.log {
+			roll_size 10mb
+			roll_keep 3
+		}
+	}
+}
