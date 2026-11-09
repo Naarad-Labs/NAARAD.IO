@@ -224,3 +224,30 @@ test('an open() that never settles falls through instead of hanging ready()', as
     assert.notEqual(s.persistence(), 'indexeddb');
   });
 });
+
+test('a slow IndexedDB open keeps the session in memory, leaves localStorage alone, and closes the late connection', async () => {
+  const map = new Map([[JOURNEY, '{"saved":[{"slug":"a"}]}']]);
+  let writes = 0;
+  const ls = {
+    get length() { return map.size; }, key: (i) => [...map.keys()][i], getItem: (k) => (map.has(k) ? map.get(k) : null),
+    setItem: (k, v) => { writes += 1; map.set(k, String(v)); }, removeItem: (k) => { writes += 1; map.delete(k); },
+  };
+  let closed = false;
+  // Opens only after the 1.5 s per-backend bound has passed.
+  const slow = { open() {
+    const req = {};
+    setTimeout(() => { req.result = { close() { closed = true; }, transaction() { throw new Error('unused'); } }; req.onsuccess(); }, 1600);
+    return req;
+  } };
+  await withLocalStorage(ls, async () => {
+    const s = openStore({ indexedDB: slow, legacy: ls, migrateKeys: KEYS });
+    await s.ready();
+    assert.equal(s.persistence(), 'memory');
+    assert.equal(ls.getItem(JOURNEY), '{"saved":[{"slug":"a"}]}');
+    s.setItem(JOURNEY, '{"saved":[{"slug":"c"}]}');
+    await tick(200);
+    assert.equal(writes, 0);
+    assert.deepEqual([...map.keys()], [JOURNEY]);
+    assert.equal(closed, true);
+  });
+});

@@ -59,8 +59,6 @@ const SHELL_ASSETS = [
   '/app/journey-store.js',
   '/app/listen-tracker.js',
   '/app/motion.js',
-  '/app/vendor/gsap/gsap.min.js',
-  '/app/vendor/gsap/ScrollTrigger.min.js',
   '/app/dither.js',
   '/app/studio-store.js',
   '/app/urls.js',

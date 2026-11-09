@@ -83,6 +83,13 @@ export async function ready() {
   state = null;
 }
 
+export const persistence = () => storage.persistence();
+
+/** What the save button says, honest about a store that keeps nothing past this tab. */
+export const savedNotice = (kind = persistence()) => (kind === 'memory'
+  ? 'Draft kept for this tab only. It is not being saved on this device.'
+  : 'Draft saved in this browser.');
+
 export function list() { return read().drafts.slice(); }
 
 /** The draft being edited, created against the given route if there is none. */

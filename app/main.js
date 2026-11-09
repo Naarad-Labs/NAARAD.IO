@@ -856,7 +856,7 @@ async function handleStudio(target) {
     await refreshStudio();
     return;
   }
-  if (field === 'save') { Drafts.update({}); notify('Draft saved in this browser.'); await refreshStudio(); return; }
+  if (field === 'save') { Drafts.update({}); notify(Drafts.savedNotice()); await refreshStudio(); return; }
   if (field === 'transcribe') { notify('Automatic transcription needs the Naarad backend, which is not part of this build.'); return; }
   if (field === 'submit') {
     if (!Account.signedIn()) { notify('Publishing needs the Naarad backend. Your draft is kept in this browser.'); return; }

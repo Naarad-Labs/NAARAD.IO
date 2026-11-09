@@ -48,6 +48,7 @@ async function indexedDbAdapter(factory) {
     },
     write: (key, value) => write((os) => os.put(value, key)),
     remove: (key) => write((os) => os.delete(key)),
+    close: () => db.close(),
   };
 }
 
@@ -76,7 +77,7 @@ function memoryAdapter() {
 
 function withTimeout(promise, ms = OPEN_TIMEOUT_MS) {
   let timer;
-  const timeout = new Promise((_, reject) => { timer = setTimeout(() => reject(new Error('backend timed out')), ms); });
+  const timeout = new Promise((_, reject) => { timer = setTimeout(() => reject(Object.assign(new Error('backend timed out'), { timedOut: true })), ms); });
   return Promise.race([promise, timeout]).finally(() => clearTimeout(timer));
 }
 
@@ -96,9 +97,17 @@ async function chooseBackend({ backend, indexedDB, adapter }) {
     }]);
   }
   for (const [kind, make] of candidates) {
+    let made = null;
+    const attempt = (async () => { made = await make(); return { adapter: made, kind, loaded: await made.load() }; })();
     try {
-      return await withTimeout((async () => { const made = await make(); return { adapter: made, kind, loaded: await made.load() }; })());
-    } catch { /* try the next backend */ }
+      return await withTimeout(attempt);
+    } catch (error) {
+      // A slow IndexedDB is not a broken one: a localStorage session now would strand its saves. Stay in memory, and close a late connection.
+      if (error?.timedOut && kind === 'indexeddb') {
+        attempt.catch(() => {}).finally(() => made?.close?.());
+        break;
+      }
+    }
   }
   const made = memoryAdapter();
   return { adapter: made, kind: 'memory', loaded: new Map() };
