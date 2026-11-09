@@ -17,7 +17,19 @@
  * starts motion (main.js), so no hidden state is ever written into a page.
  */
 
-const REDUCED = matchMedia('(prefers-reduced-motion: reduce)');
+// Guarded so the pure helpers below can be imported (and tested) outside a browser.
+const REDUCED = typeof matchMedia === 'function' ? matchMedia('(prefers-reduced-motion: reduce)') : { matches: false };
+
+/** GSAP is only fetched when none of these ask us not to move or not to spend bytes. */
+export const motionAllowed = ({ reducedMotion, saveData, prerender }) => !(reducedMotion || saveData || prerender);
+
+/** "5.2 km" at 0 -> "0.0 km"; every number scales with `progress`, keeping its decimals and unit. */
+export function countUpText(finalText, progress) {
+  if (progress >= 1) return finalText;
+  return finalText.replace(/\d+(?:\.\d+)?/g, (n) => (Number(n) * Math.max(progress, 0)).toFixed(n.split('.')[1]?.length || 0));
+}
+
+let gsap = null;   // set once the vendored build has loaded; until then the CSS reveal runs
 
 /* Surfaces that may animate. The route workspace is deliberately absent. */
 const SECTIONS = [
@@ -37,9 +49,27 @@ const PARTS = ':scope > .eyebrow, :scope > h1, :scope > h2, :scope > h3, :scope 
 let observer = null;
 const seen = new WeakSet();
 
+/* Only called for cards that enter after load: settled ones never reach reveal(). */
+function countUp(card) {
+  const nodes = [...card.querySelectorAll('.route-card-metrics > span')]
+    .flatMap((span) => [...span.childNodes].filter((n) => n.nodeType === 3 && /\d/.test(n.data)));
+  nodes.forEach((node) => {
+    const final = node.data;
+    const tick = { p: 0 };
+    node.data = countUpText(final, 0);
+    gsap.to(tick, { p: 1, duration: 0.9, ease: 'power2.out', onUpdate: () => { node.data = countUpText(final, tick.p); }, onComplete: () => { node.data = final; } });
+  });
+}
+
 function reveal(element) {
   element.dataset.reveal = 'in';
   const parts = element.querySelectorAll(PARTS);
+  if (gsap) {
+    gsap.fromTo(parts.length ? parts : element, { autoAlpha: 0, y: 16 },
+      { autoAlpha: 1, y: 0, duration: 0.6, ease: 'power2.out', stagger: 0.07, clearProps: 'opacity,visibility,transform' });
+    if (element.matches('.route-card')) countUp(element);
+    return;
+  }
   parts.forEach((part, index) => {
     // 70ms apart: the heading, then its text, then the picture.
     part.style.transitionDelay = `${Math.min(index * 70, 420)}ms`;
@@ -66,6 +96,15 @@ export function scan(root = document, { settle = false } = {}) {
   });
 }
 
+function loadGsap() {
+  const script = document.createElement('script');
+  script.src = '/app/vendor/gsap/gsap.min.js';
+  script.onload = () => { gsap = window.gsap; document.documentElement.dataset.gsap = 'on'; };
+  // On failure nothing changes: the CSS reveal keeps running.
+  script.onerror = () => script.remove();
+  document.head.append(script);
+}
+
 export function start({ settle = false } = {}) {
   if (REDUCED.matches || !('IntersectionObserver' in window)) return;
   document.documentElement.dataset.motion = 'on';
@@ -77,6 +116,8 @@ export function start({ settle = false } = {}) {
     }
   }, { rootMargin: '0px 0px -8% 0px', threshold: 0.08 });
   scan(document, { settle });
+  const allowed = motionAllowed({ reducedMotion: REDUCED.matches, saveData: Boolean(navigator.connection?.saveData), prerender: Boolean(window.__NAARAD_PRERENDER__) });
+  if (allowed) (window.requestIdleCallback || ((fn) => setTimeout(fn, 200)))(loadGsap, { timeout: 1500 });
 
   // If someone turns reduced motion on mid-visit, show everything and stop.
   REDUCED.addEventListener?.('change', (event) => {
@@ -84,5 +125,7 @@ export function start({ settle = false } = {}) {
     observer?.disconnect();
     observer = null;
     delete document.documentElement.dataset.motion;
+    delete document.documentElement.dataset.gsap;
+    gsap = null;
   });
 }

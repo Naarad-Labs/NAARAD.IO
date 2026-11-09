@@ -856,7 +856,7 @@ async function handleStudio(target) {
     await refreshStudio();
     return;
   }
-  if (field === 'save') { Drafts.update({}); notify('Draft saved in this browser.'); await refreshStudio(); return; }
+  if (field === 'save') { Drafts.update({}); notify(Drafts.savedNotice()); await refreshStudio(); return; }
   if (field === 'transcribe') { notify('Automatic transcription needs the Naarad backend, which is not part of this build.'); return; }
   if (field === 'submit') {
     if (!Account.signedIn()) { notify('Publishing needs the Naarad backend. Your draft is kept in this browser.'); return; }
@@ -1223,6 +1223,7 @@ async function boot() {
   const settle = Boolean(shell.dataset.prerendered);
   await loadMedia();
   await Data.loadRoutes();
+  if (!PRERENDER) await Promise.all([Journey.ready(), Drafts.ready()]);
   await show(new URL(location.href), { push: false, boot: true });
   if (!PRERENDER) {
     Motion.start({ settle });

@@ -6,16 +6,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 
-/** A localStorage that holds `stored`, and a fresh copy of the module that reads it. */
-let copy = 0;
-async function load(module, stored = {}) {
-  const data = new Map(Object.entries(stored));
-  globalThis.localStorage = {
-    getItem: (key) => (data.has(key) ? data.get(key) : null),
-    setItem: (key, value) => { data.set(key, String(value)); },
-  };
-  return { store: await import(`../app/${module}.js?copy=${copy++}`), data };
-}
+const { load } = await import('./fresh-module.mjs');
 
 const JOURNEY = 'naarad.journey.v1';
 const STUDIO = 'naarad.studio.v1';

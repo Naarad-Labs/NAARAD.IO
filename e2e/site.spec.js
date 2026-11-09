@@ -23,6 +23,72 @@ async function noPageErrors(page, run) {
   expect(errors, `console/page errors: ${errors.join(' | ')}`).toEqual([]);
 }
 
+// The journey lives in IndexedDB ('naarad' / 'kv'), written in the background: poll until the record is there.
+const journey = (page) => page.evaluate(async () => {
+  const read = () => new Promise((resolve) => {
+    const open = indexedDB.open('naarad', 1);
+    open.onsuccess = () => {
+      const get = open.result.transaction('kv').objectStore('kv').get('naarad.journey.v1');
+      get.onsuccess = () => { open.result.close(); resolve(get.result); };
+    };
+    open.onerror = () => resolve(undefined);
+  });
+  for (let i = 0; i < 20; i++) {
+    const raw = await read();
+    if (raw) return JSON.parse(raw);
+    await new Promise((r) => setTimeout(r, 100));
+  }
+  return {};
+});
+
+test.describe('gsap motion', () => {
+  const vendorRequests = (page) => {
+    const seen = [];
+    page.on('request', (request) => { if (/\/app\/vendor\/gsap\//.test(request.url())) seen.push(request.url()); });
+    return seen;
+  };
+
+  test('reduced motion loads no GSAP', async ({ page }) => {
+    const seen = vendorRequests(page);
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await page.goto('/');
+    await expect(page.locator('.route-card').first()).toBeVisible();
+    await page.waitForTimeout(2200);   // past the idle-callback timeout: a load would have started
+    expect(seen).toEqual([]);
+  });
+
+  test('Save-Data loads no GSAP', async ({ page }) => {
+    const seen = vendorRequests(page);
+    await page.addInitScript(() => Object.defineProperty(navigator, 'connection', { value: { saveData: true }, configurable: true }));
+    await page.goto('/');
+    await expect(page.locator('.route-card').first()).toBeVisible();
+    await page.waitForTimeout(2200);
+    expect(seen).toEqual([]);
+  });
+
+  test('with neither, GSAP loads once, settled content stays put, and a card scrolled in counts up to 5.2 km and 8 stops', async ({ page }) => {
+    // Record every text the metrics ever show, so the count-up is observed rather than assumed.
+    await page.addInitScript(() => {
+      window.__metricTexts = new Set();
+      new MutationObserver(() => document.querySelectorAll('.route-card-metrics').forEach((m) => window.__metricTexts.add(m.textContent.replace(/\s+/g, ' ').trim())))
+        .observe(document, { subtree: true, childList: true, characterData: true });
+    });
+    const seen = vendorRequests(page);
+    await page.goto('/');
+    await expect.poll(() => seen.filter((url) => url.endsWith('gsap.min.js')).length, { timeout: 5000 }).toBe(1);
+    // Already on screen at boot: not hidden and replayed.
+    await expect(page.locator('.home-hero-copy')).toBeVisible();
+    await expect(page.locator('.home-hero-copy')).not.toHaveAttribute('data-reveal', 'out');
+    const hampi = page.locator('.route-card', { hasText: 'Hampi Heritage Trail' });
+    await hampi.scrollIntoViewIfNeeded();
+    await expect(hampi.locator('.route-card-metrics')).toContainText('5.2 km');
+    await expect(hampi.locator('.route-card-metrics')).toContainText('8 stops');
+    await expect(hampi).toHaveAttribute('data-reveal', 'in');
+    // The count-up really ran: the metrics were shown starting from zero.
+    expect(await page.evaluate(() => [...window.__metricTexts].some((t) => t.includes('0.0 km')))).toBe(true);
+  });
+});
+
 test.describe('homepage', () => {
   test('renders the editorial hero and featured routes with real facts', async ({ page }) => {
     await noPageErrors(page, async () => {
@@ -632,7 +698,7 @@ test.describe('offline route bundles (behind a flag)', () => {
       await page.locator('[data-action="offline"]').click();
       await expect(page.locator('[data-action="offline"]')).toContainText('Download for offline', { timeout: 30000 });
       expect(await page.evaluate(async () => (await (await caches.open('naarad-bundles')).keys()).length)).toBe(0);
-      expect(await page.evaluate(() => JSON.parse(localStorage.getItem('naarad.journey.v1') || '{"downloads":[]}').downloads.length)).toBe(0);
+      expect(((await journey(page)).downloads || []).length).toBe(0);
     });
   });
 });
@@ -852,7 +918,7 @@ test.describe('offline route bundles v2, part A: the kit and the space check', (
     await expect(page.locator('#site-notice')).toContainText(/space/i, { timeout: 30000 });
     await expect(page.locator('[data-action="offline"]')).toContainText('Download for offline');
     expect(await page.evaluate(async () => (await (await caches.open('naarad-bundles')).keys()).length)).toBe(0);
-    expect(await page.evaluate(() => JSON.parse(localStorage.getItem('naarad.journey.v1') || '{"downloads":[]}').downloads.length)).toBe(0);
+    expect(((await journey(page)).downloads || []).length).toBe(0);
   });
 
   test('after a download the browser is asked to keep it, and the notice says honestly what it answered', async ({ page }) => {
@@ -1887,7 +1953,6 @@ test.describe('touch targets on a phone', () => {
 
 test.describe('honest walk, listening and labels', () => {
   test.beforeEach(async ({ page }) => { await page.addInitScript(withSpeech); });
-  const journey = (page) => page.evaluate(() => JSON.parse(localStorage.getItem('naarad.journey.v1') || '{}'));
 
   test('listening from stop 1 plays the stop and records no walk and no listening at the tap', async ({ page }) => {
     await page.goto('/routes/hampi-heritage-trail/');
@@ -2337,6 +2402,31 @@ test.describe('storage of the wrong shape', () => {
       });
     });
   }
+});
+
+test.describe('journey on the persisted store', () => {
+  test('a journey saved in localStorage is moved to the device store and survives a reload', async ({ page }) => {
+    await page.addInitScript(() => {
+      if (sessionStorage.getItem('seeded')) return;
+      sessionStorage.setItem('seeded', '1');
+      localStorage.setItem('naarad.journey.v1', JSON.stringify({ saved: [{ slug: 'hampi-heritage-trail', name: 'Moved Trail', location: 'Hampi' }] }));
+    });
+    await page.goto('/journey/', { waitUntil: 'networkidle' });
+    await expect(page.locator('.journey-panel[data-journey-panel="journey"]')).toContainText('Moved Trail');
+    await page.reload({ waitUntil: 'networkidle' });
+    await expect(page.locator('.journey-panel[data-journey-panel="journey"]')).toContainText('Moved Trail');
+    expect(await page.evaluate(() => localStorage.getItem('naarad.journey.v1'))).toBeNull();
+    await expect(page.locator('.journey-unsaved')).toHaveCount(0);
+  });
+
+  test('when no storage opens, the journey says it is not being saved', async ({ page }) => {
+    await page.addInitScript(() => {
+      indexedDB.open = () => { throw new Error('blocked'); };
+      Object.defineProperty(window, 'localStorage', { get() { throw new Error('blocked'); } });
+    });
+    await page.goto('/journey/', { waitUntil: 'networkidle' });
+    await expect(page.locator('.journey-unsaved')).toHaveText('Your journey is not being saved on this device. It will be kept until you close this tab.');
+  });
 });
 
 /* ── The service worker ───────────────────────────────────────────── */
