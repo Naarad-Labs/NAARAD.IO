@@ -41,6 +41,41 @@ const journey = (page) => page.evaluate(async () => {
   return {};
 });
 
+test.describe('gsap motion', () => {
+  const vendorRequests = (page) => {
+    const seen = [];
+    page.on('request', (request) => { if (/\/app\/vendor\/gsap\//.test(request.url())) seen.push(request.url()); });
+    return seen;
+  };
+
+  test('reduced motion loads no GSAP', async ({ page }) => {
+    const seen = vendorRequests(page);
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await page.goto('/');
+    await expect(page.locator('.route-card').first()).toBeVisible();
+    await page.waitForTimeout(2200);   // past the idle-callback timeout: a load would have started
+    expect(seen).toEqual([]);
+  });
+
+  test('Save-Data loads no GSAP', async ({ page }) => {
+    const seen = vendorRequests(page);
+    await page.addInitScript(() => Object.defineProperty(navigator, 'connection', { value: { saveData: true }, configurable: true }));
+    await page.goto('/');
+    await expect(page.locator('.route-card').first()).toBeVisible();
+    await page.waitForTimeout(2200);
+    expect(seen).toEqual([]);
+  });
+
+  test('with neither, GSAP loads once and the Hampi card still reads 5.2 km and 8 stops', async ({ page }) => {
+    const seen = vendorRequests(page);
+    await page.goto('/');
+    await expect.poll(() => seen.filter((url) => url.endsWith('gsap.min.js')).length, { timeout: 5000 }).toBe(1);
+    const hampi = page.locator('.route-card', { hasText: 'Hampi Heritage Trail' });
+    await expect(hampi.locator('.route-card-metrics')).toContainText('5.2 km');
+    await expect(hampi.locator('.route-card-metrics')).toContainText('8 stops');
+  });
+});
+
 test.describe('homepage', () => {
   test('renders the editorial hero and featured routes with real facts', async ({ page }) => {
     await noPageErrors(page, async () => {

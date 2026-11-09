@@ -379,6 +379,10 @@ h1[tabindex='-1']:focus, h2[tabindex='-1']:focus, h3[tabindex='-1']:focus { outl
 }
 [data-motion='on'] [data-reveal='in'] { opacity: 1; transform: none; }
 
+/* Once GSAP has loaded it drives the reveal, so the CSS transitions step aside. */
+html[data-gsap='on'][data-motion='on'] [data-reveal],
+html[data-gsap='on'][data-motion='on'] [data-reveal] > * { transition: none; }
+
 /* The parts of a surface arrive one after another. */
 [data-motion='on'] [data-reveal='out'] > .eyebrow,
 [data-motion='on'] [data-reveal='out'] > h1,
