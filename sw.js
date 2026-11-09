@@ -64,7 +64,11 @@ const SHELL_ASSETS = [
   '/app/urls.js',
   '/app/seo.js',
   '/app/views/home.js',
-  '/app/account-ui.js',
+ 
+  '/app/photo-scrubber.js',
+  '/app/walking-mode.js',
+  '/app/flyover.js',
+ '/app/account-ui.js',
   '/app/account.js',
   '/app/backend.js',
   '/app/config.js',

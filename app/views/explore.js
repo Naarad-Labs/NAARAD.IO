@@ -347,7 +347,15 @@ export async function render(context = {}) {
         <p class="data-note">Route lines are shown only where a track or a published stop sequence exists.</p>
       </aside>
 
-      <section class="catalogue-results">
+      <section 
+    <!-- Atlas map section (Atlas Obscura style) -->
+    <section class="atlas-section" aria-labelledby="atlas-title">
+      <h2 id="atlas-title" class="visually-hidden">Naarad atlas map</h2>
+      <div class="atlas-map" id="atlas-map" role="region" aria-label="Map of all routes. The same routes are listed below."></div>
+      <p class="atlas-status" id="atlas-status"></p>
+      <ol class="atlas-near" id="atlas-near" hidden></ol>
+      <p class="data-note">Your position is used on this device. It is not sent or kept.</p>
+    </section>class="catalogue-results">
         <div class="section-head">
           <div>
             <p class="eyebrow eyebrow-mark">Curated and community routes</p>
