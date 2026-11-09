@@ -84,3 +84,56 @@ test('flush is driven by the retrier: failure retries at backoffDelay, an empty 
   assert.equal(q.size, 0);
   assert.equal(live().length, 0);
 });
+
+test('4xx responses drop the event and do NOT retry forever', async () => {
+  const clock = fakeTimers();
+  // A call that returns 4xx should be treated as permanent failure.
+  // The item is removed and dropped count is incremented.
+  let responses = [{ status: 400, ok: false }];
+  const fetchImpl = async () => responses.shift() || { ok: true };
+  const store = openStore({ backend: 'memory' });
+  await store.ready();
+  const q = make(store, { endpoint: 'https://e.test', fetchImpl, isOnline: () => true, random: () => 0.5, ...clock });
+  await q.ready;
+  // Track an event (after ready, the retrier stops on empty queue, so flush manually)
+  q.setConsent(true);
+  const event = q.track('route_open', { slug: 'x' });
+  assert.ok(event, 'event should be tracked');
+  assert.equal(q.size, 1);
+  assert.equal(q.dropped, 0);
+  // Flush manually; the retry loop stops when queue was empty at boot.
+  // On 4xx, the item is dropped and count incremented, no retry timer.
+  const result = await q.flush();
+  assert.equal(result.reason, 'permanent-failure', '4xx returns permanent-failure');
+  const live = () => clock.timers.filter((t) => t.live);
+  assert.equal(live().length, 0, '4xx means no retry timer');
+  assert.equal(q.size, 0, 'queue should be empty after 4xx');
+  assert.equal(q.dropped, 1, 'dropped count should be 1 for the 4xx event');
+});
+
+test('4xx responses during queue fills count dropped items correctly', async () => {
+  const clock = fakeTimers();
+  // Multiple 4xx should be dropped immediately, no retry scheduled.
+  let responses = [
+    { status: 400, ok: false },
+    { status: 400, ok: false },
+    { status: 401, ok: false },
+  ];
+  const fetchImpl = async () => responses.shift() || { ok: true };
+  const store = openStore({ backend: 'memory' });
+  await store.ready();
+  const q = make(store, { endpoint: 'https://e.test', fetchImpl, isOnline: () => true, random: () => 0.5, ...clock });
+  await q.ready;
+  q.setConsent(true);
+  q.track('route_open', { slug: 'x' });
+  q.track('route_save', { slug: 'y' });
+  q.track('stop_select', { slug: 'z', stop: 1 });
+  assert.equal(q.size, 3);
+  // Flush all 3; 4xx means permanent failure, batch dropped, count incremented.
+  const result = await q.flush();
+  assert.equal(result.reason, 'permanent-failure', '3 4xx items return permanent-failure');
+  const live = () => clock.timers.filter((t) => t.live);
+  assert.equal(live().length, 0, 'no retry timer after permanent-failure');
+  assert.equal(q.size, 0, 'queue should be empty');
+  assert.equal(q.dropped, 3, 'dropped count should be 3 (all items dropped due to 4xx)');
+});
