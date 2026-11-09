@@ -11,21 +11,32 @@ For each editorial route this derives:
 Nothing here invents a measurement: if elevation cannot be fetched the profile
 is written as null and the interface shows its empty state.
 
-    python3 scripts/build-routes.py
+    python3 scripts/build-routes.py                    # everything, fetches elevation
+    python3 scripts/build-routes.py --catalogue-only   # only the two files below, no network
+
+The same source file also holds two flat lists that the build copies, unchanged
+and in the same order, into the files the app reads at runtime:
+  "catalogue"  ->  discover/seed-tours.json   (places with no stops or line)
+  "tracks"     ->  routes/geo-tracks.json     (recorded GPS tracks)
+scripts/import-routes.py appends to those lists from a CSV or a folder of GPX.
 """
 from __future__ import annotations
 
 import json
 import math
+import os
+import sys
 import time
 import urllib.error
 import urllib.parse
 import urllib.request
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parent.parent
+ROOT = Path(os.environ.get("NAARAD_ROOT") or Path(__file__).resolve().parent.parent)
 SOURCE = ROOT / "content/routes.source.json"
 TARGET = ROOT / "content/routes.json"
+SEED_TARGET = ROOT / "discover/seed-tours.json"
+TRACKS_TARGET = ROOT / "routes/geo-tracks.json"
 ELEVATION_API = "https://api.opentopodata.org/v1/srtm30m"
 STEP_M = 40          # spacing of the interpolated line
 SAMPLE_M = 90        # spacing of elevation samples
@@ -109,8 +120,23 @@ def nearest_index(points: list[tuple[float, float]], target: tuple[float, float]
     return min(range(len(points)), key=lambda i: haversine(points[i], target))
 
 
+def compact(value) -> str:
+    return json.dumps(value, separators=(",", ":"), ensure_ascii=False)
+
+
+def write_catalogue(source: dict) -> None:
+    """Copy the flat lists to the runtime files, in the exact format the app and its tests read."""
+    SEED_TARGET.write_text(compact({"_about": source["catalogueNote"], "tours": source["catalogue"]}) + "\n")
+    TRACKS_TARGET.write_text(compact({"tracks": source["tracks"]}))
+    print(f"Wrote {SEED_TARGET.relative_to(ROOT)} ({len(source['catalogue'])} rows) "
+          f"and {TRACKS_TARGET.relative_to(ROOT)} ({len(source['tracks'])} tracks).")
+
+
 def main() -> int:
     source = json.loads(SOURCE.read_text())
+    if "--catalogue-only" in sys.argv:
+        write_catalogue(source)
+        return 0
     routes = []
     for route in source["routes"]:
         stops = route["stops"]
@@ -175,6 +201,7 @@ def main() -> int:
         "routes": routes,
     }, indent=2) + "\n")
     print(f"\nWrote {TARGET.relative_to(ROOT)} with {len(routes)} routes.")
+    write_catalogue(source)
     return 0
 
 
