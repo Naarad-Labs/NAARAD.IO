@@ -133,7 +133,8 @@
 .atlas-near:not([hidden]) { bottom: calc(15% + 120px); display: grid; gap: 6px; list-style: none; }
 .atlas-near a { display: grid; gap: 2px; }
 .atlas-near span { font-size: var(--text-xs); color: var(--ink-muted); }
-.atlas .leaflet-top.leaflet-left { top: 96px; }
+.atlas .leaflet-top.leaflet-left { top: 112px; }
+@media (max-width: 639px) { .atlas .leaflet-top.leaflet-left { top: 168px; } }
 .atlas .leaflet-bottom { bottom: 15%; }
 
 .atlas-slider {
@@ -190,4 +191,6 @@
   .collection-mosaic-tile:not(.is-lead) .collection-mosaic-name { display: none; }
   .collection-mosaic.is-2 .collection-mosaic-tile:not(.is-lead) .collection-mosaic-name { display: block; }
 }
-}
+
+/* The search sits over the map, first in its row of controls. */
+.atlas-head .catalogue-search { flex: 1 1 100%; max-width: 440px; height: 46px; padding: 0 16px; border-color: var(--field-edge); background: var(--paper-bright); box-shadow: var(--shadow-md); }

@@ -115,19 +115,20 @@
         <h1 class="display">Go where <br>stories live.</h1>
         <p class="lede">Search places and browse published routes across India. 3 routes have ordered stops with stories; the rest carry their route facts while stops are written.</p>
       </div>
-      <form class="catalogue-search" role="search" aria-label="Search routes" onsubmit="return false">
-        <label class="sr-only" for="catalogue-query">Search routes and places</label>
-        <svg class="ico " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="10.8" cy="10.8" r="6.6"></circle><path d="m15.8 15.8 4.4 4.4"></path></svg>
-        <input id="catalogue-query" type="search" placeholder="Search a place, route or theme" autocomplete="off" list="catalogue-suggestions" value="">
-        <datalist id="catalogue-suggestions"><option value="Hampi Heritage Trail"></option><option value="Hampi, Karnataka"></option><option value="Temples"></option><option value="History"></option><option value="Living Culture"></option><option value="Thanjavur Living Heritage"></option><option value="Thanjavur, Tamil Nadu"></option><option value="Chola Heritage"></option><option value="Art &amp; Music"></option><option value="Auroville Explorer"></option><option value="Auroville, Tamil Nadu"></option><option value="Community"></option><option value="Architecture"></option><option value="Nature"></option><option value="Airport Hidden Lake Trail"></option><option value="Chennai, Tamil Nadu"></option><option value="Recorded track"></option><option value="East Coast Beach Route"></option><option value="Marina Beach Trail"></option><option value="IIT Madras Wildlife Walk"></option><option value="Thiruvanmayur Heritage Trail"></option><option value="Velacherry Neighbourhood"></option><option value="Velachcheri to Mylapore"></option><option value="Marina Lighthouse Trail"></option><option value="Mysore Palace Heritage Walk"></option><option value="Mysore, Karnataka"></option><option value="Heritage-Walk"></option><option value="Varanasi Ghats Dawn Walk"></option><option value="Varanasi, Uttar Pradesh"></option><option value="Cultural-Tour"></option><option value="Jaipur Pink City Cycling"></option><option value="Jaipur, Rajasthan"></option><option value="Konark Sun Temple Circuit"></option><option value="Konark, Odisha"></option><option value="Mahabalipuram Shore Temple"></option><option value="Mahabalipuram, Tamil Nadu"></option><option value="Temple-Trail"></option><option value="Khajuraho Temple Corridor"></option><option value="Khajuraho, Madhya Pradesh"></option><option value="Pondicherry French Quarter"></option><option value="Puducherry"></option><option value="Coorg Plantation Hike"></option><option value="Coorg, Karnataka"></option><option value="Nature-Hike"></option><option value="Udaipur Lake Palace Circuit"></option><option value="Udaipur, Rajasthan"></option><option value="Photography"></option></datalist>
-      </form>
+      
     </header>
 
     <section class="atlas" id="atlas" aria-labelledby="atlas-title">
   <div class="atlas-head">
+    <form class="catalogue-search" role="search" aria-label="Search routes" onsubmit="return false">
+  <label class="sr-only" for="catalogue-query">Search routes and places</label>
+  <svg class="ico " viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="10.8" cy="10.8" r="6.6"></circle><path d="m15.8 15.8 4.4 4.4"></path></svg>
+  <input id="catalogue-query" type="search" placeholder="Search a place, route or theme" autocomplete="off" list="catalogue-suggestions" value="">
+  <datalist id="catalogue-suggestions"><option value="Hampi Heritage Trail"></option><option value="Hampi, Karnataka"></option><option value="Temples"></option><option value="History"></option><option value="Living Culture"></option><option value="Thanjavur Living Heritage"></option><option value="Thanjavur, Tamil Nadu"></option><option value="Chola Heritage"></option><option value="Art &amp; Music"></option><option value="Auroville Explorer"></option><option value="Auroville, Tamil Nadu"></option><option value="Community"></option><option value="Architecture"></option><option value="Nature"></option><option value="Airport Hidden Lake Trail"></option><option value="Chennai, Tamil Nadu"></option><option value="Recorded track"></option><option value="East Coast Beach Route"></option><option value="Marina Beach Trail"></option><option value="IIT Madras Wildlife Walk"></option><option value="Thiruvanmayur Heritage Trail"></option><option value="Velacherry Neighbourhood"></option><option value="Velachcheri to Mylapore"></option><option value="Marina Lighthouse Trail"></option><option value="Mysore Palace Heritage Walk"></option><option value="Mysore, Karnataka"></option><option value="Heritage-Walk"></option><option value="Varanasi Ghats Dawn Walk"></option><option value="Varanasi, Uttar Pradesh"></option><option value="Cultural-Tour"></option><option value="Jaipur Pink City Cycling"></option><option value="Jaipur, Rajasthan"></option><option value="Konark Sun Temple Circuit"></option><option value="Konark, Odisha"></option><option value="Mahabalipuram Shore Temple"></option><option value="Mahabalipuram, Tamil Nadu"></option><option value="Temple-Trail"></option><option value="Khajuraho Temple Corridor"></option><option value="Khajuraho, Madhya Pradesh"></option><option value="Pondicherry French Quarter"></option><option value="Puducherry"></option><option value="Coorg Plantation Hike"></option><option value="Coorg, Karnataka"></option><option value="Nature-Hike"></option><option value="Udaipur Lake Palace Circuit"></option><option value="Udaipur, Rajasthan"></option><option value="Photography"></option></datalist>
+</form>
     <h2 id="atlas-title" class="eyebrow eyebrow-mark">Every route on the map</h2>
     <a class="text-link" href="#catalogue-grid">Skip the map</a>
-    <a class="text-link" href="#catalogue-query">Search and filters</a>
+    <a class="text-link" href="#catalogue-filters">Filters</a>
     <button type="button" class="button button-sm" data-atlas-near="">Routes near me</button>
   </div>
   <div class="atlas-map nr-map-host" data-atlas-map="" role="region" aria-label="Map of all routes. The same routes are listed below."></div>
@@ -233,7 +234,7 @@
 </section>
 
     <div class="catalogue-body">
-      <aside class="catalogue-filters" aria-label="Filters">
+      <aside class="catalogue-filters" id="catalogue-filters" aria-label="Filters">
         <h2 class="eyebrow">Filter</h2>
         <fieldset>
           <legend>Activity</legend>

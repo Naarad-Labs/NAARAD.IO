@@ -75,11 +75,12 @@ export function sliderMarkup(routes) {
   return `<ol class="atlas-slider" data-atlas-slider aria-label="Routes on the map. Swipe to move the map to each route.">${entries.map(card).join('')}</ol>`;
 }
 
-const section = (routes) => `<section class="atlas" id="atlas" aria-labelledby="atlas-title">
+const section = (routes, search = '') => `<section class="atlas" id="atlas" aria-labelledby="atlas-title">
   <div class="atlas-head">
+    ${search}
     <h2 id="atlas-title" class="eyebrow eyebrow-mark">Every route on the map</h2>
     <a class="text-link" href="#catalogue-grid">Skip the map</a>
-    <a class="text-link" href="#catalogue-query">Search and filters</a>
+    <a class="text-link" href="#catalogue-filters">Filters</a>
     <button type="button" class="button button-sm" data-atlas-near>Routes near me</button>
   </div>
   <div class="atlas-map nr-map-host" data-atlas-map role="region" aria-label="Map of all routes. The same routes are listed below."></div>
@@ -89,9 +90,10 @@ const section = (routes) => `<section class="atlas" id="atlas" aria-labelledby="
   <p class="data-note">Your position is used on this device to sort the routes. It is not sent or kept.</p>
 </section>`;
 
-/** The empty frame, for render() to place above the catalogue so the page does not shift when the map arrives. */
-export function atlasMarkup(routes) {
-  return located(routes).length ? section(routes) : '';
+/** The empty frame, for render() to place above the catalogue so the page does not shift when the map arrives.
+    `search` is the page's search form, which sits over the map; with no map the caller keeps it. */
+export function atlasMarkup(routes, { search = '' } = {}) {
+  return located(routes).length ? section(routes, search) : '';
 }
 
 /**

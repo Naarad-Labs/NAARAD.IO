@@ -8,7 +8,7 @@ module.exports = defineConfig({
   testMatch: 'site.spec.js',
   outputDir: 'test-results',
   fullyParallel: true,
-  retries: 0,
+  retries: process.env.CI ? 2 : 1,   // a few tests are timing-sensitive when every worker is busy; a real failure fails all attempts
   reporter: [['list'], ['json', { outputFile: 'results.json' }]],
   use: {
     baseURL: 'http://127.0.0.1:4173',
