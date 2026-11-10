@@ -2,12 +2,12 @@
    and /collections/<slug>/ shows one with its route cards. Written by hand in content/collections.json; a route
    a collection names that does not exist is simply left out. */
 
-import { picture, escapeHtml } from '../media.js';
+import { picture, escapeHtml, getPhoto } from '../media.js';
 import { icon } from '../icons.js';
 import * as Data from '../data.js';
 import { routeCard } from './home.js';
 import { routePreview } from '../previews.js';
-import { collectionPath } from '../urls.js';
+import { collectionPath, routePath } from '../urls.js';
 import * as Seo from '../seo.js';
 
 let loading = null;
@@ -45,6 +45,21 @@ const photoOf = (route) => route?.media?.card || route?.media?.photo || null;
 /** The route whose photograph fronts a collection: its named cover, else the first route that has a photograph. */
 const coverOf = (collection, routes) => routes.find((route) => route.slug === collection.cover && photoOf(route)) || routes.find((route) => photoOf(route)) || null;
 const count = (n) => `${n} ${n === 1 ? 'route' : 'routes'}`;
+
+/** Up to five of the collection's routes as photographs: the cover route large, the rest beside it, each a link. */
+function mosaic(collection, routes) {
+  const shown = routes.filter((route) => photoOf(route) && getPhoto(photoOf(route)));
+  const lead = coverOf(collection, shown);
+  const seen = new Set();   // two routes can share a photograph; show it once
+  const tiles = (lead ? [lead, ...shown.filter((route) => route !== lead)] : []).filter((route) => !seen.has(photoOf(route)) && seen.add(photoOf(route))).slice(0, 5);
+  if (!tiles.length) return '';
+  return `<nav class="collection-mosaic is-${tiles.length}" aria-label="Photographs from this collection">
+    ${tiles.map((route, index) => `<a class="collection-mosaic-tile${index === 0 ? ' is-lead' : ''}" href="${routePath(route.slug)}" aria-label="${escapeHtml(route.name)}, ${escapeHtml(route.location || route.region || 'India')}">
+      ${picture(photoOf(route), { sizes: index === 0 ? '(max-width: 1023px) 100vw, 50vw' : '(max-width: 1023px) 50vw, 25vw', alt: '', ratio: index === 0 ? '4 / 3' : '1 / 1', priority: index === 0 })}
+      <span class="collection-mosaic-name" aria-hidden="true">${escapeHtml(route.name)}</span>
+    </a>`).join('\n    ')}
+  </nav>`;
+}
 
 /** With no photograph, the first mapped route's line is a better picture than a blank. */
 function fallbackPicture(routes) {
@@ -127,6 +142,7 @@ export async function render({ collection }) {
   const [first, ...more] = collection.intro || [];
   return `<article class="collection-page" data-collection="${escapeHtml(collection.slug)}">
     <nav class="breadcrumb" aria-label="Breadcrumb"><a href="/routes/" data-view="routes">Routes</a>${icon('chevron')}<a href="/collections/" data-view="collections">Collections</a>${icon('chevron')}<b aria-current="page">${escapeHtml(collection.title)}</b></nav>
+    ${mosaic(collection, routes)}
     <header class="catalogue-hero dither-band" data-dither="sand"><div>
       <p class="eyebrow eyebrow-mark">${escapeHtml(collection.category)} collection · ${count(routes.length)}</p>
       <h1 class="display">${escapeHtml(collection.title)}</h1>

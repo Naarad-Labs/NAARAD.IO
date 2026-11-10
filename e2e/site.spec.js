@@ -2723,3 +2723,27 @@ test.describe('the home hero shows featured routes beside the photograph', () =>
     await expect(page).toHaveURL(new RegExp(`${href}$`));
   });
 });
+
+test.describe('a collection page opens on a mosaic of its routes', () => {
+  for (const size of [{ width: 1440, height: 900 }, { width: 390, height: 844 }]) {
+    test(`the mosaic is above the heading and fits the window at ${size.width} px`, async ({ page }) => {
+      await page.setViewportSize(size);
+      await page.goto('/collections/walks-around-chennai/');
+      const mosaic = page.locator('.collection-mosaic');
+      await expect(mosaic).toBeVisible();
+      const box = await mosaic.boundingBox();
+      const heading = await page.locator('.collection-page h1').boundingBox();
+      expect(box.y + box.height).toBeLessThanOrEqual(heading.y + 1);
+      expect(box.x + box.width).toBeLessThanOrEqual(size.width + 1);
+      const widths = await page.evaluate(() => ({ doc: document.documentElement.scrollWidth, view: window.innerWidth }));
+      expect(widths.doc).toBeLessThanOrEqual(widths.view);
+    });
+  }
+
+  test('a tile opens its route', async ({ page }) => {
+    await page.goto('/collections/walks-around-chennai/');
+    const href = await page.locator('.collection-mosaic-tile').first().getAttribute('href');
+    await page.locator('.collection-mosaic-tile').first().click();
+    await expect(page).toHaveURL(new RegExp(`${href}$`));
+  });
+});
