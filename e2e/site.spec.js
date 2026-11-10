@@ -2725,3 +2725,19 @@ test.describe('the home hero shows featured routes beside the photograph', () =>
     await expect(page).toHaveURL(new RegExp(`${href}$`));
   });
 });
+
+test.describe('the routes page search sits over the map', () => {
+  for (const size of [{ width: 1440, height: 900 }, { width: 390, height: 844 }]) {
+    test(`the search box is on the first screen, over the map, and filters the cards at ${size.width} px`, async ({ page }) => {
+      await page.setViewportSize(size);
+      await page.goto('/routes/');
+      const input = page.locator('.atlas #catalogue-query');
+      await expect(input).toBeVisible();
+      const box = await input.boundingBox();
+      expect(box.y + box.height).toBeLessThan(size.height * 0.4);
+      await input.fill('hampi');
+      await expect(page.locator('.route-card')).toHaveCount(1);
+      await expect(page.locator('.atlas-slide:not([hidden])')).toHaveCount(1);
+    });
+  }
+});

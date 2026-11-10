@@ -55,3 +55,12 @@ test('the slider has one card per located route, each linking to its page, and n
   assert.match(html, /Alpha/);
   assert.equal(sliderMarkup([route('b', null, null)]), '');
 });
+
+test('the search form goes inside the map frame when there is a map, and stays out of it when there is none', async () => {
+  const { atlasMarkup } = await import('../app/atlas.js');
+  const form = '<form class="catalogue-search"><input id="catalogue-query"></form>';
+  const withMap = atlasMarkup([route('a', 13, 80)], { search: form });
+  assert.match(withMap, /<div class="atlas-head">[\s\S]*<form class="catalogue-search">[\s\S]*<\/div>\s*<div class="atlas-map/);
+  assert.equal((withMap.match(/id="catalogue-query"/g) || []).length, 1);
+  assert.equal(atlasMarkup([route('b', null, null)], { search: form }), '', 'no located route, no map: the page keeps its own search');
+});
