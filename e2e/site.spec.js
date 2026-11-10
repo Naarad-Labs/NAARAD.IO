@@ -2765,3 +2765,16 @@ test.describe('the routes page search sits over the map', () => {
     });
   }
 });
+
+test.describe('the route line sits under the photograph credit', () => {
+  test('the credit is stacked above the drawn line, so the licence text is never crossed', async ({ page }) => {
+    await page.goto('/routes/hampi-heritage-trail/');
+    const z = await page.evaluate(() => {
+      const credit = document.querySelector('.route-hero-media .photo-credit');
+      const line = document.querySelector('.route-draw');
+      const level = (node) => { const value = parseInt(getComputedStyle(node).zIndex, 10); return Number.isFinite(value) ? value : 0; };
+      return { credit: level(credit), line: level(line) };
+    });
+    expect(z.credit).toBeGreaterThan(z.line);
+  });
+});

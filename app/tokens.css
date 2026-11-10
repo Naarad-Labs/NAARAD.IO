@@ -74,7 +74,6 @@
   /* Motion */
   --ease-out: cubic-bezier(.22, .61, .36, 1);
   --move: 460ms;
-  --scrub-speed: 300ms;
 
   /* Z-index scale */
   --z-skip-link: 2000;
@@ -82,7 +81,6 @@
   --z-walking-bar: 1100;
   --z-lightbox: 1000;
   --z-sticky: 500;
-  --z-scrubber: 600;
   --z-foreground: 1;
 
   /* Breakpoints */
