@@ -163,5 +163,34 @@
 /* The privacy line is for screen readers; sighted visitors get it in the status when they ask for routes near them. The map's attribution stays clear. */
 .atlas .data-note { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 
+/* A collection's mosaic: the cover route's photograph large, up to four more beside it (the Airbnb listing pattern). */
+.collection-mosaic { display: grid; gap: 6px; margin: 18px 0 0; height: clamp(240px, 38vw, 440px); }
+.collection-mosaic-tile { position: relative; display: block; min-height: 0; overflow: hidden; border: 1px solid var(--line); border-radius: var(--radius); background: var(--paper-deep); }
+.collection-mosaic-tile .photo, .collection-mosaic-tile picture, .collection-mosaic-tile img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.collection-mosaic-name { position: absolute; left: 0; right: 0; bottom: 0; padding: 22px 12px 9px; font-size: 13px; font-weight: 700; line-height: 1.2; color: var(--white); background: linear-gradient(to top, rgba(12, 28, 51, .78), rgba(12, 28, 51, 0)); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.collection-mosaic.is-1 { grid-template-columns: 1fr; }
+.collection-mosaic.is-2 { grid-template-columns: 2fr 1fr; }
+.collection-mosaic.is-3 { grid-template-columns: 2fr 1fr; grid-template-rows: 1fr 1fr; }
+.collection-mosaic.is-4 { grid-template-columns: 2fr 1fr; grid-template-rows: repeat(3, 1fr); }
+.collection-mosaic.is-5 { grid-template-columns: 2fr 1fr 1fr; grid-template-rows: 1fr 1fr; }
+.collection-mosaic.is-3 .is-lead, .collection-mosaic.is-5 .is-lead { grid-row: 1 / span 2; }
+.collection-mosaic.is-4 .is-lead { grid-row: 1 / span 3; }
+.collection-mosaic.is-2 .is-lead { grid-row: auto; }
+@media (hover: hover) { .collection-mosaic-tile:hover { border-color: var(--orange); } }
+.collection-mosaic-tile:focus-visible { outline: 2px solid var(--orange-text); outline-offset: 2px; }
+@media (max-width: 639px) {
+  nav.collection-mosaic { height: auto; grid-template-rows: none; }
+  nav.collection-mosaic.is-1 { grid-template-columns: 1fr; }
+  nav.collection-mosaic.is-2 { grid-template-columns: 1fr; }
+  nav.collection-mosaic.is-3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  nav.collection-mosaic.is-4 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  nav.collection-mosaic.is-5 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .collection-mosaic .is-lead { grid-column: 1 / -1; grid-row: auto; aspect-ratio: 4 / 3; }
+  .collection-mosaic-tile:not(.is-lead) { aspect-ratio: 1 / 1; }
+  .collection-mosaic.is-2 .collection-mosaic-tile:not(.is-lead) { aspect-ratio: 16 / 9; }
+  .collection-mosaic-tile:not(.is-lead) .collection-mosaic-name { display: none; }
+  .collection-mosaic.is-2 .collection-mosaic-tile:not(.is-lead) .collection-mosaic-name { display: block; }
+}
+
 /* The search sits over the map, first in its row of controls. */
 .atlas-head .catalogue-search { flex: 1 1 100%; max-width: 440px; height: 46px; padding: 0 16px; border-color: var(--field-edge); background: var(--paper-bright); box-shadow: var(--shadow-md); }
