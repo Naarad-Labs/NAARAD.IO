@@ -512,6 +512,7 @@ export function meta({ route }) {
     title: `${route.name} · Naarad`,
     description: summary(route),
     path,
+    hints: Seo.mapHints(),
     // A stub stays out of search and describes no trip to it (see isStub).
     robots: stub ? 'noindex,follow' : null,
     card: {
