@@ -254,6 +254,7 @@ function stopRail(route, selected) {
 }
 
 function mapPanel(route) {
+  const walkable = (route.stops || []).filter((stop) => Number.isFinite(stop.lat) && Number.isFinite(stop.lng)).length >= 2;
   return `<section class="map-panel" id="section-map">
     <div class="map-frame">
       <div id="map" class="route-map" role="application" aria-label="Map of ${escapeHtml(route.name)}">
@@ -267,9 +268,11 @@ function mapPanel(route) {
       <div class="map-toolbar">
         <button type="button" class="map-control" data-map="layers" aria-pressed="true">${icon('layers')}<span>Satellite</span></button>
         <button type="button" class="map-control" data-map="fit">${icon('compass')}<span>Fit route</span></button>
+        ${walkable ? `<button type="button" class="map-control" data-map="walk" aria-pressed="false">${icon('footprints')}<span>Walk</span></button>` : ''}
         <button type="button" class="map-control" data-map="fullscreen" disabled title="Map controls are loading">${icon('map')}<span>Full screen</span></button>
       </div>
       <p class="map-note script">Stories at every stop</p>
+      ${walkable ? '<p class="map-walk-status" data-walk-status role="status"></p>' : ''}
     </div>
     ${route.hasGeometry || route.startLat != null ? `<dialog class="route-map-dialog" data-route-map-dialog aria-labelledby="route-map-dialog-title">
       <header class="route-map-dialog-head">

@@ -249,6 +249,7 @@
   .map-panel { order: 1; margin: 0; }
   .route-hero { order: 2; }
   .route-facts { order: 3; }
+  .route-scrubber { order: 3; }   /* after the map and the facts: a phone opens on the map */
   .route-tabs { order: 4; }
   .stop-panel { order: 5; }
   .stop-rail { order: 6; }
@@ -420,3 +421,8 @@
 
 /* The photograph's credit carries its licence: the route line never crosses it. */
 .route-hero-media .photo-credit { z-index: 2; }
+
+/* Walking mode: a short status over the foot of the map, and a pressed state for the button. */
+.map-walk-status { position: absolute; z-index: 450; left: 12px; right: 76px; bottom: 12px; margin: 0; padding: 8px 12px; border: 1px solid var(--line); border-radius: var(--radius); background: color-mix(in srgb, var(--paper-bright) 95%, transparent); font-size: var(--text-xs); color: var(--ink); box-shadow: var(--shadow-md); }
+.map-walk-status:empty { display: none; }
+.map-control[data-map='walk'][aria-pressed='true'] { background: var(--orange); border-color: var(--orange-text); color: var(--white); }

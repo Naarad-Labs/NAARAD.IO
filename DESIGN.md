@@ -81,7 +81,7 @@ Motion is controlled via `html[data-motion='on']`:
 - **Reveal animations**: Elements with `[data-reveal]` animate in/out
 - **Hero drift**: Subtle parallax on hero photos (30s cycle)
 - **Stop-photo scrubber**: a range under one photograph moves the stop, its photograph and the map pin together (AllTrails style; route page, built)
-- **Walking mode**: Now-playing bar over map, GPS-synced (VoiceMap style)
+- **Walking mode**: a Walk button on a route's map; the walker's position (kept on the device) selects and reads each stop as they reach it (VoiceMap style; built)
 - **Route line**: the route drawn in over the hero photograph, CSS only and still under reduced motion (Strava Flyover style; route page, built)
 
 **Tokens** (`app/tokens.css`):
@@ -111,7 +111,6 @@ Hardcoded in CSS media queries:
 |-------|-------|-------|
 | `--z-skip-link` | 2000 | Skip link overlay |
 | `--z-header` | 900 | Site header |
-| `--z-walking-bar` | 1100 | Walking mode bar (same as listen) |
 | `--z-lightbox` | 1000 | Lightbox dialog |
 | `--z-sticky` | 500 | Sticky elements (route stops, map toolbar) |
 | `--z-foreground` | 1 | Default foreground layer |
@@ -140,9 +139,9 @@ Five-photo grid: one large, four small. Used on route hero, place pages, collect
 
 `.route-scrubber`: one photograph per stop that has one, with a native range input under it. Arrow keys or dragging move the stop, the photograph, the status line and the map pin together (`app/main.js` `syncScrubber`). Needs two stops with photographs.
 
-### Walking Mode (VoiceMap-style)
+### Walking mode (VoiceMap-style)
 
-Bottom bar over map showing now-playing stop, progress, GPS location. Tap to expand to full-screen walking screen.
+A `Walk` toggle in the route map's toolbar (`data-map="walk"`, `aria-pressed`). Pressing it asks the browser for location, shows the walker on the map and, within 40 m of a stop (`app/walking.js` `arrivedStop`), selects that stop and reads it aloud once. A status line (`data-walk-status`) says what is happening. The position is used on the device only. The existing listening bar is the now-playing control.
 
 ### Route line (Strava Flyover-style)
 
@@ -208,4 +207,3 @@ The following components need specification files:
 - Input fields
 - Chips/filters
 - **Photo mosaic component** (built on the route, home and collection pages; not yet specified as a component)
-- **Walking mode component**

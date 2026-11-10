@@ -580,7 +580,7 @@ function unwatchRouteBar() {
 
 /* ── Map ────────────────────────────────────────────────────────── */
 
-function destroyMap() { routeWorkspace?.destroy(); routeWorkspace = null; map?.destroy?.(); map = null; }
+function destroyMap() { stopWalking(); routeWorkspace?.destroy(); routeWorkspace = null; map?.destroy?.(); map = null; }
 
 /* The all-routes map above the catalogue. It follows the filters through the catalogue:filtered event. Not drawn
    while pre-rendering: the saved page keeps the empty frame, so it matches what boot draws. */
@@ -715,6 +715,54 @@ function stopQueue(route, from = 1) {
 }
 
 /* Starts a stop playing; true when playback was asked for. Listening time is counted by the tracker below, from playback that really happens. */
+/* ── Walking mode ────────────────────────────────────────────
+   Started by a tap on Walk. The browser asks for location then (never before); the position is used here to find the
+   stop the walker has reached, which is selected and read aloud, once. It is not sent or stored. */
+
+let walk = null;   // { watch, played } while walking mode is on
+
+const walkStatus = (text) => { const line = $('[data-walk-status]'); if (line) line.textContent = text; };
+
+function walkButton(on) {
+  const button = $('[data-map="walk"]');
+  if (!button) return;
+  button.setAttribute('aria-pressed', String(on));
+  const label = $('span', button);
+  if (label) label.textContent = on ? 'Stop walking' : 'Walk';
+}
+
+function stopWalking(message) {
+  if (!walk) return;
+  if (walk.watch != null) navigator.geolocation.clearWatch(walk.watch);
+  walk = null;
+  map?.hideYou?.();
+  walkButton(false);
+  walkStatus(message || '');
+}
+
+async function toggleWalking() {
+  if (walk) { stopWalking('Walking mode is off.'); return; }
+  if (!state.route || !navigator.geolocation) { walkStatus('Location is not available in this browser.'); return; }
+  const here = { watch: null, played: new Set() };
+  walk = here;                                   // a second tap while the code loads turns it off rather than starting twice
+  walkButton(true);
+  walkStatus('Finding your location. It stays on this device.');
+  const { arrivedStop } = await import('./walking.js');
+  if (walk !== here) return;
+  here.watch = navigator.geolocation.watchPosition(({ coords }) => {
+    if (walk !== here) return;
+    map?.youAt?.(coords.latitude, coords.longitude, { follow: true });
+    const stop = arrivedStop({ lat: coords.latitude, lng: coords.longitude, accuracy: coords.accuracy }, state.route.stops, here.played);
+    if (!stop) { walkStatus('Walking mode is on. Each stop plays as you reach it. Your position stays on this device.'); return; }
+    here.played.add(stop.order);
+    selectStop(stop.order);
+    listen(stop.order);
+    walkStatus(`You have reached stop ${stop.order}: ${stop.name}.`);
+  }, (error) => {
+    if (walk === here) stopWalking(error.code === 1 ? 'Location is switched off for this site. Allow it to walk with the map.' : 'Your location could not be found.');
+  }, { enableHighAccuracy: true, maximumAge: 5000, timeout: 20000 });
+}
+
 function listen(order) {
   if (!state.route?.stops?.length) return false;
   if (!Audio.readAloudAvailable && !state.route.stops.some((stop) => stop.audio)) {
@@ -1062,6 +1110,7 @@ document.addEventListener('click', async (event) => {
   if (mapAction === 'in') map?.zoomIn();
   if (mapAction === 'out') map?.zoomOut();
   if (mapAction === 'locate') map?.locate();
+  if (mapAction === 'walk') toggleWalking();
   if (mapAction === 'fit') map?.fit();
   if (mapAction === 'layers') {
     const button = event.target.closest('[data-map="layers"]');
