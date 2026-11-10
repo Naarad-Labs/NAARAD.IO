@@ -273,6 +273,14 @@ export async function render(context = {}) {
   const regions = [...new Set(routes.map((route) => route.region).filter(Boolean))].sort();
   const withStops = routes.filter((route) => route.hasStops).length;
 
+  const search = `<form class="catalogue-search" role="search" aria-label="Search routes" onsubmit="return false">
+  <label class="sr-only" for="catalogue-query">Search routes and places</label>
+  ${icon('search')}
+  <input id="catalogue-query" type="search" placeholder="Search a place, route or theme" autocomplete="off" list="catalogue-suggestions" value="${escapeHtml(query)}">
+  <datalist id="catalogue-suggestions">${suggestions().map((name) => `<option value="${escapeHtml(name)}"></option>`).join('')}</datalist>
+</form>`;
+  const atlas = atlasMarkup(routes, { search });
+
   return `<div class="catalogue">
     <header class="catalogue-hero dither-band" data-dither="sand">
       <div>
@@ -280,18 +288,13 @@ export async function render(context = {}) {
         <h1 class="display">Go where <br>stories live.</h1>
         <p class="lede">Search places and browse published routes across India. ${withStops} ${withStops === 1 ? 'route has' : 'routes have'} ordered stops with stories; the rest carry their route facts while stops are written.</p>
       </div>
-      <form class="catalogue-search" role="search" aria-label="Search routes" onsubmit="return false">
-        <label class="sr-only" for="catalogue-query">Search routes and places</label>
-        ${icon('search')}
-        <input id="catalogue-query" type="search" placeholder="Search a place, route or theme" autocomplete="off" list="catalogue-suggestions" value="${escapeHtml(query)}">
-        <datalist id="catalogue-suggestions">${suggestions().map((name) => `<option value="${escapeHtml(name)}"></option>`).join('')}</datalist>
-      </form>
+      ${atlas ? '' : search}
     </header>
 
-    ${atlasMarkup(routes)}
+    ${atlas}
 
     <div class="catalogue-body">
-      <aside class="catalogue-filters" aria-label="Filters">
+      <aside class="catalogue-filters" id="catalogue-filters" aria-label="Filters">
         <h2 class="eyebrow">Filter</h2>
         <fieldset>
           <legend>Activity</legend>
