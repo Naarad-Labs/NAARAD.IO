@@ -2701,3 +2701,25 @@ test.describe('the maps start from a keyless tile source', () => {
     });
   }
 });
+
+test.describe('the home hero shows featured routes beside the photograph', () => {
+  for (const size of [{ width: 1440, height: 900 }, { width: 768, height: 1000 }, { width: 390, height: 844 }]) {
+    test(`four route tiles sit in the hero and fit the window at ${size.width} px`, async ({ page }) => {
+      await page.setViewportSize(size);
+      await page.goto('/');
+      const tiles = page.locator('.home-mosaic-tile');
+      expect(await tiles.count()).toBeGreaterThan(1);
+      const box = await page.locator('.home-mosaic').boundingBox();
+      expect(box.x + box.width).toBeLessThanOrEqual(size.width + 1);
+      const widths = await page.evaluate(() => ({ doc: document.documentElement.scrollWidth, view: window.innerWidth }));
+      expect(widths.doc).toBeLessThanOrEqual(widths.view);
+    });
+  }
+
+  test('a tile opens its route', async ({ page }) => {
+    await page.goto('/');
+    const href = await page.locator('.home-mosaic-tile').first().getAttribute('href');
+    await page.locator('.home-mosaic-tile').first().click();
+    await expect(page).toHaveURL(new RegExp(`${href}$`));
+  });
+});
