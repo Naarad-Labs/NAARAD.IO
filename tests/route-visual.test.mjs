@@ -146,3 +146,11 @@ test('the scrubber names the real stop number and the real stop count when some 
   const second = route.stops[1];
   assert.match(range, new RegExp(`aria-valuetext="Stop ${second.order} of ${route.stops.length}: ${second.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}"`));
 });
+
+test('the scrubber photographs do not compete with the hero photograph for loading priority', async () => {
+  const hampi = routes.find((r) => r.slug === 'hampi-heritage-trail');
+  const html = await RouteView.render({ route: hampi, stop: hampi.stops[0].order });
+  const scrubber = html.match(/<section class="route-scrubber"[\s\S]*?<\/section>/)[0];
+  assert.doesNotMatch(scrubber, /fetchpriority="high"/);
+  assert.match(html.slice(0, html.indexOf('<section class="route-scrubber"')), /fetchpriority="high"/, 'the hero photograph keeps its priority');
+});

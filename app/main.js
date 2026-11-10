@@ -1108,7 +1108,7 @@ document.addEventListener('input', async (event) => {
   const target = event.target;
   if (target.matches?.('[data-scrubber]')) {
     const order = JSON.parse(target.dataset.scrubberOrders || '[]')[Number(target.value) - 1];
-    if (order) selectStop(order);
+    if (order != null) selectStop(order);
     return;
   }
   if (target.id === 'catalogue-query') {

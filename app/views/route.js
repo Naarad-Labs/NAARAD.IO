@@ -93,7 +93,7 @@ function routeScrubber(route, selected) {
     <h2 class="sr-only" id="scrubber-title">Scrub along the route by stop photograph</h2>
     <div class="scrubber-stage">
       ${stops.map((stop, index) => `<figure class="scrubber-frame" data-scrubber-order="${stop.order}" data-scrubber-name="${escapeHtml(stop.name)}"${index === current ? '' : ' hidden'}>
-        ${picture(stop.photo, { sizes: '(max-width: 1023px) 100vw, 640px', alt: `${stop.name}, stop ${index + 1} of ${total}`, ratio: '16 / 9', priority: index === current })}
+        ${picture(stop.photo, { sizes: '(max-width: 1023px) 100vw, 640px', alt: `${stop.name}, stop ${index + 1} of ${total}`, ratio: '16 / 9' })}
         <figcaption><b>${escapeHtml(stop.name)}</b></figcaption>
       </figure>`).join('\n      ')}
     </div>

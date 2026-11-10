@@ -417,3 +417,6 @@
 .scrubber-range { display: block; width: 100%; margin: 12px 0 0; accent-color: var(--orange); height: 28px; cursor: ew-resize; }
 .scrubber-range:focus-visible { outline: 2px solid var(--orange-text); outline-offset: 3px; border-radius: 4px; }
 @media (max-width: 1023px) { .route-scrubber { width: calc(100% - 32px); } }
+
+/* The photograph's credit carries its licence: the route line never crosses it. */
+.route-hero-media .photo-credit { z-index: 2; }

@@ -80,9 +80,9 @@ Motion is controlled via `html[data-motion='on']`:
 - **Transitions**: 180-520ms using `var(--ease-out)`
 - **Reveal animations**: Elements with `[data-reveal]` animate in/out
 - **Hero drift**: Subtle parallax on hero photos (30s cycle)
-- **Photo scrubber**: Scrub along route, photos update in sync (AllTrails style)
+- **Stop-photo scrubber**: a range under one photograph moves the stop, its photograph and the map pin together (AllTrails style; route page, built)
 - **Walking mode**: Now-playing bar over map, GPS-synced (VoiceMap style)
-- **3D flyover**: Strava-style aerial hero video
+- **Route line**: the route drawn in over the hero photograph, CSS only and still under reduced motion (Strava Flyover style; route page, built)
 
 **Tokens** (`app/tokens.css`):
 
@@ -114,7 +114,6 @@ Hardcoded in CSS media queries:
 | `--z-walking-bar` | 1100 | Walking mode bar (same as listen) |
 | `--z-lightbox` | 1000 | Lightbox dialog |
 | `--z-sticky` | 500 | Sticky elements (route stops, map toolbar) |
-| `--z-scrubber` | 600 | Photo scrubber overlay |
 | `--z-foreground` | 1 | Default foreground layer |
 
 ### Breakpoint Scale
@@ -137,17 +136,17 @@ Hardcoded in CSS media queries:
 
 Five-photo grid: one large, four small. Used on route hero, place pages, collections.
 
-### Photo Scrubber (AllTrails-style)
+### Stop-photo scrubber (AllTrails-style)
 
-Horizontal scrubber beneath route hero/map. Scrubbing reveals photos at each stop position along the route.
+`.route-scrubber`: one photograph per stop that has one, with a native range input under it. Arrow keys or dragging move the stop, the photograph, the status line and the map pin together (`app/main.js` `syncScrubber`). Needs two stops with photographs.
 
 ### Walking Mode (VoiceMap-style)
 
 Bottom bar over map showing now-playing stop, progress, GPS location. Tap to expand to full-screen walking screen.
 
-### 3D Flyover Hero (Strava Flyover-style)
+### Route line (Strava Flyover-style)
 
-Aerial 3D video/animation of the route as hero background.
+`.route-draw`: an SVG path from the route's geometry (`app/route-draw.js`) over the hero photograph, drawn in by a CSS animation and still under `prefers-reduced-motion`. No video: it would be too heavy for an offline-first page.
 
 ### Cards
 
@@ -191,7 +190,6 @@ Fonts are self-hosted as WOFF2 in `/app/fonts/`.
 - `img` tags include `loading="eager"` for hero images
 - Photos can have torn paper edges via `.torn-left` / `.torn-bottom` classes
 - **New**: Dithered hero backgrounds for motion/atmosphere (Framer dither style)
-- **New**: 3D flyover video as hero (Strava style)
 
 ## Spacing
 
@@ -209,7 +207,5 @@ The following components need specification files:
 - Focus ring pattern
 - Input fields
 - Chips/filters
-- **Photo mosaic component**
-- **Photo scrubber component**
+- **Photo mosaic component** (built on the route, home and collection pages; not yet specified as a component)
 - **Walking mode component**
-- **3D flyover component**
