@@ -512,14 +512,14 @@ Run lock: none
 | 502 | todo |  | Generate manifests in build-site.mjs | Offline route bundles v2 |  |
 | 503 | todo |  | Verify sha256 on download | Offline route bundles v2 |  |
 | 504 | todo |  | Version bundles independently of the shell | Offline route bundles v2 |  |
-| 505 | todo |  | Pre-flight storage check | Offline route bundles v2 |  |
+| 505 | done |  | Pre-flight storage check | Offline route bundles v2 | PR 17 (offline v2 part A): storage estimate read before writing, refusal in plain words naming what is needed and free, quota error rolls back, browser asked to keep the data |
 | 506 | todo |  | Resumable downloads | Offline route bundles v2 |  |
 | 507 | todo |  | Download queue with concurrency cap | Offline route bundles v2 |  |
 | 508 | todo |  | Per-bundle delete and delete-all | Offline route bundles v2 |  |
 | 509 | todo |  | Update-available flow | Offline route bundles v2 |  |
 | 510 | todo |  | Atomic bundle swap | Offline route bundles v2 |  |
 | 511 | todo |  | Bundle integrity self-check on open | Offline route bundles v2 |  |
-| 512 | todo |  | Offline coverage indicator | Offline route bundles v2 |  |
+| 512 | todo |  | Offline coverage indicator | Offline route bundles v2 | partial, PR 18: offline bar and 'Not saved for offline' marks on unsaved routes. Still to do: saving, update and damaged states, icons, axe pass, e2e for all five states |
 | 513 | blocked | needs-decision | Cap total offline footprint | Offline route bundles v2 | needs-decision |
 | 514 | todo |  | Gate bundles behind F-002 with a kill switch | Offline route bundles v2 |  |
 | 515 | blocked | needs-decision | Write a basemap options memo | Basemap strategy under OSM policy | needs-decision |
