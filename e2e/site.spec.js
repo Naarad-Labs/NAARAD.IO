@@ -2778,3 +2778,65 @@ test.describe('the route line sits under the photograph credit', () => {
     expect(z.credit).toBeGreaterThan(z.line);
   });
 });
+
+test.describe('walking mode', () => {
+  test('the page does not ask for the visitor\'s location until Walk is pressed', async ({ page }) => {
+    await page.addInitScript(() => {
+      window.__geoCalls = 0;
+      for (const name of ['getCurrentPosition', 'watchPosition']) {
+        const original = navigator.geolocation[name].bind(navigator.geolocation);
+        navigator.geolocation[name] = (...args) => { window.__geoCalls += 1; return original(...args); };
+      }
+    });
+    await page.goto('/routes/hampi-heritage-trail/');
+    await expect(page.locator('[data-map="walk"]')).toBeVisible();
+    await expect(page.locator('[data-map="walk"]')).toHaveAttribute('aria-pressed', 'false');
+    expect(await page.evaluate(() => window.__geoCalls)).toBe(0);
+  });
+
+  test.describe('with location allowed', () => {
+    // Hampi Bazaar, stop 3 of the Hampi Heritage Trail
+    test.use({ permissions: ['geolocation'], geolocation: { latitude: 15.3348, longitude: 76.4645, accuracy: 10 } });
+
+    test('arriving at a stop selects it, says so, and Stop walking switches it off', async ({ page }) => {
+      await page.goto('/routes/hampi-heritage-trail/');
+      const walk = page.locator('[data-map="walk"]');
+      await walk.click();
+      await expect(walk).toHaveAttribute('aria-pressed', 'true');
+      await expect(walk).toContainText('Stop walking');
+      await expect(page.locator('[data-walk-status]')).toContainText('You have reached stop 3: Hampi Bazaar');
+      await expect(page.locator('.stop-title').first()).toContainText('Hampi Bazaar');
+      await walk.click();
+      await expect(walk).toHaveAttribute('aria-pressed', 'false');
+      await expect(walk).toContainText('Walk');
+      await expect(page.locator('[data-walk-status]')).toContainText('Walking mode is off');
+    });
+
+    test('a position far from every stop selects nothing and keeps walking mode on', async ({ page, context }) => {
+      await context.setGeolocation({ latitude: 13.0, longitude: 80.0, accuracy: 10 });
+      await page.goto('/routes/hampi-heritage-trail/');
+      const before = await page.locator('.stop-title').first().textContent();
+      await page.locator('[data-map="walk"]').click();
+      await expect(page.locator('[data-walk-status]')).toContainText('Each stop plays as you reach it');
+      await expect(page.locator('.stop-title').first()).toHaveText(before.trim());
+      await expect(page.locator('[data-map="walk"]')).toHaveAttribute('aria-pressed', 'true');
+    });
+  });
+
+  test('without permission, Walk says location is off and switches itself off', async ({ page }) => {
+    await page.goto('/routes/hampi-heritage-trail/');
+    await page.locator('[data-map="walk"]').click();
+    await expect(page.locator('[data-walk-status]')).toContainText(/Location is switched off|could not be found/);
+    await expect(page.locator('[data-map="walk"]')).toHaveAttribute('aria-pressed', 'false');
+  });
+});
+
+test.describe('on a phone the route page keeps the map first', () => {
+  test.use({ viewport: PHONE, isMobile: true, hasTouch: true });
+  test('the stop-photo scrubber comes after the map, not before it', async ({ page }) => {
+    await page.goto('/routes/hampi-heritage-trail/');
+    const map = await page.locator('.map-frame').boundingBox();
+    const scrubber = await page.locator('.route-scrubber').boundingBox();
+    expect(map.y, 'the map is above the scrubber').toBeLessThan(scrubber.y);
+  });
+});

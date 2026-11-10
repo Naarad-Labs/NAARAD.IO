@@ -295,6 +295,21 @@ export async function mountRouteMap(container, route, options = {}) {
         if (!state.destroyed) state.status = makeStatus(container, 'Your location could not be found. Check location access and try again.', undefined, undefined, 'location');
       }, { enableHighAccuracy: true, timeout: 12000, maximumAge: 30000 });
     },
+    /** Put the "you are here" dot at a position, and bring it back into view when it has wandered towards the edge. */
+    youAt(lat, lng, { follow = false } = {}) {
+      if (!state.map || state.destroyed) return;
+      const point = [lat, lng];
+      if (state.location) state.location.setLatLng(point);
+      else {
+        state.location = window.L.circleMarker(point, { radius: 8, color: token('--white', '#fff'), weight: 3, fillColor: token('--orange', '#c6511b'), fillOpacity: 1 })
+          .addTo(state.map).bindPopup('You are here');
+      }
+      if (follow && !state.map.getBounds().pad(-0.3).contains(point)) state.map.panTo(point, { animate: true });
+    },
+    hideYou() {
+      state.location?.remove();
+      state.location = null;
+    },
     destroy() {
       if (state.destroyed) return;
       state.destroyed = true;
