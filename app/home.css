@@ -221,3 +221,20 @@
 .home-video, .home-how { width: min(1100px, calc(100% - 32px)); margin: 56px auto; }
 .home-video video { display: block; width: 100%; height: auto; margin-top: 18px; border-radius: var(--radius); background: var(--ink-deep); }
 .home-how img { display: block; width: 100%; height: auto; margin-top: 18px; border-radius: var(--radius); }
+
+/* The hero mosaic: the Hampi photograph keeps its place; the featured routes' photographs sit beside it, each a link. */
+.home-hero-main { position: relative; min-height: inherit; }
+@media (min-width: 640px) { .home-hero-media.has-mosaic { display: grid; grid-template-columns: minmax(0, 1fr) clamp(96px, 14%, 168px); gap: 6px; } }
+.home-mosaic { display: grid; grid-auto-rows: minmax(0, 1fr); gap: 6px; }
+.home-mosaic-tile { position: relative; display: block; min-height: 0; overflow: hidden; border: 1px solid var(--line); border-radius: var(--radius); background: var(--paper-deep); }
+.home-mosaic-tile .photo, .home-mosaic-tile picture, .home-mosaic-tile img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.home-mosaic-name { position: absolute; left: 0; right: 0; bottom: 0; padding: 18px 8px 6px; font-size: 12px; font-weight: 700; line-height: 1.15; color: var(--white); background: linear-gradient(to top, rgba(12, 28, 51, .8), rgba(12, 28, 51, 0)); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+@media (hover: hover) { .home-mosaic-tile:hover { border-color: var(--orange); } }
+.home-mosaic-tile:focus-visible { outline: 2px solid var(--orange-text); outline-offset: 2px; }
+/* A phone: the photograph keeps its fixed height and the four tiles run in a row beneath it. */
+@media (max-width: 639px) {
+  .home-hero-media.has-mosaic { height: auto; overflow: visible; }
+  .home-hero-main { height: 28svh; min-height: 168px; overflow: hidden; }
+  .home-mosaic { grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); grid-auto-rows: auto; height: 52px; margin-top: 4px; }
+  .home-mosaic-name { display: none; }
+}
