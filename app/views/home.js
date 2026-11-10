@@ -4,7 +4,7 @@
    Desktop reads as an editorial spread; the same components stack into a
    single column on a phone (see home.css). */
 
-import { picture, escapeHtml } from '../media.js';
+import { picture, escapeHtml, getPhoto } from '../media.js';
 import { icon } from '../icons.js';
 import * as Data from '../data.js';
 import { routePreview, terrainSparkline } from '../previews.js';
@@ -70,8 +70,21 @@ export function routeCard(route, options = {}) {
   </a>`;
 }
 
+/** Up to four featured routes' photographs beside the hero photograph, each a link to its route. Empty when none has a photograph. */
+function heroMosaic(featured) {
+  const tiles = featured.filter((route) => { const id = route.media?.card || route.media?.photo; return id && getPhoto(id); }).slice(0, 4);
+  if (!tiles.length) return '';
+  return `<nav class="home-mosaic is-${tiles.length}" aria-label="Featured routes">
+    ${tiles.map((route) => `<a class="home-mosaic-tile" href="${routePath(route.slug)}" aria-label="${escapeHtml(route.name)}, ${escapeHtml(route.location || route.region || 'India')}">
+      ${picture(route.media?.card || route.media?.photo, { sizes: '(max-width: 1023px) 25vw, 180px', alt: '', ratio: '1 / 1' })}
+      <span class="home-mosaic-name" aria-hidden="true">${escapeHtml(route.name)}</span>
+    </a>`).join('\n    ')}
+  </nav>`;
+}
+
 function hero(featured) {
   const first = featured[0];
+  const mosaic = heroMosaic(featured);
   return `<section class="home-hero dither-band" data-dither="sand" aria-labelledby="home-title">
     <div class="home-hero-copy">
       <p class="eyebrow">A living heritage, a shared human story</p>
@@ -85,7 +98,8 @@ function hero(featured) {
         </a></li>`).join('')}
       </ul>
     </div>
-    <div class="home-hero-media">
+    <div class="home-hero-media${mosaic ? ' has-mosaic' : ''}">
+      <div class="home-hero-main">
       ${picture('hampi-landscape', {
     sizes: HERO_SIZES,
     alt: 'The boulder landscape of Hampi, Karnataka, with temple towers among the rocks',
@@ -97,6 +111,8 @@ function hero(featured) {
         <p class="script">Every stone has a story. <br>All you have to do is listen.</p>
       </div>
       ${first ? `<span class="pin-chip home-hero-place">${icon('pin')}${escapeHtml(first.location || 'India')}</span>` : ''}
+      </div>
+      ${mosaic}
     </div>
   </section>`;
 }
