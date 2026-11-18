@@ -1,0 +1,51 @@
+x-trekking: &trekking
+  build:
+    context: .
+    dockerfile: trekking/Dockerfile
+  environment:
+    TREKKING_ADMIN_EMAIL: ${TREKKING_ADMIN_EMAIL:-admin@localhost}
+    TREKKING_ADMIN_PASSWORD: ${TREKKING_ADMIN_PASSWORD:?Set the initial admin password}
+    TREKKING_SECRET_KEY: ${TREKKING_SECRET_KEY:?Set the Flask session secret}
+    TREKKING_HTTPS: ${TREKKING_HTTPS:-0}
+    TREKKING_DATABASE: /var/lib/trekking/trekking.sqlite
+    TREKKING_OUTBOX: /var/lib/trekking/mail
+    TREKKING_REDIS_URL: redis://redis:6379/1
+    TREKKING_BROKER_URL: redis://redis:6379/2
+    TREKKING_SMTP_HOST: ${TREKKING_SMTP_HOST:-}
+    TREKKING_SMTP_PORT: ${TREKKING_SMTP_PORT:-587}
+    TREKKING_SMTP_USER: ${TREKKING_SMTP_USER:-}
+    TREKKING_SMTP_PASSWORD: ${TREKKING_SMTP_PASSWORD:-}
+    TREKKING_FROM: ${TREKKING_FROM:-trekking@localhost}
+  volumes:
+    - trekking-data:/var/lib/trekking
+  depends_on:
+    redis:
+      condition: service_healthy
+  restart: unless-stopped
+
+services:
+  web:
+    <<: *trekking
+    ports:
+      - "127.0.0.1:${TREKKING_PORT:-8000}:8000"
+  worker:
+    <<: *trekking
+    command: ["celery", "-A", "worker:celery", "worker", "--pool", "solo", "--loglevel", "INFO"]
+  scheduler:
+    <<: *trekking
+    command: ["celery", "-A", "worker:celery", "beat", "--schedule", "/var/lib/trekking/beat", "--loglevel", "INFO"]
+  redis:
+    image: redis:8.2.1
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 2s
+      retries: 10
+    restart: unless-stopped
+
+volumes:
+  trekking-data:
+  redis-data:

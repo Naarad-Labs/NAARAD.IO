@@ -92,3 +92,15 @@ public bookings and configure SMTP before enabling real notification delivery.
 
 GitHub Pages cannot run the WSGI application or workers. Verify the combined
 site on the destination server before switching domain routing.
+
+## Deploy with Docker Compose
+
+From the full repository root, export `TREKKING_ADMIN_PASSWORD` and
+`TREKKING_SECRET_KEY`, then run `docker compose up -d --build`. The web service
+binds to loopback on port 8000 by default. SQLite, the Beat schedule, and the
+local email outbox share the `trekking-data` volume. Redis uses its own volume.
+
+For an HTTPS deployment, set `TREKKING_HTTPS=1` and configure the HTTPS reverse
+proxy to pass requests to the loopback port. Verify the combined site on the
+host before updating domain routing. For a local demo, optional seed data is
+available with `docker compose exec web flask --app app seed-demo`.
