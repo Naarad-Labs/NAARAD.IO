@@ -517,6 +517,31 @@ export async function meta({ route }) {
   };
 }
 
+async function guidedDepartures(route) {
+  if (!globalThis.__NAARAD_SITE_ROLE__) return '';
+  const params = new URLSearchParams({ route: route.slug });
+  const listing = '/routes/departures/?' + params;
+  try {
+    const response = await fetch('/trekking/api/departures?' + params, {
+      signal: AbortSignal.timeout(1200),
+    });
+    if (!response.ok) return '';
+    const departures = await response.json();
+    const first = departures[0];
+    if (!first) return '';
+    const date = new Intl.DateTimeFormat('en-IN', { dateStyle: 'long', timeZone: 'UTC' })
+      .format(new Date(first.start_date + 'T00:00:00Z'));
+    return `<section class="route-glance" aria-labelledby="guided-departures-heading">
+      <h2 class="section-title" id="guided-departures-heading">Upcoming guided departures</h2>
+      <p>${escapeHtml(date)} · ${Math.max(0, first.capacity - first.booked)} places left</p>
+      <a class="button button-sm" data-full-page href="/routes/departures/?departure=${Number(first.id)}">View departure</a>
+      ${departures.length > 1 ? `<a class="button button-sm" data-full-page href="${listing}">All departures for this route</a>` : ''}
+    </section>`;
+  } catch {
+    return '';
+  }
+}
+
 export const stylesheet = '/app/route.css';
 export async function render({ route, stop = 1 }) {
   const selectedStop = Data.getStop(route, stop);
@@ -526,6 +551,7 @@ export async function render({ route, stop = 1 }) {
     ${photoScrubber(route)}
     ${factRow(route)}
     ${tabBar(route)}
+    ${await guidedDepartures(route)}
     <div class="route-workspace">
       ${mapPanel(route)}
       ${stopPanel(route, selectedStop)}

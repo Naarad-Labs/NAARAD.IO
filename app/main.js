@@ -886,7 +886,7 @@ async function handleStudio(target) {
 function pageLink(event) {
   if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return null;
   const link = event.target.closest('a[href]');
-  if (!link || link.target || link.hasAttribute('download')) return null;
+  if (!link || link.target || link.hasAttribute('download') || link.hasAttribute('data-full-page')) return null;
   const url = new URL(link.href, location.href);
   if (url.origin !== location.origin) return null;
   // A jump within this page (the story contents, the skip link) is the browser's.

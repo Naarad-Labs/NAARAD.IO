@@ -222,7 +222,8 @@ export async function render(context = {}) {
     return `<div class="studio">
       ${sidebar('profile')}
       <div class="studio-main">
-        ${Account.panel()}
+        ${globalThis.__NAARAD_SITE_ROLE__ === 'staff' ? '<a class="button button-sm" data-full-page href="/creators/guide/">Guide workspace</a>' : ''}
+      ${Account.panel()}
         ${await Journey.renderBody({ breadcrumb: 'Profile' })}
       </div>
     </div>`;

@@ -6,20 +6,28 @@
   <title>Naarad Trekking</title>
   <link rel="stylesheet" href="./static/vendor/bootstrap.min.css">
   <style>[v-cloak]{display:none}.table th{white-space:nowrap}.min-control{min-width:8rem}</style>
+  <link rel="stylesheet" href="./static/workspace.css">
   <script defer src="./static/vendor/vue.js"></script>
   <script defer src="./static/dashboard.js"></script>
 </head>
 <body class="bg-body-tertiary">
 <div id="app" v-cloak>
-  <header class="bg-dark text-white">
+  <header :class="integrated ? 'workspace-header' : 'bg-dark text-white'">
     <div class="container py-3 d-flex justify-content-between align-items-center gap-3 flex-wrap">
-      <div class="d-flex align-items-center gap-3 flex-wrap">
-        <a v-if="integrated" class="link-light" href="/">Naarad home</a>
-        <span class="fs-5 fw-semibold">Naarad Trekking</span>
-      </div>
+      <a v-if="integrated" class="brand" href="/" aria-label="Naarad home">
+        <img src="/Images/cropped_logo.png" alt="" width="40" height="40"><strong>NAARAD</strong>
+      </a>
+      <span v-else class="fs-5 fw-semibold">Naarad Trekking</span>
+      <nav v-if="integrated && user" aria-label="Naarad" class="d-flex gap-3 flex-wrap">
+        <a href="/routes/">Routes</a>
+        <a href="/routes/departures/" :aria-current="screen === 'departures' ? 'page' : null">Guided departures</a>
+        <a v-if="user.role === 'trekker'" href="/journey/bookings/" :aria-current="screen === 'bookings' ? 'page' : null">My bookings</a>
+        <a v-if="user.role === 'staff'" href="/creators/guide/" :aria-current="screen === 'guide' ? 'page' : null">Guide workspace</a>
+        <a v-if="user.role === 'admin'" href="/admin/treks/" :aria-current="screen === 'admin' ? 'page' : null">Admin</a>
+      </nav>
       <div v-if="user" class="d-flex align-items-center gap-3">
         <span>{{ user.name }} · {{ roleName }}</span>
-        <button class="btn btn-outline-light btn-sm" :disabled="busy" @click="logout">Sign out</button>
+        <button class="btn btn-sm" :class="integrated ? 'btn-outline-secondary' : 'btn-outline-light'" :disabled="busy" @click="logout">Sign out</button>
       </div>
     </div>
   </header>
@@ -28,8 +36,9 @@
     <p v-if="error" class="alert alert-danger" role="alert">{{ error }}</p>
     <p v-if="message" class="alert alert-success" role="status">{{ message }}</p>
 
-    <section v-if="!loading && !user" class="card mx-auto p-4" style="max-width:30rem">
-      <h1 class="h3">{{ registering ? 'Create a trekker account' : 'Sign in' }}</h1>
+    <section v-if="!loading && !user" class="workspace-auth card p-4">
+      <h1 class="h3">{{ registering ? 'Create a trekker account' : signInRole === 'staff' ? 'Staff sign-in' : signInRole === 'admin' ? 'Admin sign-in' : 'Sign in to Naarad' }}</h1>
+      <p v-if="signInRole === 'staff'">Use the staff account created by your administrator.</p>
       <form @submit.prevent="authenticate" class="d-grid gap-3">
         <label v-if="registering">Name <input v-model.trim="credentials.name" class="form-control" required maxlength="160"></label>
         <label>Email <input v-model.trim="credentials.email" class="form-control" type="email" autocomplete="username" required></label>
@@ -37,13 +46,23 @@
           :autocomplete="registering ? 'new-password' : 'current-password'" required :minlength="registering ? 8 : 1"></label>
         <button class="btn btn-primary" :disabled="busy">{{ registering ? 'Register' : 'Sign in' }}</button>
       </form>
-      <button class="btn btn-link mt-2" @click="registering=!registering">
+      <button v-if="!signInRole || signInRole === 'trekker'" class="btn btn-link mt-2" @click="registering=!registering">
         {{ registering ? 'Back to sign in' : 'Create a trekker account' }}
       </button>
     </section>
 
-    <template v-if="user?.role === 'admin' && admin">
-      <h1 class="h2">Administration</h1>
+    <section v-if="!loading && user && !allowed" class="workspace-auth">
+      <h1>Access restricted</h1>
+      <p>This workspace requires a {{ requiredRole }} account.</p>
+      <a href="/" class="button button-sm">Return to Naarad</a>
+    </section>
+    <section v-if="!loading && user && screen === 'signin'" class="workspace-auth">
+      <h1>Your Naarad account</h1>
+      <a class="btn btn-primary" href="/">Return to Naarad</a>
+    </section>
+
+    <template v-if="allowed && user.role === 'admin' && admin && (screen === 'admin' || screen === 'standalone')">
+      <h1 class="h2">{{ integrated ? "Trek operations" : "Administration" }}</h1>
       <dl class="row row-cols-2 row-cols-md-5 g-2 mb-4">
         <div v-for="(label,key) in metricLabels" :key="key" class="col">
           <div class="card h-100 p-3"><dt>{{ label }}</dt><dd class="fs-3 mb-0">{{ admin.counts[key] }}</dd></div>
@@ -55,6 +74,7 @@
             <h2 class="h5">{{ routeForm.id ? 'Edit route' : 'Add route' }}</h2>
             <label>Route name <input class="form-control" v-model.trim="routeForm.name" required></label>
             <label>Location <input class="form-control" v-model.trim="routeForm.location" required></label>
+            <label v-if="integrated">Naarad route slug <input class="form-control" v-model.trim="routeForm.route_slug" placeholder="hampi-heritage-trail"></label>
             <label>Difficulty <select class="form-select" v-model="routeForm.difficulty">
               <option v-for="value in difficulties" :key="value">{{ value }}</option>
             </select></label>
@@ -132,7 +152,7 @@
       </div>
     </template>
 
-    <template v-if="user && user.role !== 'trekker'">
+    <template v-if="allowed && user.role !== 'trekker' && ['admin', 'guide', 'standalone'].includes(screen)">
       <h1 v-if="user.role === 'staff'" class="h2">Assigned treks</h1>
       <h2 v-else class="h4">Scheduled treks</h2>
       <p v-if="!treks.length">No matching treks.</p>
@@ -175,9 +195,10 @@
       </section>
     </template>
 
-    <template v-if="user?.role === 'trekker'">
-      <h1 class="h2">Available treks</h1>
-      <form class="row g-2 align-items-end mb-3" @submit.prevent="perform(load)">
+    <template v-if="allowed && (screen === 'departures' || (screen === 'standalone' && user.role === 'trekker'))">
+      <h1 class="display">{{ departure ? "Guided departure" : integrated ? "Guided departures" : "Available treks" }}</h1>
+      <a v-if="departure || routeSlug" href="/routes/departures/">All guided departures</a>
+      <form v-if="!departure" class="row g-2 align-items-end mb-3" @submit.prevent="perform(load)">
         <label class="col-md">Trek name <input class="form-control" v-model.trim="filter.q"></label>
         <label class="col-md">Location <input class="form-control" v-model.trim="filter.location"></label>
         <label class="col-md">Difficulty <select class="form-select" v-model="filter.difficulty">
@@ -187,20 +208,25 @@
         <div class="col-md-auto"><button class="btn btn-outline-primary" :disabled="busy">Apply filters</button></div>
       </form>
       <p v-if="!treks.length">No open treks match your search.</p>
-      <div class="row g-3 mb-4">
-        <article v-for="trek in treks" :key="trek.id" class="col-md-6 col-xl-4">
-          <div class="card p-3 h-100">
+      <div class="mb-4" :class="integrated ? '' : 'row g-3'">
+        <article v-for="trek in treks" :key="trek.id" :class="integrated ? 'workspace-departure' : 'col-md-6 col-xl-4'">
+          <div :class="integrated ? '' : 'card p-3 h-100'">
             <h2 class="h5">{{ trek.name }}</h2>
-            <p class="mb-2">{{ trek.location }} · {{ trek.difficulty }} · {{ trek.duration }} day(s)</p>
-            <p class="mb-2">{{ trek.start_date }} to {{ trek.end_date }} · {{ trek.capacity-trek.booked }} places left</p>
+            <p class="mb-2">{{ trek.location }} · {{ trek.difficulty }} · {{ trek.duration }} {{ trek.duration === 1 ? 'day' : 'days' }}</p>
+            <p class="mb-2">{{ departureDates(trek) }} · {{ trek.capacity-trek.booked }} {{ trek.capacity-trek.booked === 1 ? 'place left' : 'places left' }}</p>
             <p>{{ trek.instructions }}</p>
-            <button class="btn btn-primary mt-auto align-self-start" :disabled="busy || trek.booked>=trek.capacity || bookings.some(b=>b.trek_id===trek.id)"
+            <a v-if="integrated && !departure" class="button button-sm" :href="'/routes/departures/?departure='+trek.id">View departure</a>
+            <button v-else-if="user.role === 'trekker'" class="btn btn-primary mt-auto align-self-start" :disabled="busy || trek.booked>=trek.capacity || bookings.some(b=>b.trek_id===trek.id)"
               @click="change('/api/treks/'+trek.id+'/book','POST',{},'Your trek is booked.')">
               {{ bookings.some(b=>b.trek_id===trek.id) ? 'Booking on record' : trek.booked>=trek.capacity ? 'Full' : 'Book trek' }}
             </button>
           </div>
         </article>
       </div>
+    </template>
+
+    <template v-if="allowed && user.role === 'trekker' && (screen === 'bookings' || screen === 'standalone')">
+      <h1 v-if="integrated" class="display">My bookings</h1>
       <form class="card p-3 mb-4" @submit.prevent="saveProfile">
         <h2 class="h5">Profile</h2>
         <div class="d-flex align-items-end flex-wrap gap-2">
@@ -210,7 +236,7 @@
       </form>
     </template>
 
-    <section v-if="user && user.role !== 'staff' && (user.role !== 'admin' || admin)">
+    <section v-if="allowed && ((screen === 'bookings') || (screen === 'admin' && admin) || (screen === 'standalone' && (user.role === 'trekker' || admin)))">
       <div class="d-flex flex-wrap align-items-center gap-2 justify-content-between mb-2">
         <h2 class="h4 mb-0">{{ user.role==='admin' ? 'All bookings' : 'Booking history' }}</h2>
         <button v-if="user.role==='trekker'" class="btn btn-outline-primary" :disabled="busy" @click="queueExport">Export CSV</button>

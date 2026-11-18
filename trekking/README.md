@@ -69,8 +69,18 @@ This application was implemented with Codex assistance. The inherited Naarad com
 
 Use the full Naarad checkout containing this folder. The combined application
 serves the site's pre-rendered pages and existing assets at their normal URLs.
-The booking dashboard, its API and its cookie are scoped to `/trekking/`.
-My Journey shows a **Trek bookings** button when the booking service responds.
+The home hero is public. Naarad uses the trekking session to require sign-in
+for other pages and return visitors to their original destination. The API
+remains under `/trekking/api/`.
+
+- Routes links to guided departures at `/routes/departures/`. A route with open
+  departures lists them when its slug matches the admin route record.
+- My Journey links trekkers to `/journey/bookings/` for their bookings and CSV export.
+- Creators links assigned staff to `/creators/guide/`.
+- Admin operations are at `/admin/treks/`.
+
+The combined site replaces the public service worker with a network-only worker
+so protected pages are unavailable from the site offline cache.
 
 From this folder, with the local environment and Redis configured as above:
 
@@ -79,7 +89,7 @@ python -m pip install -r requirements-site.txt
 gunicorn --no-control-socket --bind 127.0.0.1:8000 'naarad_site:create_site()'
 ```
 
-Open http://127.0.0.1:8000/journey/ and use **Trek bookings**. The Celery worker
+Open http://127.0.0.1:8000/ and choose **Routes** to start. The Celery worker
 and Beat commands above also apply to the combined site. The standalone source
 ZIP includes the booking app for the course demo and can run with Flask alone.
 

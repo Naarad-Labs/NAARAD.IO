@@ -3,18 +3,21 @@
     "name": "Hampi Vijayanagara Circuit",
     "location": "Hampi, Karnataka",
     "difficulty": "Moderate",
-    "duration": 1
+    "duration": 1,
+    "route_slug": "hampi-heritage-trail"
   },
   {
     "name": "Thanjavur Brihadeeswarar Trail",
     "location": "Thanjavur, Tamil Nadu",
     "difficulty": "Easy",
-    "duration": 1
+    "duration": 1,
+    "route_slug": "thanjavur-living-heritage"
   },
   {
     "name": "IIT Madras Forest Loop",
     "location": "Chennai, Tamil Nadu",
     "difficulty": "Easy",
-    "duration": 1
+    "duration": 1,
+    "route_slug": "iit-madras-wildlife-walk"
   }
 ]

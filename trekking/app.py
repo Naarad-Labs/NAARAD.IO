@@ -2,6 +2,7 @@ import hashlib
 import io
 import json
 import os
+import re
 import secrets
 import sqlite3
 from contextlib import closing
@@ -18,7 +19,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 ROOT = Path(__file__).resolve().parent
 DIFFICULTIES = ("Easy", "Moderate", "Hard")
 TREK_SELECT = """
-    SELECT t.*, r.name, r.location, r.duration, r.difficulty, r.archived,
+    SELECT t.*, r.name, r.location, r.duration, r.difficulty, r.archived, r.route_slug,
            u.name AS staff_name,
            (SELECT COUNT(*) FROM bookings b WHERE b.trek_id = t.id
             AND b.status != 'Cancelled') AS booked
@@ -133,6 +134,13 @@ def create_app(config=None):
     Path(db_path).parent.mkdir(parents=True, exist_ok=True)
     with closing(connect(db_path)) as db, db:
         db.executescript((ROOT / "schema.sql").read_text())
+        db.execute("BEGIN IMMEDIATE")
+        if "route_slug" not in {column["name"] for column in db.execute("PRAGMA table_info(routes)")}:
+            db.execute("ALTER TABLE routes ADD COLUMN route_slug TEXT")
+            for route in json.loads((ROOT / "demo_routes.json").read_text()):
+                db.execute("UPDATE routes SET route_slug=? WHERE name=? AND location=?",
+                           (route["route_slug"], route["name"], route["location"]))
+            db.execute("UPDATE catalogue_version SET version=version+1 WHERE id=1")
         if not db.execute("SELECT 1 FROM users WHERE role='admin'").fetchone():
             password = app.config["ADMIN_PASSWORD"]
             if not password or len(password) < 8:
@@ -273,13 +281,21 @@ def create_app(config=None):
     def save_route(route_id=None):
         values = data()
         fields = (field(values, "name"), field(values, "location"), choice(values, "difficulty", DIFFICULTIES), integer(values, "duration"))
+        if "route_slug" in values:
+            slug = values["route_slug"]
+            if slug and (not isinstance(slug, str) or len(slug) > 160 or not re.fullmatch(r"[a-z0-9]+(?:-[a-z0-9]+)*", slug)):
+                abort(400, "Use the route address slug, such as hampi-heritage-trail.")
+        else:
+            slug = None
         if route_id is None:
-            cursor = g.db.execute("INSERT INTO routes (name,location,difficulty,duration) VALUES (?,?,?,?)", fields)
+            cursor = g.db.execute("INSERT INTO routes (name,location,difficulty,duration,route_slug) VALUES (?,?,?,?,?)", (*fields, slug or None))
             status = 201
             route_id = cursor.lastrowid
         else:
             get_record("SELECT id FROM routes WHERE id=? AND archived=0", (route_id,))
             g.db.execute("UPDATE routes SET name=?,location=?,difficulty=?,duration=? WHERE id=?", (*fields, route_id))
+            if "route_slug" in values:
+                g.db.execute("UPDATE routes SET route_slug=? WHERE id=?", (slug or None, route_id))
             status = 200
         touch_catalogue()
         return {"id": route_id}, status
@@ -360,6 +376,11 @@ def create_app(config=None):
             return rows(g.db, TREK_SELECT + " ORDER BY t.start_date")
         if g.user["role"] == "staff":
             return rows(g.db, TREK_SELECT + " WHERE t.staff_id=? ORDER BY t.start_date", (g.user["id"],))
+        return open_treks()
+
+    @app.get("/api/departures")
+    @role("admin", "staff", "trekker")
+    def open_treks():
         today = date.today().isoformat()
         catalogue = g.db.execute("SELECT namespace,version FROM catalogue_version WHERE id=1").fetchone()
         cache = current_app.extensions["trek_cache"]
@@ -386,11 +407,15 @@ def create_app(config=None):
         location = request.args.get("location", "").casefold()
         term = request.args.get("q", "").casefold()
         duration = request.args.get("duration", "")
+        slug = request.args.get("route", "")
+        departure = request.args.get("departure", "")
         return [item for item in result
                 if (not difficulty or item["difficulty"] == difficulty)
                 and location in item["location"].casefold()
                 and term in item["name"].casefold()
-                and (not duration or duration == str(item["duration"]))]
+                and (not duration or duration == str(item["duration"]))
+                and (not slug or item["route_slug"] == slug)
+                and (not departure or departure == str(item["id"]))]
 
     @app.get("/api/treks/<int:trek_id>/participants")
     @role("staff", "admin")

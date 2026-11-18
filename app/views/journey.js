@@ -132,28 +132,11 @@ function downloadsPanel(store) {
   </ul>`;
 }
 
-async function trekkingAvailable() {
-  if (globalThis.__NAARAD_PRERENDER__) return false;
-  const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), 450);
-  try {
-    const response = await fetch('/trekking/availability', {
-      cache: 'no-store', signal: controller.signal,
-    });
-    return response.ok && response.headers.get('content-type')?.includes('application/json')
-      && (await response.json()).trekking === true;
-  } catch {
-    return false;
-  } finally {
-    clearTimeout(timer);
-  }
-}
-
 export async function renderBody({ breadcrumb = 'My Journey' } = {}) {
   const store = Journey.all();
   const totals = Journey.stats();
   const badges = Journey.badges();
-  const [routes, showTrekking] = await Promise.all([Data.loadRoutes(), trekkingAvailable()]);
+  const routes = await Data.loadRoutes();
   const bySlug = new Map(routes.map((route) => [route.slug, route]));
   const target = Math.max(5, Math.ceil((totals.walksCompleted + 1) / 5) * 5);
 
@@ -165,7 +148,7 @@ export async function renderBody({ breadcrumb = 'My Journey' } = {}) {
         <nav class="breadcrumb" aria-label="Breadcrumb"><a href="/" data-view="home">Home</a>${icon('chevron')}<b aria-current="page">${escapeHtml(breadcrumb)}</b></nav>
         <h1 class="display">${breadcrumb === 'Profile' ? 'Your profile' : 'My Journey'} <br><span class="accent">More than places.</span></h1>
         <p class="lede">Your walks, stories and notes in one place. Everything here is kept on this device.</p>
-        ${showTrekking ? '<a class="button button-sm" href="/trekking/">Trek bookings</a>' : ''}
+        ${globalThis.__NAARAD_SITE_ROLE__ === 'trekker' ? '<a class="button button-sm" data-full-page href="/journey/bookings/">My bookings</a>' : ''}
       </div>
       <div class="journey-hero-media">
         ${picture('india-traveller', {

@@ -1,5 +1,5 @@
 const emptyCredentials = () => ({ name: '', email: '', password: '' });
-const emptyRoute = () => ({ name: '', location: '', difficulty: 'Easy', duration: 1 });
+const emptyRoute = () => ({ name: '', location: '', difficulty: 'Easy', duration: 1, route_slug: '' });
 const emptyTrek = () => ({ route_id: '', staff_id: null, capacity: 10, start_date: '', end_date: '', instructions: '' });
 
 async function api(path, method = 'GET', body) {
@@ -14,10 +14,35 @@ async function api(path, method = 'GET', body) {
   return result;
 }
 
+const pages = {
+  '/routes/departures/': 'departures',
+  '/journey/bookings/': 'bookings',
+  '/creators/guide/': 'guide',
+  '/admin/treks/': 'admin',
+  '/trekking/sign-in/': 'signin',
+};
+const query = new URLSearchParams(location.search);
+const screen = pages[location.pathname] || 'standalone';
+const requiredRole = { guide: 'staff', admin: 'admin', bookings: 'trekker' }[screen];
+
+function continueTo(user) {
+  let next;
+  try {
+    next = new URL(query.get('next') || '/', location.origin);
+  } catch {
+    next = new URL('/', location.origin);
+  }
+  const role = { '/creators/guide/': 'staff', '/admin/treks/': 'admin', '/journey/bookings/': 'trekker' }[next.pathname];
+  if (next.origin === location.origin && next.pathname !== '/trekking/sign-in/' && (!role || role === user.role)) return next.href;
+  return { admin: '/admin/treks/', staff: '/creators/guide/', trekker: '/routes/departures/' }[user.role];
+}
+
 Vue.createApp({
   data() {
     return {
-      integrated: location.pathname === '/trekking/',
+      integrated: screen !== 'standalone',
+      screen, requiredRole, signInRole: query.get('role'), switching: query.has('switch'),
+      departure: query.get('departure'), routeSlug: query.get('route'),
       loading: true, busy: false, message: '', error: '', user: null, registering: false,
       credentials: emptyCredentials(), profileName: '',
       admin: null, adminSearch: '', routeForm: emptyRoute(), staffForm: emptyCredentials(),
@@ -29,6 +54,7 @@ Vue.createApp({
     };
   },
   computed: {
+    allowed() { return this.user && (!this.requiredRole || this.user.role === this.requiredRole); },
     roleName() { return { admin: 'Admin', staff: 'Staff', trekker: 'Trekker' }[this.user?.role]; },
     visibleBookings() { return this.user?.role === 'admin' ? this.admin.bookings : this.bookings; },
   },
@@ -37,12 +63,22 @@ Vue.createApp({
       const { user } = await api('/api/me');
       this.user = user;
       this.profileName = user?.name || '';
-      if (user) await this.load();
+      if (user && screen === 'signin' && !this.switching) {
+        location.replace(continueTo(user));
+        return;
+      }
+      if (this.allowed && screen !== 'signin') await this.load();
     });
     this.loading = false;
   },
   beforeUnmount() { clearTimeout(this.exportTimer); },
   methods: {
+    departureDates(trek) {
+      const format = new Intl.DateTimeFormat('en-IN', { dateStyle: 'medium', timeZone: 'UTC' });
+      const start = new Date(trek.start_date + 'T00:00:00Z');
+      const end = new Date(trek.end_date + 'T00:00:00Z');
+      return format.formatRange(start, end);
+    },
     async perform(action) {
       this.busy = true;
       this.error = '';
@@ -57,7 +93,17 @@ Vue.createApp({
     },
     async load() {
       let treks;
-      if (this.user.role === 'admin') {
+      if (screen === 'departures') {
+        const filters = new URLSearchParams(this.filter);
+        if (this.routeSlug) filters.set('route', this.routeSlug);
+        if (this.departure) filters.set('departure', this.departure);
+        treks = await api('/api/departures?' + filters);
+        if (this.user.role === 'trekker') this.bookings = await api('/api/bookings');
+      } else if (screen === 'bookings') {
+        this.bookings = await api('/api/bookings');
+        await this.refreshExport();
+        treks = [];
+      } else if (this.user.role === 'admin') {
         this.admin = await api('/api/admin?' + new URLSearchParams({ q: this.adminSearch }));
         treks = this.admin.treks;
       } else if (this.user.role === 'staff') {
@@ -79,12 +125,25 @@ Vue.createApp({
         this.profileName = this.user.name;
         this.credentials = emptyCredentials();
         this.registering = false;
+        if (screen === 'signin') {
+          if (this.signInRole && this.user.role !== this.signInRole) {
+            await api('/api/logout', 'POST', {});
+            this.user = null;
+            throw new Error('This workspace requires a ' + this.signInRole + ' account.');
+          }
+          location.replace(continueTo(this.user));
+          return;
+        }
         await this.load();
       });
     },
     logout() {
       return this.perform(async () => {
         await api('/api/logout', 'POST', {});
+        if (this.integrated) {
+          location.replace('/');
+          return;
+        }
         clearTimeout(this.exportTimer);
         this.user = null;
         this.admin = null;

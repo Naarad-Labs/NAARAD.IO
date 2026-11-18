@@ -1,0 +1,33 @@
+.naarad-workspace {
+  --bs-body-color: var(--ink);
+  --bs-body-bg: var(--paper);
+  --bs-body-font-family: var(--sans);
+  --bs-border-color: var(--line);
+  color: var(--ink);
+  background: var(--paper);
+  font-family: var(--sans);
+}
+.naarad-workspace h1, .naarad-workspace h2, .naarad-workspace h3 { font-family: var(--serif); }
+.naarad-workspace .workspace-header { border-bottom: 1px solid var(--line); }
+.naarad-workspace .workspace-header a { color: var(--ink); }
+.naarad-workspace .workspace-header a[aria-current="page"] { color: var(--orange-text); }
+.naarad-workspace .card { --bs-card-bg: var(--paper-bright); --bs-card-border-color: var(--line); }
+.naarad-workspace .btn-primary {
+  --bs-btn-bg: var(--orange-text);
+  --bs-btn-border-color: var(--orange-text);
+  --bs-btn-hover-bg: var(--orange-deep);
+  --bs-btn-hover-border-color: var(--orange-deep);
+  --bs-btn-active-bg: var(--orange-deep);
+  --bs-btn-active-border-color: var(--orange-deep);
+}
+.naarad-workspace .btn-outline-primary, .naarad-workspace .btn-link {
+  --bs-btn-color: var(--orange-text);
+  --bs-btn-border-color: var(--orange-text);
+  --bs-btn-hover-color: var(--white);
+  --bs-btn-hover-bg: var(--orange-deep);
+  --bs-btn-hover-border-color: var(--orange-deep);
+}
+.naarad-workspace .form-control, .naarad-workspace .form-select { border-color: var(--field-edge); }
+.naarad-workspace .workspace-auth { max-width: 30rem; margin: clamp(2rem,8vw,6rem) auto; }
+.naarad-workspace .workspace-departure { border-top: 1px solid var(--line); padding: 1.15rem 0; }
+.naarad-workspace .workspace-departure:last-child { border-bottom: 1px solid var(--line); }

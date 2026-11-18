@@ -280,6 +280,7 @@ export async function render(context = {}) {
         <h1 class="display">Go where <br>stories live.</h1>
         <p class="lede">Search places and browse published routes across India. ${withStops} ${withStops === 1 ? 'route has' : 'routes have'} ordered stops with stories; the rest carry their route facts while stops are written.</p>
       </div>
+      ${globalThis.__NAARAD_SITE_ROLE__ ? '<a class="button button-sm" data-full-page href="/routes/departures/">Guided departures</a>' : ''}
       <form class="catalogue-search" role="search" aria-label="Search routes" onsubmit="return false">
         <label class="sr-only" for="catalogue-query">Search routes and places</label>
         ${icon('search')}

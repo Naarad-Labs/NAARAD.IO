@@ -16,8 +16,8 @@ def register_demo_command(app):
             routes = json.loads((ROOT / "demo_routes.json").read_text())
             for route in routes:
                 db.execute("""
-                    INSERT INTO routes (name,location,difficulty,duration)
-                    SELECT :name,:location,:difficulty,:duration
+                    INSERT INTO routes (name,location,difficulty,duration,route_slug)
+                    SELECT :name,:location,:difficulty,:duration,:route_slug
                     WHERE NOT EXISTS (SELECT 1 FROM routes WHERE name=:name AND location=:location)
                 """, route)
             sample = routes[0]

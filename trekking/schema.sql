@@ -14,6 +14,7 @@ CREATE TABLE IF NOT EXISTS routes (
     location TEXT NOT NULL,
     difficulty TEXT NOT NULL CHECK (difficulty IN ('Easy', 'Moderate', 'Hard')),
     duration INTEGER NOT NULL CHECK (duration > 0),
+    route_slug TEXT,
     archived INTEGER NOT NULL DEFAULT 0 CHECK (archived IN (0, 1))
 );
 CREATE TABLE IF NOT EXISTS treks (
