@@ -10,7 +10,7 @@ from naarad_site import create_site
 
 
 class NaaradIntegrationTest(unittest.TestCase):
-    def test_public_hero_session_and_workspace_permissions(self):
+    def test_public_landing_session_and_workspace_permissions(self):
         root = Path(__file__).resolve().parents[2]
         if not (root / "app" / "shell.html").exists():
             self.skipTest("Requires the full Naarad repository.")
@@ -24,8 +24,9 @@ class NaaradIntegrationTest(unittest.TestCase):
             hero = guest.get("/")
             self.assertIn(b'class="home-hero ', hero.data)
             self.assertNotIn(b'src="/app/main.js"', hero.data)
-            self.assertLess(len(hero.data), (root / "index.html").stat().st_size)
-            for path in ("/routes/?q=Hampi", "/journey/", "/creators/", "/creators/guide/", "/admin/treks/", "/content/routes.json"):
+            self.assertIn(b"Iconic journeys", hero.data)
+            self.assertIn(b"Real places. Deeper stories.", hero.data)
+            for path in ("/explore/", "/routes/?q=Hampi", "/journey/", "/creators/", "/creators/guide/", "/admin/treks/", "/content/routes.json"):
                 response = guest.get(path)
                 self.assertEqual(response.status_code, 302, path)
                 self.assertEqual(parse_qs(urlsplit(response.location).query)["next"], [path])
@@ -46,6 +47,7 @@ class NaaradIntegrationTest(unittest.TestCase):
             staff = Client(app, Response)
             self.assertEqual(staff.post("/trekking/api/login", json=staff_details).status_code, 200)
             self.assertEqual(staff.get("/creators/guide/").status_code, 200)
+            self.assertIn(b'id="nav-creators"', staff.get("/creators/").data)
             self.assertEqual(staff.get("/admin/treks/").status_code, 403)
 
             trekker_details = {"email": "trekker@example.test", "name": "Trekker", "password": "test-password"}
@@ -54,6 +56,10 @@ class NaaradIntegrationTest(unittest.TestCase):
             self.assertEqual(guest.get("/routes/departures/").status_code, 200)
             self.assertEqual(guest.get("/journey/bookings/").status_code, 200)
             self.assertEqual(guest.get("/creators/guide/").status_code, 403)
+            self.assertEqual(guest.get("/creators/").status_code, 403)
+            self.assertNotIn(b'id="nav-creators"', guest.get("/explore/").data)
+            for path in ("/explore/", "/routes/", "/stories/", "/journey/"):
+                self.assertEqual(guest.get(path).status_code, 200)
             self.assertEqual(guest.get("/admin/treks/").status_code, 403)
             self.assertEqual(guest.post("/trekking/api/logout", json={}).status_code, 200)
             self.assertEqual(guest.get("/routes/").status_code, 302)

@@ -471,6 +471,11 @@ function anchorId(hash) {
  * `scrollY` is where the page opens: the top, or where Back left it.
  */
 async function show(url, { push = true, boot = false, scrollY = 0 } = {}) {
+  if (globalThis.__NAARAD_SITE_ROLE__ && globalThis.__NAARAD_SITE_ROLE__ !== 'staff'
+    && (url.pathname === '/creators' || url.pathname.startsWith('/creators/'))) {
+    location.assign(url.href);
+    return;
+  }
   const current = ++generation;
   const match = resolve(url);
   let page = match?.page || NOT_FOUND;

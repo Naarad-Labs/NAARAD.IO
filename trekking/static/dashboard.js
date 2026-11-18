@@ -26,13 +26,15 @@ const screen = pages[location.pathname] || 'standalone';
 const requiredRole = { guide: 'staff', admin: 'admin', bookings: 'trekker' }[screen];
 
 function continueTo(user) {
+  if (user.role === 'admin') return '/admin/treks/';
   let next;
   try {
-    next = new URL(query.get('next') || '/', location.origin);
+    next = new URL(query.get('next') || (user.role === 'staff' ? '/creators/' : '/explore/'), location.origin);
   } catch {
     next = new URL('/', location.origin);
   }
-  const role = { '/creators/guide/': 'staff', '/admin/treks/': 'admin', '/journey/bookings/': 'trekker' }[next.pathname];
+  const role = next.pathname === '/creators' || next.pathname.startsWith('/creators/')
+    ? 'staff' : { '/admin/treks/': 'admin', '/journey/bookings/': 'trekker' }[next.pathname];
   if (next.origin === location.origin && next.pathname !== '/trekking/sign-in/' && (!role || role === user.role)) return next.href;
   return { admin: '/admin/treks/', staff: '/creators/guide/', trekker: '/routes/departures/' }[user.role];
 }
@@ -41,7 +43,7 @@ Vue.createApp({
   data() {
     return {
       integrated: screen !== 'standalone',
-      screen, requiredRole, signInRole: query.get('role'), switching: query.has('switch'),
+      screen, requiredRole, loginMode: query.get('role') === 'staff' ? 'creator' : 'user', switching: query.has('switch'),
       departure: query.get('departure'), routeSlug: query.get('route'),
       loading: true, busy: false, message: '', error: '', user: null, registering: false,
       credentials: emptyCredentials(), profileName: '',
@@ -126,10 +128,17 @@ Vue.createApp({
         this.credentials = emptyCredentials();
         this.registering = false;
         if (screen === 'signin') {
-          if (this.signInRole && this.user.role !== this.signInRole) {
+          if (this.loginMode === 'creator' && this.user.role !== 'staff' && this.user.role !== 'admin') {
             await api('/api/logout', 'POST', {});
             this.user = null;
-            throw new Error('This workspace requires a ' + this.signInRole + ' account.');
+            throw new Error('Use your creator account, or choose User login.');
+          }
+          if (this.loginMode === 'creator' && this.user.role === 'staff') {
+            const next = query.get('next') || '';
+            if (!next.startsWith('/creators/')) {
+              location.replace('/creators/');
+              return;
+            }
           }
           location.replace(continueTo(this.user));
           return;

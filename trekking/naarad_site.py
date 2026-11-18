@@ -1,6 +1,7 @@
 """Serve Naarad behind the trekking session, with a public home hero."""
 
 import os
+import re
 from contextlib import closing
 from pathlib import Path
 
@@ -64,7 +65,7 @@ def create_site(config=None, root=None):
 
     def sign_in(role=None):
         target = request.full_path.removesuffix("?")
-        return redirect(url_for("sign_in_page", next=target, role=role))
+        return redirect(url_for("sign_in_page", next=target, role="staff" if role == "staff" else None))
 
     @site.after_request
     def private_response(response):
@@ -86,17 +87,16 @@ def create_site(config=None, root=None):
     def website_page(target, role):
         html = target.read_text()
         if role:
+            if role != "staff":
+                html = re.sub(r'<a\b[^>]*\bid="nav-creators"[^>]*>[^<]*</a>\s*', "", html)
+                html = re.sub(r'<a\b[^>]*href="/creators/"[^>]*>Creators</a>\s*', "", html)
             controls = '<a href="/trekking/sign-in/?switch=1">Account</a>'
             if role == "admin":
                 controls = '<a href="/admin/treks/">Admin</a>' + controls
             html = html.replace('</nav>', controls + '</nav>', 1)
             marker = f'<script>globalThis.__NAARAD_SITE_ROLE__ = "{role}";</script>'
             return html.replace('<script type="module" src="/app/main.js">', marker + '<script type="module" src="/app/main.js">', 1)
-        hero_end = html.index("</section>", html.index('<section class="home-hero'))
-        main_end = html.index("</main>", hero_end)
-        html = html[:hero_end + len("</section>")] + "</div>" + html[main_end:]
         html = html.replace('<script type="module" src="/app/main.js"></script>', '', 1)
-        html = html.replace('</nav>', '<a href="/trekking/sign-in/">Sign in</a></nav>', 1)
         return html.replace('</body>', """<script>
           const menu = document.querySelector('.menu-toggle');
           menu?.addEventListener('click', () => {
@@ -152,7 +152,9 @@ def create_site(config=None, root=None):
         public_asset = target.suffix.lower() not in {".html", ".json", ".geojson", ".gpx", ".js"} or target.name == "manifest.json"
         role = None if public_asset else signed_in_role()
         if not public_asset and not role:
-            return sign_in()
+            return sign_in("staff" if parts[0] == "creators" else None)
+        if parts[0] == "creators" and role != "staff" and target.suffix == ".html":
+            return "This page requires a creator account.", 403
         if target.suffix == ".html":
             if not page.endswith("/") and target.name == "index.html" and not page.endswith(".html"):
                 return redirect(request.path + "/" + ("?" + request.query_string.decode("latin-1") if request.query_string else ""), 308)

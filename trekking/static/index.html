@@ -37,8 +37,12 @@
     <p v-if="message" class="alert alert-success" role="status">{{ message }}</p>
 
     <section v-if="!loading && !user" class="workspace-auth card p-4">
-      <h1 class="h3">{{ registering ? 'Create a trekker account' : signInRole === 'staff' ? 'Staff sign-in' : signInRole === 'admin' ? 'Admin sign-in' : 'Sign in to Naarad' }}</h1>
-      <p v-if="signInRole === 'staff'">Use the staff account created by your administrator.</p>
+      <h1 class="h3">{{ registering ? 'Create a trekker account' : 'Sign in to Naarad' }}</h1>
+      <div v-if="integrated && !registering" role="group" aria-label="Account type" class="d-flex flex-wrap gap-2 mb-3">
+        <button type="button" class="btn btn-outline-primary" :aria-pressed="loginMode === 'user'" @click="loginMode = 'user'; error = ''">User login</button>
+        <button type="button" class="btn btn-outline-primary" :aria-pressed="loginMode === 'creator'" @click="loginMode = 'creator'; error = ''">Creator login</button>
+      </div>
+      <p v-if="loginMode === 'creator'">Use the creator account provided by your administrator.</p>
       <form @submit.prevent="authenticate" class="d-grid gap-3">
         <label v-if="registering">Name <input v-model.trim="credentials.name" class="form-control" required maxlength="160"></label>
         <label>Email <input v-model.trim="credentials.email" class="form-control" type="email" autocomplete="username" required></label>
@@ -46,7 +50,7 @@
           :autocomplete="registering ? 'new-password' : 'current-password'" required :minlength="registering ? 8 : 1"></label>
         <button class="btn btn-primary" :disabled="busy">{{ registering ? 'Register' : 'Sign in' }}</button>
       </form>
-      <button v-if="!signInRole || signInRole === 'trekker'" class="btn btn-link mt-2" @click="registering=!registering">
+      <button v-if="loginMode === 'user'" class="btn btn-link mt-2" @click="registering=!registering">
         {{ registering ? 'Back to sign in' : 'Create a trekker account' }}
       </button>
     </section>

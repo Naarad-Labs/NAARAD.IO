@@ -69,8 +69,9 @@ This application was implemented with Codex assistance. The inherited Naarad com
 
 Use the full Naarad checkout containing this folder. The combined application
 serves the site's pre-rendered pages and existing assets at their normal URLs.
-The home hero is public. Naarad uses the trekking session to require sign-in
-for other pages and return visitors to their original destination. The API
+The original full landing page is public. Start Exploring opens sign-in for guests. Naarad uses the trekking session to require sign-in
+for other pages. User login opens visitor pages and Creator login opens the
+creator workspace. The same sign-in form sends administrator accounts to Admin. The API
 remains under `/trekking/api/`.
 
 - Routes links to guided departures at `/routes/departures/`. A route with open

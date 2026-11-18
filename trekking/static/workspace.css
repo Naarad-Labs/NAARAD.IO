@@ -31,3 +31,8 @@
 .naarad-workspace .workspace-auth { max-width: 30rem; margin: clamp(2rem,8vw,6rem) auto; }
 .naarad-workspace .workspace-departure { border-top: 1px solid var(--line); padding: 1.15rem 0; }
 .naarad-workspace .workspace-departure:last-child { border-bottom: 1px solid var(--line); }
+.naarad-workspace [aria-label="Account type"] button[aria-pressed="true"] {
+  color: var(--white);
+  background: var(--orange-text);
+  border-color: var(--orange-text);
+}
