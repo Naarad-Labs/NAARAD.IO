@@ -4,16 +4,19 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Naarad Trekking</title>
-  <link rel="stylesheet" href="/static/vendor/bootstrap.min.css">
+  <link rel="stylesheet" href="./static/vendor/bootstrap.min.css">
   <style>[v-cloak]{display:none}.table th{white-space:nowrap}.min-control{min-width:8rem}</style>
-  <script defer src="/static/vendor/vue.js"></script>
-  <script defer src="/static/dashboard.js"></script>
+  <script defer src="./static/vendor/vue.js"></script>
+  <script defer src="./static/dashboard.js"></script>
 </head>
 <body class="bg-body-tertiary">
 <div id="app" v-cloak>
   <header class="bg-dark text-white">
     <div class="container py-3 d-flex justify-content-between align-items-center gap-3 flex-wrap">
-      <span class="fs-5 fw-semibold">Naarad Trekking</span>
+      <div class="d-flex align-items-center gap-3 flex-wrap">
+        <a v-if="integrated" class="link-light" href="/">Naarad home</a>
+        <span class="fs-5 fw-semibold">Naarad Trekking</span>
+      </div>
       <div v-if="user" class="d-flex align-items-center gap-3">
         <span>{{ user.name }} · {{ roleName }}</span>
         <button class="btn btn-outline-light btn-sm" :disabled="busy" @click="logout">Sign out</button>
@@ -213,7 +216,7 @@
         <button v-if="user.role==='trekker'" class="btn btn-outline-primary" :disabled="busy" @click="queueExport">Export CSV</button>
       </div>
       <p v-if="user.role==='trekker' && latestExport" role="status">
-        <a v-if="latestExport.status==='Ready'" :href="'/api/exports/'+latestExport.id+'/csv'">Your export is ready. Download CSV</a>
+        <a v-if="latestExport.status==='Ready'" :href="'./api/exports/'+latestExport.id+'/csv'">Your export is ready. Download CSV</a>
         <span v-else>{{ latestExport.status==='Failed' ? 'Export failed. Try again.' : 'Preparing your CSV…' }}</span>
       </p>
       <div class="table-responsive">

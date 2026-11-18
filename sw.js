@@ -21,7 +21,7 @@
  * a page that was already controlled reload once when the worker changes.
  */
 
-const VERSION = 'v54';
+const VERSION = 'v55';
 const SHELL = `naarad-shell-${VERSION}`;
 const PAGES = `naarad-pages-${VERSION}`;
 const CONTENT = `naarad-content-${VERSION}`;
@@ -207,6 +207,8 @@ self.addEventListener('fetch', (event) => {
   }
 
   if (url.origin !== location.origin) return;
+  // Trek sessions and booking downloads belong to the server, including offline.
+  if (url.pathname === '/trekking' || url.pathname.startsWith('/trekking/')) return;
   // A <video> asks for byte ranges (206), which Cache.put rejects and Safari will not replay from a cache.
   if (request.destination === 'video' || request.headers.has('range')) return;
 

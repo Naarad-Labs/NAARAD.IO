@@ -8,7 +8,7 @@ async function api(path, method = 'GET', body) {
     options.headers = { 'Content-Type': 'application/json' };
     options.body = JSON.stringify(body);
   }
-  const response = await fetch(path, options);
+  const response = await fetch('.' + path, options);
   const result = await response.json();
   if (!response.ok) throw new Error(result.error || 'The request failed.');
   return result;
@@ -17,6 +17,7 @@ async function api(path, method = 'GET', body) {
 Vue.createApp({
   data() {
     return {
+      integrated: location.pathname === '/trekking/',
       loading: true, busy: false, message: '', error: '', user: null, registering: false,
       credentials: emptyCredentials(), profileName: '',
       admin: null, adminSearch: '', routeForm: emptyRoute(), staffForm: emptyCredentials(),

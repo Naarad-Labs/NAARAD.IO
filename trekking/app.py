@@ -193,6 +193,10 @@ def create_app(config=None):
     def home():
         return app.send_static_file("index.html")
 
+    @app.get("/availability")
+    def availability():
+        return {"trekking": True}, 200, {"Cache-Control": "no-store"}
+
     @app.post("/api/register")
     def register():
         return create_account(data(), "trekker")

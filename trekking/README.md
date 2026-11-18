@@ -64,3 +64,31 @@ One route has many scheduled treks. Each trek can have one assigned staff accoun
 ## Provenance
 
 This application was implemented with Codex assistance. The inherited Naarad commits predate the MAD-II application. Describe the extent of AI assistance and prior work in the course report.
+
+## Run the complete Naarad website with booking
+
+Use the full Naarad checkout containing this folder. The combined application
+serves the site's pre-rendered pages and existing assets at their normal URLs.
+The booking dashboard, its API and its cookie are scoped to `/trekking/`.
+My Journey shows a **Trek bookings** button when the booking service responds.
+
+From this folder, with the local environment and Redis configured as above:
+
+```sh
+python -m pip install -r requirements-site.txt
+gunicorn --no-control-socket --bind 127.0.0.1:8000 'naarad_site:create_site()'
+```
+
+Open http://127.0.0.1:8000/journey/ and use **Trek bookings**. The Celery worker
+and Beat commands above also apply to the combined site. The standalone source
+ZIP includes the booking app for the course demo and can run with Flask alone.
+
+For a public deployment, point the HTTPS proxy for `naarad.io` at the combined
+WSGI server. Keep Gunicorn on loopback or a private network, set
+`TREKKING_HTTPS=1` and a stable `TREKKING_SECRET_KEY` on the web process, and
+put `TREKKING_DATABASE` on a persistent writable volume shared with the worker.
+Run one Beat instance and use a private Redis endpoint. Use a fresh database for
+public bookings and configure SMTP before enabling real notification delivery.
+
+GitHub Pages cannot run the WSGI application or workers. Verify the combined
+site on the destination server before switching domain routing.
